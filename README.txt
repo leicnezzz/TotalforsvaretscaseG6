@@ -5,3 +5,13 @@ Lucas Fjeld
 Marcia Kristine Olsen
 Maya Asad Noor
 Rebekka Boije
+
+
+**Branch pushes code**
+
+feature:
+bugfix:
+visual:
+code:
+security:
+doc:

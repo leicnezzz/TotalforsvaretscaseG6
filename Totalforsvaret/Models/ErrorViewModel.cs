@@ -1,4 +1,4 @@
-namespace WebApplication1.Models;
+namespace Totalforsvaret.Models;
 
 public class ErrorViewModel
 {

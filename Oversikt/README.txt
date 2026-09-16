@@ -9,8 +9,8 @@ Rebekka Boije
 **Branch pushes code**
 
 feature:
-bugfix:
+bugfix: fikser en bug
 visual:
 code:
 security:
-doc:
+doc: 

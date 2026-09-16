@@ -1,4 +1,4 @@
-namespace Totalforsvaret.Models
+namespace Totalforsvaret.Controllers
 {
     public class ErrorViewModel
     {

@@ -1,4 +1,6 @@
 <Solution>
   <Folder Name="/Oversikt/" />
-  <Project Path="Totalforsvaret/Totalforsvaret.csproj" />
+  <Project Path="Totalforsvaret/Totalforsvaret.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>

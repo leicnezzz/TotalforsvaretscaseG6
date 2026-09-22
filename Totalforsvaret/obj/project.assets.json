@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
     "net10.0": {}
   },
@@ -8,28 +8,31 @@
     "net10.0": []
   },
   "packageFolders": {
-    "/Users/kennybui/.nuget/packages/": {}
+    "C:\\Users\\boije\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/kennybui/Documents/GitHub/TotalforsvaretscaseG6/Totalforsvaret/Totalforsvaret.csproj",
+      "projectUniqueName": "C:\\Users\\boije\\source\\repos\\TotalforsvaretscaseG6\\Totalforsvaret\\Totalforsvaret.csproj",
       "projectName": "Totalforsvaret",
-      "projectPath": "/Users/kennybui/Documents/GitHub/TotalforsvaretscaseG6/Totalforsvaret/Totalforsvaret.csproj",
-      "packagesPath": "/Users/kennybui/.nuget/packages/",
-      "outputPath": "/Users/kennybui/Documents/GitHub/TotalforsvaretscaseG6/Totalforsvaret/obj/",
+      "projectPath": "C:\\Users\\boije\\source\\repos\\TotalforsvaretscaseG6\\Totalforsvaret\\Totalforsvaret.csproj",
+      "packagesPath": "C:\\Users\\boije\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\boije\\source\\repos\\TotalforsvaretscaseG6\\Totalforsvaret\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/kennybui/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\boije\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net10.0": {
+          "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {}
         }
@@ -48,6 +51,7 @@
     },
     "frameworks": {
       "net10.0": {
+        "framework": "net10.0",
         "targetAlias": "net10.0",
         "imports": [
           "net461",
@@ -68,7 +72,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.400/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.AspNetCore": "(,10.0.32767]",
           "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

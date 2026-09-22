@@ -4,7 +4,6 @@
     {
         public int ResourceId { get; set; }
         public string Object { get; set; }
-        public string Category { get; set; }
         public int CategoryId { get; set; }
         public bool Available { get; set; }
         public Decimal Latitude { get; set; }

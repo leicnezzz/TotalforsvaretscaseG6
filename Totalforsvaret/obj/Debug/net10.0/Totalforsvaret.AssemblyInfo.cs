@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Totalforsvaret")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8cbd1dcbca0b968a998ed612fe06012b31e5763e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3756a32c4323e551f3d99bad66d943c57a964752")]
 [assembly: System.Reflection.AssemblyProductAttribute("Totalforsvaret")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Totalforsvaret")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

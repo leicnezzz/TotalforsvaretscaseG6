@@ -1,0 +1,147 @@
+@{
+    ViewData["Title"] = "Kart";
+}
+
+<h1>Kart over Kristiansand</h1>
+
+<p>Klikk på kartet for å velge en adresse.</p>
+
+<div id="map"></div>
+
+<div class="mt-3">
+    <strong>Valgt adresse:</strong>
+    <p id="selectedAddress">Ingen adresse valgt</p>
+</div>
+
+<style>
+    #map {
+        height: 600px;
+        width: 100%;
+        border-radius: 8px;
+    }
+</style>
+
+@section Scripts {
+
+    <script>
+
+        // Oppretter kartet og sentrerer det på Kristiansand
+        const map = L.map('map').setView([58.1467, 7.9956], 13);
+
+        // Legger til OpenStreetMap
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+
+        // Her lagrer vi markøren
+        let marker;
+
+
+        // Når brukeren klikker på kartet
+        map.on('click', async function (e) {
+
+            const latitude = e.latlng.lat;
+            const longitude = e.latlng.lng;
+
+
+            // Hvis markør allerede finnes, flyttes den
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            }
+
+            // Hvis ikke, lager vi en ny markør
+            else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+
+
+            // Viser melding mens adressen hentes
+            marker
+                .bindPopup("Henter adresse...")
+                .openPopup();
+
+
+            try {
+
+                // Sender koordinatene til Nominatim
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+                );
+
+                const data = await response.json();
+
+
+                // Henter adresseinformasjon
+                const a = data.address || {};
+
+                const road =
+                    a.road ||
+                    a.pedestrian ||
+                    a.footway ||
+                    "";
+
+                const houseNumber =
+                    a.house_number || "";
+
+                const postcode =
+                    a.postcode || "";
+
+                const city =
+                    a.city ||
+                    a.town ||
+                    a.village ||
+                    a.municipality ||
+                    "Kristiansand";
+
+
+                // Lager en ryddig adresse
+                let address = `${road} ${houseNumber}`.trim();
+
+                if (postcode || city) {
+                    address += `, ${postcode} ${city}`;
+                }
+
+
+                // Hvis vi ikke finner en god adresse
+                if (!road) {
+                    address = data.display_name || "Adresse ikke funnet";
+                }
+
+
+                // Viser adressen på markøren
+                marker
+                    .bindPopup(
+                        `<strong>Valgt adresse</strong><br>${address}`
+                    )
+                    .openPopup();
+
+
+                // Viser adressen under kartet
+                document.getElementById("selectedAddress").innerText =
+                    address;
+
+
+                // Zoom inn på valgt sted
+                map.setView(e.latlng, 16);
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                marker
+                    .bindPopup("Kunne ikke hente adresse.")
+                    .openPopup();
+
+                document.getElementById("selectedAddress").innerText =
+                    "Kunne ikke hente adresse.";
+            }
+
+        });
+
+    </script>
+
+}

@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Totalforsvaret.styles.css" asp-append-version="true" />
+   
+    @* Leaflet CSS - brukes for styling av kartet *@
+    <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" /> 
+    
 </head>
 <body>
     <header>
@@ -45,6 +49,9 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @*Leaflet JavaScript: Gjør det mulig å opprette og bruke interaktive kart*@
+    <script src="~/lib/leaflet/leaflet.js"></script> 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

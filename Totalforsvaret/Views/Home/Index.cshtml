@@ -1,8 +1,25 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Kart";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Her skal Leaflet-kartet vises.
+    Kartet må ha en høyde for å være synlig. -->
+<h1>Kart</h1>
+
+<div id="map" style="height: 600px; width: 100%;"></div>
+
+@section Scripts {
+    <script>
+        // Oppretter Leaflet-kartet.
+        // Koordinatene viser Kristiansand sentrum.
+        // 13 bestemmer hvor langt kartet er zoomet inn.
+        var map = L.map('map').setView([58.1467, 7.9956], 13);
+
+        // Legger til selve kartbildet.
+        // {z} = zoomnivå
+        // {x} og {y} = hvilken del av kartet som skal vises.
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+    </script>
+}

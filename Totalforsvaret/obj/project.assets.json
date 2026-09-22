@@ -8,19 +8,19 @@
     "net10.0": []
   },
   "packageFolders": {
-    "/Users/emmaleiknes/.nuget/packages/": {}
+    "/Users/mayaunnisa/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/emmaleiknes/RiderProjects/TotalforsvaretscaseG6/Totalforsvaret/Totalforsvaret.csproj",
+      "projectUniqueName": "/Users/mayaunnisa/RiderProjects/TotalforsvaretscaseG6/Totalforsvaret/Totalforsvaret.csproj",
       "projectName": "Totalforsvaret",
-      "projectPath": "/Users/emmaleiknes/RiderProjects/TotalforsvaretscaseG6/Totalforsvaret/Totalforsvaret.csproj",
-      "packagesPath": "/Users/emmaleiknes/.nuget/packages/",
-      "outputPath": "/Users/emmaleiknes/RiderProjects/TotalforsvaretscaseG6/Totalforsvaret/obj/",
+      "projectPath": "/Users/mayaunnisa/RiderProjects/TotalforsvaretscaseG6/Totalforsvaret/Totalforsvaret.csproj",
+      "packagesPath": "/Users/mayaunnisa/.nuget/packages/",
+      "outputPath": "/Users/mayaunnisa/RiderProjects/TotalforsvaretscaseG6/Totalforsvaret/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/emmaleiknes/.nuget/NuGet/NuGet.Config"
+        "/Users/mayaunnisa/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"

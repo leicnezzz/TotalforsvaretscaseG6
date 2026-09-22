@@ -4,29 +4,47 @@ namespace Totalforsvaret.Handlers
 {
     public class ResourceHandler
     {
-        public Resource CreateResource(int resourceId, string resourceName, int categoryId, string categoryName, bool available, decimal latitude, decimal longitude)
+        private int nextResourceId = 0;
+
+        private readonly List<Category> categories = new()
         {
-            var category = new Category
+            new Category { CategoryId = 1, Name = "Food" },
+            new Category { CategoryId = 2, Name = "Vehicles" },
+            new Category { CategoryId = 3, Name = "Equipment" }
+        };
+
+        public Resource CreateResource( string resourceName, int categoryId, bool available, decimal latitude, decimal longitude)
+        {
+            lock (categories)
             {
-                CategoryId = categoryId,
-                Name = categoryName,
-                Resources = new List<Resource>()
-            };
+                var category = categories.Find(c => c.CategoryId == categoryId);
 
-            var resource = new Resource
-            {
-                ResourceId = resourceId,
-                Object = resourceName,
-                CategoryId = category.CategoryId,
-                Category = category,
-                Available = available,
-                Latitude = latitude,
-                Longitude = longitude
-            };
+                if (category == null)
+                {
+                    throw new ArgumentException("Category does not exist.");
+                }
 
-            category.Resources.Add(resource);
+                nextResourceId++;
 
-            return resource;
+                var resource = new Resource
+                {
+                    ResourceId = nextResourceId,
+                    Object = resourceName,
+                    CategoryId = category.CategoryId,
+                    Category = category,
+                    Available = available,
+                    Latitude = latitude,
+                    Longitude = longitude
+                };
+
+                category.Resources.Add(resource);
+
+                return resource;
+            }
         }
     }
 }
+
+// LEGG TIl I PROGRAM CS FOR OG BYGGE KATEGORI IMORGEN NÅR VI SAMMENSVEISER
+
+// builder.Services.AddSingleton<Totalforsvaret.Handlers.ResourceHandler>();

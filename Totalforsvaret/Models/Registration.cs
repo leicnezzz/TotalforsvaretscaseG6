@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Totalforsvaret.Models;
 
 public class Registration
 {
+    [MaxLength (200)]
     public int ID { get; set; }
+    
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }

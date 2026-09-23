@@ -1,4 +1,4 @@
-﻿using Totalforsvaret.Models.resourcemodels;
+using Totalforsvaret.Models.resourcemodels;
 
 namespace Totalforsvaret.Handlers
 {
@@ -13,7 +13,22 @@ namespace Totalforsvaret.Handlers
             new Category { CategoryId = 3, Name = "Equipment" }
         };
 
-        public Resource CreateResource( string resourceName, int categoryId, bool available, decimal latitude, decimal longitude)
+        // Returner kopier slik at skjemaet ikke kan endre handlerens kategorier.
+        public IReadOnlyList<Category> GetCategories()
+        {
+            lock (categories)
+            {
+                return categories.Select(c => new Category
+                {
+                    CategoryId = c.CategoryId,
+                    Name = c.Name
+                }).ToList();
+            }
+        }
+
+        public Resource CreateResource(string resourceName, int categoryId, bool available,
+            decimal latitude, decimal longitude, string navn = "", string kontaktpunkt = "",
+            DateTime? tilgjengeligFra = null)
         {
             lock (categories)
             {
@@ -34,7 +49,10 @@ namespace Totalforsvaret.Handlers
                     Category = category,
                     Available = available,
                     Latitude = latitude,
-                    Longitude = longitude
+                    Longitude = longitude,
+                    Navn = navn,
+                    Kontaktpunkt = kontaktpunkt,
+                    TilgjengeligFra = tilgjengeligFra
                 };
 
                 category.Resources.Add(resource);
@@ -44,7 +62,3 @@ namespace Totalforsvaret.Handlers
         }
     }
 }
-
-// LEGG TIl I PROGRAM CS FOR OG BYGGE KATEGORI IMORGEN NÅR VI SAMMENSVEISER
-
-// builder.Services.AddSingleton<Totalforsvaret.Handlers.ResourceHandler>();

@@ -1,8 +1,6 @@
 <Solution>
   <Folder Name="/Oversikt/" />
-  <Folder Name="/Solution Items/">
-    <File Path="compose.yaml" />
-  </Folder>
+  <Folder Name="/Solution Items/" />
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>

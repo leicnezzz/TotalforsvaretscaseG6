@@ -1,5 +1,10 @@
 <Solution>
   <Folder Name="/Oversikt/" />
+  <Folder Name="/Solution Items/">
+    <File Path="compose.yaml" />
+  </Folder>
   <Project Path="Totalforsvaret.AppHost/Totalforsvaret.AppHost.csproj" />
-  <Project Path="Totalforsvaret/Totalforsvaret.csproj" />
+  <Project Path="Totalforsvaret/Totalforsvaret.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>

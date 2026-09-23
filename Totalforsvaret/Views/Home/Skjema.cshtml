@@ -1,0 +1,109 @@
+@model Totalforsvaret.Models.FormDataModel
+
+@{
+   ViewData["Title"] = "Registrer posisjon";
+}
+
+<h2>Registrer data</h2>
+
+<form asp-controller="Home" asp-action="Skjema" method="post">
+    <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+    
+   <div class="mb-3">
+       <label asp-for="RessursType" class="form-label">Type ressurs:</label>
+       <input asp-for="RessursType"
+              class="form-control"
+              list="ressursTyper"
+              placeholder="Skriv type ressurs"
+              required />
+       @*<datalist id="ressursTyper">
+           <option value="Drone og droneoperatør"></option>
+           <option value="ATV"></option>
+           <option value="Traktor"></option>
+           <option value="Gravemaskin"></option>
+           <option value="Hjullaster"></option>
+           <option value="Snøskuter"></option>
+           <option value="Lastebil"></option>
+           <option value="Sand/grus"></option>
+           <option value="Aggregat"></option>
+           <option value="Lokaler"></option>
+           <option value="Sambandsutstyr"></option>
+           <option value="Båt"></option>
+           <option value="Mannskap / frivillige"></option>
+           <option value="sykepleier/vernepleier/helsefagarbeider"></option>
+
+       </datalist>*@
+       <span asp-validation-for="RessursType" class="text-danger"></span>
+   </div>
+
+   <div class="mb-3">
+       <label asp-for="CategoryId" class="form-label">Kategori:</label>
+       <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select" required>
+           <option value="">-- Velg kategori --</option>
+       </select>
+       <span asp-validation-for="CategoryId" class="text-danger"></span>
+   </div>
+
+   <div class="mb-3">
+       <label asp-for="Available" class="form-label">Er ressursen tilgjengelig?</label>
+       <select asp-for="Available" class="form-select" required>
+           <option value="">-- Velg tilgjengelighet --</option>
+           <option value="true">Ja</option>
+           <option value="false">Nei</option>
+       </select>
+       <span asp-validation-for="Available" class="text-danger"></span>
+   </div>
+    
+   <div class="mb-3">
+       <label asp-for="TilgjengeligFra" class="form-label">
+           Tilgjengelig fra:
+       </label>
+
+       <input asp-for="TilgjengeligFra"
+              type="datetime-local"
+              class="form-control"
+              required />
+   </div>
+    
+   <div class="mb-3">
+       <label asp-for="Kontaktpunkt" class="form-label">
+           Kontaktpunkt:
+       </label>
+
+       <input asp-for="Kontaktpunkt"
+              class="form-control"
+              placeholder="Telefon eller e-post"
+              required />
+   </div>
+    
+   <div class="mb-3">
+       <label asp-for="Navn" class="form-label">Navn:</label>
+       <input asp-for="Navn"
+              class="form-control"
+              required />
+       <span asp-validation-for="Navn" class="text-danger"></span>
+   </div>
+    
+   <div class="mb-3">
+       <label class="form-label">Klikk i kartet for å velge posisjon:</label>
+       <div id="resourceMap" style="height: 350px" aria-label="Velg ressursens posisjon"></div>
+   </div>
+    
+   <input type="hidden" asp-for="Latitude" id="latInput" />
+   <input type="hidden" asp-for="Longitude" id="lngInput" />
+
+   <p>
+       Valgt posisjon:
+       <span id="posTekst" class="fw-bold">Ingen valgt</span>
+   </p>
+
+   <button type="submit" class="btn btn-primary">
+       Send inn
+   </button>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/resource-form.js" asp-append-version="true"></script>
+}

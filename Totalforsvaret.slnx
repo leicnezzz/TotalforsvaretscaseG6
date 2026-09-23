@@ -3,6 +3,9 @@
   <Folder Name="/Solution Items/">
     <File Path="compose.yaml" />
   </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
   <Project Path="Totalforsvaret.AppHost/Totalforsvaret.AppHost.csproj" />
   <Project Path="Totalforsvaret/Totalforsvaret.csproj">
     <Deploy Solution="Debug|*" />

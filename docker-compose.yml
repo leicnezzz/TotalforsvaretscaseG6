@@ -1,0 +1,6 @@
+services:
+  totalforsvaret:
+    image: ${DOCKER_REGISTRY-}totalforsvaret
+    build:
+      context: .
+      dockerfile: Totalforsvaret/Dockerfile

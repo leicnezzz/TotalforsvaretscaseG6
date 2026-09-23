@@ -1,4 +1,9 @@
 <Solution>
   <Folder Name="/Oversikt/" />
-  <Project Path="Totalforsvaret/Totalforsvaret.csproj" />
+  <Folder Name="/Solution Items/">
+    <File Path="compose.yaml" />
+  </Folder>
+  <Project Path="Totalforsvaret/Totalforsvaret.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>

@@ -1,0 +1,19 @@
+<h1>Report a Need</h1>
+
+<div id="map"></div>
+
+<style>
+    #map {
+        height: 500px;
+        width: 100%;
+    }
+</style>
+
+<script>
+    const map = L.map('map').setView([58.1467, 7.9956], 13);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+</script>

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Totalforsvaret")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+29cf2bcf0851e36a0ec4a81c5a27524939e03080")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+77910a12d52ed5cb9c9075905e928c0ecf1095da")]
 [assembly: System.Reflection.AssemblyProductAttribute("Totalforsvaret")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Totalforsvaret")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

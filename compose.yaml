@@ -12,7 +12,7 @@
   db:
     image: mysql:8
     environment:
-      MYSQL_ROOT_PASSWORD: dittpassord
+      MYSQL_ROOT_PASSWORD: gruppe6
       MYSQL_DATABASE: totalforsvaret
     ports:
       - "3307:3306"

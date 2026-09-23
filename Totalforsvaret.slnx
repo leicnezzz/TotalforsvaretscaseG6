@@ -1,4 +1,5 @@
 <Solution>
   <Folder Name="/Oversikt/" />
+  <Project Path="Totalforsvaret.AppHost/Totalforsvaret.AppHost.csproj" />
   <Project Path="Totalforsvaret/Totalforsvaret.csproj" />
 </Solution>

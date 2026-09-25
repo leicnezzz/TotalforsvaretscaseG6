@@ -28,5 +28,5 @@ Applikasjon bruker containers med Docker, som er delt i 2 containers. En er for 
 Gruppen valgte å teste validering av navn, kartplassering og tilgjengelighet. Testene bekrefter at registreringer uten navn og plassering blir avvist, og at "Nei" godtas som et gyldig valg for tilgjengelighet.
 En ressurs kan dermed registreres selv om den ikke er tilgjengelig, noe som gir grunnlag for videre arbeid med spesifikke tilgjengelighetstider. Alle tre unit-testene bestod.
 
-## **Bruk av KI ** ##
+## **Bruk av KI** ##
 Siden programmerings prosjektet bruker flere språk som er nye for gruppen (javascript, html, css) har vi brukt KI til å generere koden for disse spesifikke språkene og bedt om å forklare. Videre har gruppen brukt KI til å debugge, eventuell konflikter mellom Rider og Visual Studio Code. I tillegg har KI hjulpet med å anvende oppgaven riktig. Via prompt engineering ved å mate KI med informasjon om oppgaven, forelesnings presentasjoner og informasjon om applikasjonen som har blitt bygd så langt. 

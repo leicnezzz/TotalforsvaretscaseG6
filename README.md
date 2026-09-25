@@ -12,19 +12,19 @@ Marcia Kristine Olsen - marciako@uia.no
 Kurskode og navn: IS-202-1 26H Programmerings prosjekt
 Dato: 25.09.2026
 
-## ** Systemarkitektur ** ##
+## **Systemarkitektur** ##
 Gruppen har brukt en monolittisk arkitektur, der alt er samlet og kjøres som et. Dette er for å gjøre det lettere å overvåke, utvikle, teste og skaper en god oversikt for å jobbe parallelt. Likevel er gruppen klar over sårbarheten, ved at hvis en ting ikke fungerer så går hele systemet ned. Webapplikasjonen er basert på ASP.net Core MVC (Model, view, controller), noe som gir en klar separasjon. Views er det som vises på nettsiden, brukergrensesnittet, og her har gruppen blant annet et interaktiv kart som var en obligatorisk del av oppgaven. Controller håndterer HTTP-forespørsler, styrer flyten i applikasjonen og kaller på forretningslogikken. For eksempel, Homecontroller med actions for Index, Privacy og Map. Gruppen har valgt en midlertidlig løsning for datatilgang med resourcehandler for å senere koble til en database. Den planlagte databasen bruker Entity Framework Core og er migrasjons basert. 
 
-## ** Teknologistack ** ##
+## **Teknologistack** ##
 .Net / ASP.NET core MVC som web rammeverk
 Entity Framework Core for databasetilgang
 Leaflet.js for interaktiv kartfunksjonalitet
 .Net Aspire styrer flyten mellom applikasjonens tjenester i utvikling og kjøremiljø
 
-## ** Infrastruktur og drift ** ##
+## **Infrastruktur og drift** ##
 Applikasjon bruker containers med Docker, som er delt i 2 containers. En er for selv webapplikasjonen og den andre for databasen som bruker MySQL
 
-## **Testing scenarier og resultater ** ##
+## **Testing scenarier og resultater** ##
 Gruppen valgte å teste validering av navn, kartplassering og tilgjengelighet. Testene bekrefter at registreringer uten navn og plassering blir avvist, og at "Nei" godtas som et gyldig valg for tilgjengelighet.
 En ressurs kan dermed registreres selv om den ikke er tilgjengelig, noe som gir grunnlag for videre arbeid med spesifikke tilgjengelighetstider. Alle tre unit-testene bestod.
 

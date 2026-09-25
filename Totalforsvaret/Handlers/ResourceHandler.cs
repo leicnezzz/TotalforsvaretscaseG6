@@ -6,7 +6,8 @@ namespace Totalforsvaret.Handlers
     {
         private int nextResourceId = 0;
 
-        private readonly List<Category> categories = new()
+        // Liste med katteogier 
+        private readonly List<Category> categories = new() 
         {
             new Category { CategoryId = 1, Name = "Food" },
             new Category { CategoryId = 2, Name = "Vehicles" },
@@ -26,6 +27,7 @@ namespace Totalforsvaret.Handlers
             }
         }
 
+        // Lager en ny ressurs og legger den til i riktig kategori. Returnerer den nye ressursen.
         public Resource CreateResource(string resourceName, int categoryId, bool available,
             decimal latitude, decimal longitude, string navn = "", string kontaktpunkt = "",
             DateTime? tilgjengeligFra = null)

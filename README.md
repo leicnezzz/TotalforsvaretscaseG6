@@ -24,6 +24,12 @@ Leaflet.js for interaktiv kartfunksjonalitet
 ## **Infrastruktur og drift** ##
 Applikasjon bruker containers med Docker, som er delt i 2 containers. En er for selv webapplikasjonen og den andre for databasen som bruker MySQL
 
+## **Kjøring med Docker** ##
+For å kjøre prosjektet med Docker må Docker Desktop og .NET SDK være installert. Docker Desktop må være startet før prosjektet kjøres. I Rider eller Visual Studio velges "Totalforsvaret/Dockerfile" som oppstartskonfigurasjon, og prosjektet kjøres med Run. Docker bygger og starter containeren, og applikasjonen kan åpnes gjennom localhost-porten.
+For å stoppe prosjektet trykkes Stop-knappen i Rider eller Visual Studio. Dette stopper Docker-containeren som kjører. 
+
+**Testresultat:** Docker-oppsettet ble testet på Mac med Rider og på Windows med Visual Studio. Containeren startet, og applikasjonen ble tilgjengelig gjennom localhost etter at riktig portbinding ble konfigurert. 
+
 ## **Testing scenarier og resultater** ##
 Gruppen valgte å teste validering av navn, kartplassering og tilgjengelighet. Testene bekrefter at registreringer uten navn og plassering blir avvist, og at "Nei" godtas som et gyldig valg for tilgjengelighet.
 En ressurs kan dermed registreres selv om den ikke er tilgjengelig, noe som gir grunnlag for videre arbeid med spesifikke tilgjengelighetstider. Alle tre unit-testene bestod.

@@ -2,14 +2,15 @@
 **Gruppenummer og studentnavn:**
 Gruppe 6
 
-Emma Moland Leiknes - emmaml@uia.no
-Kenny Minh Bui - kennymb@uia.no
-Lucas Fjeld - lucasf@uia.no
-Maya Noor Asad - mayana@uia.no
-Rebekka Boije, rebekkabo@uia.no
-Marcia Kristine Olsen - marciako@uia.no
+Emma Moland Leiknes - emmaml@uia.no,
+Kenny Minh Bui - kennymb@uia.no,
+Lucas Fjeld - lucasf@uia.no,
+Maya Noor Asad - mayana@uia.no,
+Rebekka Boije - rebekkabo@uia.no,
+Marcia Kristine Olsen - marciako@uia.no,
 
 Kurskode og navn: IS-202-1 26H Programmeringsprosjekt
+
 Dato: 30.09.2026
 
 ## **Systemarkitektur** ##
@@ -17,8 +18,11 @@ Gruppen har brukt en monolittisk arkitektur, der alt er samlet og kjøres som et
 
 ## **Teknologistack** ##
 .Net / ASP.NET core MVC som web rammeverk
+
 Entity Framework Core for databasetilgang
+
 Leaflet.js for interaktiv kartfunksjonalitet
+
 .Net Aspire styrer flyten mellom applikasjonens tjenester i utvikling og kjøremiljø
 
 ## **Infrastruktur og drift** ##

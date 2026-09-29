@@ -7,4 +7,5 @@
   <Project Path="Totalforsvaret/Totalforsvaret.csproj">
     <Deploy Solution="Debug|*" />
   </Project>
+  <Project Path="Totalforsvaret.Tests/Totalforsvaret.Tests.csproj" />
 </Solution>

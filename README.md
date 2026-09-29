@@ -9,8 +9,8 @@ Maya Noor Asad - mayana@uia.no
 Rebekka Boije, rebekkabo@uia.no
 Marcia Kristine Olsen - marciako@uia.no
 
-Kurskode og navn: IS-202-1 26H Programmerings prosjekt
-Dato: 25.09.2026
+Kurskode og navn: IS-202-1 26H Programmeringsprosjekt
+Dato: 30.09.2026
 
 ## **Systemarkitektur** ##
 Gruppen har brukt en monolittisk arkitektur, der alt er samlet og kjøres som et. Dette er for å gjøre det lettere å overvåke, utvikle, teste og skaper en god oversikt for å jobbe parallelt. Likevel er gruppen klar over sårbarheten, ved at hvis en ting ikke fungerer så går hele systemet ned. Webapplikasjonen er basert på ASP.net Core MVC (Model, view, controller), noe som gir en klar separasjon. Views er det som vises på nettsiden, brukergrensesnittet, og her har gruppen blant annet et interaktiv kart som var en obligatorisk del av oppgaven. Controller håndterer HTTP-forespørsler, styrer flyten i applikasjonen og kaller på forretningslogikken. For eksempel, Homecontroller med actions for Index, Privacy og Map. Gruppen har valgt en midlertidlig løsning for datatilgang med resourcehandler for å senere koble til en database. Den planlagte databasen bruker Entity Framework Core og er migrasjons basert. 

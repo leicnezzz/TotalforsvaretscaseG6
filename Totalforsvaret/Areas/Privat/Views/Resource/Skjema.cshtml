@@ -1,4 +1,4 @@
-@model Totalforsvaret.Models.FormDataModel
+@model Totalforsvaret.Areas.Privat.Models.FormDataModel
 
 @{
    ViewData["Title"] = "Registrer posisjon";
@@ -6,7 +6,7 @@
 
 <h2>Registrer data</h2>
 
-<form asp-controller="Home" asp-action="Skjema" method="post">
+<form asp-area="Privat" asp-controller="Resource" asp-action="Skjema" method="post">
     <div asp-validation-summary="All" class="text-danger" role="alert"></div>
     
    <div class="mb-3">

@@ -28,6 +28,22 @@ app.UseRouting();
 app.UseAuthorization();
 app.MapStaticAssets();
 
+// Bevar gamle innganger, inkludert POST og valideringsfeil på ressursskjemaet.
+app.MapControllerRoute(
+    name: "legacy-resource",
+    pattern: "Home/Skjema",
+    defaults: new { area = "Privat", controller = "Resource", action = "Skjema" });
+
+app.MapControllerRoute(
+    name: "legacy-need",
+    pattern: "Need/{action=Create}/{id?}",
+    defaults: new { area = "Offentlig", controller = "Need" });
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller}/{action=Index}/{id?}")
+    .WithStaticAssets();
+
 app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using NUnit.Framework;
-using Totalforsvaret.Models;
+using Totalforsvaret.Areas.Privat.Models;
 
 namespace Totalforsvaret.Tests;
 

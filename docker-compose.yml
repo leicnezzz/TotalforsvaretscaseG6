@@ -1,0 +1,23 @@
+services:
+  totalforsvaret:
+    image: ${DOCKER_REGISTRY-}totalforsvaret
+    build:
+      context: .
+      dockerfile: Totalforsvaret/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: gruppe6
+      MYSQL_DATABASE: totalforsvaret
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:

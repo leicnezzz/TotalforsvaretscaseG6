@@ -1,22 +1,29 @@
 @model Totalforsvaret.Models.resourcemodels.Resource
+@* Kobler denne visningen til Resource-modellen slik at vi kan vise innsendte ressursdata *@
+
 @using System.Globalization
+
+@* Setter tittelen som vises for denne siden *@
 @{
     ViewData["Title"] = "Innsendte data";
 }
 
 <h2>Innsendte data</h2>
+@* Viser informasjonen om ressursen som brukeren har sendt inn *@
 <div class="card p-3">
     <p><strong>Navn:</strong> <span id="resourceName">@Model.Navn</span></p>
     <p><strong>Type ressurs:</strong> @Model.Object</p>
     <p><strong>Ressursnummer:</strong> @Model.ResourceId</p>
     <p><strong>Kategori:</strong> @Model.Category.Name</p>
+    @* Gjør boolean-verdien mer brukervennlig ved å vise Ja eller Nei *@
     <p><strong>Tilgjengelig:</strong> @(Model.Available ? "Ja" : "Nei")</p>
     <p><strong>Tilgjengelig fra:</strong> @(Model.TilgjengeligFra?.ToString("dd.MM.yyyy HH:mm"))</p>
     <p><strong>Kontaktpunkt:</strong> @Model.Kontaktpunkt</p>
     <p><strong>Breddegrad:</strong> @Model.Latitude</p>
     <p><strong>Lengdegrad:</strong> @Model.Longitude</p>
 </div>
-
+@* Sender breddegrad og lengdegrad til JavaScript slik at valgt posisjon kan vises på kartet.
+   InvariantCulture sørger for at koordinatene bruker punktum som desimalskilletegn. *@
 <h3 class="mt-4">Valgt posisjon</h3>
 <div id="resourceMap" style="height: 350px" data-latitude="@Model.Latitude.ToString(CultureInfo.InvariantCulture)"
      data-longitude="@Model.Longitude.ToString(CultureInfo.InvariantCulture)" aria-label="Ressursens posisjon"></div>

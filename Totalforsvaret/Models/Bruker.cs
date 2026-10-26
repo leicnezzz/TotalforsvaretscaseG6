@@ -11,6 +11,6 @@ namespace Totalforsvaret.Models
         // PhoneNumber (string) arves fra IdentityUser
         // PasswordHash (string) arves fra IdentityUser
         [Required]
-        public string Fornavn { get; set; } = "";
+        public string Navn { get; set; } = "";
     }
 }

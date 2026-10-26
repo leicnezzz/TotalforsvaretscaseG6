@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Totalforsvaret.Controllers;
+namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
+[Area("Offentlig")]
 public class NeedController : Controller
 {
     [HttpGet]

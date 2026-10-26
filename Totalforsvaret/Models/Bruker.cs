@@ -2,7 +2,7 @@
 
 namespace Totalforsvaret.Models
 {
-    public class Bruker // Superklasse for brukere offentlig og privat
+    public abstract class Bruker // Superklasse for brukere offentlig og privat
     {
         public string? BrukerID { get; }
         private string? Passord { get; set; }

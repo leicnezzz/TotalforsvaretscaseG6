@@ -1,0 +1,49 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Logg inn – Paratus</title>
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="login-page">
+        <header class="brand-header">
+            <a href="/Home/Index" aria-label="Paratus – forsiden"><img src="~/images/login/image-1-2.png" alt="Paratus – Mennesket som ressurs" /></a>
+        </header>
+        <main class="login-main">
+            <div class="landscape" aria-hidden="true">
+                <img class="landscape-base" src="~/images/login/vector-35.svg" alt="" />
+                <img class="hill hill-back" src="~/images/login/vector-36.svg" alt="" />
+                <img class="hill hill-middle" src="~/images/login/vector-37.svg" alt="" />
+                <img class="hill hill-front" src="~/images/login/vector-38.svg" alt="" />
+                <img class="landscape-line" src="~/images/login/vector-40.svg" alt="" />
+                <div class="leaves leaves-top"><img src="~/images/login/vector-46.svg" alt="" /><img src="~/images/login/vector-47.svg" alt="" /><img src="~/images/login/vector-48.svg" alt="" /></div><div class="leaves leaves-bottom"><img src="~/images/login/vector-46.svg" alt="" /><img src="~/images/login/vector-47.svg" alt="" /><img src="~/images/login/vector-48.svg" alt="" /></div>
+            </div>
+            <section class="login-panel" aria-labelledby="login-title">
+                <span class="accent" aria-hidden="true"></span>
+
+                <h1 id="login-title">Logg inn for å fortsette</h1>
+                <form id="login-form" method="post" action="/Account/Login">
+@Html.AntiForgeryToken()
+@if (ViewData["FormError"] is string error) { <p class="form-message" role="alert">@error</p> }
+@if (TempData["AccountMessage"] is string notice) { <p class="form-message" role="status">@notice</p> }<fieldset class="actor-choice"><legend>Velg aktørtype</legend><label><input type="radio" name="actor" value="civil" checked /><span>Sivil aktør</span></label><label><input type="radio" name="actor" value="public" /><span>Offentlig aktør</span></label></fieldset>
+                    <label for="email">Mail</label>
+                    <div class="input-wrap"><svg class="field-icon" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M4 26c0-8 16-8 16 0"/></svg><input id="email" name="email" type="email" autocomplete="username" placeholder="Skriv inn mail" required /></div>
+                    <label for="password">Passord</label>
+                    <div class="input-wrap"><svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V6a4 4 0 0 1 8 0v4"/></svg><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Skriv inn passord" required /><button type="button" class="show-password" aria-label="Vis passord" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+                    <label class="checkbox-label"><input type="checkbox" name="rememberMe" value="true" /> Husk meg</label><button class="submit-button" type="submit">LOGG INN <span aria-hidden="true">→</span></button>
+                    <div class="account-links"><a class="register-button" href="/Account/Register">Opprett bruker</a><a href="/Account/ForgotPassword">Glemt passord?</a></div>
+                    <p id="form-message" class="form-message" role="status" hidden></p>
+                </form>
+            </section>
+            <aside class="quote"><blockquote>“Sterkere mennesker<br />bygger sterkere samfunn”</blockquote><span class="accent" aria-hidden="true"></span></aside>
+        </main>
+        <footer class="login-footer"><p><strong>Paratus</strong><span class="separator">|</span>Mennesket som ressurs</p><nav aria-label="Informasjon"><a asp-controller="Home" asp-action="Privacy">Personvern</a><span class="separator">|</span><button type="button" data-info="Kontakt oss for informasjon om tilgjengelighet.">Tilgjengelighet</button><span class="separator">|</span><button type="button" data-info="Kontaktinformasjon kommer snart.">Kontakt</button></nav></footer>
+    </div>
+    <script src="~/js/login.js" asp-append-version="true"></script>
+</body>
+</html>

@@ -19,5 +19,8 @@
     <Content Include="docker-compose.override.windows.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </Content>
+    <Content Include="Kommandoer.md">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </Content>
   </ItemGroup>
 </Project>

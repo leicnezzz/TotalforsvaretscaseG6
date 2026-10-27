@@ -10,10 +10,10 @@ services:
       - db
 
   db:
-    image: mysql:8
+    image: mariadb:11
     environment:
-      MYSQL_ROOT_PASSWORD: gruppe6
-      MYSQL_DATABASE: totalforsvaret
+      MARIADB_ROOT_PASSWORD: gruppe6
+      MARIADB_DATABASE: totalforsvaret
     ports:
       - "3307:3306"
     volumes:

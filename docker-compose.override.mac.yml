@@ -1,0 +1,5 @@
+services:
+    totalforsvaret:
+      volumes:
+        - ~/Library/Application Support/Microsoft/UserSecrets:/home/app/ .microsoft/usersecrets:ro
+        - ~/.aspnet/https:/home/app/.aspnet/https:ro

@@ -15,4 +15,9 @@
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="docker-compose.override.mac.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </Content>
+  </ItemGroup>
 </Project>

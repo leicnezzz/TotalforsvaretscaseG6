@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
+using Totalforsvaret.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,6 +16,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
     });
+builder.Services.AddSingleton<Totalforsvaret.Handlers.ResourceHandler>();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 000))));
 
 var app = builder.Build();
 
@@ -31,6 +39,22 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapStaticAssets();
+
+// Bevar gamle innganger, inkludert POST og valideringsfeil på ressursskjemaet.
+app.MapControllerRoute(
+    name: "legacy-resource",
+    pattern: "Home/Skjema",
+    defaults: new { area = "Privat", controller = "Resource", action = "Skjema" });
+
+app.MapControllerRoute(
+    name: "legacy-need",
+    pattern: "Need/{action=Create}/{id?}",
+    defaults: new { area = "Offentlig", controller = "Need" });
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller}/{action=Index}/{id?}")
+    .WithStaticAssets();
 
 app.MapControllerRoute(
         name: "default",

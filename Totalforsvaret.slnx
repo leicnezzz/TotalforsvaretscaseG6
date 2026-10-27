@@ -1,4 +1,12 @@
 <Solution>
   <Folder Name="/Oversikt/" />
-  <Project Path="Totalforsvaret/Totalforsvaret.csproj" />
+  <Folder Name="/Solution Items/" />
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+  <Project Path="Totalforsvaret.AppHost/Totalforsvaret.AppHost.csproj" />
+  <Project Path="Totalforsvaret/Totalforsvaret.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+  <Project Path="Totalforsvaret.Tests/Totalforsvaret.Tests.csproj" />
 </Solution>

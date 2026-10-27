@@ -10,6 +10,7 @@ namespace Totalforsvaret.Models
         // Email (string) arves fra IdentityUser
         // PhoneNumber (string) arves fra IdentityUser
         // PasswordHash (string) arves fra IdentityUser
+
         [Required]
         public string Navn { get; set; } = "";
     }

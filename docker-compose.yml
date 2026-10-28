@@ -8,7 +8,7 @@ services:
       - "8080:8080"
     depends_on:
       - db
-
+#Passord må byttes før endelig innlevering - husk å bytte i appsettings også
   db:
     image: mariadb:11.4
     environment:

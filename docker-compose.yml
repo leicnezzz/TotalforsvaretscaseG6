@@ -8,16 +8,16 @@ services:
       - "8080:8080"
     depends_on:
       - db
-
+#Passord må byttes før endelig innlevering - husk å bytte i appsettings også
   db:
-    image: mysql:8
+    image: mariadb:11.4
     environment:
-      MYSQL_ROOT_PASSWORD: gruppe6
-      MYSQL_DATABASE: totalforsvaret
+      MARIADB_ROOT_PASSWORD: test1234
+      MARIADB_DATABASE: totalforsvaret
     ports:
-      - "3307:3306"
+      - "3308:3306"
     volumes:
-      - dbdata:/var/lib/mysql
+      - mariadbdata:/var/lib/mysql
 
 volumes:
-  dbdata:
+  mariadbdata:

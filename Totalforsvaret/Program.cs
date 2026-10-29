@@ -20,7 +20,7 @@ builder.Services.AddSingleton<Totalforsvaret.Handlers.ResourceHandler>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 000))));
+    options.UseMySql(connectionString, new MariaDbServerVersion(new Version(11, 4, 0))));
 
 var app = builder.Build();
 

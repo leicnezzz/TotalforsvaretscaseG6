@@ -5,6 +5,7 @@
     <Build />
   </Project>
   <Project Path="Totalforsvaret.AppHost/Totalforsvaret.AppHost.csproj" />
+  <Project Path="Totalforsvaret.ServiceDefaults/Totalforsvaret.ServiceDefaults.csproj" />
   <Project Path="Totalforsvaret/Totalforsvaret.csproj">
     <Deploy Solution="Debug|*" />
   </Project>

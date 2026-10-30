@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Totalforsvaret.Handlers;
 using Totalforsvaret.Areas.Privat.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Totalforsvaret.Areas.Privat.Controllers;
 
 [Area("Privat")]
+[Authorize]
 public class ResourceController(ResourceHandler resourceHandler) : Controller
 {
     private void PopulateCategories(FormDataModel model)

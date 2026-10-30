@@ -15,7 +15,4 @@
     </PackageReference>
     <ProjectReference Include="../Totalforsvaret/Totalforsvaret.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include=".github\workflows\unit-test.yml" />
-  </ItemGroup>
 </Project>

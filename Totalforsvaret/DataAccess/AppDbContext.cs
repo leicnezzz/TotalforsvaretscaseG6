@@ -13,14 +13,15 @@ namespace Totalforsvaret.DataAccess
         {
         }
 
-        public override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
             // Konfigurer arv for Bruker-klassen
             builder.Entity<Bruker>()
                 .HasDiscriminator<string>("BrukerType")
-                .HasValue<PrivatBruker>("Privat")
-                .HasValue<OffentligBruker>("Offentlig");
+                .HasValue<Privataktor>("Privat")
+                .HasValue<Offentligaktør>("Offentlig");
         }
     }
 }

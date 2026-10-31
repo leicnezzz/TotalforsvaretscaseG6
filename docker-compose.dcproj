@@ -9,8 +9,10 @@
     <DockerServiceName>totalforsvaret</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="docker-compose.https.yml" />
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="Oppstart.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="docker-compose.override.mac.yml">

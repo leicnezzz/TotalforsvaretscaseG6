@@ -1,0 +1,44 @@
+name: Unit tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v5
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Restore AppHost
+        run: dotnet restore Totalforsvaret.AppHost/Totalforsvaret.AppHost.csproj
+
+      - name: Build AppHost
+        run: >
+          dotnet build Totalforsvaret.AppHost/Totalforsvaret.AppHost.csproj
+          --configuration Release
+          --no-restore
+      - name: Restore dependencies
+        run: dotnet restore Totalforsvaret.Tests/Totalforsvaret.Tests.csproj
+
+      - name: Build and run tests
+        run: >
+          dotnet test Totalforsvaret.Tests/Totalforsvaret.Tests.csproj
+          --configuration Release
+          --no-restore
+          --verbosity normal

@@ -13,4 +13,3 @@ public class LoginInput {
  public string Actor { get; set; } = "civil";
  public bool RememberMe { get; set; }
 }
-public record LocalUser(string Id, string FirstName, string LastName, string Email, string PasswordHash);

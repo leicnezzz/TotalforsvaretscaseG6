@@ -1,0 +1,30 @@
+services:
+  totalforsvaret:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ASPNETCORE_HTTPS_PORTS: "8081"
+      ASPNETCORE_HTTPS_PORT: "8081"
+
+      ConnectionStrings__DefaultConnection: "Server=db;Port=3306;Database=totalforsvaret;User=root;Password=${DB_PASSWORD:?Sett DB_PASSWORD};"
+
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/totalforsvaret.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "${DEV_CERT_PASSWORD:?Sett DEV_CERT_PASSWORD}"
+
+    ports:
+      - "8081:8081"
+
+    volumes:
+      - "${DEV_CERT_DIR:?Sett DEV_CERT_DIR}:/https:ro"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s

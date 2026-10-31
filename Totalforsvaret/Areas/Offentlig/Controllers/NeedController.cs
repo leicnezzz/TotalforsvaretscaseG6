@@ -1,8 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
 [Area("Offentlig")]
+[Authorize(Policy = "KunOffentlig")]
+
 public class NeedController : Controller
 {
     [HttpGet]

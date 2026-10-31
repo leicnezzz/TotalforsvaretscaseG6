@@ -70,13 +70,46 @@ builder.Services.AddHealthChecks()
 mariadb.WithHealthCheck("mariadb-ready");
 
 // Webappen får tilkoblingen gjennom en miljøvariabel.
+// Finner hjemmemappen automatisk på både Windows og Mac.
+
+var certificatePath = Path.Combine(
+    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+    ".aspnet",
+    "https",
+    "totalforsvaret.pfx");
+
+if (!File.Exists(certificatePath))
+{
+    throw new InvalidOperationException(
+        "HTTPS-sertifikatet mangler. Følg oppstartsveiledningen.");
+}
+
+var certificatePassword = builder.AddParameter(
+    "https-password",
+    secret: true);
+
 builder
-    .AddProject<Projects.Totalforsvaret>(
+    .AddDockerfile(
         "totalforsvaret",
-        launchProfileName: "https")
+        contextPath: "..",
+        dockerfilePath: "Totalforsvaret/Dockerfile")
+    .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
+    .WithEnvironment("ASPNETCORE_HTTPS_PORTS", "8081")
+    .WithEnvironment(
+        "ASPNETCORE_Kestrel__Certificates__Default__Path",
+        "/https/totalforsvaret.pfx")
+    .WithEnvironment(
+        "ASPNETCORE_Kestrel__Certificates__Default__Password",
+        certificatePassword)
+    .WithBindMount(
+        certificatePath,
+        "/https/totalforsvaret.pfx",
+        isReadOnly: true)
+    .WithHttpsEndpoint(targetPort: 8081, name: "https")
     .WithEnvironment(
         "ConnectionStrings__DefaultConnection",
         connectionString)
     .WaitFor(mariadb);
 
 builder.Build().Run();
+

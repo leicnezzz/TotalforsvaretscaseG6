@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Dokumentasjon/">
+    <File Path="Oppstart.md" />
+  </Folder>
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>

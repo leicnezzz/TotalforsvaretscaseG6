@@ -14,13 +14,15 @@ namespace Totalforsvaret.Tests;
 
 public class AccountControllerTests
 {
-    [Test]
-    public async Task Register_GyldigSkjema_OppretterPrivatBruker()
+    private Mock<UserManager<Bruker>> users = null!;
+    private AccountController controller = null!;
+
+    [SetUp]
+    public void SetUp()
     {
-        // Arrange: erstatt databaseoperasjonene med en mock.
         var store = new Mock<IUserStore<Bruker>>();
 
-        var users = new Mock<UserManager<Bruker>>(
+        users = new Mock<UserManager<Bruker>>(
             store.Object,
             Options.Create(new IdentityOptions()),
             new PasswordHasher<Bruker>(),
@@ -31,29 +33,34 @@ public class AccountControllerTests
             Mock.Of<IServiceProvider>(),
             NullLogger<UserManager<Bruker>>.Instance);
 
-        users
-            .Setup(manager => manager.CreateAsync(
-                It.IsAny<Bruker>(),
-                It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Success);
-
-        // Registreringsmetoden bruker ikke SignInManager.
-        var controller = new AccountController(users.Object, null!);
+        // Disse testene bruker bare registrering, ikke SignInManager.
+        controller = new AccountController(users.Object, null!);
 
         controller.TempData = new TempDataDictionary(
             new DefaultHttpContext(),
             Mock.Of<ITempDataProvider>());
+    }
 
-        var input = new RegisterInput
-        {
-            FirstName = "Lucas",
-            LastName = "Test",
-            Email = "lucas@example.test",
-            Password = "Testpassord123!",
-            ConfirmPassword = "Testpassord123!"
-        };
+    [TearDown]
+    public void TearDown()
+    {
+        controller.Dispose();
+        users.Object.Dispose();
+    }
 
-        // Act: kall registreringsmetoden.
+    [Test]
+    public async Task Register_GyldigSkjema_OppretterPrivatBruker()
+    {
+        // Arrange
+        var input = LagGyldigInput();
+
+        users
+            .Setup(manager => manager.CreateAsync(
+                It.IsAny<Bruker>(),
+                input.Password))
+            .ReturnsAsync(IdentityResult.Success);
+
+        // Act
         var resultat = await controller.Register(input);
 
         // Assert: riktig brukertype og data sendes til Identity.
@@ -67,7 +74,6 @@ public class AccountControllerTests
                 input.Password),
             Times.Once);
 
-        // Etter registrering skal brukeren sendes til innlogging.
         Assert.That(resultat, Is.TypeOf<RedirectToActionResult>());
 
         var redirect = (RedirectToActionResult)resultat;
@@ -80,6 +86,95 @@ public class AccountControllerTests
             controller.TempData["AccountMessage"],
             Is.Not.Null);
     }
-}
 
-//test kommando dotnet test Totalforsvaret.Tests/Totalforsvaret.Tests.csproj
+    [Test]
+    public async Task Register_EpostFinnesFraFor_ViserFeil()
+    {
+        // Arrange: simuler at Identity avviser en duplikatadresse.
+        var input = LagGyldigInput();
+
+        users
+            .Setup(manager => manager.CreateAsync(
+                It.IsAny<Bruker>(),
+                input.Password))
+            .ReturnsAsync(IdentityResult.Failed(new IdentityError
+            {
+                Code = "DuplicateEmail",
+                Description = "E-postadressen er allerede registrert."
+            }));
+
+        // Act
+        var resultat = await controller.Register(input);
+
+        // Assert: skjemaet vises igjen med feilmelding.
+        Assert.That(resultat, Is.TypeOf<ViewResult>());
+
+        var view = (ViewResult)resultat;
+
+        Assert.That(view.Model, Is.SameAs(input));
+
+        Assert.That(
+            controller.ViewData["FormError"],
+            Is.EqualTo("E-postadressen er allerede registrert."));
+
+        Assert.That(
+            controller.TempData["AccountMessage"],
+            Is.Null);
+
+        users.Verify(
+            manager => manager.CreateAsync(
+                It.IsAny<Bruker>(),
+                input.Password),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task Register_UgyldigSkjema_OppretterIkkeBruker()
+    {
+        // Arrange
+        var input = LagGyldigInput();
+        input.Email = "";
+
+        // MVC validerer normalt før controlleren kalles.
+        // Ved direkte metodekall må testen legge inn feilen selv.
+        controller.ModelState.AddModelError(
+            nameof(RegisterInput.Email),
+            "E-post er påkrevd.");
+
+        // Act
+        var resultat = await controller.Register(input);
+
+        // Assert: ingen opprettelse forsøkes.
+        users.Verify(
+            manager => manager.CreateAsync(
+                It.IsAny<Bruker>(),
+                It.IsAny<string>()),
+            Times.Never);
+
+        Assert.That(resultat, Is.TypeOf<ViewResult>());
+
+        var view = (ViewResult)resultat;
+
+        Assert.That(view.Model, Is.SameAs(input));
+
+        Assert.That(
+            controller.ViewData["FormError"],
+            Is.Not.Null);
+
+        Assert.That(
+            controller.TempData["AccountMessage"],
+            Is.Null);
+    }
+
+    private static RegisterInput LagGyldigInput()
+    {
+        return new RegisterInput
+        {
+            FirstName = "Lucas",
+            LastName = "Test",
+            Email = "lucas@example.test",
+            Password = "Testpassord123!",
+            ConfirmPassword = "Testpassord123!"
+        };
+    }
+}

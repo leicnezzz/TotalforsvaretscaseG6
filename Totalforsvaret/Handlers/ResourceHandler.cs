@@ -1,3 +1,4 @@
+using Totalforsvaret.Models;
 using Totalforsvaret.Models.resourcemodels;
 
 namespace Totalforsvaret.Handlers
@@ -6,15 +7,14 @@ namespace Totalforsvaret.Handlers
     {
         private int nextResourceId = 0;
 
-        // Liste med katteogier 
-        private readonly List<Category> categories = new() 
+        private readonly List<Category> categories = new()
         {
             new Category { CategoryId = 1, Name = "Food" },
             new Category { CategoryId = 2, Name = "Vehicles" },
             new Category { CategoryId = 3, Name = "Equipment" }
         };
 
-        // Returner kopier slik at skjemaet ikke kan endre handlerens kategorier.
+        // Returnerer kopier av kategoriene til skjemaet.
         public IReadOnlyList<Category> GetCategories()
         {
             lock (categories)
@@ -27,18 +27,26 @@ namespace Totalforsvaret.Handlers
             }
         }
 
-        // Lager en ny ressurs og legger den til i riktig kategori. Returnerer den nye ressursen.
-        public Resource CreateResource(string resourceName, int categoryId, bool available,
-            decimal latitude, decimal longitude, string navn = "", string kontaktpunkt = "",
-            DateTime? tilgjengeligFra = null)
+        // Oppretter en ressurs knyttet til brukeren som registrerer den.
+        public Resource CreateResource(
+            string resourceName, int categoryId, bool available, decimal latitude,
+            decimal longitude, int brukerId, string navn = "", string kontaktpunkt = "", DateTime? tilgjengeligFra = null)
         {
+            if (brukerId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(brukerId));
+            }
+
             lock (categories)
             {
-                var category = categories.Find(c => c.CategoryId == categoryId);
+                var category = categories.Find(
+                    c => c.CategoryId == categoryId);
 
                 if (category == null)
                 {
-                    throw new ArgumentException("Category does not exist.");
+                    throw new ArgumentException(
+                        "Category does not exist.",
+                        nameof(categoryId));
                 }
 
                 nextResourceId++;
@@ -46,6 +54,7 @@ namespace Totalforsvaret.Handlers
                 var resource = new Resource
                 {
                     ResourceId = nextResourceId,
+                    BrukerId = brukerId,
                     Object = resourceName,
                     CategoryId = category.CategoryId,
                     Category = category,
@@ -60,6 +69,29 @@ namespace Totalforsvaret.Handlers
                 category.Resources.Add(resource);
 
                 return resource;
+            }
+        }
+
+        // Returnerer kun kartpunktene som tilhører denne brukeren.
+        public IReadOnlyList<ResourceMapPoint> GetResourcePointsForUser(
+            int brukerId)
+        {
+            if (brukerId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(brukerId));
+            }
+
+            lock (categories)
+            {
+                return categories
+                    .SelectMany(c => c.Resources)
+                    .Where(r => r.BrukerId == brukerId)
+                    .Select(r => new ResourceMapPoint(
+                        r.ResourceId,
+                        r.Object,
+                        r.Latitude,
+                        r.Longitude))
+                    .ToList();
             }
         }
     }

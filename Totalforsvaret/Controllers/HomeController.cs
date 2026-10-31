@@ -9,6 +9,14 @@ public class HomeController : Controller
     [Microsoft.AspNetCore.Authorization.Authorize]
     public IActionResult Index()
     {
+        if (User.HasClaim("Brukertype", "Privat"))
+        {
+            return RedirectToAction(
+                "Index",
+                "Dashboard",
+                new { area = "Privat" });
+        }
+
         return View();
     }
 

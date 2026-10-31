@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Totalforsvaret.Services;
 using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Models;
 using Totalforsvaret.DataAccess;
@@ -29,7 +30,8 @@ builder.Services.AddIdentityCore<Bruker>(options =>
 
 })
     .AddEntityFrameworkStores<AppDbContext>()
-    .AddSignInManager();
+    .AddSignInManager()
+    .AddClaimsPrincipalFactory<BrukerClaimsFactory>();
 
 builder.Services
     .AddAuthentication(IdentityConstants.ApplicationScheme)
@@ -46,10 +48,16 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("KunPrivat", policy =>
+        policy.RequireAuthenticatedUser()
+              .RequireClaim("Brukertype", "Privat"));
 
-
-
+    options.AddPolicy("KunOffentlig", policy =>
+        policy.RequireAuthenticatedUser()
+              .RequireClaim("Brukertype", "Offentlig"));
+});
 
 builder.Services.AddSingleton<Totalforsvaret.Handlers.ResourceHandler>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

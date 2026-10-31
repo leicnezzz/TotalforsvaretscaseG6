@@ -3,12 +3,16 @@ using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Models;
 using Totalforsvaret.DataAccess;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 // identity framework ting
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+});
 
 builder.Services.AddIdentityCore<Bruker>(options =>
 {

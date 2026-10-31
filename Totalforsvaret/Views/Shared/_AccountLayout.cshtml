@@ -1,0 +1,97 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <title>@ViewData["Title"] – Paratus</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+          rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="~/css/account.css"
+          asp-append-version="true" />
+</head>
+
+<body class="account-page">
+    <header class="account-header">
+        <span>Innlogging</span>
+    </header>
+
+    <div class="account-landscape" aria-hidden="true">
+        <svg viewBox="0 0 1920 1080"
+             preserveAspectRatio="none"
+             focusable="false">
+            <defs>
+                <linearGradient id="account-hill"
+                                x1="0" y1="0"
+                                x2="1" y2="0">
+                    <stop offset="0%" stop-color="#d8e4db" />
+                    <stop offset="100%" stop-color="#8eae98" />
+                </linearGradient>
+            </defs>
+
+            <path d="M0 550 C500 360 1100 560 1920 250
+            L1920 1080 L0 1080 Z"
+                  fill="url(#account-hill)" />
+
+            <path d="M0 480 C600 650 1100 550 1920 900
+            L1920 1080 L0 1080 Z"
+                  fill="#bdd0c3"
+                  opacity=".5" />
+
+            <path d="M0 850 C600 820 1250 850 1920 1030
+            L1920 1080 L0 1080 Z"
+                  fill="#e0e9e2"
+                  opacity=".6" />
+        </svg>
+    </div>
+
+    <main class="account-main">
+        <a class="account-back"
+           asp-area=""
+           asp-controller="Home"
+           asp-action="Index">
+            ← Hovedmeny
+        </a>
+
+        <div class="account-welcome">
+            <h1>Velkommen til Paratus</h1>
+            <p>En enkel måte å bidra til alles sikkerhet</p>
+        </div>
+
+        @RenderBody()
+    </main>
+
+    <footer class="account-footer">
+        <span>Paratus</span>
+
+        <div class="account-footer-links">
+            <a asp-area=""
+               asp-controller="Home"
+               asp-action="Privacy">
+                Personvern
+            </a>
+
+            <span aria-hidden="true">·</span>
+            <span>Tilgjengelighet</span>
+            <span aria-hidden="true">·</span>
+            <span>Kontakt</span>
+        </div>
+    </footer>
+
+    <script src="~/js/account.js"
+            asp-append-version="true"></script>
+</body>
+</html>

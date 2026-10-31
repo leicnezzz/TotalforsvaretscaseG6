@@ -1,55 +1,182 @@
+@model Totalforsvaret.Models.RegisterInput
+
 @{
-    Layout = null;
+    Layout = "_AccountLayout";
+    ViewData["Title"] = "Opprett bruker";
 }
-<!DOCTYPE html>
-<html lang="nb">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Opprett bruker – Paratus</title>
-    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
-</head>
-<body>
-    <div class="login-page">
-        <header class="brand-header">
-            <a href="/Home/Index" aria-label="Paratus – forsiden"><img src="~/images/login/image-1-2.png" alt="Paratus – Mennesket som ressurs" /></a>
-        </header>
-        <main class="login-main">
-            <div class="landscape" aria-hidden="true">
-                <img class="landscape-base" src="~/images/login/vector-35.svg" alt="" />
-                <img class="hill hill-back" src="~/images/login/vector-36.svg" alt="" />
-                <img class="hill hill-middle" src="~/images/login/vector-37.svg" alt="" />
-                <img class="hill hill-front" src="~/images/login/vector-38.svg" alt="" />
-                <img class="landscape-line" src="~/images/login/vector-40.svg" alt="" />
-                <div class="leaves leaves-top"><img src="~/images/login/vector-46.svg" alt="" /><img src="~/images/login/vector-47.svg" alt="" /><img src="~/images/login/vector-48.svg" alt="" /></div><div class="leaves leaves-bottom"><img src="~/images/login/vector-46.svg" alt="" /><img src="~/images/login/vector-47.svg" alt="" /><img src="~/images/login/vector-48.svg" alt="" /></div>
+
+<section class="account-card"
+         aria-labelledby="register-title">
+    <h2 id="register-title">Opprett bruker</h2>
+    <p class="account-intro">Opprett en ny privat bruker.</p>
+
+    @if (ViewData["FormError"] is string error)
+    {
+        <p class="account-message account-error" role="alert">
+            @error
+        </p>
+    }
+
+    <form asp-area=""
+          asp-controller="Account"
+          asp-action="Register"
+          method="post">
+        <div class="account-name-row">
+            <div class="account-field">
+                <label asp-for="FirstName">Fornavn</label>
+
+                <div class="account-input">
+                    <input asp-for="FirstName"
+                           autocomplete="given-name"
+                           maxlength="100"
+                           placeholder="Skriv inn fornavn"
+                           required />
+                </div>
+
+                <span asp-validation-for="FirstName"
+                      class="account-validation"></span>
             </div>
-            <section class="login-panel registration-panel" aria-labelledby="register-title">
-    <span class="accent" aria-hidden="true"></span>
-    <h1 id="register-title">Opprett bruker</h1>
-    <p class="registration-intro">Registrer deg med e-posten din som sivil aktør.</p>
-    <form id="register-form" method="post" action="/Account/Register">
-@Html.AntiForgeryToken()
-@if (ViewData["FormError"] is string error) { <p class="form-message" role="alert">@error</p> }
-@if (TempData["AccountMessage"] is string notice) { <p class="form-message" role="status">@notice</p> }<input type="hidden" name="actor" value="civil" />        <p class="required-note">Alle felt er obligatoriske.</p>
-        <div class="form-grid">
-            <div><label for="first-name">Fornavn</label><input id="first-name" name="firstName" autocomplete="given-name" placeholder="Skriv inn fornavn" required /></div>
-            <div><label for="last-name">Etternavn</label><input id="last-name" name="lastName" autocomplete="family-name" placeholder="Skriv inn etternavn" required /></div>
+
+            <div class="account-field">
+                <label asp-for="LastName">Etternavn</label>
+
+                <div class="account-input">
+                    <input asp-for="LastName"
+                           autocomplete="family-name"
+                           maxlength="100"
+                           placeholder="Skriv inn etternavn"
+                           required />
+                </div>
+
+                <span asp-validation-for="LastName"
+                      class="account-validation"></span>
+            </div>
         </div>
-        <label for="email">Mail</label><input id="email" name="email" type="email" autocomplete="username" placeholder="Skriv inn mail" required />
-        <div class="form-grid">
-            <div><label for="password">Passord</label><div class="input-wrap"><input id="password" name="password" type="password" autocomplete="new-password" minlength="12" pattern="(?=.*[A-Za-zÆØÅæøå])(?=.*[0-9]).{12,}" placeholder="Velg et passord" aria-describedby="password-help" required /><button type="button" class="show-password" data-target="password" aria-label="Vis passord" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
-            <div><label for="confirm-password">Bekreft passord</label><div class="input-wrap"><input id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Gjenta passordet" required /><button type="button" class="show-password" data-target="confirm-password" aria-label="Vis bekreftet passord" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+
+        <div class="account-field">
+            <label asp-for="Email">E-post</label>
+
+            <div class="account-input">
+                <svg class="account-field-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.4"
+                     aria-hidden="true">
+                    <circle cx="12" cy="7" r="4" />
+                    <path d="M4 22v-2a8 8 0 0 1 16 0v2" />
+                </svg>
+
+                <input asp-for="Email"
+                       type="email"
+                       autocomplete="username"
+                       maxlength="254"
+                       placeholder="Skriv inn e-post"
+                       required />
+            </div>
+
+            <span asp-validation-for="Email"
+                  class="account-validation"></span>
         </div>
-        <p id="password-help" class="required-note">Bruk minst 12 tegn, med både bokstaver og tall.</p>
-        <button class="submit-button" type="submit">Opprett bruker <span aria-hidden="true">→</span></button>
-        <p class="existing-account">Har du allerede en bruker? <a href="/Account/Login">Logg inn</a></p>
-        <p id="form-message" class="form-message" role="status" hidden></p>
+
+        <div class="account-field">
+            <label asp-for="Password">Passord</label>
+
+            <div class="account-input">
+                <svg class="account-field-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.4"
+                     aria-hidden="true">
+                    <rect x="5" y="10" width="14" height="11" rx="2" />
+                    <path d="M8 10V6a4 4 0 0 1 8 0v4" />
+                </svg>
+
+                <input asp-for="Password"
+                       type="password"
+                       autocomplete="new-password"
+                       minlength="12"
+                       aria-describedby="password-help"
+                       placeholder="Skriv inn passord"
+                       required />
+
+                <button class="account-password-toggle"
+                        type="button"
+                        data-password-toggle
+                        aria-controls="Password"
+                        aria-label="Vis passord"
+                        aria-pressed="false">
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.5"
+                         aria-hidden="true">
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
+            </div>
+
+            <span asp-validation-for="Password"
+                  class="account-validation"></span>
+
+            <p id="password-help" class="account-help">
+                Minst 12 tegn, med både bokstaver og tall.
+            </p>
+        </div>
+
+        <div class="account-field">
+            <label asp-for="ConfirmPassword">Gjenta passord</label>
+
+            <div class="account-input">
+                <svg class="account-field-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.4"
+                     aria-hidden="true">
+                    <rect x="5" y="10" width="14" height="11" rx="2" />
+                    <path d="M8 10V6a4 4 0 0 1 8 0v4" />
+                </svg>
+
+                <input asp-for="ConfirmPassword"
+                       type="password"
+                       autocomplete="new-password"
+                       placeholder="Gjenta passordet"
+                       required />
+
+                <button class="account-password-toggle"
+                        type="button"
+                        data-password-toggle
+                        aria-controls="ConfirmPassword"
+                        aria-label="Vis passord"
+                        aria-pressed="false">
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.5"
+                         aria-hidden="true">
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
+            </div>
+
+            <span asp-validation-for="ConfirmPassword"
+                  class="account-validation"></span>
+        </div>
+
+        <button class="account-submit" type="submit">
+            Opprett bruker
+        </button>
+
+        <div class="account-links">
+            <a asp-area=""
+               asp-controller="Account"
+               asp-action="Login">
+                Har du allerede en konto? Logg inn
+            </a>
+        </div>
     </form>
 </section>
-            <aside class="quote"><blockquote>“Sterkere mennesker<br />bygger sterkere samfunn”</blockquote><span class="accent" aria-hidden="true"></span></aside>
-        </main>
-        <footer class="login-footer"><p><strong>Paratus</strong><span class="separator">|</span>Mennesket som ressurs</p><nav aria-label="Informasjon"><a asp-controller="Home" asp-action="Privacy">Personvern</a><span class="separator">|</span><button type="button" data-info="Kontakt oss for informasjon om tilgjengelighet.">Tilgjengelighet</button><span class="separator">|</span><button type="button" data-info="Kontaktinformasjon kommer snart.">Kontakt</button></nav></footer>
-    </div>
-    <script src="~/js/login.js" asp-append-version="true"></script>
-</body>
-</html>

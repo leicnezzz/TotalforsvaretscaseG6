@@ -139,7 +139,7 @@ public class AccountController(
     [HttpGet]
     public IActionResult AccessDenied()
     {
-        Response.StatusCode = StatusCodes.Status403Forbidden; // Venter på vi tar designet fra figma vi kan legge til den filen i views-Account-AccessDenied.cshtml
+        Response.StatusCode = StatusCodes.Status403Forbidden; // Venter på vi tar designet fra figma. 
         return View();
     }
 }

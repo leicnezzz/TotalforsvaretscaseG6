@@ -9,18 +9,19 @@ namespace Totalforsvaret.Controllers;
 
 public class HomeController : Controller
 {
-    [Microsoft.AspNetCore.Authorization.Authorize]
-    public IActionResult Index()
+    [AllowAnonymous]
+    [HttpGet]
+    public IActionResult Index([FromServices] ResourceHandler resourceHandler)
     {
-        if (User.HasClaim("Brukertype", "Privat"))
+        var model = new PublicHomeViewModel
         {
-            return RedirectToAction(
-                "Index",
-                "Dashboard",
-                new { area = "Privat" });
-        }
+            Categories = resourceHandler.GetCategories()
+                .Select(category => new SelectListItem(category.Name,
+                    category.CategoryId.ToString(System.Globalization.CultureInfo.InvariantCulture)))
+                .ToList()
+        };
 
-        return View();
+        return View(model);
     }
 
     public IActionResult Privacy()

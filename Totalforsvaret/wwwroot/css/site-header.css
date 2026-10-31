@@ -1,0 +1,117 @@
+/* Felles toppbar på den offentlige forsiden og privat dashboard. */
+.site-header,
+.public-header {
+    --header-green: #2e6840;
+    --green: var(--header-green);
+    background: #fff;
+    box-shadow: 0 3px 7px rgb(0 0 0 / 12%);
+}
+
+.primary-nav,
+.public-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 72px;
+    padding: 0 clamp(20px, 3vw, 60px);
+    gap: 24px;
+}
+
+.nav-links,
+.public-nav-pages {
+    display: flex;
+    align-self: stretch;
+    align-items: stretch;
+    gap: 28px;
+}
+
+.nav-links a,
+.public-nav-pages a {
+    display: flex;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 3px solid transparent;
+    color: #607078;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.nav-links a.active,
+.public-nav-pages a.active {
+    border-bottom-color: var(--header-green);
+    color: var(--header-green);
+    font-weight: 700;
+}
+
+.section-bar,
+.public-section-bar {
+    display: flex;
+    align-items: center;
+    height: 38px;
+    min-height: 38px;
+    padding: 8px clamp(20px, 3vw, 60px);
+    gap: 10px;
+    background: var(--header-green);
+    color: #eef2ee;
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.site-header .profile {
+    gap: 16px;
+    min-width: 0;
+}
+
+.site-header .profile-name {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.site-header .avatar-small {
+    width: 32px;
+    font-size: 12px;
+}
+
+@media (max-width: 760px) {
+    .primary-nav,
+    .public-nav {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 0 16px 14px;
+    }
+
+    .nav-links,
+    .public-nav-pages {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 0 20px;
+    }
+
+    .nav-links a,
+    .public-nav-pages a {
+        font-size: 13px;
+        padding-block: 16px;
+    }
+
+    .site-header .profile,
+    .public-nav-account {
+        width: 100%;
+        justify-content: flex-end;
+        padding: 0;
+    }
+
+    .section-bar,
+    .public-section-bar {
+        height: 28px;
+        min-height: 28px;
+        padding: 4px 16px;
+        font-size: 13px;
+    }
+
+    .public-nav-account .nav-button {
+        min-width: 100px;
+        font-size: 13px;
+    }
+}

@@ -99,6 +99,11 @@ public class AccountController(
             return LoginFeil(input);
         }
 
+        if (bruker is Privataktor)
+        {
+            return RedirectToAction("Index", "Dashboard", new { area = "Privat" });
+        }
+
         return RedirectToAction("Index", "Home");
     }
 

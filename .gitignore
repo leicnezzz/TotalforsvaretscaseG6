@@ -797,3 +797,5 @@ fabric.properties
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/csharp,aspnetcore,visualstudio,visualstudiocode,rider
+# Local registered accounts (never commit user data)
+**/App_Data/

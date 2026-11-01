@@ -1,4 +1,4 @@
-namespace Totalforsvaret.Models;
+namespace Totalforsvaret.Areas.Offentlig.Models;
 
 public class Need
 {

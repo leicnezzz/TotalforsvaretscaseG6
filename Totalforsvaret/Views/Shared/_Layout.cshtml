@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -37,14 +37,15 @@
 
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Home" asp-action="Skjema">Registrer ressurs</a>
+                        <a class="nav-link text-dark" asp-area="Privat" asp-controller="Resource" asp-action="Skjema">Registrer ressurs</a>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link text-dark"
+                           asp-area=""
                            asp-controller="Home"
                            asp-action="Index">
-                            Home
+                            Hjem
                         </a>
                     </li>
                     <!-- Lenke til oversikten for offentlige aktører -->
@@ -58,6 +59,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link text-dark"
+                           asp-area=""
                            asp-controller="Home"
                            asp-action="Map">
                             Kart
@@ -66,6 +68,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link text-dark"
+                           asp-area=""
                            asp-controller="Home"
                            asp-action="Privacy">
                             Privacy
@@ -73,6 +76,17 @@
                     </li>
 
                 </ul>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <span class="navbar-text me-3">Hei, @User.Identity.Name</span>
+                    <form method="post" asp-area="" asp-controller="Account" asp-action="Logout">
+                        <button type="submit" class="btn btn-outline-secondary">Logg ut</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="btn btn-outline-secondary" asp-area="" asp-controller="Account" asp-action="Login">Logg inn</a>
+                }
 
             </div>
         </div>

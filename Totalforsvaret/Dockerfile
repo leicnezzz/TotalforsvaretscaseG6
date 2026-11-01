@@ -13,6 +13,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Totalforsvaret/Totalforsvaret.csproj", "Totalforsvaret/"]
+COPY ["Totalforsvaret.ServiceDefaults/Totalforsvaret.ServiceDefaults.csproj", "Totalforsvaret.ServiceDefaults/"]
 RUN dotnet restore "./Totalforsvaret/Totalforsvaret.csproj"
 COPY . .
 WORKDIR "/src/Totalforsvaret"

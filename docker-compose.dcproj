@@ -9,10 +9,20 @@
     <DockerServiceName>totalforsvaret</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="docker-compose.override.yml">
-      <DependentUpon>docker-compose.yml</DependentUpon>
-    </None>
+    <None Include="docker-compose.https.yml" />
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="Oppstart.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="docker-compose.override.mac.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </Content>
+    <Content Include="docker-compose.override.windows.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </Content>
+    <Content Include="Kommandoer.md">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </Content>
   </ItemGroup>
 </Project>

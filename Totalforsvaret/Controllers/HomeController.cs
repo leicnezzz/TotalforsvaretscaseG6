@@ -1,15 +1,27 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Totalforsvaret.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Totalforsvaret.Handlers;
 
 namespace Totalforsvaret.Controllers;
 
 public class HomeController : Controller
 {
-    [Microsoft.AspNetCore.Authorization.Authorize]
-    public IActionResult Index()
+    [AllowAnonymous]
+    [HttpGet]
+    public IActionResult Index([FromServices] ResourceHandler resourceHandler)
     {
-        return View();
+        var model = new PublicHomeViewModel
+        {
+            Categories = resourceHandler.GetCategories()
+                .Select(category => new SelectListItem(category.Name,
+                    category.CategoryId.ToString(System.Globalization.CultureInfo.InvariantCulture)))
+                .ToList()
+        };
+
+        return View(model);
     }
 
     public IActionResult Privacy()

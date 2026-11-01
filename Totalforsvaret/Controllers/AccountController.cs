@@ -82,14 +82,8 @@ public class AccountController(
             input.Email.Trim());
 
         // Valget i skjemaet må samsvare med lagret brukertype.
-        var riktigType = input.Actor switch
-        {
-            "civil" => bruker is Privataktor,
-            "public" => bruker is Offentligaktør,
-            _ => false
-        };
-
-        if (bruker == null || !riktigType)
+        // Brukertypen hentes fra kontoen i databasen.
+        if (bruker == null)
         {
             return LoginFeil(input);
         }
@@ -103,6 +97,11 @@ public class AccountController(
         if (!resultat.Succeeded)
         {
             return LoginFeil(input);
+        }
+
+        if (bruker is Privataktor)
+        {
+            return RedirectToAction("Index", "Dashboard", new { area = "Privat" });
         }
 
         return RedirectToAction("Index", "Home");
@@ -129,8 +128,8 @@ public class AccountController(
     private IActionResult LoginFeil(LoginInput input)
     {
         ViewData["FormError"] =
-            "Innlogging mislyktes. Kontroller e-post, passord " +
-            "og aktørtype. Kontoen kan være midlertidig låst.";
+             "Innlogging mislyktes. Kontroller e-post og passord. " +
+             "Kontoen kan være midlertidig låst.";
 
         return View("Login", input);
     }

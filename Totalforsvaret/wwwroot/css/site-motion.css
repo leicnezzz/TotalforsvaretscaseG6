@@ -1,0 +1,97 @@
+/* Diskrete overganger for de nye sidene. Ingen innhold skjules uten JavaScript. */
+@media (prefers-reduced-motion: no-preference) {
+    html:has(.public-home, .private-home, .account-page) {
+        scroll-behavior: smooth;
+    }
+
+    :is(.public-button, .nav-button, .action-button, .account-submit) {
+        transition: transform 180ms ease, background-color 180ms ease,
+            border-color 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+    }
+
+    :is(.public-button, .nav-button, .action-button, .account-submit):active {
+        transform: translateY(1px);
+    }
+
+    :is(.public-button, .action-button) > span[aria-hidden="true"] {
+        transition: transform 180ms ease;
+    }
+
+    :is(.nav-links a, .public-nav-pages a) {
+        transition: color 180ms ease, border-color 180ms ease;
+    }
+
+    :is(.nav-links a, .public-nav-pages a):hover {
+        color: #2e6840;
+        border-bottom-color: #9bb9a3;
+    }
+
+    :is(.account-input, .public-resource-form select) {
+        transition: background-color 180ms ease, border-color 180ms ease,
+            box-shadow 180ms ease;
+    }
+
+    .account-input:focus-within {
+        background: #e6ede8;
+        box-shadow: 0 0 0 4px rgb(46 104 64 / 8%);
+    }
+
+    :is(.public-card, .action-card) {
+        transition: transform 220ms ease, box-shadow 220ms ease;
+        animation: site-fade-in 550ms ease-out backwards;
+    }
+
+    :is(.public-card, .action-card):nth-child(2) {
+        animation-delay: 90ms;
+    }
+
+    :is(.account-welcome, .greeting) {
+        animation: site-enter 450ms ease-out backwards;
+    }
+
+    .account-card {
+        animation: site-enter 550ms ease-out 60ms backwards;
+    }
+
+    :is(.incident-alert, .resource-map-section, .public-registration) {
+        animation: site-fade-in 650ms ease-out backwards;
+    }
+
+    :is(.public-help, .card-help)[open] p {
+        animation: site-enter 160ms ease-out;
+    }
+
+    :is(.public-help summary, .card-help summary, .account-password-toggle) {
+        transition: background-color 180ms ease, color 180ms ease;
+    }
+
+    :is(.public-help summary, .card-help summary):hover {
+        background: #e5eee7;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        :is(.public-card, .action-card):hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgb(0 0 0 / 11%);
+        }
+
+        :is(.public-button, .nav-button, .action-button, .account-submit):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgb(0 0 0 / 12%);
+        }
+
+        :is(.public-button, .action-button):hover > span[aria-hidden="true"] {
+            transform: translateX(3px);
+        }
+    }
+}
+
+@keyframes site-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes site-enter {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

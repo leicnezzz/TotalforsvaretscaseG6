@@ -1,0 +1,217 @@
+@model Totalforsvaret.Areas.Privat.Models.PrivateHomeViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <title>Min side – Paratus</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+          rel="stylesheet" />
+
+    <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
+    <link rel="stylesheet"
+          href="~/css/private-home.css"
+          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/incident-alert.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
+</head>
+
+<body class="private-home">
+    <header class="site-header">
+        <nav class="primary-nav" aria-label="Hovedmeny">
+            <div class="nav-links">
+                <a class="active"
+                   aria-current="page"
+                   asp-area="Privat"
+                   asp-controller="Dashboard"
+                   asp-action="Index">
+                    Min side
+                </a>
+
+                <a asp-area="Privat"
+                   asp-controller="Resource"
+                   asp-action="Skjema">
+                    Ressurser registrering
+                </a>
+
+                <a asp-area="Privat"
+                   asp-controller="Resource"
+                   asp-action="Oversikt">
+                    Administrer ressurs
+                </a>
+            </div>
+
+            <div class="profile">
+                <svg class="bell"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     aria-hidden="true">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
+                    <path d="M10 21h4" />
+                </svg>
+
+                <span class="avatar avatar-small" aria-hidden="true">
+                    @Model.Initialer
+                </span>
+
+                <span class="profile-name">@Model.Navn</span>
+            </div>
+        </nav>
+
+        <div class="section-bar">
+            <span>Min side</span>
+            <span aria-hidden="true">⌄</span>
+        </div>
+    </header>
+
+    <form class="logout-form"
+          method="post"
+          asp-area=""
+          asp-controller="Account"
+          asp-action="Logout">
+        <button type="submit">← Logg ut</button>
+    </form>
+
+    <main class="home-content">
+        <partial name="/Views/Shared/_IncidentAlert.cshtml" />
+
+        <section class="greeting" aria-labelledby="greeting-title">
+            <h1 id="greeting-title">Hei, @Model.Navn</h1>
+            <span class="avatar avatar-large" aria-hidden="true">
+                @Model.Initialer
+            </span>
+        </section>
+
+        <section class="action-cards" aria-label="Dine valg">
+            <article class="action-card">
+                <details class="card-help">
+                    <summary aria-label="Hjelp om registrering">?</summary>
+                    <p>
+                        Registrer en ressurs du kan stille til rådighet.
+                    </p>
+                </details>
+
+                <h2>Ønsker du å registrere en ny ressurs?</h2>
+
+                <p class="card-description">
+                    Her kan du registrere nye ressurser til rådighet.
+                </p>
+
+                <h3>Registrer ressurs</h3>
+
+                <a class="action-button primary-button"
+                   asp-area="Privat"
+                   asp-controller="Resource"
+                   asp-action="Skjema">
+                    <span>Registreringen</span>
+                    <span aria-hidden="true">→</span>
+                </a>
+            </article>
+
+            <article class="action-card">
+                <details class="card-help">
+                    <summary aria-label="Hjelp om ressursoversikten">?</summary>
+                    <p>
+                        Her finner du siden for oversikt og
+                        fremtidig redigering av dine ressurser.
+                    </p>
+                </details>
+
+                <h2>Ønsker du å administrere en ressurs?</h2>
+
+                <p class="card-description">
+                    Her kan du redigere dine ressurser.
+                </p>
+
+                <h3>Dine ressurser</h3>
+
+                <a class="action-button secondary-button"
+                   asp-area="Privat"
+                   asp-controller="Resource"
+                   asp-action="Oversikt">
+                    <span>Se oversikt</span>
+                    <span aria-hidden="true">→</span>
+                </a>
+            </article>
+        </section>
+
+        <section class="resource-map-section"
+                 aria-label="Dine registrerte ressurser på kart">
+            <div id="private-resource-map"
+                 class="resource-map"
+                 role="region"
+                 aria-label="Kart over dine ressurser"
+                 data-points-url="@Url.Action("ResourcePoints", "Dashboard", new { area = "Privat" })">
+            </div>
+
+            <p id="map-status" class="map-status" role="status">
+                Henter dine ressurser …
+            </p>
+
+            <noscript>
+                Du må aktivere JavaScript for å vise kartet.
+            </noscript>
+        </section>
+    </main>
+
+    <footer class="thank-you">
+        <div class="footer-content">
+            <h2>Tusen takk for din hjelp</h2>
+
+            <p>
+                Vi ønsker å rette en stor takk til alle som bidrar
+                til å styrke vår felles beredskap. Enten du stiller
+                ressurser til disposisjon, deler viktig informasjon
+                eller på andre måter engasjerer deg, er ditt bidrag
+                verdifullt.
+            </p>
+
+            <p>
+                God beredskap handler om samarbeid, tillit og viljen
+                til å stille opp for hverandre. Ved å samle mennesker,
+                organisasjoner og tilgjengelige ressurser på ett sted,
+                legger vi til rette for bedre samhandling og raskere
+                respons når det virkelig gjelder.<br />
+                Sammen kan vi skape et tryggere, sterkere og mer
+                forberedt samfunn.
+            </p>
+        </div>
+
+        <div class="footer-bottom">
+            <span>Paratus</span>
+
+            <div class="footer-links">
+                <a asp-area=""
+                   asp-controller="Home"
+                   asp-action="Privacy">
+                    Personvern
+                </a>
+                <span aria-hidden="true">·</span>
+                <span>Tilgjengelighet</span>
+                <span aria-hidden="true">·</span>
+                <span>Kontakt</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/js/private-home.js"
+            asp-append-version="true"></script>
+</body>
+</html>
+

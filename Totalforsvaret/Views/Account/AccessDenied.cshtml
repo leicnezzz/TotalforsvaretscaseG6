@@ -1,4 +1,5 @@
 @{
+    // This view is used when a user tries to access a page they don't have permission to view.
     Layout = null;
     ViewData["Title"] = "Ingen tilgang";
     var isAuthenticated = User.Identity?.IsAuthenticated == true;

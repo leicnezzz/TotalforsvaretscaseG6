@@ -1,0 +1,214 @@
+@model Totalforsvaret.Models.PublicHomeViewModel
+@{
+    var isPrivate = User.Identity?.IsAuthenticated == true && User.HasClaim("Brukertype", "Privat");
+}
+<form id="resource-wizard" class="resource-wizard"
+      action="#registrer-ressurs" method="get"
+      data-authenticated="@(User.Identity?.IsAuthenticated == true ? "true" : "false")"
+      data-private="@(isPrivate ? "true" : "false")">
+    <noscript><p class="wizard-message">Aktiver JavaScript for å bruke den trinnvise registreringen.</p></noscript>
+    <p id="wizard-message" class="wizard-message" role="status" tabindex="-1" hidden></p>
+    <p class="wizard-hint">Forhåndsvisning av registreringen. Ingen ressurs sendes inn eller lagres.</p>
+
+    <section class="wizard-step wizard-step-white" aria-labelledby="wizard-category-title">
+        <details class="public-help">
+            <summary aria-label="Hjelp om valg av kategori">?</summary>
+            <p>Kategorien bestemmer hvilke spørsmål du får. Foreløpig er kjøretøy tilgjengelig.</p>
+        </details>
+        <div class="wizard-description">
+            <h3 id="wizard-category-title">Hva ønsker du å registrere?</h3>
+            <p>Her kan du velge hvilken type ressurs du ønsker å stille til rådighet.</p>
+        </div>
+        <div class="wizard-fields">
+            <label for="wizard-category">Velg en ressurstype</label>
+            <select id="wizard-category">
+                <option value="">Ressurstype</option>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category.Value">@(category.Value switch { "1" => "Mat", "2" => "Kjøretøy", "3" => "Utstyr", _ => category.Text })</option>
+                }
+            </select>
+            <p id="wizard-category-note" class="wizard-hint" hidden>Registrering for denne kategorien kommer senere. Velg kjøretøy for å prøve flyten.</p>
+        </div>
+    </section>
+
+    <fieldset class="wizard-step wizard-step-soft" data-step="registration-choice" hidden disabled>
+        <legend class="wizard-sr-only">Kjøretøyregistrering</legend>
+        <details class="public-help"><summary aria-label="Hjelp om registreringsnummer">?</summary><p>Du kan registrere kjøretøy både med og uten registreringsnummer.</p></details>
+        <div class="wizard-description">
+            <h3>Kjøretøyregistrering</h3>
+            <p>Har kjøretøyet registreringsnummer? Velg «Ja» for å oppgi det, eller «Nei» for å gå direkte til kjøretøyinformasjon.</p>
+        </div>
+        <div class="wizard-fields">
+            <p class="wizard-label" id="registration-question">Har kjøretøyet et registreringsnummer?</p>
+            <div role="group" aria-labelledby="registration-question" class="wizard-radios">
+                <label><input type="radio" name="HasRegistrationNumber" value="true" required /> Ja</label>
+                <label><input type="radio" name="HasRegistrationNumber" value="false" required /> Nei</label>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="wizard-step wizard-step-blue" data-step="registration-number" hidden disabled>
+        <legend class="wizard-sr-only">Registreringsnummer</legend>
+        <div class="wizard-description">
+            <h3>Skriv inn registreringsnummer</h3>
+            <p>Oppgi registreringsnummeret for å hente kjøretøyinformasjon. I denne forhåndsvisningen kan du prøve AB12345 for å se automatisk utfylling med tydelig merkede eksempeldata.</p>
+        </div>
+        <div class="wizard-fields">
+            <label for="vehicle-registration-number">Registreringsnummer</label>
+            <div class="wizard-plate">
+                <span aria-hidden="true">N</span>
+                <input id="vehicle-registration-number" name="RegistrationNumber" maxlength="12" minlength="2" placeholder="Eks. AB 12345" autocomplete="off" required />
+            </div>
+            <p id="vehicle-lookup-status" class="wizard-hint" role="status"></p>
+        </div>
+    </fieldset>
+
+    <fieldset class="wizard-step wizard-step-soft" data-step="vehicle-details" hidden disabled>
+        <legend class="wizard-sr-only">Kjøretøyinformasjon</legend>
+        <div class="wizard-description">
+            <h3>Kjøretøyinformasjon</h3>
+            <p>Fyll inn kjøretøyets modell, tekniske tilstand og påkrevd førerkortklasse. Opplysningene brukes til å vurdere egnethet og tilgjengelighet.</p>
+        </div>
+        <div class="wizard-fields">
+            <label for="vehicle-model">Modell / serie *</label>
+            <input id="vehicle-model" name="Model" maxlength="100" placeholder="Eks. BMW 3-serie" required />
+            <label for="vehicle-condition">Tilstand *</label>
+            <input id="vehicle-condition" name="Condition" maxlength="100" placeholder="Eks. god, kjørbar, behov for service" required />
+            <label for="vehicle-license">Påkrevd førerkortklasse</label>
+            <input id="vehicle-license" name="RequiredLicense" maxlength="100" placeholder="Eks. B, BE, C1, C eller T" />
+            <div id="vehicle-information-check" hidden>
+                <p class="wizard-label" id="vehicle-information-question">Stemmer informasjonen?</p>
+                <div class="wizard-radios" role="group" aria-labelledby="vehicle-information-question">
+                    <label><input type="radio" name="VehicleInfoCorrect" value="true" /> Ja, informasjonen stemmer</label>
+                    <label><input type="radio" name="VehicleInfoCorrect" value="false" /> Nei, jeg vil rette opplysningene</label>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="wizard-step wizard-step-white" data-step="additional" hidden disabled>
+        <legend class="wizard-sr-only">Ytterligere informasjon</legend>
+        <div class="wizard-description">
+            <h3>Ytterligere informasjon</h3>
+            <p>Har du praktiske opplysninger om kjøretøyet, kapasitet eller begrensninger? Dette feltet er valgfritt.</p>
+        </div>
+        <div class="wizard-fields">
+            <label for="vehicle-additional">Har du noe ytterligere du ønsker å informere om?</label>
+            <textarea id="vehicle-additional" name="AdditionalInformation" maxlength="200" rows="5" placeholder="Skriv her"></textarea>
+            <p class="wizard-counter"><span id="vehicle-additional-count">0</span>/200</p>
+            <button id="wizard-additional-next" class="public-button public-button-primary" type="button">
+                <span>Fortsett til kontaktinformasjon</span><span aria-hidden="true">↓</span>
+            </button>
+        </div>
+    </fieldset>
+
+    <fieldset class="wizard-step wizard-step-soft" data-step="availability" hidden disabled>
+        <legend class="wizard-sr-only">Kontakt og tilgjengelighet</legend>
+        <div class="wizard-description">
+            <h3>Kontakt og tilgjengelighet</h3>
+            <p>Oppgi telefonnummeret du kan kontaktes på, og når kjøretøyet kan stilles til rådighet. E-postadressen er allerede knyttet til kontoen din.</p>
+        </div>
+        <div class="wizard-fields">
+            <label for="vehicle-contact">Telefon *</label>
+            <input id="vehicle-contact" name="Contact" type="tel" inputmode="tel" maxlength="25" autocomplete="tel" placeholder="Eks. +47 900 12 345" aria-describedby="vehicle-contact-error" required />
+            <p id="vehicle-contact-error" class="wizard-field-error" role="status" hidden></p>
+            <label for="vehicle-available">Er kjøretøyet tilgjengelig? *</label>
+            <select id="vehicle-available" name="Available" required>
+                <option value="">Velg tilgjengelighet</option>
+                <option value="true">Ja</option>
+                <option value="false">Ikke akkurat nå</option>
+            </select>
+            <label for="vehicle-available-from">Kan være tilgjengelig fra (valgfritt)</label>
+            <input id="vehicle-available-from" name="AvailableFrom" type="datetime-local" />
+            <p class="wizard-hint">Lar du datoen stå tom, er kjøretøyet tilgjengelig fra registreringstidspunktet.</p>
+            <button id="wizard-contact-next" class="public-button public-button-primary" type="button">
+                <span>Fortsett til adresse</span><span aria-hidden="true">↓</span>
+            </button>
+        </div>
+    </fieldset>
+
+    <fieldset class="wizard-step wizard-step-white" data-step="location" hidden disabled>
+        <legend class="wizard-sr-only">Plassering</legend>
+        <div class="wizard-description">
+            <h3>Hvor finnes kjøretøyet?</h3>
+            <p>Begynn å skrive gateadresse og poststed. Velg riktig adresse fra forslagene under feltet, og kontroller plasseringen på kartet.</p>
+        </div>
+        <div class="wizard-fields">
+            <label for="vehicle-address">Adresse *</label>
+            <input id="vehicle-address" name="Address" maxlength="250" autocomplete="street-address"
+                   placeholder="Eks. Rådhusgata 18, Kristiansand" aria-controls="vehicle-address-results" aria-describedby="vehicle-address-help vehicle-address-status" required />
+            <p id="vehicle-address-help" class="wizard-hint">Søket sendes til Kartverket, med Photon/OpenStreetMap som reserve. Velg et forslag for å plassere adressen på kartet.</p>
+            <p id="vehicle-address-status" class="wizard-hint" role="status"></p>
+            <ul id="vehicle-address-results" class="wizard-address-results" aria-label="Adresser som passer søket" hidden></ul>
+            @* Ressursmodellen bruker fortsatt Latitude og Longitude. Brukeren fyller kun inn adressen. *@
+            <input id="vehicle-latitude" name="Latitude" type="hidden" />
+            <input id="vehicle-longitude" name="Longitude" type="hidden" />
+        </div>
+        <div id="vehicle-location-map" class="wizard-map" role="region" aria-label="Kart over valgt adresse" hidden></div>
+    </fieldset>
+
+    <fieldset class="wizard-step wizard-step-blue" data-step="account" hidden disabled>
+        <legend class="wizard-sr-only">Konto</legend>
+        <div class="wizard-description">
+            <h3>Logg inn eller opprett bruker</h3>
+            <p>Du er snart ferdig. Velg om du vil bruke en eksisterende konto eller opprette en ny, uten å forlate registreringen.</p>
+            <p class="wizard-hint">Kun frontend-demo. Bruk testopplysninger og et oppdiktet passord. Ingen konto opprettes, og du logges ikke inn.</p>
+        </div>
+        <div class="wizard-fields wizard-account-actions">
+            <div id="wizard-account-choice" class="wizard-account-choice" role="group" aria-label="Velg innlogging eller ny bruker">
+                <button type="button" class="wizard-account-mode" data-account-mode="login" aria-pressed="true" aria-controls="wizard-login-panel">Logg inn</button>
+                <button type="button" class="wizard-account-mode" data-account-mode="register" aria-pressed="false" aria-controls="wizard-register-panel">Opprett bruker</button>
+            </div>
+            <fieldset id="wizard-login-panel" class="wizard-fields wizard-auth-panel" data-account-panel="login">
+                <legend class="wizard-sr-only">Logg inn i registreringsflyten</legend>
+                <label for="wizard-login-email">E-post *</label>
+                <input id="wizard-login-email" type="email" name="PreviewLoginEmail" autocomplete="off" placeholder="test@example.com" required />
+                <label for="wizard-login-password">Passord *</label>
+                <input id="wizard-login-password" type="password" name="PreviewLoginPassword" autocomplete="off" placeholder="Skriv et testpassord" required />
+                <button type="button" class="public-button public-button-primary" data-account-continue>Logg inn og fortsett (demo)</button>
+            </fieldset>
+            <fieldset id="wizard-register-panel" class="wizard-fields wizard-auth-panel" data-account-panel="register" hidden disabled>
+                <legend class="wizard-sr-only">Opprett bruker i registreringsflyten</legend>
+                <label for="wizard-register-firstname">Fornavn *</label>
+                <input id="wizard-register-firstname" name="PreviewFirstName" maxlength="100" autocomplete="off" required />
+                <label for="wizard-register-lastname">Etternavn *</label>
+                <input id="wizard-register-lastname" name="PreviewLastName" maxlength="100" autocomplete="off" required />
+                <label for="wizard-register-email">E-post *</label>
+                <input id="wizard-register-email" name="PreviewRegisterEmail" type="email" autocomplete="off" placeholder="test@example.com" required />
+                <label for="wizard-register-password">Passord *</label>
+                <input id="wizard-register-password" name="PreviewRegisterPassword" type="password" minlength="12" autocomplete="off" aria-describedby="wizard-password-help" required />
+                <p id="wizard-password-help" class="wizard-hint">Minst 12 tegn, med bokstaver og tall. Bruk et oppdiktet testpassord i denne demoen.</p>
+                <label for="wizard-register-confirm-password">Gjenta passord *</label>
+                <input id="wizard-register-confirm-password" name="PreviewConfirmPassword" type="password" autocomplete="off" required />
+                <button type="button" class="public-button public-button-primary" data-account-continue>Opprett bruker og fortsett (demo)</button>
+            </fieldset>
+            <div id="wizard-account-complete" hidden>
+                <p id="wizard-account-complete-text" role="status"></p>
+                <button id="wizard-account-edit" type="button" class="public-button public-button-outline">Endre kontovalg</button>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="wizard-step wizard-step-confirm" data-step="confirmation" hidden disabled>
+        <legend class="wizard-sr-only">Bekreft registrering</legend>
+        <div class="wizard-description">
+            <h3>Registrer ressurs</h3>
+            <p>Kontroller opplysningene. Bekreftelsen viser kun hvordan avslutningen vil se ut; ingen ressurs blir registrert.</p>
+        </div>
+        <div class="wizard-fields">
+            <dl id="vehicle-summary" class="wizard-summary"></dl>
+            <label class="wizard-confirm-label"><input type="checkbox" name="Confirmed" value="true" required /> Jeg bekrefter at opplysningene er korrekte, og at ressursen kan gjøres tilgjengelig for relevante beredskapsaktører.</label>
+            <p id="wizard-account-note" class="wizard-hint">Kun forhåndsvisning – ingenting sendes inn.</p>
+            <p id="wizard-prerequisite-note" class="wizard-prerequisite" role="status" hidden></p>
+            <button id="vehicle-submit" type="submit" class="public-button" disabled><span>Registrer ressurs</span><span aria-hidden="true">→</span></button>
+        </div>
+    </fieldset>
+
+    <section id="wizard-success" class="wizard-success" tabindex="-1" hidden>
+        <h3>Forhåndsvisning av bekreftelse</h3>
+        <p id="wizard-success-message"></p>
+        <a class="public-button public-button-primary" asp-area="Privat" asp-controller="Dashboard" asp-action="Index">Gå til min side</a>
+        <button id="wizard-new" type="button" class="public-button public-button-outline">Registrer et nytt kjøretøy</button>
+    </section>
+</form>

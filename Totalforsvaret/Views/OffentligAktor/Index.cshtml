@@ -1,0 +1,272 @@
+@using Totalforsvaret.Models.resourcemodels
+@using System.Text.Json
+@model List<Resource>
+
+@{
+    ViewData["Title"] = "Operativ oversikt";
+    ViewData["FullWidth"] = true;
+
+    // Sender bare opplysningene kartet trenger.
+    var kartRessurser = Model.Select(ressurs => new
+    {
+        navn = ressurs.Object,
+        kategori = ressurs.Category?.Name ?? "Uten kategori",
+        tilbyder = ressurs.Navn,
+        kontaktpunkt = ressurs.Kontaktpunkt,
+        tilgjengeligFra = ressurs.TilgjengeligFra?.ToString("dd.MM.yyyy HH:mm"),
+        latitude = ressurs.Latitude,
+        longitude = ressurs.Longitude
+    });
+
+    var ressurserJson = JsonSerializer.Serialize(kartRessurser);
+}
+
+<link rel="stylesheet"
+      href="~/css/offentlig-aktor.css"
+      asp-append-version="true" />
+
+<div class="container-fluid offentlig-dashboard">
+
+    <!-- Eksempeltekst inntil organisasjon er koblet til innlogging -->
+    <div class="aktorlinje">
+        <div class="aktor-identitet">
+            <span class="aktor-merke">Offentlig aktør</span>
+
+            <span class="aktor-organisasjon">
+                Kristiansand kommune · Beredskap
+            </span>
+        </div>
+
+        <span class="aktor-ansvarsomrade">
+            Ansvarsområde: Kristiansand kommune
+        </span>
+    </div>
+
+    <!-- Overskrift og handlinger -->
+    <div class="oversikt-topp">
+        <div>
+            <h1>Operativ oversikt</h1>
+            <p>Situasjonsbilde for Agder</p>
+        </div>
+
+        <div class="oversikt-handlinger">
+            <button type="button" class="tildel-oppdrag-knapp"
+                    title="Tildel oppdrag">
+                Tildel oppdrag
+            </button>
+
+            <a class="registrer-behov-knapp"
+               asp-controller="Need"
+               asp-action="Create">
+                + Registrer behov
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistikkort -->
+    <div class="row">
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-kort behov-kort">
+                <h2>Aktive behov</h2>
+                <p class="stat-tall">–</p>
+                <span>Avventer behovsdata</span>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-kort ressurs-kort">
+                <h2>Tilgjengelige ressurser</h2>
+                <p class="stat-tall">@Model.Count</p>
+                <span>Registrert som tilgjengelige</span>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-kort treff-kort">
+                <h2>Foreslåtte treff</h2>
+                <p class="stat-tall">–</p>
+                <span>Avventer matching</span>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-kort lost-kort">
+                <h2>Løste behov</h2>
+                <p class="stat-tall">–</p>
+                <span>Avventer behovsdata</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kart og oppfølging -->
+    <div class="row mt-3 gx-3 offentlig-arbeidsflate">
+
+        <div class="col-lg-9 kart-kolonne">
+            <section class="situasjonskart"
+                     aria-label="Kart over registrerte ressurser">
+
+                <div id="offentligKart"></div>
+            </section>
+
+            <p id="kartmelding"
+               class="small text-muted mt-2 mb-0"
+               role="status"></p>
+        </div>
+
+        <div class="col-lg-3 oppfolging-kolonne">
+            <section class="oppfolging-panel"
+                     aria-labelledby="oppfolging-tittel">
+
+                <h2 id="oppfolging-tittel">Krever oppfølging</h2>
+
+                <div class="oppfolging-innhold">
+                    <h3>Aktive behov</h3>
+                    <p>Ingen behovsdata hentet ennå.</p>
+                </div>
+
+                <div class="oppfolging-innhold">
+                    <h3>Foreslåtte treff</h3>
+                    <p>Ingen treff hentet ennå.</p>
+                </div>
+
+            </section>
+        </div>
+    </div>
+
+    <!-- Koordinering -->
+    <section class="koordinering-panel"
+             aria-labelledby="koordinering-tittel">
+
+        <h2 id="koordinering-tittel">Koordinering</h2>
+
+        <p>
+            Ingen koordineringsnotater hentet ennå.
+            Her skal siste avklaringer og oppdateringer vises.
+        </p>
+    </section>
+
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const kartmelding = document.getElementById('kartmelding');
+
+            if (typeof L === 'undefined') {
+                kartmelding.textContent =
+                    'Kartet kunne ikke lastes. Kontroller internettilkoblingen.';
+                return;
+            }
+
+            // Ressurser hentet gjennom controlleren.
+            const ressurser = @Html.Raw(ressurserJson);
+
+            // Henter grønnfargen fra CSS-en.
+            const dashboard = document.querySelector('.offentlig-dashboard');
+            const ressursfarge = getComputedStyle(dashboard)
+                .getPropertyValue('--tilgjengelig')
+                .trim() || '#50C832';
+
+            // Kristiansand brukes som utgangspunkt når kartet er tomt.
+            const offentligKart = L.map('offentligKart')
+                .setView([58.1467, 7.9956], 12);
+
+            L.tileLayer(
+                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                {
+                    maxZoom: 19,
+                    attribution:
+                        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }
+            ).addTo(offentligKart);
+
+            // Samler ressursmarkørene i ett lag.
+            const ressurslag = L.featureGroup()
+                .addTo(offentligKart);
+
+            let utenGyldigPosisjon = 0;
+
+            // Registrerte verdier vises som tekst, ikke HTML.
+            function lagPopup(ressurs) {
+                const innhold = document.createElement('div');
+                const overskrift = document.createElement('strong');
+
+                overskrift.textContent = ressurs.navn;
+                innhold.appendChild(overskrift);
+
+                const opplysninger = [
+                    ['Kategori', ressurs.kategori],
+                    ['Tilbyder', ressurs.tilbyder || 'Ikke oppgitt'],
+                    ['Kontakt', ressurs.kontaktpunkt || 'Ikke oppgitt'],
+                    [
+                        'Tilgjengelig fra',
+                        ressurs.tilgjengeligFra || 'Ikke oppgitt'
+                    ]
+                ];
+
+                for (const [etikett, verdi] of opplysninger) {
+                    const linje = document.createElement('div');
+                    linje.textContent = `${etikett}: ${verdi}`;
+                    innhold.appendChild(linje);
+                }
+
+                return innhold;
+            }
+
+            // Lager en grønn markør for hver gyldig posisjon.
+            for (const ressurs of ressurser) {
+                const latitude = ressurs.latitude;
+                const longitude = ressurs.longitude;
+
+                const gyldigPosisjon =
+                    Number.isFinite(latitude) &&
+                    Number.isFinite(longitude) &&
+                    latitude >= -90 &&
+                    latitude <= 90 &&
+                    longitude >= -180 &&
+                    longitude <= 180;
+
+                if (!gyldigPosisjon) {
+                    utenGyldigPosisjon++;
+                    continue;
+                }
+
+                L.circleMarker([latitude, longitude], {
+                    radius: 9,
+                    color: '#FFFFFF',
+                    weight: 3,
+                    fillColor: ressursfarge,
+                    fillOpacity: 1
+                })
+                    .bindPopup(lagPopup(ressurs))
+                    .addTo(ressurslag);
+            }
+
+            const antallMarkorer = ressurslag.getLayers().length;
+
+            // Tilpasser kartutsnittet til markørene.
+            if (antallMarkorer > 0) {
+                offentligKart.fitBounds(ressurslag.getBounds(), {
+                    padding: [40, 40],
+                    maxZoom: 14
+                });
+
+                kartmelding.textContent =
+                    `${antallMarkorer} ressurser vist. ` +
+                    'Grønn markør betyr registrert som tilgjengelig. ' +
+                    'Klikk på en markør for detaljer.';
+            } else if (ressurser.length === 0) {
+                kartmelding.textContent =
+                    'Ingen ressurser er registrert som tilgjengelige ennå.';
+            } else {
+                kartmelding.textContent =
+                    'Ingen av ressursene har gyldige kartkoordinater.';
+            }
+
+            if (utenGyldigPosisjon > 0) {
+                kartmelding.textContent +=
+                    ` ${utenGyldigPosisjon} ressurser kunne ikke plasseres i kartet.`;
+            }
+        })();
+    </script>
+}

@@ -26,7 +26,18 @@ namespace Totalforsvaret.Handlers
                 }).ToList();
             }
         }
-
+        
+        // Henter alle registrerte ressurser fra kategoriene
+        public List<Resource> GetResources()
+        {
+            lock (categories)
+            {
+                return categories
+                    .SelectMany(c => c.Resources)
+                    .ToList();
+            }
+        }
+        
         // Lager en ny ressurs og legger den til i riktig kategori. Returnerer den nye ressursen.
         public Resource CreateResource(string resourceName, int categoryId, bool available,
             decimal latitude, decimal longitude, string navn = "", string kontaktpunkt = "",

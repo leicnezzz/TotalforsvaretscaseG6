@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="~/css/public-home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/incident-alert.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
 </head>
 <body class="public-home">
     <header class="public-header">
@@ -43,9 +44,19 @@
         <div class="public-section-bar" aria-hidden="true"></div>
     </header>
 
-    <main class="public-content">
-        <partial name="/Views/Shared/_IncidentAlert.cshtml" />
+    <div class="public-video-hero" aria-hidden="true">
+        <img class="public-hero-poster" src="https://i.ytimg.com/vi/pd6goYLB3Gs/maxresdefault.jpg" alt="" />
+        <div class="public-hero-video" aria-hidden="true" inert>
+            <iframe id="public-background-video"
+                    data-video-src="https://www.youtube-nocookie.com/embed/pd6goYLB3Gs?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=pd6goYLB3Gs&amp;controls=0&amp;playsinline=1&amp;disablekb=1&amp;fs=0"
+                    title="Lydløs bakgrunnsvideo"
+                    allow="autoplay; encrypted-media"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    tabindex="-1"></iframe>
+        </div>
+    </div>
 
+    <main class="public-content">
         <section class="public-action-cards" aria-label="Kom i gang">
             <article class="public-card">
                 <details class="public-help">
@@ -76,6 +87,10 @@
                 </div>
             </article>
         </section>
+
+        <div class="public-home-incident">
+            <partial name="/Views/Shared/_IncidentAlert.cshtml" />
+        </div>
 
         <section id="registrer-ressurs" class="public-registration" aria-labelledby="registration-title">
             <div class="public-registration-intro">
@@ -122,6 +137,8 @@
             </div>
         </div>
     </footer>
+    <script src="~/js/public-home.js" asp-append-version="true"></script>
 </body>
 </html>
+
 

@@ -59,7 +59,7 @@ public class LoginControllerTests
 
     [TestCase("civil", false)]
     [TestCase("public", true)]
-    public async Task Login_RiktigPassordOgAktortype_SenderTilForsiden(
+    public async Task Login_RiktigPassord_SenderTilStartsideForKontotypen(
         string actor,
         bool offentlig)
     {
@@ -87,7 +87,11 @@ public class LoginControllerTests
         var redirect = (RedirectToActionResult)resultat;
 
         Assert.That(redirect.ActionName, Is.EqualTo("Index"));
-        Assert.That(redirect.ControllerName, Is.EqualTo("Home"));
+        Assert.That(redirect.ControllerName, Is.EqualTo(offentlig ? "Home" : "Dashboard"));
+        if (!offentlig)
+        {
+            Assert.That(redirect.RouteValues!["area"], Is.EqualTo("Privat"));
+        }
 
         // Husk meg og kontolåsing videresendes til Identity.
         signIn.Verify(manager => manager.PasswordSignInAsync(
@@ -120,18 +124,26 @@ public class LoginControllerTests
 
     [TestCase("public")]
     [TestCase("ukjent")]
-    public async Task Login_FeilAktortype_ForsokerIkkeInnlogging(
+    public async Task Login_AktorvalgFraKlienten_EndrerIkkeLagretKontotype(
         string actor)
     {
         var input = LagInput(actor);
 
+        var bruker = new Privataktor();
         users.Setup(manager => manager.FindByEmailAsync(input.Email))
-            .ReturnsAsync(new Privataktor());
+            .ReturnsAsync(bruker);
+        signIn.Setup(manager => manager.PasswordSignInAsync(
+                bruker, input.Password, false, true))
+            .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
         var resultat = await controller.Login(input);
 
-        KontrollerLoginFeil(resultat, input);
-        KontrollerIngenInnlogging();
+        Assert.That(resultat, Is.TypeOf<RedirectToActionResult>());
+        var redirect = (RedirectToActionResult)resultat;
+        Assert.That(redirect.ControllerName, Is.EqualTo("Dashboard"));
+        Assert.That(redirect.RouteValues!["area"], Is.EqualTo("Privat"));
+        signIn.Verify(manager => manager.PasswordSignInAsync(
+            bruker, input.Password, false, true), Times.Once);
     }
 
     [Test]

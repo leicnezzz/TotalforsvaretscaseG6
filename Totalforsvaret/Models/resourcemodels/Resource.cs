@@ -5,6 +5,7 @@ namespace Totalforsvaret.Models.resourcemodels
     // Representerer en ressurs i systemet, med tilhørende kategori og tilgjengelighet.
     public class Resource
     {
+        public int BrukerId { get; set; } // Tror jeg trenger denne 
         public int ResourceId { get; set; }
         [MaxLength(100)]
         public required string Object { get; set; }

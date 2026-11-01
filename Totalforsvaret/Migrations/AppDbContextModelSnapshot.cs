@@ -166,6 +166,31 @@ namespace Totalforsvaret.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("Totalforsvaret.Models.Crisis", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Area")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Crises");
+                });
+
             modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Offentligaktør", b =>
                 {
                     b.HasBaseType("Totalforsvaret.Models.Bruker");

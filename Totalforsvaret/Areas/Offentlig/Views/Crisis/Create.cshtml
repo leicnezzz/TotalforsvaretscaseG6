@@ -1,0 +1,62 @@
+@model Totalforsvaret.Models.Crisis
+
+@{
+    ViewData["Title"] = "Opprett krise";
+}
+
+<div class="container py-4">
+    <h1>Opprett krise</h1>
+    <p>Registrer krisen før du legger til behov.</p>
+
+    <form asp-area="Offentlig"
+          asp-controller="Crisis"
+          asp-action="Create"
+          method="post">
+
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">
+                Navn på krisen
+            </label>
+            <input asp-for="Name"
+                   class="form-control"
+                   placeholder="For eksempel Flom i Otra"
+                   maxlength="100"
+                   required />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Area" class="form-label">
+                Område
+            </label>
+            <input asp-for="Area"
+                   class="form-control"
+                   placeholder="For eksempel Kristiansand"
+                   maxlength="100"
+                   required />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">
+                Beskriv krisen
+            </label>
+            <textarea asp-for="Description"
+                      class="form-control"
+                      rows="5"
+                      maxlength="1500"
+                      required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            Opprett krise
+        </button>
+
+        <a asp-area=""
+           asp-controller="OffentligAktor"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            Avbryt
+        </a>
+    </form>
+</div>

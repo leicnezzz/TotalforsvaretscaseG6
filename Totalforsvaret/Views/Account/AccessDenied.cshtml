@@ -1,6 +1,106 @@
-﻿@{
+@{
+    // This view is used when a user tries to access a page they don't have permission to view.
+    Layout = null;
     ViewData["Title"] = "Ingen tilgang";
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var isPrivate = isAuthenticated && User.HasClaim("Brukertype", "Privat");
 }
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ingen tilgang – Paratus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/public-home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/access-denied.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/wave-background.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
+</head>
+<body class="public-home access-denied-page">
+    <header class="public-header">
+        <nav class="public-nav" aria-label="Hovedmeny">
+            <div class="public-nav-pages">
+                <a asp-area="" asp-controller="Home" asp-action="Index">Hovedside</a>
+                @if (isPrivate)
+                {
+                    <a asp-area="Privat" asp-controller="Dashboard" asp-action="Index">Min side</a>
+                    <a asp-area="Privat" asp-controller="Resource" asp-action="Skjema">Registrer ressurs</a>
+                }
+            </div>
+            <div class="public-nav-account">
+                @if (isAuthenticated)
+                {
+                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                        <button class="nav-button nav-button-outline" type="submit">Logg ut</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="nav-button nav-button-primary" asp-area="" asp-controller="Account" asp-action="Login">Logg inn</a>
+                    <a class="nav-button nav-button-outline" asp-area="" asp-controller="Account" asp-action="Register">Opprett bruker</a>
+                }
+            </div>
+        </nav>
+        <div class="public-section-bar"><span>Ingen tilgang</span></div>
+    </header>
 
-<h1>Ingen tilgang</h1>
-<p>Du har ikke tilgang til denne siden noob.</p>
+    <partial name="/Views/Shared/_WaveBackground.cshtml" />
+
+    <main class="denied-main">
+        <h1>Oops, her har du ikke tilgang</h1>
+        <section class="denied-card account-card" aria-labelledby="denied-title">
+            <details class="public-help">
+                <summary aria-label="Hvorfor får jeg denne meldingen?">?</summary>
+                <p>Ulike kontotyper har tilgang til ulike deler av Paratus. Innlogging gir ikke automatisk tilgang til alle sidene.</p>
+            </details>
+            <div class="denied-description">
+                <h2 id="denied-title">Du har ikke tilgang til denne siden!</h2>
+                @if (isAuthenticated)
+                {
+                    <p>Du er innlogget, men kontoen din har ikke tilgang til denne siden.</p>
+                    <p>Gå tilbake til en side du har tilgang til. Hvis du mener du skal ha tilgang, ta kontakt med prosjektets ansvarlige.</p>
+                }
+                else
+                {
+                    <p>Du er ikke innlogget. Logg inn for å få tilgang til sidene som er tilgjengelige for kontoen din.</p>
+                }
+            </div>
+            <div class="denied-illustration">
+                <img src="~/images/access-denied/illustration.png" width="293" height="292" alt="" />
+                @if (isPrivate)
+                {
+                    <a class="public-button public-button-primary" asp-area="Privat" asp-controller="Dashboard" asp-action="Index">
+                        <span aria-hidden="true">←</span><span>Til min side</span>
+                    </a>
+                }
+                else if (isAuthenticated)
+                {
+                    <a class="public-button public-button-primary" asp-area="" asp-controller="Home" asp-action="Index">
+                        <span aria-hidden="true">←</span><span>Til hovedsiden</span>
+                    </a>
+                }
+                else
+                {
+                    <a class="public-button public-button-primary" asp-area="" asp-controller="Account" asp-action="Login">
+                        <span aria-hidden="true">←</span><span>Logg inn</span>
+                    </a>
+                }
+            </div>
+        </section>
+    </main>
+
+    <footer class="denied-footer">
+        <span>Paratus</span>
+        <div class="public-footer-links">
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Personvern</a>
+            <span aria-hidden="true">·</span><span>Tilgjengelighet</span>
+            <span aria-hidden="true">·</span><span>Kontakt</span>
+        </div>
+    </footer>
+</body>
+</html>
+

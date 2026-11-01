@@ -1,4 +1,4 @@
-﻿.account-page {
+.account-page {
     --account-green: #2e6840;
     --account-background: #eef2ee;
     --account-muted: #607078;
@@ -52,20 +52,6 @@
     font-weight: 700;
     box-shadow: 0 3px 8px rgb(0 0 0 / 18%);
 }
-
-.account-landscape {
-    position: absolute;
-    inset: 64px 0 0;
-    z-index: -1;
-    overflow: hidden;
-    pointer-events: none;
-}
-
-    .account-landscape svg {
-        display: block;
-        width: 100%;
-        height: 100%;
-    }
 
 .account-main {
     flex: 1;
@@ -371,10 +357,6 @@
         font-size: 14px;
     }
 
-    .account-landscape {
-        top: 48px;
-    }
-
     .account-main {
         padding: 24px 16px 32px;
     }
@@ -428,3 +410,4 @@
         gap: 10px;
     }
 }
+

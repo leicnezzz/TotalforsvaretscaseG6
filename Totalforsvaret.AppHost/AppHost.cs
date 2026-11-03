@@ -2,6 +2,7 @@ using Aspire.Hosting.ApplicationModel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using MySqlConnector;
+using Totalforsvaret.AppHost;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -23,6 +24,17 @@ var mariadb = builder
     .WithVolume(
         "totalforsvaretscaseg6_mariadbdata",
         "/var/lib/mysql");
+
+// Kun en visningsressurs for den eksisterende databasen.
+builder.AddResource(
+    new DatabaseDisplayResource(
+        "totalforsvaret-db",
+        mariadb.Resource))
+    .WithInitialState(new CustomResourceSnapshot
+    {
+        ResourceType = "Database",
+        Properties = []
+    });
 
 var endpoint = mariadb.GetEndpoint("tcp");
 

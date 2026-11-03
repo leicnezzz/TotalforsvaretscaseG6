@@ -2,6 +2,8 @@
 
 @{
     Layout = null;
+    ViewData["PrivateSection"] = "";
+    ViewData["PrivateBack"] = false;
 }
 
 <!DOCTYPE html>
@@ -45,13 +47,13 @@
                 <a asp-area="Privat"
                    asp-controller="Resource"
                    asp-action="Skjema">
-                    Ressurser registrering
+                    Ressursregistrering
                 </a>
 
                 <a asp-area="Privat"
                    asp-controller="Resource"
                    asp-action="Oversikt">
-                    Administrer ressurs
+                    Mine ressurser
                 </a>
             </div>
 
@@ -73,19 +75,10 @@
             </div>
         </nav>
 
-        <div class="section-bar">
-            <span>Min side</span>
-            <span aria-hidden="true">⌄</span>
-        </div>
+        <partial name="/Views/Shared/_PrivateBreadcrumb.cshtml" />
     </header>
 
-    <form class="logout-form"
-          method="post"
-          asp-area=""
-          asp-controller="Account"
-          asp-action="Logout">
-        <button type="submit">← Logg ut</button>
-    </form>
+    <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
 
     <main class="home-content">
         <partial name="/Views/Shared/_IncidentAlert.cshtml" />

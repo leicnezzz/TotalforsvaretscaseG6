@@ -1,0 +1,54 @@
+.overview-content { width: min(760px, calc(100% - 32px)); margin: 0 auto; padding-bottom: 120px; min-height: 850px; }
+.overview-content h1 { margin: 48px 0 32px; font-size: clamp(27px, 3vw, 36px); }
+.overview-intro { display: grid; grid-template-columns: 1.7fr 1fr; align-items: center; gap: 32px; background: white; padding: 40px; border-radius: 8px; }
+.overview-intro h2 { font-size: 27px; }
+.overview-intro h3 { font-size: 17px; margin-bottom: 16px; }
+.overview-intro p { color: var(--muted); line-height: 1.5; margin-top: 16px; }
+.overview-button { display: inline-flex; justify-content: space-between; align-items: center; gap: 24px; padding: 12px 16px; background: var(--green); color: white !important; border: 0; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.overview-intro .overview-button { width: 100%; }
+.overview-demo-note { margin: 16px 0 !important; font-size: 13px; line-height: 1.5; color: #607078; }
+.overview-list { display: grid; gap: 16px; }
+.resource-item { background: white; border-radius: 8px; padding: 24px; }
+.resource-item > summary { display: flex; align-items: center; gap: 16px; cursor: pointer; list-style: none; }
+.resource-item > summary::-webkit-details-marker { display: none; }
+.resource-icon { width: 64px; height: 64px; flex-shrink: 0; display: grid; place-items: center; background: var(--page); border-radius: 7px; font-size: 28px; }
+.resource-description { display: grid; gap: 8px; }
+.resource-description strong { font-size: 19px; }
+.resource-description > span { font-size: 12px; color: #607078; }
+.resource-availability i { display: inline-block; width: 10px; height: 10px; margin-left: 6px; border-radius: 50%; }
+.resource-availability .available { background: var(--green); }
+.resource-availability .unavailable { background: #c44232; }
+.resource-toggle { margin-left: auto; padding: 10px 13px; border-radius: 6px; background: var(--green); color: white; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.resource-item:not([open]) .when-open, .resource-item[open] .when-closed { display: none; }
+.resource-edit-form { margin-top: 24px; }
+.resource-edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.resource-edit-grid label { display: grid; gap: 8px; margin-bottom: 24px; font-size: 14px; font-weight: 700; }
+.resource-edit-form input:not([type=radio]), .resource-edit-form select, .resource-edit-form textarea { width: 100%; min-height: 44px; padding: 10px; border: 1px solid var(--green); border-radius: 6px; background: white; color: #263b2b; font: inherit; font-weight: 400; }
+.resource-edit-form textarea { min-height: 125px; resize: vertical; }
+.resource-placement { display: flex; flex-wrap: wrap; gap: 8px; border: 0; padding: 0; margin: 0 0 24px; }
+.resource-placement legend { margin-bottom: 12px; font-size: 14px; font-weight: 700; }
+.resource-placement label { display: flex; align-items: center; gap: 6px; margin: 0; padding: 9px; border: 1px solid var(--green); border-radius: 6px; font-size: 12px; }
+.resource-placement input { accent-color: var(--green); }
+.resource-edit-actions { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 16px; }
+.resource-delete { padding: 10px; border: 0; background: transparent; color: #b83d35; cursor: pointer; }
+.resource-item :is(input, textarea, select, summary):focus-visible { outline: 3px solid #163c4c; outline-offset: 4px; }
+.resource-other-address[hidden] { display: none; }
+.overview-status, .overview-empty { margin-top: 24px !important; line-height: 1.5; }
+.resource-overview .footer-content { width: min(760px, calc(100% - 32px)); margin: auto; }
+.resource-overview .footer-content h2 { font-size: 34px; }
+.resource-overview .footer-content p { font-size: 17px; }
+@media (max-width: 600px) {
+    .overview-content { min-height: 650px; padding-bottom: 80px; }
+    .overview-intro, .resource-edit-grid { grid-template-columns: 1fr; gap: 24px; }
+    .overview-intro { padding: 24px; }
+    .resource-icon { width: 46px; height: 46px; font-size: 23px; }
+    .resource-item > summary { gap: 10px; }
+    .resource-description strong { font-size: 16px; }
+    .resource-toggle { padding: 9px; }
+    .resource-edit-actions .overview-button { width: 100%; justify-content: center; }
+}
+
+.resource-icon svg { width: 32px; height: 32px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.resource-description { min-width: 0; overflow-wrap: anywhere; }
+.resource-edit-form input, .resource-edit-form select, .resource-edit-form textarea { font-size: 16px; }
+.overview-status:empty { display: none; }

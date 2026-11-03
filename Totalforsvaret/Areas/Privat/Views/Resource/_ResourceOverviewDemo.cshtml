@@ -1,0 +1,69 @@
+@* DEMODATA START: Hele denne filen kan fjernes når ressurslisten hentes fra databasen.
+   data-resource-id er kun demo-ID-er. Ingen av skjemaene sender til serveren. *@<details class="resource-item" data-resource-id="demo-vehicle" data-resource-type="Kjøretøy" >
+    <summary>
+        <span class="resource-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="m6 13 3-6h14l3 6M5 13h22v12H5zM9 25v3m14-3v3M9 18h2m10 0h2M6 13h20" /></svg></span>
+        <span class="resource-description"><strong>Valtra n175</strong><span>Kjøretøy · Førerkort kl. T</span><span class="resource-availability">Tilgjengelig <i class="available" aria-hidden="true"></i></span></span>
+        <span class="resource-toggle"><span class="when-closed">Endre ↓</span><span class="when-open">Lukk ↑</span></span>
+    </summary>
+    <form class="resource-edit-form" data-demo-edit>
+        <div class="resource-edit-grid">
+            <div>
+                <label>Påkrevd førerkortklasse<input name="RequiredLicense" placeholder="Eks. B, T" /></label>
+                <label>Beskrivelse<textarea name="Description" maxlength="200" placeholder="Skriv her"></textarea></label>
+            </div>
+            <div>
+                <label>Antall<input name="Quantity" type="number" min="1" placeholder="Eks. 2" /></label>
+                <label>Tilstand<input name="Condition" placeholder="Eks. God, Dårlig" /></label>
+                <label>Tilgjengelighet<select name="Available"><option value="true">Tilgjengelig nå</option><option value="false">Ikke tilgjengelig</option></select></label>
+                <fieldset class="resource-placement"><legend>Plassering</legend><label><input type="radio" name="Placement" value="home" checked /> Ved min adresse</label><label><input type="radio" name="Placement" value="other" /> Ved annen adresse</label></fieldset>
+                <label class="resource-other-address" hidden>Adresse<input name="Address" autocomplete="street-address" placeholder="Gateadresse og poststed" disabled /></label>
+            </div>
+        </div>
+        <div class="resource-edit-actions"><button type="button" class="resource-delete" data-demo-delete>Slett ressurs</button><button type="submit" class="overview-button">Lagre endringer (demo)</button></div>
+    </form>
+</details><details class="resource-item" data-resource-id="demo-mower" data-resource-type="Kjøretøy" >
+    <summary>
+        <span class="resource-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="m6 13 3-6h14l3 6M5 13h22v12H5zM9 25v3m14-3v3M9 18h2m10 0h2M6 13h20" /></svg></span>
+        <span class="resource-description"><strong>Plenklipper</strong><span>Kjøretøy · Førerkort kl. N/A</span><span class="resource-availability">Ikke tilgjengelig <i class="unavailable" aria-hidden="true"></i></span></span>
+        <span class="resource-toggle"><span class="when-closed">Endre ↓</span><span class="when-open">Lukk ↑</span></span>
+    </summary>
+    <form class="resource-edit-form" data-demo-edit>
+        <div class="resource-edit-grid">
+            <div>
+                <label>Påkrevd førerkortklasse<input name="RequiredLicense" placeholder="Eks. B, T" /></label>
+                <label>Beskrivelse<textarea name="Description" maxlength="200" placeholder="Skriv her"></textarea></label>
+            </div>
+            <div>
+                <label>Antall<input name="Quantity" type="number" min="1" placeholder="Eks. 2" /></label>
+                <label>Tilstand<input name="Condition" placeholder="Eks. God, Dårlig" /></label>
+                <label>Tilgjengelighet<select name="Available"><option value="true">Tilgjengelig nå</option><option value="false" selected>Ikke tilgjengelig</option></select></label>
+                <fieldset class="resource-placement"><legend>Plassering</legend><label><input type="radio" name="Placement" value="home" checked /> Ved min adresse</label><label><input type="radio" name="Placement" value="other" /> Ved annen adresse</label></fieldset>
+                <label class="resource-other-address" hidden>Adresse<input name="Address" autocomplete="street-address" placeholder="Gateadresse og poststed" disabled /></label>
+            </div>
+        </div>
+        <div class="resource-edit-actions"><button type="button" class="resource-delete" data-demo-delete>Slett ressurs</button><button type="submit" class="overview-button">Lagre endringer (demo)</button></div>
+    </form>
+</details><details class="resource-item" data-resource-id="demo-equipment" data-resource-type="Utstyr" open>
+    <summary>
+        <span class="resource-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="m19 5 8 8-5 5-3-3L9 26a3 3 0 0 1-4-4l11-10-3-3zM17 7l4-3 7 7-3 4" /></svg></span>
+        <span class="resource-description"><strong>DJI Mavic 4</strong><span>Utstyr · Drone</span><span class="resource-availability">Tilgjengelig <i class="available" aria-hidden="true"></i></span></span>
+        <span class="resource-toggle"><span class="when-closed">Endre ↓</span><span class="when-open">Lukk ↑</span></span>
+    </summary>
+    <form class="resource-edit-form" data-demo-edit>
+        <div class="resource-edit-grid">
+            <div>
+                <label>Velg utstyrstype<select name="EquipmentType"><option>Drone</option><option>Verktøy</option><option>Annet utstyr</option></select></label>
+                <label>Beskrivelse<textarea name="Description" maxlength="200" placeholder="Skriv her"></textarea></label>
+            </div>
+            <div>
+                <label>Antall<input name="Quantity" type="number" min="1" placeholder="Eks. 2" /></label>
+                <label>Tilstand<input name="Condition" placeholder="Eks. God, Dårlig" /></label>
+                <label>Tilgjengelighet<select name="Available"><option value="true">Tilgjengelig nå</option><option value="false">Ikke tilgjengelig</option></select></label>
+                <fieldset class="resource-placement"><legend>Plassering</legend><label><input type="radio" name="Placement" value="home" checked /> Ved min adresse</label><label><input type="radio" name="Placement" value="other" /> Ved annen adresse</label></fieldset>
+                <label class="resource-other-address" hidden>Adresse<input name="Address" autocomplete="street-address" placeholder="Gateadresse og poststed" disabled /></label>
+            </div>
+        </div>
+        <div class="resource-edit-actions"><button type="button" class="resource-delete" data-demo-delete>Slett ressurs</button><button type="submit" class="overview-button">Lagre endringer (demo)</button></div>
+    </form>
+</details>
+@* DEMODATA SLUTT *@

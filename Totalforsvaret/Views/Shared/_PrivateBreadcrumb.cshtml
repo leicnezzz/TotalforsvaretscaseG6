@@ -1,0 +1,15 @@
+@{
+    var currentPage = ViewData["PrivateSection"] as string;
+}
+<nav class="section-bar private-breadcrumb" aria-label="Sidesti">
+    @if (string.IsNullOrEmpty(currentPage))
+    {
+        <span aria-current="page">Min side</span>
+    }
+    else
+    {
+        <a asp-area="Privat" asp-controller="Dashboard" asp-action="Index">Min side</a>
+        <span aria-hidden="true">→</span>
+        <span aria-current="page">@currentPage</span>
+    }
+</nav>

@@ -59,7 +59,7 @@ builder.Services.AddAuthorization(options =>
               .RequireClaim("Brukertype", "Offentlig"));
 });
 
-builder.Services.AddSingleton<Totalforsvaret.Handlers.ResourceHandler>();
+builder.Services.AddScoped<Totalforsvaret.Handlers.ResourceHandler>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>

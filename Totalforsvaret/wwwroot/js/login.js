@@ -1,3 +1,4 @@
+// 
 document.querySelectorAll('.show-password').forEach(toggle => {
     const password = document.getElementById(toggle.dataset.target || 'password');
     toggle.addEventListener('click', () => {
@@ -6,7 +7,7 @@ document.querySelectorAll('.show-password').forEach(toggle => {
         toggle.setAttribute('aria-pressed', String(visible));
         toggle.setAttribute('aria-label', visible ? 'Skjul passord' : 'Vis passord');
 
-    });
+    }); 
 });
 const message = document.querySelector('#form-message');
 function showMessage(text) { message.textContent = text; message.hidden = false; }

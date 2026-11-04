@@ -1,109 +1,97 @@
 @model Totalforsvaret.Areas.Privat.Models.FormDataModel
-
 @{
-   ViewData["Title"] = "Registrer posisjon";
+    Layout = null;
+    ViewData["PrivateSection"] = "Ressursregistrering";
+    ViewData["PrivateBack"] = true;
+    var navn = User.Identity?.Name ?? "Min konto";
+    var initialer = string.Concat(navn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(del => char.ToUpperInvariant(del[0])));
 }
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Registrer ressurs – Paratus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/private-home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/incident-alert.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="~/css/resource-wizard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/resource-registration.css" asp-append-version="true" />
+    <script src="~/js/help-dismiss.js" asp-append-version="true" defer></script>
+</head>
+<body class="private-home resource-registration">
+    <header class="site-header">
+        <nav class="primary-nav" aria-label="Hovedmeny">
+            <div class="nav-links">
+                <a
 
-<h2>Registrer data</h2>
+                   asp-area="Privat"
+                   asp-controller="Dashboard"
+                   asp-action="Index">
+                    Min side
+                </a>
 
-<form asp-area="Privat" asp-controller="Resource" asp-action="Skjema" method="post">
-    <div asp-validation-summary="All" class="text-danger" role="alert"></div>
-    
-   <div class="mb-3">
-       <label asp-for="RessursType" class="form-label">Type ressurs:</label>
-       <input asp-for="RessursType"
-              class="form-control"
-              list="ressursTyper"
-              placeholder="Skriv type ressurs"
-              required />
-       @*<datalist id="ressursTyper">
-           <option value="Drone og droneoperatør"></option>
-           <option value="ATV"></option>
-           <option value="Traktor"></option>
-           <option value="Gravemaskin"></option>
-           <option value="Hjullaster"></option>
-           <option value="Snøskuter"></option>
-           <option value="Lastebil"></option>
-           <option value="Sand/grus"></option>
-           <option value="Aggregat"></option>
-           <option value="Lokaler"></option>
-           <option value="Sambandsutstyr"></option>
-           <option value="Båt"></option>
-           <option value="Mannskap / frivillige"></option>
-           <option value="sykepleier/vernepleier/helsefagarbeider"></option>
+                <a asp-area="Privat"
+                   asp-controller="Resource"
+                   asp-action="Skjema" class="active" aria-current="page">
+                    Ressursregistrering
+                </a>
 
-       </datalist>*@
-       <span asp-validation-for="RessursType" class="text-danger"></span>
-   </div>
+                <a asp-area="Privat"
+                   asp-controller="Resource"
+                   asp-action="Oversikt">
+                    Mine ressurser
+                </a>
+            </div>
 
-   <div class="mb-3">
-       <label asp-for="CategoryId" class="form-label">Kategori:</label>
-       <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select" required>
-           <option value="">-- Velg kategori --</option>
-       </select>
-       <span asp-validation-for="CategoryId" class="text-danger"></span>
-   </div>
+            <div class="profile">
+                <svg class="bell"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     aria-hidden="true">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
+                    <path d="M10 21h4" />
+                </svg>
 
-   <div class="mb-3">
-       <label asp-for="Available" class="form-label">Er ressursen tilgjengelig?</label>
-       <select asp-for="Available" class="form-select" required>
-           <option value="">-- Velg tilgjengelighet --</option>
-           <option value="true">Ja</option>
-           <option value="false">Nei</option>
-       </select>
-       <span asp-validation-for="Available" class="text-danger"></span>
-   </div>
-    
-   <div class="mb-3">
-       <label asp-for="TilgjengeligFra" class="form-label">
-           Tilgjengelig fra:
-       </label>
+                <span class="avatar avatar-small" aria-hidden="true">
+                    @initialer
+                </span>
 
-       <input asp-for="TilgjengeligFra"
-              type="datetime-local"
-              class="form-control"
-              required />
-   </div>
-    
-   <div class="mb-3">
-       <label asp-for="Kontaktpunkt" class="form-label">
-           Kontaktpunkt:
-       </label>
+                <span class="profile-name">@navn</span>
+            </div>
+        </nav>
 
-       <input asp-for="Kontaktpunkt"
-              class="form-control"
-              placeholder="Telefon eller e-post"
-              required />
-   </div>
-    
-   <div class="mb-3">
-       <label asp-for="Navn" class="form-label">Navn:</label>
-       <input asp-for="Navn"
-              class="form-control"
-              required />
-       <span asp-validation-for="Navn" class="text-danger"></span>
-   </div>
-    
-   <div class="mb-3">
-       <label class="form-label">Klikk i kartet for å velge posisjon:</label>
-       <div id="resourceMap" style="height: 350px" aria-label="Velg ressursens posisjon"></div>
-   </div>
-    
-   <input type="hidden" asp-for="Latitude" id="latInput" />
-   <input type="hidden" asp-for="Longitude" id="lngInput" />
-
-   <p>
-       Valgt posisjon:
-       <span id="posTekst" class="fw-bold">Ingen valgt</span>
-   </p>
-
-   <button type="submit" class="btn btn-primary">
-       Send inn
-   </button>
-
-</form>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script src="~/js/resource-form.js" asp-append-version="true"></script>
-}
+        <partial name="/Views/Shared/_PrivateBreadcrumb.cshtml" />
+    </header>
+    <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
+    <main class="registration-main">
+        <div class="registration-content">
+            <partial name="/Views/Shared/_IncidentAlert.cshtml" />
+            <section class="registration-intro" aria-labelledby="registration-title">
+                <h1 id="registration-title">Registrere en ressurs til disposisjon</h1>
+                <p>Registrer kjøretøy, utstyr eller andre ressurser som kan bidra i en beredskapssituasjon.</p>
+            </section>
+            <div id="registrer-ressurs"><partial name="/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" /></div>
+        </div>
+    </main>
+    <footer class="registration-footer">
+        <span>Paratus</span>
+        <div>
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Personvern</a>
+            <span aria-hidden="true">·</span><span>Tilgjengelighet</span>
+            <span aria-hidden="true">·</span><span>Kontakt</span>
+        </div>
+    </footer>
+    <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/js/resource-fields.js" asp-append-version="true"></script>
+    <script src="~/js/resource-address.js" asp-append-version="true"></script>
+    <script src="~/js/resource-wizard.js" asp-append-version="true"></script>
+    <partial name="/Views/Shared/_ResourceApi.cshtml" />
+</body>
+</html>

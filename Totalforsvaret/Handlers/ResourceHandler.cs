@@ -1,116 +1,95 @@
+using Microsoft.EntityFrameworkCore;
+using Totalforsvaret.DataAccess;
 using Totalforsvaret.Models;
 using Totalforsvaret.Models.resourcemodels;
 
-namespace Totalforsvaret.Handlers
-{
-    public class ResourceHandler
-    {
-        private int nextResourceId = 0;
+namespace Totalforsvaret.Handlers;
 
-        private readonly List<Category> categories = new()
+public class ResourceHandler(AppDbContext db)
+{
+    // Henter kategoriene som migrasjonen opprettet i databasen.
+    public IReadOnlyList<Category> GetCategories()
+    {
+        return db.Categories
+            .AsNoTracking()
+            .OrderBy(category => category.CategoryId)
+            .ToList();
+    }
+
+    // Lagrer en ressurs med fremmednøkkel til Identity-brukeren.
+    public Resource CreateResource(
+        string resourceName,
+        int categoryId,
+        bool available,
+        decimal latitude,
+        decimal longitude,
+        int brukerId,
+        string navn = "",
+        string kontaktpunkt = "",
+        DateTime? tilgjengeligFra = null)
+    {
+        if (brukerId <= 0)
         {
-            new Category { CategoryId = 1, Name = "Food" },
-            new Category { CategoryId = 2, Name = "Vehicles" },
-            new Category { CategoryId = 3, Name = "Equipment" }
+            throw new ArgumentOutOfRangeException(nameof(brukerId));
+        }
+
+        var category = db.Categories
+            .SingleOrDefault(category =>
+                category.CategoryId == categoryId);
+
+        if (category is null)
+        {
+            throw new ArgumentException(
+                "Kategorien finnes ikke.",
+                nameof(categoryId));
+        }
+
+        var resource = new Resource
+        {
+            BrukerId = brukerId,
+            Object = resourceName,
+            CategoryId = category.CategoryId,
+            Category = category,
+            Available = available,
+            Latitude = latitude,
+            Longitude = longitude,
+            Navn = navn,
+            Kontaktpunkt = kontaktpunkt,
+            TilgjengeligFra = tilgjengeligFra
         };
 
-        // Returnerer kopier av kategoriene til skjemaet.
-        public IReadOnlyList<Category> GetCategories()
+        db.Resources.Add(resource);
+        db.SaveChanges();
+
+        return resource;
+    }
+
+    // Henter alle registrerte ressurser til oversikten.
+    public List<Resource> GetResources()
+    {
+        return db.Resources
+            .AsNoTracking()
+            .ToList();
+    }
+
+    // Henter kartpunktene til den innloggede brukeren.
+    public IReadOnlyList<ResourceMapPoint> GetResourcePointsForUser(
+        int brukerId)
+    {
+        if (brukerId <= 0)
         {
-            lock (categories)
-            {
-                return categories.Select(c => new Category
-                {
-                    CategoryId = c.CategoryId,
-                    Name = c.Name
-                }).ToList();
-            }
+            throw new ArgumentOutOfRangeException(nameof(brukerId));
         }
 
-        // Henter alle registrerte ressurser til oversikten.
-        public List<Resource> GetResources()
-        {
-            lock (categories)
-            {
-                return categories
-                    .SelectMany(c => c.Resources)
-                    .ToList();
-            }
-        }
-
-        // Oppretter en ressurs knyttet til brukeren som registrerer den.
-        public Resource CreateResource(
-            string resourceName,
-            int categoryId,
-            bool available,
-            decimal latitude,
-            decimal longitude,
-            int brukerId,
-            string navn = "",
-            string kontaktpunkt = "",
-            DateTime? tilgjengeligFra = null)
-        {
-            if (brukerId <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(brukerId));
-            }
-
-            lock (categories)
-            {
-                var category = categories.Find(
-                    c => c.CategoryId == categoryId);
-
-                if (category == null)
-                {
-                    throw new ArgumentException(
-                        "Category does not exist.",
-                        nameof(categoryId));
-                }
-
-                nextResourceId++;
-
-                var resource = new Resource
-                {
-                    ResourceId = nextResourceId,
-                    BrukerId = brukerId,
-                    Object = resourceName,
-                    CategoryId = category.CategoryId,
-                    Category = category,
-                    Available = available,
-                    Latitude = latitude,
-                    Longitude = longitude,
-                    Navn = navn,
-                    Kontaktpunkt = kontaktpunkt,
-                    TilgjengeligFra = tilgjengeligFra
-                };
-
-                category.Resources.Add(resource);
-
-                return resource;
-            }
-        }
-
-        // Returnerer kun kartpunktene som tilhører denne brukeren.
-        public IReadOnlyList<ResourceMapPoint> GetResourcePointsForUser(
-            int brukerId)
-        {
-            if (brukerId <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(brukerId));
-            }
-
-            lock (categories)
-            {
-                return categories
-                    .SelectMany(c => c.Resources)
-                    .Where(r => r.BrukerId == brukerId)
-                    .Select(r => new ResourceMapPoint(
-                        r.ResourceId,
-                        r.Object,
-                        r.Latitude,
-                        r.Longitude))
-                    .ToList();
-            }
-        }
+        return db.Resources
+            .AsNoTracking()
+            .Where(resource => resource.BrukerId == brukerId)
+            .OrderBy(resource => resource.ResourceId)
+            .Select(resource => new ResourceMapPoint(
+                resource.ResourceId,
+                resource.Object,
+                resource.Latitude,
+                resource.Longitude))
+            .ToList();
     }
 }

@@ -1,0 +1,12 @@
+﻿<div id="resource-api"
+     hidden
+     data-token-url="@Url.Action("Token", "ResourceSession", new { area = "" })"
+     data-login-url="@Url.Action("Login", "ResourceSession", new { area = "" })"
+     data-register-url="@Url.Action("Register", "ResourceSession", new { area = "" })"
+     data-create-url="@Url.Action("Create", "Resource", new { area = "Privat" })"
+     data-update-url="@Url.Action("Update", "Resource", new { area = "Privat" })"
+     data-delete-url="@Url.Action("Delete", "Resource", new { area = "Privat" })">
+</div>
+
+<script src="~/js/resource-api.js"
+        asp-append-version="true"></script>

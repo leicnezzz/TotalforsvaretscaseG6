@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/incident-alert.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="~/css/resource-wizard.css" asp-append-version="true" />
+    <script src="~/js/help-dismiss.js" asp-append-version="true" defer></script>
 </head>
 <body class="public-home">
     <header class="public-header">
@@ -75,10 +78,10 @@
             <article class="public-card">
                 <details class="public-help">
                     <summary aria-label="Hjelp om ressursregistrering">?</summary>
-                    <p>Du skal kunne fylle ut ressursen først og logge inn eller opprette konto ved fullføring. Registreringen blir tilgjengelig senere.</p>
+                    <p>Fyll ut kjøretøyets opplysninger først. Logg inn eller opprett en privat konto før du bekrefter registreringen.</p>
                 </details>
                 <h2>Registrer en ressurs</h2>
-                <p class="public-card-description">Her vil du kunne starte en ressursregistrering uten å logge inn først.</p>
+                <p class="public-card-description">Her kan du starte en ressursregistrering uten å logge inn først.</p>
                 <div class="public-card-action">
                     <h3>Registrering</h3>
                     <a class="public-button public-button-outline" href="#registrer-ressurs">
@@ -97,28 +100,7 @@
                 <h2 id="registration-title">Registrer en ressurs til disposisjon</h2>
                 <p>Har du utstyr, kjøretøy eller andre ressurser du kan stille til rådighet?</p>
             </div>
-            <div class="public-resource-card">
-                <details class="public-help">
-                    <summary aria-label="Hjelp om ressurstyper">?</summary>
-                    <p>Velg kategorien som passer ressursen din. Selve registreringsskjemaet kommer senere.</p>
-                </details>
-                <div class="public-resource-description">
-                    <h3>Hva ønsker du å registrere?</h3>
-                    <p>Her kan du velge hvilken type ressurs du ønsker å stille til rådighet.</p>
-                </div>
-                @* Klargjort for registrering uten innlogging. Ingen innsending før gjesteflyten er implementert. *@
-                <div class="public-resource-form">
-                    <label for="public-category">Velg en ressurstype</label>
-                    <select id="public-category" aria-describedby="public-registration-status">
-                        <option value="" disabled selected>Ressurstype</option>
-                        @foreach (var category in Model.Categories)
-                        {
-                            <option value="@category.Value">@category.Text</option>
-                        }
-                    </select>
-                    <p id="public-registration-status" class="public-login-note">Registreringen blir tilgjengelig senere. Ingenting sendes inn her ennå.</p>
-                </div>
-            </div>
+            <partial name="/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" />
         </section>
     </main>
 
@@ -137,8 +119,11 @@
             </div>
         </div>
     </footer>
+    <script src="~/lib/leaflet/leaflet.js"></script>
     <script src="~/js/public-home.js" asp-append-version="true"></script>
+    <script src="~/js/resource-fields.js" asp-append-version="true"></script>
+    <script src="~/js/resource-address.js" asp-append-version="true"></script>
+    <script src="~/js/resource-wizard.js" asp-append-version="true"></script>
+    <partial name="/Views/Shared/_ResourceApi.cshtml" />
 </body>
 </html>
-
-

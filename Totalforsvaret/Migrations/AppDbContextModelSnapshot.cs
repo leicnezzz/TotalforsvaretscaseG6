@@ -362,6 +362,193 @@ namespace Totalforsvaret.Migrations
                 {
                     b.Navigation("Needs");
                 });
+
+            modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.Category", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CategoryId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("CategoryId");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = 1,
+                            Name = "Vehicles"
+                        },
+                        new
+                        {
+                            CategoryId = 2,
+                            Name = "Equipment"
+                        });
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.EquipmentDetails", b =>
+                {
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EquipmentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("ResourceId");
+
+                    b.ToTable("EquipmentDetails");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.Resource", b =>
+                {
+                    b.Property<int>("ResourceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ResourceId"));
+
+                    b.Property<string>("AdditionalInformation")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)");
+
+                    b.Property<bool>("Available")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("BrukerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Condition")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Kontaktpunkt")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<decimal>("Latitude")
+                        .HasPrecision(9, 6)
+                        .HasColumnType("decimal(9,6)");
+
+                    b.Property<decimal>("Longitude")
+                        .HasPrecision(9, 6)
+                        .HasColumnType("decimal(9,6)");
+
+                    b.Property<string>("Navn")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Object")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime?>("TilgjengeligFra")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("ResourceId");
+
+                    b.HasIndex("BrukerId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Resources");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.VehicleDetails", b =>
+                {
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RegistrationNumber")
+                        .HasMaxLength(12)
+                        .HasColumnType("varchar(12)");
+
+                    b.Property<string>("RequiredLicense")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("ResourceId");
+
+                    b.ToTable("VehicleDetails");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.EquipmentDetails", b =>
+                {
+                    b.HasOne("Totalforsvaret.Models.resourcemodels.Resource", "Resource")
+                        .WithOne("Equipment")
+                        .HasForeignKey("Totalforsvaret.Models.resourcemodels.EquipmentDetails", "ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.Resource", b =>
+                {
+                    b.HasOne("Totalforsvaret.Models.Bruker", "Bruker")
+                        .WithMany()
+                        .HasForeignKey("BrukerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Totalforsvaret.Models.resourcemodels.Category", "Category")
+                        .WithMany("Resources")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Bruker");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.VehicleDetails", b =>
+                {
+                    b.HasOne("Totalforsvaret.Models.resourcemodels.Resource", "Resource")
+                        .WithOne("Vehicle")
+                        .HasForeignKey("Totalforsvaret.Models.resourcemodels.VehicleDetails", "ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.Category", b =>
+                {
+                    b.Navigation("Resources");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.Resource", b =>
+                {
+                    b.Navigation("Equipment");
+
+                    b.Navigation("Vehicle");
+                });
 #pragma warning restore 612, 618
         }
     }

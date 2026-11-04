@@ -50,18 +50,13 @@
         </div>
 
         <div class="oversikt-handlinger">
-            <button type="button" class="tildel-oppdrag-knapp"
-                    title="Tildel oppdrag">
-                Tildel oppdrag
-            </button>
-
             <a class="registrer-behov-knapp"
                asp-area="Offentlig"
                asp-controller="Need"
                asp-action="Create">
                 + Registrer behov
             </a>
-            <a class="registrer-behov-knapp"
+            <a class="opprett-krise-knapp"
                asp-area="Offentlig"
                asp-controller="Crisis"
                asp-action="Create">
@@ -71,12 +66,20 @@
     </div>
 
     <!-- Statistikkort -->
-    <div class="row">
+    <div class="row statistikk-rad">
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-kort krise-kort">
+                <h2>Aktive kriser</h2>
+                <p class="stat-tall">@ViewBag.AktiveKriser</p>
+                <span>Kriser med status Aktiv</span>
+            </div>
+        </div>
+        
         <div class="col-lg-3 col-md-6">
             <div class="stat-kort behov-kort">
                 <h2>Aktive behov</h2>
                 <p class="stat-tall">@ViewBag.AktiveBehov</p>
-                <span>Behov som venter på oppfølging</span>
+                <span>Åpne og under behandling</span>
             </div>
         </div>
 
@@ -113,6 +116,10 @@
                      aria-label="Kart over registrerte ressurser">
 
                 <div id="offentligKart"></div>
+                <div class="kart-forklaring">
+                    <span><span class="kart-prikk kart-ressurs"></span> Tilgjengelig ressurs</span>
+                    <span><span class="kart-prikk kart-behov"></span> Aktivt behov</span>
+                </div>
             </section>
 
             <p id="kartmelding"

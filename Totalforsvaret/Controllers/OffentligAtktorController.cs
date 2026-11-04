@@ -50,7 +50,10 @@ public class OffentligAktorController : Controller
             .OrderByDescending(n => n.Id)
             .Take(5)
             .ToList();
-        
+       
+        // Teller kriser med status Aktiv.
+        ViewBag.AktiveKriser = _context?.Set<Totalforsvaret.Models.Crisis>()
+            .Count(k => k.Status == "Aktiv") ?? 0;
         return View(tilgjengeligeRessurser);
     }
 }

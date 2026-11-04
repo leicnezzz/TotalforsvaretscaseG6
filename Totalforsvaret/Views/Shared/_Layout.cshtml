@@ -70,8 +70,19 @@
                 </ul>
                 @if (User.Identity?.IsAuthenticated == true)
                 {
+                    <a class="nav-link"
+                       asp-area="Privat"
+                       asp-controller="Profile"
+                       asp-action="Index">
+                        Min profil
+                    </a>
+
                     <span class="navbar-text me-3">Hei, @User.Identity.Name</span>
-                    <form method="post" asp-area="" asp-controller="Account" asp-action="Logout">
+
+                    <form method="post"
+                          asp-area=""
+                          asp-controller="Account"
+                          asp-action="Logout">
                         <button type="submit" class="btn btn-outline-secondary">Logg ut</button>
                     </form>
                 }

@@ -86,6 +86,72 @@ namespace Totalforsvaret.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Need", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CrisisId")
+                        .HasColumnType("int")
+                        .HasColumnName("HendelseId");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("Beskrivelse");
+
+                    b.Property<DateTime?>("Frist")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Kontaktperson")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Kontaktpunkt")
+                        .HasColumnType("longtext");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double")
+                        .HasColumnName("Breddegrad");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double")
+                        .HasColumnName("Lengdegrad");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("Tittel");
+
+                    b.Property<int>("OffentligAktorId")
+                        .HasColumnType("int")
+                        .HasColumnName("OffentligAktørId");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("Prioritet");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Telefonnummer")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CrisisId");
+
+                    b.ToTable("Behov");
+                });
+
             modelBuilder.Entity("Totalforsvaret.Models.Bruker", b =>
                 {
                     b.Property<int>("Id")
@@ -176,19 +242,53 @@ namespace Totalforsvaret.Migrations
 
                     b.Property<string>("Area")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("Sted");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("Beskrivelse");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double")
+                        .HasColumnName("Breddegrad");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double")
+                        .HasColumnName("Lengdegrad");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("Navn");
+
+                    b.Property<int?>("OffentligAktorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Severity")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("Alvorlighetsgrad");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("Dato");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Crises");
+                    b.HasIndex("OffentligAktorId");
+
+                    b.ToTable("Kriser");
                 });
 
             modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Offentligaktør", b =>
@@ -236,6 +336,31 @@ namespace Totalforsvaret.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Need", b =>
+                {
+                    b.HasOne("Totalforsvaret.Models.Crisis", "Crisis")
+                        .WithMany("Needs")
+                        .HasForeignKey("CrisisId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Crisis");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.Crisis", b =>
+                {
+                    b.HasOne("Totalforsvaret.Areas.Offentlig.Models.Offentligaktør", "OffentligAktor")
+                        .WithMany()
+                        .HasForeignKey("OffentligAktorId");
+
+                    b.Navigation("OffentligAktor");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.Crisis", b =>
+                {
+                    b.Navigation("Needs");
                 });
 #pragma warning restore 612, 618
         }

@@ -75,8 +75,8 @@
         <div class="col-lg-3 col-md-6">
             <div class="stat-kort behov-kort">
                 <h2>Aktive behov</h2>
-                <p class="stat-tall">–</p>
-                <span>Avventer behovsdata</span>
+                <p class="stat-tall">@ViewBag.AktiveBehov</p>
+                <span>Behov som venter på oppfølging</span>
             </div>
         </div>
 
@@ -99,8 +99,8 @@
         <div class="col-lg-3 col-md-6">
             <div class="stat-kort lost-kort">
                 <h2>Løste behov</h2>
-                <p class="stat-tall">–</p>
-                <span>Avventer behovsdata</span>
+                <p class="stat-tall">@ViewBag.LosteBehov</p>
+                <span>Behov som er løst</span>
             </div>
         </div>
     </div>
@@ -128,7 +128,42 @@
 
                 <div class="oppfolging-innhold">
                     <h3>Aktive behov</h3>
-                    <p>Ingen behovsdata hentet ennå.</p>
+
+                    @if (ViewBag.AktiveBehovListe != null &&
+                         ViewBag.AktiveBehovListe.Count > 0)
+                    {
+                        @foreach (var behov in ViewBag.AktiveBehovListe)
+                        {
+                            <div class="behov-element">
+                                <strong>@behov.Name</strong>
+                                <p>Type: @behov.Type</p>
+                                <p>Prioritet: @behov.Priority</p>
+                                <p>Status: @behov.Status</p>
+                                
+                                <div class="d-flex flex-wrap gap-2 mt-2 mb-3">
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-area="Offentlig"
+                                       asp-controller="Need"
+                                       asp-action="Edit"
+                                       asp-route-id="@behov.Id">
+                                        Endre behov
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       asp-area="Offentlig"
+                                       asp-controller="Crisis"
+                                       asp-action="Edit"
+                                       asp-route-id="@behov.CrisisId">
+                                        Endre krise
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>Ingen aktive behov registrert.</p>
+                    }
                 </div>
 
                 <div class="oppfolging-innhold">
@@ -167,6 +202,12 @@
 
             // Ressurser hentet gjennom controlleren.
             const ressurser = @Html.Raw(ressurserJson);
+            const behov = @Html.Raw(JsonSerializer.Serialize(
+            (object?)ViewBag.BehovPaKart,
+            new JsonSerializerOptions
+            {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            })) ?? [];
 
             // Henter grønnfargen fra CSS-en.
             const dashboard = document.querySelector('.offentlig-dashboard');
@@ -187,8 +228,11 @@
                 }
             ).addTo(offentligKart);
 
-            // Samler ressursmarkørene i ett lag.
+            // Samler markørene for ressurser og aktive behov.
             const ressurslag = L.featureGroup()
+                .addTo(offentligKart);
+
+            const behovslag = L.featureGroup()
                 .addTo(offentligKart);
 
             let utenGyldigPosisjon = 0;
@@ -248,26 +292,74 @@
                     .bindPopup(lagPopup(ressurs))
                     .addTo(ressurslag);
             }
+// Legger aktive behov inn på kartet med røde markører.
+            for (const behovElement of behov) {
+                const latitude = behovElement.latitude;
+                const longitude = behovElement.longitude;
 
-            const antallMarkorer = ressurslag.getLayers().length;
+                const gyldigPosisjon =
+                    Number.isFinite(latitude) &&
+                    Number.isFinite(longitude) &&
+                    latitude >= -90 &&
+                    latitude <= 90 &&
+                    longitude >= -180 &&
+                    longitude <= 180;
 
-            // Tilpasser kartutsnittet til markørene.
-            if (antallMarkorer > 0) {
-                offentligKart.fitBounds(ressurslag.getBounds(), {
+                if (!gyldigPosisjon) {
+                    continue;
+                }
+
+                const innhold = document.createElement('div');
+                const overskrift = document.createElement('strong');
+
+                overskrift.textContent = behovElement.name;
+                innhold.appendChild(overskrift);
+
+                const opplysninger = [
+                    ['Type', behovElement.type],
+                    ['Prioritet', behovElement.priority],
+                    ['Status', behovElement.status],
+                    ['Beskrivelse', behovElement.description]
+                ];
+
+                for (const [etikett, verdi] of opplysninger) {
+                    const linje = document.createElement('div');
+                    linje.textContent = `${etikett}: ${verdi || 'Ikke oppgitt'}`;
+                    innhold.appendChild(linje);
+                }
+
+                L.circleMarker([latitude, longitude], {
+                    radius: 9,
+                    color: '#FFFFFF',
+                    weight: 3,
+                    fillColor: '#DC3545',
+                    fillOpacity: 1
+                })
+                    .bindPopup(innhold)
+                    .addTo(behovslag);
+            }
+            const antallRessurser = ressurslag.getLayers().length;
+            const antallBehov = behovslag.getLayers().length;
+
+// Samler ressursene og behovene for å tilpasse kartutsnittet.
+            const alleMarkorer = L.featureGroup([
+                ...ressurslag.getLayers(),
+                ...behovslag.getLayers()
+            ]);
+
+            if (alleMarkorer.getLayers().length > 0) {
+                offentligKart.fitBounds(alleMarkorer.getBounds(), {
                     padding: [40, 40],
                     maxZoom: 14
                 });
 
                 kartmelding.textContent =
-                    `${antallMarkorer} ressurser vist. ` +
-                    'Grønn markør betyr registrert som tilgjengelig. ' +
+                    `${antallRessurser} ressurser og ${antallBehov} aktive behov vist. ` +
+                    'Grønne markører viser ressurser, røde viser behov. ' +
                     'Klikk på en markør for detaljer.';
-            } else if (ressurser.length === 0) {
-                kartmelding.textContent =
-                    'Ingen ressurser er registrert som tilgjengelige ennå.';
             } else {
                 kartmelding.textContent =
-                    'Ingen av ressursene har gyldige kartkoordinater.';
+                    'Ingen ressurser eller aktive behov med gyldige kartkoordinater å vise.';
             }
 
             if (utenGyldigPosisjon > 0) {

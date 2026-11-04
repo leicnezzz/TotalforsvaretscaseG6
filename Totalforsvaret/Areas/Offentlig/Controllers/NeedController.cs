@@ -1,17 +1,212 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Totalforsvaret.Areas.Offentlig.Models;
+using Totalforsvaret.Areas.Offentlig.ViewModels;
+using Totalforsvaret.DataAccess;
+using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
+//ENDRET MIDLERTIDLIG !!!! 
 [Area("Offentlig")]
-[Authorize(Policy = "KunOffentlig")]
-
+// [Authorize(Policy = "KunOffentlig")]
+[AllowAnonymous]
 public class NeedController : Controller
 {
-    [HttpGet]
-    public IActionResult Create()
+    private readonly AppDbContext _context;
+    private readonly UserManager<Bruker> _userManager;
+
+    public NeedController(
+        AppDbContext context,
+        UserManager<Bruker> userManager)
     {
-        return View();
+        _context = context;
+        _userManager = userManager;
     }
+
+    // Åpner skjemaet og henter eksisterende kriser.
+    [HttpGet]
+    public async Task<IActionResult> Create()
+    {
+        var viewModel = new NeedCreateViewModel
+        {
+            Crises = await GetCrisesAsync()
+        };
+
+        return View(viewModel);
+    }
+
+    // Kontrollerer og lagrer behovet.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(NeedCreateViewModel viewModel)
+    {
+        // var bruker = await _userManager.GetUserAsync(User);
+
+        // if (bruker is not Offentligaktør offentligAktor)
+        //    return Forbid();
+
+        // Kontrollerer at den valgte krisen finnes.
+        var crisisExists = await _context.Crises
+            .AnyAsync(c => c.Id == viewModel.CrisisId);
+
+        if (!crisisExists)
+        {
+            ModelState.AddModelError(
+                nameof(viewModel.CrisisId),
+                "Velg en gyldig krise.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            viewModel.Crises = await GetCrisesAsync();
+            return View(viewModel);
+        }
+
+        // Oppretter behovet med riktig aktørtilknytning.
+        var need = new Need
+        {
+            Name = viewModel.Name.Trim(),
+            Type = viewModel.Type.Trim(),
+            Description = viewModel.Description.Trim(),
+            Priority = viewModel.Priority,
+            Status = viewModel.Status,
+            Latitude = viewModel.Latitude!.Value,
+            Longitude = viewModel.Longitude!.Value,
+            CrisisId = viewModel.CrisisId,
+            // OffentligAktorId = offentligAktor.Id
+        };
+
+        _context.Needs.Add(need);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(
+            "Index", "OffentligAktor", new { area = "" });
+    }
+
+    // Henter krisene som kan velges i skjemaet.
+    private async Task<IEnumerable<SelectListItem>> GetCrisesAsync()
+    {
+        return await _context.Crises
+            .OrderBy(c => c.Name)
+            .Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            })
+            .ToListAsync();
+    }
+    [HttpGet]
+public async Task<IActionResult> Edit(int id)
+{
+    var need = await _context.Needs
+        .AsNoTracking()
+        .SingleOrDefaultAsync(n => n.Id == id);
+
+    if (need == null)
+        return NotFound();
+
+    ViewData["EditId"] = id;
+
+    var viewModel = new NeedCreateViewModel
+    {
+        Name = need.Name,
+        Type = need.Type,
+        Description = need.Description,
+        Priority = need.Priority,
+        Status = need.Status,
+        CrisisId = need.CrisisId,
+        Latitude = need.Latitude,
+        Longitude = need.Longitude,
+        Crises = await GetCrisesAsync()
+    };
+
+    return View("Create", viewModel);
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Edit(
+    int id,
+    NeedCreateViewModel viewModel)
+{
+    var need = await _context.Needs
+        .SingleOrDefaultAsync(n => n.Id == id);
+
+    if (need == null)
+        return NotFound();
+
+    var crisisExists = await _context.Crises
+        .AnyAsync(c => c.Id == viewModel.CrisisId);
+
+    if (!crisisExists)
+    {
+        ModelState.AddModelError(
+            nameof(viewModel.CrisisId),
+            "Velg en gyldig krise.");
+    }
+
+    if (viewModel.Latitude.HasValue &&
+        (double.IsNaN(viewModel.Latitude.Value) ||
+         viewModel.Latitude < -90 ||
+         viewModel.Latitude > 90))
+    {
+        ModelState.AddModelError(
+            nameof(viewModel.Latitude),
+            "Ugyldig breddegrad.");
+    }
+
+    if (viewModel.Longitude.HasValue &&
+        (double.IsNaN(viewModel.Longitude.Value) ||
+         viewModel.Longitude < -180 ||
+         viewModel.Longitude > 180))
+    {
+        ModelState.AddModelError(
+            nameof(viewModel.Longitude),
+            "Ugyldig lengdegrad.");
+    }
+
+    if (!ModelState.IsValid)
+    {
+        ViewData["EditId"] = id;
+        viewModel.Crises = await GetCrisesAsync();
+        return View("Create", viewModel);
+    }
+
+    need.Name = viewModel.Name.Trim();
+    need.Type = viewModel.Type.Trim();
+    need.Description = viewModel.Description.Trim();
+    need.Priority = viewModel.Priority;
+    need.Status = viewModel.Status;
+    need.CrisisId = viewModel.CrisisId;
+    need.Latitude = viewModel.Latitude;
+    need.Longitude = viewModel.Longitude;
+
+    await _context.SaveChangesAsync();
+
+    return RedirectToAction(
+        "Index", "OffentligAktor", new { area = "" });
+}
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Delete(int id)
+{
+    var need = await _context.Needs
+        .SingleOrDefaultAsync(n => n.Id == id);
+
+    if (need == null)
+        return NotFound();
+
+    _context.Needs.Remove(need);
+    await _context.SaveChangesAsync();
+
+    return RedirectToAction(
+        "Index",
+        "OffentligAktor",
+        new { area = "" });
+}
 }

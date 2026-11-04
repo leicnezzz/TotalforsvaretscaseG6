@@ -1,31 +1,56 @@
 using Microsoft.AspNetCore.Mvc;
-// Gir tilgant til gruppens eksisterende ressushåndteirng 
+using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Handlers;
+using Totalforsvaret.DataAccess;
 
 namespace Totalforsvaret.Controllers;
 
 public class OffentligAktorController : Controller
 {
-    // Gir Controlleren tilgang til ressursene 
     private readonly ResourceHandler _resourceHandler;
+    private readonly AppDbContext? _context;
 
-    //Motter ResourceHandler fra Program.cs
-    public OffentligAktorController(ResourceHandler resourceHandler)
+    public OffentligAktorController(
+        ResourceHandler resourceHandler,
+        AppDbContext? context = null)
     {
         _resourceHandler = resourceHandler;
+        _context = context;
     }
 
     public IActionResult Index()
     {
-        // Henter alle registrerte ressurser
+        // Henter tilgjengelige ressurser
         var ressurser = _resourceHandler.GetResources();
 
-        // Velger bare ressursene som er tilgjengelige
         var tilgjengeligeRessurser = ressurser
             .Where(r => r.Available)
             .ToList();
 
-        // Sender ressursene videre til nettsiden
+        // Henter antall aktive behov
+        ViewBag.AktiveBehov = _context?.Needs.Count(n =>
+            n.Status == "Åpen" ||
+            n.Status == "Under behandling") ?? 0;
+        
+        // Henter antall løste behov.
+        ViewBag.LosteBehov = _context?.Needs.Count(n =>
+            n.Status == "Løst") ?? 0;
+
+        // Henter aktive behov med gyldige kartkoordinater
+        ViewBag.BehovPaKart = _context?.Needs
+            .Where(n =>
+                (n.Status == "Åpen" || n.Status == "Under behandling") &&
+                n.Latitude != null &&
+                n.Longitude != null)
+            .ToList();
+        
+        // Henter de fem nyeste aktive behovene
+        ViewBag.AktiveBehovListe = _context?.Needs
+            .Where(n => n.Status == "Åpen" || n.Status == "Under behandling")
+            .OrderByDescending(n => n.Id)
+            .Take(5)
+            .ToList();
+        
         return View(tilgjengeligeRessurser);
     }
 }

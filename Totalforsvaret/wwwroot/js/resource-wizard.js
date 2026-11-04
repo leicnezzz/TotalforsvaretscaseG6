@@ -7,7 +7,7 @@
     const step = name => form.querySelector('[data-step="' + name + '"]');
     const category = field('CategoryId');
     const kind = () => category.selectedOptions[0]?.dataset.resourceKind;
-    const authenticated = form.dataset.authenticated === 'true';
+    let authenticated = form.dataset.authenticated === 'true';
     const message = document.getElementById('wizard-message');
     const submit = document.getElementById('vehicle-submit');
     const draftKey = 'paratus.resource-draft.v2';
@@ -118,6 +118,7 @@
         const vehicle = kind() === 'vehicle';
         const equipment = kind() === 'equipment';
         const supported = (vehicle || equipment) && !completed;
+        form.querySelector('.wizard-step').hidden = completed;
         const numbered = field('HasRegistrationNumber').value === 'true';
         showStep('registration-choice', supported && vehicle);
         showStep('registration-number', supported && vehicle && numbered);
@@ -153,7 +154,7 @@
         document.getElementById('resource-name-label').textContent = equipment ? 'Navn / modell *' : 'Modell / serie *';
         field('Object').placeholder = equipment ? 'Eks. DJI Mavic 4 eller Honda aggregat' : 'Eks. Toyota Hiace';
         document.getElementById('vehicle-additional-count').textContent = field('AdditionalInformation').value.length;
-        document.getElementById('wizard-progress').textContent = completed ? 'Forhåndsvisningen er fullført.'
+        document.getElementById('wizard-progress').textContent = completed ? 'Registreringen er fullført.'
             : !supported ? 'Velg en ressurstype for å begynne.'
             : ['1 av 5 · Ressursinformasjon', '2 av 5 · Ytterligere informasjon', '3 av 5 · Kontakt og tilgjengelighet',
                 '4 av 5 · Plassering', '5 av 5 · Kontroller og bekreft'][stage];
@@ -338,6 +339,7 @@
                 setBusy(false);
                 button.disabled = false;
                 accountReady = true;
+                if (!result.demo) authenticated = true;
                 for (const key of Object.keys(credentials)) delete credentials[key];
                 form.querySelectorAll('.wizard-auth-panel input[type="password"]').forEach(element => { element.value = ''; });
                 document.getElementById('wizard-account-complete-text').textContent = result.demo
@@ -354,7 +356,7 @@
             const event = new CustomEvent('resource:account', {
                 bubbles: true, cancelable: true, detail: { mode: accountMode, credentials, complete, fail }
             });
-            if (form.dispatchEvent(event)) complete();
+            if (form.dispatchEvent(event)) fail('Kontotjenesten kunne ikke lastes. Last siden på nytt.');
         });
     }
     document.getElementById('wizard-account-edit').addEventListener('click', () => {
@@ -391,6 +393,7 @@
                 ? 'Forhåndsvisningen er fullført. Ressursen er ikke lagret. Backend kobles til senere.'
                 : 'Ressursen er registrert.';
             const success = document.getElementById('wizard-success');
+            success.querySelector('h3').textContent = 'Ressursen er registrert';
             success.hidden = false;
             success.focus();
         }, text => {

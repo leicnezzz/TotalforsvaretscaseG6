@@ -36,7 +36,7 @@
     }
 
     // Integrasjonen kan avbryte hendelsen med preventDefault(), utføre sitt API-kall
-    // og deretter kalle complete() eller fail(melding). Standard er en lokal demo.
+    // og deretter kalle complete() eller fail(melding).
     function submitPreview(target, eventName, resource, complete, fail) {
         let settled = false;
         const finish = callback => value => {
@@ -50,7 +50,7 @@
             cancelable: true,
             detail: { resource, complete: success, fail: finish(fail) }
         });
-        if (target.dispatchEvent(event)) success({ demo: true });
+        if (target.dispatchEvent(event)) finish(fail)('Lagringstjenesten kunne ikke lastes. Last siden på nytt.');
     }
 
     window.ParatusResources = { validPhone, readResource, submitPreview };

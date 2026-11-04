@@ -8,7 +8,7 @@
       data-private="@(isPrivate ? "true" : "false")" data-resource-registration>
     <div class="wizard-toolbar"><p id="wizard-progress" role="status">Velg en ressurstype for å begynne.</p><button type="button" class="wizard-text-button" id="wizard-clear">Tøm utkast</button></div><noscript><p class="wizard-message">Aktiver JavaScript for å bruke den trinnvise registreringen.</p></noscript>
     <p id="wizard-message" class="wizard-message" role="status" tabindex="-1" hidden></p>
-    <p class="wizard-hint">Forhåndsvisning av registreringen. Ingen ressurs sendes inn eller lagres.</p>
+    <p class="wizard-hint">Opplysningene lagres når du bekrefter registreringen.</p>
 
     <section class="wizard-step wizard-step-white" aria-labelledby="wizard-category-title">
         <details class="public-help">
@@ -175,7 +175,7 @@
         <div class="wizard-description">
             <h3>Logg inn eller opprett bruker</h3>
             <p>Du er snart ferdig. Velg om du vil bruke en eksisterende konto eller opprette en ny, uten å forlate registreringen.</p>
-            <p class="wizard-hint">Kun frontend-demo. Bruk testopplysninger og et oppdiktet passord. Ingen konto opprettes, og du logges ikke inn.</p>
+            <p class="wizard-hint">Ressursen knyttes til den private kontoen du logger inn med eller oppretter her.</p>
         </div>
         <div class="wizard-fields wizard-account-actions">
             <div id="wizard-account-choice" class="wizard-account-choice" role="group" aria-label="Velg innlogging eller ny bruker">
@@ -185,10 +185,10 @@
             <fieldset id="wizard-login-panel" class="wizard-fields wizard-auth-panel" data-account-panel="login">
                 <legend class="wizard-sr-only">Logg inn i registreringsflyten</legend>
                 <label for="wizard-login-email">E-post *</label>
-                <input id="wizard-login-email" type="email" name="PreviewLoginEmail" autocomplete="off" placeholder="test@example.com" required />
+                <input id="wizard-login-email" type="email" name="PreviewLoginEmail" autocomplete="username" placeholder="navn@eksempel.no" required />
                 <label for="wizard-login-password">Passord *</label>
-                <input id="wizard-login-password" type="password" name="PreviewLoginPassword" autocomplete="off" placeholder="Skriv et testpassord" required />
-                <button type="button" class="public-button public-button-primary" data-account-continue>Logg inn og fortsett (demo)</button>
+                <input id="wizard-login-password" type="password" name="PreviewLoginPassword" autocomplete="current-password" placeholder="Skriv inn passord" required />
+                <button type="button" class="public-button public-button-primary" data-account-continue>Logg inn og fortsett</button>
             </fieldset>
             <fieldset id="wizard-register-panel" class="wizard-fields wizard-auth-panel" data-account-panel="register" hidden disabled>
                 <legend class="wizard-sr-only">Opprett bruker i registreringsflyten</legend>
@@ -197,13 +197,13 @@
                 <label for="wizard-register-lastname">Etternavn *</label>
                 <input id="wizard-register-lastname" name="PreviewLastName" maxlength="100" autocomplete="off" required />
                 <label for="wizard-register-email">E-post *</label>
-                <input id="wizard-register-email" name="PreviewRegisterEmail" type="email" autocomplete="off" placeholder="test@example.com" required />
+                <input id="wizard-register-email" name="PreviewRegisterEmail" type="email" autocomplete="username" placeholder="navn@eksempel.no" required />
                 <label for="wizard-register-password">Passord *</label>
-                <input id="wizard-register-password" name="PreviewRegisterPassword" type="password" minlength="12" autocomplete="off" aria-describedby="wizard-password-help" required />
-                <p id="wizard-password-help" class="wizard-hint">Minst 12 tegn, med bokstaver og tall. Bruk et oppdiktet testpassord i denne demoen.</p>
+                <input id="wizard-register-password" name="PreviewRegisterPassword" type="password" minlength="12" autocomplete="new-password" aria-describedby="wizard-password-help" required />
+                <p id="wizard-password-help" class="wizard-hint">Minst 12 tegn, med bokstaver og tall.</p>
                 <label for="wizard-register-confirm-password">Gjenta passord *</label>
-                <input id="wizard-register-confirm-password" name="PreviewConfirmPassword" type="password" autocomplete="off" required />
-                <button type="button" class="public-button public-button-primary" data-account-continue>Opprett bruker og fortsett (demo)</button>
+                <input id="wizard-register-confirm-password" name="PreviewConfirmPassword" type="password" autocomplete="new-password" required />
+                <button type="button" class="public-button public-button-primary" data-account-continue>Opprett bruker og fortsett</button>
             </fieldset>
             <div id="wizard-account-complete" hidden>
                 <p id="wizard-account-complete-text" role="status"></p>
@@ -216,19 +216,19 @@
         <legend class="wizard-sr-only">Bekreft registrering</legend>
         <div class="wizard-description">
             <h3>Registrer ressurs</h3>
-            <p>Kontroller opplysningene. Bekreftelsen viser kun hvordan avslutningen vil se ut; ingen ressurs blir registrert.</p>
+            <p>Kontroller opplysningene før du registrerer ressursen.</p>
         </div>
         <div class="wizard-fields">
             <dl id="vehicle-summary" class="wizard-summary"></dl>
             <label class="wizard-confirm-label"><input type="checkbox" name="Confirmed" value="true" required /> Jeg bekrefter at opplysningene er korrekte, og at ressursen kan gjøres tilgjengelig for relevante beredskapsaktører.</label>
-            <p id="wizard-account-note" class="wizard-hint">Kun forhåndsvisning – ingenting sendes inn.</p>
+            <p id="wizard-account-note" class="wizard-hint">Ressursen knyttes til kontoen din.</p>
             <p id="wizard-prerequisite-note" class="wizard-prerequisite" role="status" hidden></p>
             <button id="vehicle-submit" type="submit" class="public-button" disabled><span>Registrer ressurs</span><span aria-hidden="true">→</span></button>
         </div>
     </fieldset>
 
     <section id="wizard-success" class="wizard-success" tabindex="-1" hidden>
-        <h3>Forhåndsvisning av bekreftelse</h3>
+        <h3>Ressursen er registrert</h3>
         <p id="wizard-success-message"></p>
         <a class="public-button public-button-primary" asp-area="Privat" asp-controller="Dashboard" asp-action="Index">Gå til min side</a>
         <button id="wizard-new" type="button" class="public-button public-button-outline">Registrer en ny ressurs</button>

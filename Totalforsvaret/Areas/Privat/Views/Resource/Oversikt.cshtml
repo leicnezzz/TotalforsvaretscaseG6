@@ -1,3 +1,4 @@
+@model IReadOnlyList<Totalforsvaret.Models.resourcemodels.Resource>
 @{
     Layout = null;
     ViewData["PrivateSection"] = "Mine ressurser";
@@ -81,15 +82,14 @@
                 <a class="overview-button" asp-area="Privat" asp-controller="Resource" asp-action="Skjema">Registreringen <span aria-hidden="true">→</span></a>
             </div>
         </section>
-        <p class="overview-demo-note">Demovisning: Eksempelressursene under er ikke hentet fra kontoen din. Endringer lagres ikke.</p>
         <section class="overview-filters" aria-label="Filtrer ressurser">
             <label for="resource-search">Søk i dine ressurser<input id="resource-search" type="search" placeholder="Søk etter navn eller modell" /></label>
             <label for="resource-filter">Ressurstype<select id="resource-filter"><option value="">Alle ressurser</option><option value="vehicle">Kjøretøy</option><option value="equipment">Utstyr</option></select></label>
         </section>
         <p id="resource-count" class="overview-demo-note" role="status"></p>
         <div id="resource-list" class="overview-list" aria-label="Dine ressurser">
-            @* Kun demo: erstatt denne partialen med brukerens ressurser fra en viewmodell når databasen kobles til. *@
-            <partial name="/Areas/Privat/Views/Resource/_ResourceOverviewDemo.cshtml" />
+
+            <partial name="/Areas/Privat/Views/Resource/_ResourceList.cshtml" model="Model" />
         </div>
         <p id="resource-empty" class="overview-empty" hidden>Du har ingen ressurser å vise. Velg «Registreringen» for å legge til en ressurs.</p>
         <p id="overview-status" class="overview-status" role="status" aria-live="polite"></p>
@@ -135,7 +135,7 @@
     </footer>
     <dialog id="resource-delete-confirm" class="resource-delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-description">
         <h2 id="delete-title">Slett ressurs?</h2>
-        <p id="delete-description">Vil du slette <strong id="delete-resource-name"></strong>? I demovisningen kan du laste siden på nytt for å få ressursen tilbake.</p>
+        <p id="delete-description">Vil du slette <strong id="delete-resource-name"></strong>? Ressursen fjernes fra kontoen din.</p>
         <div class="resource-edit-actions">
             <button class="resource-cancel" type="button" data-delete-cancel autofocus>Avbryt</button>
             <button class="overview-button" type="button" data-delete-confirm>Slett ressurs</button>
@@ -145,5 +145,6 @@
     <script src="~/js/resource-fields.js" asp-append-version="true"></script>
     <script src="~/js/resource-address.js" asp-append-version="true"></script>
     <script src="~/js/resource-overview.js" asp-append-version="true"></script>
+    <partial name="/Views/Shared/_ResourceApi.cshtml" />
 </body>
 </html>

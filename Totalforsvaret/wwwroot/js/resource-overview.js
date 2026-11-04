@@ -123,7 +123,7 @@
             card.querySelector('summary').focus();
             return;
         }
-        if (!event.target.closest('[data-demo-delete]')) return;
+        if (!event.target.closest('[data-resource-delete], [data-demo-delete]')) return;
         const name = card.querySelector('strong').textContent;
         pendingDelete = card;
         document.getElementById('delete-resource-name').textContent = name;

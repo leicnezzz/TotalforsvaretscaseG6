@@ -52,3 +52,23 @@
 .resource-description { min-width: 0; overflow-wrap: anywhere; }
 .resource-edit-form input, .resource-edit-form select, .resource-edit-form textarea { font-size: 16px; }
 .overview-status:empty { display: none; }
+.overview-filters { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; margin-top: 24px; }
+.overview-filters label { display: grid; gap: 8px; font-size: 14px; font-weight: 700; }
+.overview-filters :is(input, select) { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--green); border-radius: 6px; background: white; color: #263b2b; font: inherit; font-size: 16px; }
+.resource-overview [hidden] { display: none !important; }
+.resource-edit-address { margin-block: 8px 24px; }
+.resource-edit-address > label { display: grid; gap: 8px; font-size: 14px; font-weight: 700; }
+.resource-edit-address .wizard-map { margin-top: 24px; }
+.resource-edit-address .wizard-address-results { margin-block: 16px; }
+.resource-cancel { min-height: 44px; padding: 10px 16px; border: 1px solid var(--green); border-radius: 6px; background: white; color: var(--green); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.resource-edit-status { margin-bottom: 24px !important; font-size: 14px; line-height: 1.5; }
+.resource-edit-status:empty { display: none; }
+.resource-item { scroll-margin-top: 64px; }
+.resource-delete-dialog { width: min(460px, calc(100% - 32px)); padding: 32px; border: 1px solid #2e6840; border-radius: 10px; color: #2e6840; background: white; font: inherit; }
+.resource-delete-dialog::backdrop { background: rgb(15 37 23 / 45%); }
+.resource-delete-dialog p { margin-block: 24px; color: #607078; line-height: 1.5; }
+.resource-delete-dialog .overview-button { background: #b83d35; }
+@media (max-width: 600px) {
+    .overview-filters { grid-template-columns: 1fr; }
+    .resource-edit-actions { justify-content: space-between; }
+}

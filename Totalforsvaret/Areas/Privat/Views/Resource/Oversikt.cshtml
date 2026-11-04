@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/incident-alert.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="~/css/resource-wizard.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/resource-overview.css" asp-append-version="true" />
 </head>
 <body class="private-home resource-overview">
@@ -80,6 +82,11 @@
             </div>
         </section>
         <p class="overview-demo-note">Demovisning: Eksempelressursene under er ikke hentet fra kontoen din. Endringer lagres ikke.</p>
+        <section class="overview-filters" aria-label="Filtrer ressurser">
+            <label for="resource-search">Søk i dine ressurser<input id="resource-search" type="search" placeholder="Søk etter navn eller modell" /></label>
+            <label for="resource-filter">Ressurstype<select id="resource-filter"><option value="">Alle ressurser</option><option value="vehicle">Kjøretøy</option><option value="equipment">Utstyr</option></select></label>
+        </section>
+        <p id="resource-count" class="overview-demo-note" role="status"></p>
         <div id="resource-list" class="overview-list" aria-label="Dine ressurser">
             @* Kun demo: erstatt denne partialen med brukerens ressurser fra en viewmodell når databasen kobles til. *@
             <partial name="/Areas/Privat/Views/Resource/_ResourceOverviewDemo.cshtml" />
@@ -126,6 +133,17 @@
             </div>
         </div>
     </footer>
+    <dialog id="resource-delete-confirm" class="resource-delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-description">
+        <h2 id="delete-title">Slett ressurs?</h2>
+        <p id="delete-description">Vil du slette <strong id="delete-resource-name"></strong>? I demovisningen kan du laste siden på nytt for å få ressursen tilbake.</p>
+        <div class="resource-edit-actions">
+            <button class="resource-cancel" type="button" data-delete-cancel autofocus>Avbryt</button>
+            <button class="overview-button" type="button" data-delete-confirm>Slett ressurs</button>
+        </div>
+    </dialog>
+    <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/js/resource-fields.js" asp-append-version="true"></script>
+    <script src="~/js/resource-address.js" asp-append-version="true"></script>
     <script src="~/js/resource-overview.js" asp-append-version="true"></script>
 </body>
 </html>

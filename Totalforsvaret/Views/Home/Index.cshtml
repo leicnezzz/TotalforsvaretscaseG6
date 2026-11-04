@@ -100,7 +100,7 @@
                 <h2 id="registration-title">Registrer en ressurs til disposisjon</h2>
                 <p>Har du utstyr, kjøretøy eller andre ressurser du kan stille til rådighet?</p>
             </div>
-            <partial name="/Views/Shared/_ResourceWizard.cshtml" model="Model" />
+            <partial name="/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" />
         </section>
     </main>
 
@@ -121,6 +121,8 @@
     </footer>
     <script src="~/lib/leaflet/leaflet.js"></script>
     <script src="~/js/public-home.js" asp-append-version="true"></script>
+    <script src="~/js/resource-fields.js" asp-append-version="true"></script>
+    <script src="~/js/resource-address.js" asp-append-version="true"></script>
     <script src="~/js/resource-wizard.js" asp-append-version="true"></script>
 </body>
 </html>

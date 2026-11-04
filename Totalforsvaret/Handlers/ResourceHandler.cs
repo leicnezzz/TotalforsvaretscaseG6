@@ -9,9 +9,8 @@ namespace Totalforsvaret.Handlers
 
         private readonly List<Category> categories = new()
         {
-            new Category { CategoryId = 1, Name = "Food" },
-            new Category { CategoryId = 2, Name = "Vehicles" },
-            new Category { CategoryId = 3, Name = "Equipment" }
+            new Category { CategoryId = 1, Name = "Vehicles" },
+            new Category { CategoryId = 2, Name = "Equipment" }
         };
 
         // Returnerer kopier av kategoriene til skjemaet.

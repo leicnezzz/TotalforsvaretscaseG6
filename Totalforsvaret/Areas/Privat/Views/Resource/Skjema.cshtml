@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/incident-alert.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="~/css/resource-wizard.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/resource-registration.css" asp-append-version="true" />
     <script src="~/js/help-dismiss.js" asp-append-version="true" defer></script>
 </head>
@@ -75,31 +77,7 @@
                 <h1 id="registration-title">Registrere en ressurs til disposisjon</h1>
                 <p>Registrer kjøretøy, utstyr eller andre ressurser som kan bidra i en beredskapssituasjon.</p>
             </section>
-            <section class="registration-category" aria-labelledby="category-title">
-                <details class="registration-help">
-                    <summary aria-label="Hjelp til valg av ressurstype">?</summary>
-                    <p>Velg kategorien som passer ressursen du ønsker å stille til rådighet.</p>
-                </details>
-                <div>
-                    <h2 id="category-title">Hva ønsker du å registrere?</h2>
-                    <p>Her kan du velge hvilken type ressurs du ønsker å stille til rådighet.</p>
-                </div>
-                <div class="registration-category-field">
-                    <label for="CategoryId">Velg en ressurstype</label>
-                    <div class="registration-select">
-                        <select asp-for="CategoryId" aria-describedby="category-preview-note">
-                            <option value="">Ressurstype</option>
-                            @foreach (var category in Model.Categories)
-                            {
-                                var label = category.Text switch { "Vehicles" => "Kjøretøy", "Food" => "Mat", "Equipment" => "Utstyr", _ => category.Text };
-                                <option value="@category.Value">@label</option>
-                            }
-                        </select>
-                        <span aria-hidden="true">⌄</span>
-                    </div>
-                    <span id="category-preview-note" class="registration-sr-only">Foreløpig vises kun kategorivalget. Flere registreringssteg kommer senere.</span>
-                </div>
-            </section>
+            <div id="registrer-ressurs"><partial name="/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" /></div>
         </div>
     </main>
     <footer class="registration-footer">
@@ -110,5 +88,9 @@
             <span aria-hidden="true">·</span><span>Kontakt</span>
         </div>
     </footer>
+    <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/js/resource-fields.js" asp-append-version="true"></script>
+    <script src="~/js/resource-address.js" asp-append-version="true"></script>
+    <script src="~/js/resource-wizard.js" asp-append-version="true"></script>
 </body>
 </html>

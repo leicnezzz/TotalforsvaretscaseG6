@@ -12,7 +12,7 @@
     border: 0;
 }
 .wizard-step:first-of-type { border-radius: 8px 8px 0 0; }
-.wizard-step { scroll-margin-top: 24px; }
+.wizard-step { scroll-margin-top: 64px; }
 #wizard-additional-next, #wizard-contact-next { margin-top: 22px; }
 .wizard-step::after {
     content: "";
@@ -65,6 +65,34 @@
 .wizard-plate { display: flex; border: 1.5px solid #2e6840; border-radius: 5px; overflow: hidden; background: #fff; }
 .wizard-plate span { display: grid; place-items: center; padding: 8px; background: #527d60; color: #fff; font-weight: 700; }
 .wizard-plate input { border: 0; margin: 0; border-radius: 0; text-transform: uppercase; }
+.wizard-fields [data-vehicle-fields] input,
+.wizard-fields [data-equipment-fields] :is(input, select) {
+    width: 100%;
+    min-height: 44px;
+    margin: 8px 0 24px;
+    padding: 10px 12px;
+    border: 1.5px solid #2e6840;
+    border-radius: 6px;
+    font: inherit;
+    background: white;
+}
+.wizard-fields [data-vehicle-fields] label,
+.wizard-fields [data-equipment-fields] label { font-size: 15px; font-weight: 700; }
+.wizard-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; font-size: 14px; }
+.wizard-text-button { min-height: 44px; padding: 8px 0; border: 0; background: transparent; color: #2e6840; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.resource-wizard .public-button { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 44px; padding: 12px 16px; gap: 16px; border: 1.5px solid #2e6840; border-radius: 6px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; }
+.resource-wizard .public-button-primary { background: #2e6840; color: white; }
+.resource-wizard .public-button-outline { background: white; color: #2e6840; }
+.resource-wizard .public-help { position: absolute; top: 16px; right: 16px; }
+.resource-wizard .public-help summary { display: grid; place-items: center; width: 28px; height: 28px; border: 1.5px solid #2e6840; border-radius: 50%; font-weight: 700; cursor: pointer; list-style: none; }
+.resource-wizard .public-help summary::-webkit-details-marker { display: none; }
+.resource-wizard .public-help p { position: absolute; z-index: 5; right: 0; width: min(260px, 70vw); padding: 16px; background: white; color: #607078; border: 1px solid #2e6840; border-radius: 6px; box-shadow: 0 4px 12px #0002; font-size: 14px; line-height: 1.5; }
+.resource-wizard button:focus-visible,
+.resource-wizard summary:focus-visible,
+.resource-wizard select:focus-visible { outline: 3px solid #163c4c; outline-offset: 4px; }
+.resource-wizard button:disabled { opacity: .55; cursor: not-allowed; }
+.wizard-location-next { grid-column: 2; }
+.resource-wizard .wizard-step-confirm button { background: #eef2ee; color: #2e6840; border-color: #eef2ee; }
 .wizard-counter { text-align: right; font-size: 12px; color: #607078; }
 .wizard-hint { margin-top: 14px !important; font-size: 13px; line-height: 1.5; }
 .wizard-map { grid-column: 1 / -1; height: 300px; border-radius: 6px; z-index: 0; }
@@ -103,6 +131,7 @@
     .wizard-fields :is(input, select, textarea) { transition: border-color 180ms ease, box-shadow 180ms ease; }
 }
 @media (max-width: 760px) {
+    .wizard-location-next { grid-column: 1; }
     .wizard-step { grid-template-columns: 1fr; padding: 40px 26px; gap: 24px; }
     .wizard-description p { margin-top: 18px; }
     .wizard-map { height: 280px; }

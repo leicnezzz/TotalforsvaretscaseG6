@@ -27,3 +27,5 @@
             });
         });
 })();
+// Kontrollerer passordfeltet og gir feilmeldingerf hvis passordet ikke oppfyller kravene. 
+// Krav: minst 8 tegn, 1 stor bokstav, 1 liten bokstav, 1 tall og 1 spesialtegn. 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Totalforsvaret.Models;
 // Informasjon som vises på forsiden. Inneholder kategorier som vises i menyen. 

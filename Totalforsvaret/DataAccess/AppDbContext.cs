@@ -14,6 +14,9 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
     {
     }
 
+    public DbSet<Crisis> Crises => Set<Crisis>();
+    public DbSet<Need> Needs => Set<Need>();
+
     public DbSet<Resource> Resources => Set<Resource>();
 
     public DbSet<Category> Categories => Set<Category>();
@@ -32,6 +35,19 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
             .HasDiscriminator<string>("BrukerType")
             .HasValue<Privataktor>("Privat")
             .HasValue<Offentligaktør>("Offentlig");
+
+        builder.Entity<Need>()
+            .HasOne(n => n.Crisis)
+            .WithMany(c => c.Needs)
+            .HasForeignKey(n => n.CrisisId);
+
+        builder.Entity<Need>()
+            .Ignore(n => n.OffentligAktor);
+
+        builder.Entity<Crisis>()
+            .HasOne(c => c.OffentligAktor)
+            .WithMany()
+            .HasForeignKey(c => c.OffentligAktorId);
 
         builder.Entity<Resource>(entity =>
         {

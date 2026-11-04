@@ -86,6 +86,72 @@ namespace Totalforsvaret.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Need", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CrisisId")
+                        .HasColumnType("int")
+                        .HasColumnName("HendelseId");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("Beskrivelse");
+
+                    b.Property<DateTime?>("Frist")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Kontaktperson")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Kontaktpunkt")
+                        .HasColumnType("longtext");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double")
+                        .HasColumnName("Breddegrad");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double")
+                        .HasColumnName("Lengdegrad");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("Tittel");
+
+                    b.Property<int>("OffentligAktorId")
+                        .HasColumnType("int")
+                        .HasColumnName("OffentligAktørId");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("Prioritet");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Telefonnummer")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CrisisId");
+
+                    b.ToTable("Behov");
+                });
+
             modelBuilder.Entity("Totalforsvaret.Models.Bruker", b =>
                 {
                     b.Property<int>("Id")
@@ -164,6 +230,137 @@ namespace Totalforsvaret.Migrations
                     b.HasDiscriminator<string>("BrukerType").HasValue("Bruker");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.Crisis", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Area")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("Sted");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("Beskrivelse");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double")
+                        .HasColumnName("Breddegrad");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double")
+                        .HasColumnName("Lengdegrad");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("Navn");
+
+                    b.Property<int?>("OffentligAktorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Severity")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("Alvorlighetsgrad");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("Dato");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OffentligAktorId");
+
+                    b.ToTable("Kriser");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Offentligaktør", b =>
+                {
+                    b.HasBaseType("Totalforsvaret.Models.Bruker");
+
+                    b.Property<string>("Avdeling")
+                        .HasColumnType("longtext");
+
+                    b.HasDiscriminator().HasValue("Offentlig");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Areas.Privat.Models.Privataktor", b =>
+                {
+                    b.HasBaseType("Totalforsvaret.Models.Bruker");
+
+                    b.Property<string>("Organisasjonnummer")
+                        .HasColumnType("longtext");
+
+                    b.HasDiscriminator().HasValue("Privat");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.HasOne("Totalforsvaret.Models.Bruker", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.HasOne("Totalforsvaret.Models.Bruker", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.HasOne("Totalforsvaret.Models.Bruker", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Need", b =>
+                {
+                    b.HasOne("Totalforsvaret.Models.Crisis", "Crisis")
+                        .WithMany("Needs")
+                        .HasForeignKey("CrisisId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Crisis");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.Crisis", b =>
+                {
+                    b.HasOne("Totalforsvaret.Areas.Offentlig.Models.Offentligaktør", "OffentligAktor")
+                        .WithMany()
+                        .HasForeignKey("OffentligAktorId");
+
+                    b.Navigation("OffentligAktor");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.Crisis", b =>
+                {
+                    b.Navigation("Needs");
                 });
 
             modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.Category", b =>
@@ -298,53 +495,6 @@ namespace Totalforsvaret.Migrations
                     b.HasKey("ResourceId");
 
                     b.ToTable("VehicleDetails");
-                });
-
-            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Offentligaktør", b =>
-                {
-                    b.HasBaseType("Totalforsvaret.Models.Bruker");
-
-                    b.Property<string>("Avdeling")
-                        .HasColumnType("longtext");
-
-                    b.HasDiscriminator().HasValue("Offentlig");
-                });
-
-            modelBuilder.Entity("Totalforsvaret.Areas.Privat.Models.Privataktor", b =>
-                {
-                    b.HasBaseType("Totalforsvaret.Models.Bruker");
-
-                    b.Property<string>("Organisasjonnummer")
-                        .HasColumnType("longtext");
-
-                    b.HasDiscriminator().HasValue("Privat");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
-                {
-                    b.HasOne("Totalforsvaret.Models.Bruker", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
-                {
-                    b.HasOne("Totalforsvaret.Models.Bruker", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
-                {
-                    b.HasOne("Totalforsvaret.Models.Bruker", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.EquipmentDetails", b =>

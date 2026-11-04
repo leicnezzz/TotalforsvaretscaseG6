@@ -64,6 +64,14 @@ public class ResourceHandler(AppDbContext db)
         return resource;
     }
 
+    // Henter alle registrerte ressurser til oversikten.
+    public List<Resource> GetResources()
+    {
+        return db.Resources
+            .AsNoTracking()
+            .ToList();
+    }
+
     // Henter kartpunktene til den innloggede brukeren.
     public IReadOnlyList<ResourceMapPoint> GetResourcePointsForUser(
         int brukerId)

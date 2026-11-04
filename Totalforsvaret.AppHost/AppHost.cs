@@ -53,6 +53,11 @@ builder.Services.AddHealthChecks()
                     new ValueProviderContext(),
                     cancellationToken);
 
+                if (string.IsNullOrWhiteSpace(resolved))
+                {
+                    return HealthCheckResult.Unhealthy(
+                        "Tilkoblingsstrengen til MariaDB mangler.");
+                }
                 var settings = new MySqlConnectionStringBuilder(resolved)
                 {
                     ConnectionTimeout = 3,

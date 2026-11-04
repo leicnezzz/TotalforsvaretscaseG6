@@ -35,3 +35,4 @@
     reducedMotion.addEventListener("change", updatePlayback);
     updatePlayback();
 })();
+// Viser video på forsiden.

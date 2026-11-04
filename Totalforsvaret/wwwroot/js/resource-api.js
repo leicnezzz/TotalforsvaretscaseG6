@@ -15,7 +15,7 @@
 
         if (!tokenResponse.ok) {
             throw new Error('Kunne ikke klargjøre forespørselen. Last siden på nytt.');
-        }
+        } 
 
         const tokenData = await tokenResponse.json();
 
@@ -48,7 +48,7 @@
         }
 
         return result;
-    }
+    } 
 
     function resourceUrl(baseUrl, resourceId) {
         const url = new URL(baseUrl, window.location.origin);
@@ -115,3 +115,5 @@
         }
     });
 })();
+// Sender opplysninger og ressursdata til serveren for ressurshåndtering, innlogging og registrering.
+// Henter sikkerhetstoken før sending og gir melding om handlingen lyktes eller feiles. 

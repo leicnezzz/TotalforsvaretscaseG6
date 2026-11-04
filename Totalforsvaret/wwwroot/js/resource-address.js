@@ -18,7 +18,7 @@
             clearTimeout(timer);
             signal.removeEventListener('abort', abort);
         }
-    }
+    } // Forespørsel til Kartverkets API for henting av adresseforslag. 
 
     async function suggestions(query, signal) {
         if (Date.now() >= retryKartverketAt) {
@@ -35,7 +35,7 @@
                 if (signal.aborted) throw error;
                 retryKartverketAt = Date.now() + 300000;
             }
-        }
+        } // Hvis Kartverkets API ikke er tilgjengelig, hentes adresseforslag fra Photon. 
         const url = new URL('https://photon.komoot.io/api/');
         url.search = new URLSearchParams({ q: query, limit: '5', countrycode: 'NO', lat: '58.1467', lon: '7.9956' });
         const result = await requestJson(url, signal, 8000);
@@ -51,7 +51,7 @@
                     longitude: Number(feature.geometry?.coordinates?.[0])
                 };
             });
-    }
+    } // henter adresseforslag, og returnerer liste med forslag: label, latitude og longitude.
 
     function attach(container, onChange = () => {}) {
         const address = container.querySelector('[name="Address"]');
@@ -69,7 +69,7 @@
             return Boolean(address.value.trim() && latitude.value && longitude.value &&
                 Number.isFinite(Number(latitude.value)) && Math.abs(Number(latitude.value)) <= 90 &&
                 Number.isFinite(Number(longitude.value)) && Math.abs(Number(longitude.value)) <= 180);
-        }
+        } // Sjekker om adressefelt og koordinater er gyldige. 
 
         function refresh() {
             if (!mapElement.getClientRects().length) return;
@@ -99,7 +99,7 @@
                 marker.remove();
                 marker = null;
             }
-        }
+        } // Oppdaterer kartet med valgt adresse og koordinater.
 
         function reset() {
             clearTimeout(timer);
@@ -156,7 +156,8 @@
                     status.textContent = 'Adresseforslag er utilgjengelige. Prøv igjen om litt.';
                 }
             }
-        }
+        } // Søker etter adresseforslag og vises i en liste under adressefeltet. 
+        // Om bruker velger et forslag, fylles adressefelt og koordinater i skjemaet. 
 
         address.addEventListener('input', () => {
             reset();

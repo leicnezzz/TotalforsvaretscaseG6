@@ -1,0 +1,113 @@
+@using System.Globalization
+@model IReadOnlyList<Totalforsvaret.Models.resourcemodels.Resource>
+
+@foreach (var resource in Model)
+{
+    var vehicle = resource.CategoryId == 1;
+    var kind = vehicle ? "vehicle" : "equipment";
+    var hasNumber = !string.IsNullOrWhiteSpace(resource.Vehicle?.RegistrationNumber);
+    var prefix = $"resource-{resource.ResourceId}";
+    var equipmentType = resource.Equipment?.EquipmentType ?? "";
+
+    <details class="resource-item" data-resource-id="@resource.ResourceId"
+             data-category-id="@resource.CategoryId" data-resource-kind="@kind">
+        <summary>
+            <span class="resource-icon" aria-hidden="true">
+                @if (vehicle)
+                {
+                    <svg viewBox="0 0 32 32"><path d="m6 13 3-6h14l3 6M5 13h22v12H5zM9 25v3m14-3v3M9 18h2m10 0h2" /></svg>
+                }
+                else
+                {
+                    <svg viewBox="0 0 32 32"><path d="m19 5 8 8-5 5-3-3L9 26a3 3 0 0 1-4-4l11-10-3-3zM17 7l4-3 7 7-3 4" /></svg>
+                }
+            </span>
+            <span class="resource-description">
+                <strong>@resource.Object</strong>
+                <span data-resource-info>
+                    @if (vehicle)
+                    {
+                        <span>Kjøretøy · Førerkort kl. @(string.IsNullOrWhiteSpace(resource.Vehicle?.RequiredLicense) ? "Ikke oppgitt" : resource.Vehicle.RequiredLicense)</span>
+                    }
+                    else
+                    {
+                        <span>Utstyr · @equipmentType · @(resource.Equipment?.Quantity ?? 1) stk.</span>
+                    }
+                </span>
+                <span class="resource-availability">
+                    @(resource.Available ? "Tilgjengelig" : "Ikke tilgjengelig")
+                    <i class="@(resource.Available ? "available" : "unavailable")" aria-hidden="true"></i>
+                </span>
+            </span>
+            <span class="resource-toggle"><span class="when-closed">Endre ↓</span><span class="when-open">Lukk ↑</span></span>
+        </summary>
+        <form class="resource-edit-form" data-resource-kind="@kind" novalidate>
+            <input name="ResourceId" type="hidden" value="@resource.ResourceId" />
+            <input name="CategoryId" type="hidden" value="@resource.CategoryId" />
+            <div class="resource-edit-grid">
+                <div>
+                    <label>Navn / modell *<input name="Object" value="@resource.Object" maxlength="100" required /></label>
+                    @if (vehicle)
+                    {
+                        <label>Har kjøretøyet registreringsnummer?
+                            <select name="HasRegistrationNumber">
+                                <option value="true" selected="@hasNumber">Ja</option>
+                                <option value="false" selected="@(!hasNumber)">Nei</option>
+                            </select>
+                        </label>
+                        <label data-registration-number hidden="@(!hasNumber)">Registreringsnummer
+                            <input name="RegistrationNumber" value="@resource.Vehicle?.RegistrationNumber"
+                                   maxlength="12" minlength="2" disabled="@(!hasNumber)" required />
+                        </label>
+                        <label>Påkrevd førerkortklasse<input name="RequiredLicense" value="@resource.Vehicle?.RequiredLicense" maxlength="100" /></label>
+                    }
+                    else
+                    {
+                        <label>Utstyrstype *
+                            <select name="EquipmentType" required>
+                                <option value="">Velg utstyrstype</option>
+                                @foreach (var type in new[] { "Drone", "Verktøy", "Aggregat", "Sambandsutstyr", "Annet utstyr" })
+                                {
+                                    <option value="@type" selected="@(equipmentType == type)">@type</option>
+                                }
+                            </select>
+                        </label>
+                        <label>Antall *<input name="Quantity" type="number" min="1" max="100000" step="1" value="@(resource.Equipment?.Quantity ?? 1)" required /></label>
+                    }
+                    <label>Tilstand *<input name="Condition" value="@resource.Condition" maxlength="100" required /></label>
+                    <label>Ytterligere informasjon<textarea name="AdditionalInformation" maxlength="200" rows="4">@resource.AdditionalInformation</textarea></label>
+                </div>
+                <div>
+                    <label>Telefon *<input name="Kontaktpunkt" type="tel" inputmode="tel" maxlength="25" value="@resource.Kontaktpunkt" required /></label>
+                    <label>Tilgjengelighet *
+                        <select name="Available" required>
+                            <option value="true" selected="@resource.Available">Ja</option>
+                            <option value="false" selected="@(!resource.Available)">Ikke akkurat nå</option>
+                        </select>
+                    </label>
+                    <label>Kan være tilgjengelig fra (valgfritt)
+                        <input name="TilgjengeligFra" type="datetime-local" value="@(resource.TilgjengeligFra?.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture))" />
+                    </label>
+                </div>
+            </div>
+            <section data-resource-address class="resource-edit-address" aria-label="Ressursens plassering">
+                <label for="@(prefix)-address">Adresse *
+                    <input id="@(prefix)-address" name="Address" value="@resource.Address" maxlength="250"
+                           autocomplete="street-address" aria-expanded="false" aria-controls="@(prefix)-results" required />
+                </label>
+                <input name="Latitude" type="hidden" value="@resource.Latitude.ToString(CultureInfo.InvariantCulture)" />
+                <input name="Longitude" type="hidden" value="@resource.Longitude.ToString(CultureInfo.InvariantCulture)" />
+                <p class="wizard-hint">Skriv en ny adresse og velg et forslag for å flytte ressursen. Søket sendes til Kartverket eller Photon/OpenStreetMap.</p>
+                <p data-address-status class="wizard-hint" role="status"></p>
+                <ul id="@(prefix)-results" data-address-results class="wizard-address-results" aria-label="Adresseforslag" hidden></ul>
+                <div data-address-map class="wizard-map" role="region" aria-label="Kart over ressursens plassering"></div>
+            </section>
+            <p class="resource-edit-status" role="status" aria-live="polite"></p>
+            <div class="resource-edit-actions">
+                <button type="button" class="resource-delete" data-resource-delete>Slett ressurs</button>
+                <button type="button" class="resource-cancel" data-resource-cancel>Avbryt</button>
+                <button type="submit" class="overview-button">Lagre endringer</button>
+            </div>
+        </form>
+    </details>
+}

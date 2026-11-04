@@ -1,0 +1,150 @@
+@model IReadOnlyList<Totalforsvaret.Models.resourcemodels.Resource>
+@{
+    Layout = null;
+    ViewData["PrivateSection"] = "Mine ressurser";
+    ViewData["PrivateBack"] = false;
+    var navn = User.Identity?.Name ?? "Min konto";
+    var initialer = string.Concat(navn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(del => char.ToUpperInvariant(del[0])));
+}
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mine ressurser – Paratus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/private-home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/incident-alert.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="~/css/resource-wizard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/resource-overview.css" asp-append-version="true" />
+</head>
+<body class="private-home resource-overview">
+    <header class="site-header">
+        <nav class="primary-nav" aria-label="Hovedmeny">
+            <div class="nav-links">
+                <a
+
+                   asp-area="Privat"
+                   asp-controller="Dashboard"
+                   asp-action="Index">
+                    Min side
+                </a>
+
+                <a asp-area="Privat"
+                   asp-controller="Resource"
+                   asp-action="Skjema">
+                    Ressursregistrering
+                </a>
+
+                <a asp-area="Privat"
+                   asp-controller="Resource"
+                   asp-action="Oversikt" class="active" aria-current="page">
+                    Mine ressurser
+                </a>
+            </div>
+
+            <div class="profile">
+                <svg class="bell"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     aria-hidden="true">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
+                    <path d="M10 21h4" />
+                </svg>
+
+                <span class="avatar avatar-small" aria-hidden="true">
+                    @initialer
+                </span>
+
+                <span class="profile-name">@navn</span>
+            </div>
+        </nav>
+
+        <partial name="/Views/Shared/_PrivateBreadcrumb.cshtml" />
+    </header>
+    <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
+    <main class="overview-content">
+        <partial name="/Views/Shared/_IncidentAlert.cshtml" />
+        <h1>Liste over dine ressurser</h1>
+        <section class="overview-intro" aria-labelledby="resources-title">
+            <div>
+                <h2 id="resources-title">Dine ressurser</h2>
+                <p>Under er alle dine registrerte ressurser listet.<br />For å redigere trykk på ressursen.</p>
+            </div>
+            <div>
+                <h3>Registrer ny ressurs</h3>
+                <a class="overview-button" asp-area="Privat" asp-controller="Resource" asp-action="Skjema">Registreringen <span aria-hidden="true">→</span></a>
+            </div>
+        </section>
+        <section class="overview-filters" aria-label="Filtrer ressurser">
+            <label for="resource-search">Søk i dine ressurser<input id="resource-search" type="search" placeholder="Søk etter navn eller modell" /></label>
+            <label for="resource-filter">Ressurstype<select id="resource-filter"><option value="">Alle ressurser</option><option value="vehicle">Kjøretøy</option><option value="equipment">Utstyr</option></select></label>
+        </section>
+        <p id="resource-count" class="overview-demo-note" role="status"></p>
+        <div id="resource-list" class="overview-list" aria-label="Dine ressurser">
+
+            <partial name="/Areas/Privat/Views/Resource/_ResourceList.cshtml" model="Model" />
+        </div>
+        <p id="resource-empty" class="overview-empty" hidden>Du har ingen ressurser å vise. Velg «Registreringen» for å legge til en ressurs.</p>
+        <p id="overview-status" class="overview-status" role="status" aria-live="polite"></p>
+    </main>
+    <footer class="thank-you">
+        <div class="footer-content">
+            <h2>Tusen takk for din hjelp</h2>
+
+            <p>
+                Vi ønsker å rette en stor takk til alle som bidrar
+                til å styrke vår felles beredskap. Enten du stiller
+                ressurser til disposisjon, deler viktig informasjon
+                eller på andre måter engasjerer deg, er ditt bidrag
+                verdifullt.
+            </p>
+
+            <p>
+                God beredskap handler om samarbeid, tillit og viljen
+                til å stille opp for hverandre. Ved å samle mennesker,
+                organisasjoner og tilgjengelige ressurser på ett sted,
+                legger vi til rette for bedre samhandling og raskere
+                respons når det virkelig gjelder.<br />
+                Sammen kan vi skape et tryggere, sterkere og mer
+                forberedt samfunn.
+            </p>
+        </div>
+
+        <div class="footer-bottom">
+            <span>Paratus</span>
+
+            <div class="footer-links">
+                <a asp-area=""
+                   asp-controller="Home"
+                   asp-action="Privacy">
+                    Personvern
+                </a>
+                <span aria-hidden="true">·</span>
+                <span>Tilgjengelighet</span>
+                <span aria-hidden="true">·</span>
+                <span>Kontakt</span>
+            </div>
+        </div>
+    </footer>
+    <dialog id="resource-delete-confirm" class="resource-delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-description">
+        <h2 id="delete-title">Slett ressurs?</h2>
+        <p id="delete-description">Vil du slette <strong id="delete-resource-name"></strong>? Ressursen fjernes fra kontoen din.</p>
+        <div class="resource-edit-actions">
+            <button class="resource-cancel" type="button" data-delete-cancel autofocus>Avbryt</button>
+            <button class="overview-button" type="button" data-delete-confirm>Slett ressurs</button>
+        </div>
+    </dialog>
+    <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/js/resource-fields.js" asp-append-version="true"></script>
+    <script src="~/js/resource-address.js" asp-append-version="true"></script>
+    <script src="~/js/resource-overview.js" asp-append-version="true"></script>
+    <partial name="/Views/Shared/_ResourceApi.cshtml" />
+</body>
+</html>

@@ -1,0 +1,12 @@
+<div class="private-page-actions">
+    @if (ViewData["PrivateBack"] is true)
+    {
+        <a class="private-page-action" asp-area="Privat" asp-controller="Dashboard" asp-action="Index">← Tilbake</a>
+    }
+    else
+    {
+        <form method="post" asp-area="" asp-controller="Account" asp-action="Logout">
+            <button class="private-page-action" type="submit">← Logg ut</button>
+        </form>
+    }
+</div>

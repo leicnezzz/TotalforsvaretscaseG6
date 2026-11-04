@@ -1,0 +1,32 @@
+.resource-registration { min-height: 100vh; display: flex; flex-direction: column; }
+.registration-main { position: relative; flex: 1; padding: 0 24px 120px; }
+.registration-content { width: min(100%, 760px); margin: 0 auto; }
+.registration-intro { text-align: center; margin: 48px 0; }
+.registration-intro h1 { font-size: clamp(26px, 2.8vw, 36px); line-height: 1.2; }
+.registration-intro p { max-width: 600px; margin: 24px auto 0; color: var(--muted); font-size: 18px; line-height: 1.45; }
+.registration-category { position: relative; display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; padding: 48px; background: white; border-radius: 8px 8px 0 0; }
+.registration-category h2 { max-width: 280px; font-size: 28px; line-height: 1.15; }
+.registration-category p { margin-top: 32px; color: var(--muted); font-size: 18px; line-height: 1.45; }
+.registration-category-field { align-self: end; padding-bottom: 8px; }
+.registration-category-field label { display: block; margin-bottom: 32px; font-size: 18px; font-weight: 700; }
+.registration-select { position: relative; }
+.registration-select select { width: 100%; min-height: 46px; padding: 12px 56px 12px 14px; border: 2px solid var(--green); border-radius: 6px; appearance: none; background: white; color: #222; font: inherit; cursor: pointer; }
+.registration-select > span { position: absolute; inset: 0 0 0 auto; display: grid; place-items: center; width: 46px; background: var(--green); color: white; border-radius: 0 5px 5px 0; pointer-events: none; font-size: 25px; }
+.registration-select select:focus-visible { outline: 3px solid #163c4c; outline-offset: 4px; }
+.registration-help { position: absolute; top: 16px; right: 16px; }
+.registration-help summary { display: grid; place-items: center; width: 30px; height: 30px; border: 2px solid var(--green); border-radius: 50%; font-weight: 700; cursor: pointer; list-style: none; }
+.registration-help summary::-webkit-details-marker { display: none; }
+.registration-help p { position: absolute; right: 0; z-index: 2; width: min(260px, 70vw); margin: 10px 0 0; padding: 16px; background: white; border: 1px solid var(--green); border-radius: 6px; font-size: 14px; box-shadow: 0 4px 12px #0002; }
+.registration-footer { display: flex; justify-content: space-between; gap: 24px; padding: 24px; font-size: 14px; }
+.registration-footer > div { display: flex; gap: 16px; flex-wrap: wrap; }
+.registration-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 600px) {
+    .registration-main { padding: 0 16px 80px; }
+    .registration-intro { margin: 32px 0; }
+    .registration-intro p { font-size: 16px; }
+    .registration-category { grid-template-columns: 1fr; gap: 32px; padding: 48px 24px 32px; }
+    .registration-category h2 { font-size: 26px; }
+    .registration-category p { margin-top: 24px; font-size: 16px; }
+    .registration-category-field label { margin-bottom: 16px; }
+    .registration-footer { flex-wrap: wrap; font-size: 12px; }
+}

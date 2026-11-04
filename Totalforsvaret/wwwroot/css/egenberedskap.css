@@ -1,0 +1,73 @@
+.beredskap-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 2rem;
+}
+
+.page-header {
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.page-header p {
+    color: #59635B;
+}
+
+.checklist-grid,
+.courses-grid {
+    display: grid;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.checklist-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.courses-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.card,
+.course-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.15);
+}
+
+.card h3,
+.course-card h3 {
+    margin-bottom: 1rem;
+    color: #2E6840;
+}
+
+.card ul,
+.course-card ul {
+    padding-left: 1.2rem;
+}
+
+.card li,
+.course-card li {
+    margin-bottom: .5rem;
+}
+
+@media (max-width: 768px) {
+
+    .checklist-grid,
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .beredskap-container {
+        padding: 1rem;
+    }
+}

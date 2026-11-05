@@ -1,5 +1,6 @@
 @{
     Layout = null;
+    var offentligLogin = ViewData["OffentligLogin"] is true;
 }
 
 <!DOCTYPE html>
@@ -26,7 +27,7 @@
     <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
 </head>
 
-<body class="account-page">
+<body class="account-page @(offentligLogin ? "account-page-public" : "")">
     <header class="account-header">
         <span>Innlogging</span>
     </header>
@@ -42,7 +43,11 @@
         </a>
 
         <div class="account-welcome">
-            <h1>Velkommen til Paratus</h1>
+            <h1>
+                 @(offentligLogin
+                     ? "Velkommen til Paratus Offentlig"
+                     : "Velkommen til Paratus")
+            </h1>
             <p>En enkel måte å bidra til alles sikkerhet</p>
         </div>
 

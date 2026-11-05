@@ -1,3 +1,5 @@
+@inject Microsoft.AspNetCore.Identity.UserManager<Totalforsvaret.Models.Bruker> UserManager 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,6 +72,8 @@
                 </ul>
                 @if (User.Identity?.IsAuthenticated == true)
                 {
+                    var currentUser = await UserManager.GetUserAsync(User);
+
                     <a class="nav-link"
                        asp-area="Privat"
                        asp-controller="Profile"
@@ -77,7 +81,9 @@
                         Min profil
                     </a>
 
-                    <span class="navbar-text me-3">Hei, @User.Identity.Name</span>
+                    <span class="navbar-text me-3">
+                        Hei, @(currentUser?.Navn ?? User.Identity?.Name)
+                    </span>
 
                     <form method="post"
                           asp-area=""

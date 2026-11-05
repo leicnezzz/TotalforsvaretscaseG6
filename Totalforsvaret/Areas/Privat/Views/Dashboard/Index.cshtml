@@ -59,7 +59,11 @@
                 </a>
             </div>
 
-            <div class="profile">
+            <a class="profile profile-link"
+               asp-area="Privat"
+               asp-controller="Profile"
+               asp-action="Index">
+
                 <svg class="bell"
                      viewBox="0 0 24 24"
                      fill="none"
@@ -74,7 +78,7 @@
                 </span>
 
                 <span class="profile-name">@Model.Navn</span>
-            </div>
+            </a>
         </nav>
 
         <partial name="/Views/Shared/_PrivateBreadcrumb.cshtml" />

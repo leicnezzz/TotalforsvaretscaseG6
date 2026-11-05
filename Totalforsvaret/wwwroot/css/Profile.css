@@ -1,0 +1,323 @@
+:root {
+    --profile-green: #2e6840;
+    --profile-green-dark: #245333;
+    --profile-mint: #eef2ee;
+    --profile-teal: #00c8b3;
+    --profile-ink: #2e6840;
+    --profile-muted: #718087;
+    --profile-danger: #b83d35;
+    --profile-link: #2e6840;
+    --profile-font: "Inter", "Roboto", sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+}
+
+body.profile-page {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    background: var(--profile-mint);
+    color: var(--profile-ink);
+    font-family: var(--profile-font);
+}
+
+.profile-main {
+    width: min(100% - 48px, 1240px);
+    flex: 1;
+    margin: 0 auto;
+    padding: 26px 0 64px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 28px;
+    color: var(--profile-green);
+    font-size: 18px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.profile-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: clamp(32px, 7vw, 100px);
+    width: min(100%, 1040px);
+    min-height: 650px;
+    margin: 0 auto;
+    padding: clamp(36px, 5vw, 68px) clamp(32px, 7vw, 114px);
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgb(23 44 52 / 5%);
+}
+
+.profile-card__main h1 {
+    margin: 0 0 32px;
+    color: var(--profile-green);
+    font-size: clamp(30px, 3.2vw, 42px);
+    line-height: 1.2;
+}
+
+.profile-card__aside {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 18px;
+    padding-top: 8px;
+}
+
+.profile-card__aside .avatar-large {
+    display: grid;
+    width: 136px;
+    height: 136px;
+    flex: 0 0 136px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--profile-teal);
+    color: var(--profile-ink);
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.section-heading {
+    margin: 0 0 14px;
+    border-bottom: 2px solid var(--profile-green);
+}
+
+.section-heading h2 {
+    margin: 0 0 7px;
+    color: var(--profile-green);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.name-fields {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.8fr) minmax(180px, 1.4fr);
+    gap: 12px;
+}
+
+.field {
+    display: grid;
+    gap: 7px;
+    margin: 0 0 14px;
+}
+
+.field label {
+    color: var(--profile-green);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.field input {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 14px;
+    border: 2px solid var(--profile-green);
+    border-radius: 9px;
+    background: #fff;
+    color: var(--profile-ink);
+    font: inherit;
+    font-size: 15px;
+}
+
+.field input:focus {
+    outline: 3px solid rgb(0 200 179 / 24%);
+    outline-offset: 2px;
+}
+
+.field input[readonly] {
+    background: #f7f9f7;
+    color: var(--profile-muted);
+}
+
+.field small {
+    color: var(--profile-muted);
+    font-size: 12px;
+}
+
+.field-error,
+.validation-summary {
+    color: var(--profile-danger);
+    font-size: 13px;
+}
+
+.security-heading {
+    margin-top: 30px;
+}
+
+.password-link {
+    color: var(--profile-link);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.password-link:hover {
+    text-decoration: underline;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 48px;
+}
+
+.button,
+.change-avatar {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 22px;
+    border: 2px solid transparent;
+    border-radius: 9px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.button-danger {
+    background: var(--profile-danger);
+    color: #fff;
+}
+
+.button-primary {
+    min-width: 106px;
+    background: var(--profile-green);
+    color: #fff;
+    cursor: pointer;
+}
+
+.button-primary:hover {
+    background: var(--profile-green-dark);
+}
+
+.button:focus-visible,
+.change-avatar:focus-visible,
+.profile-page a:focus-visible {
+    outline: 3px solid var(--profile-teal);
+    outline-offset: 3px;
+}
+
+.profile-page button:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.change-avatar {
+    min-height: 32px;
+    padding: 4px 10px;
+    border-color: var(--profile-green);
+    background: #fff;
+    color: var(--profile-muted);
+    font-size: 12px;
+}
+
+.site-footer {
+    position: relative;
+    display: flex;
+    min-height: 118px;
+    align-items: flex-end;
+    justify-content: space-between;
+    overflow: hidden;
+    padding: 28px clamp(24px, 5vw, 76px);
+    background:
+            radial-gradient(120% 90% at 15% 130%, #d6e3d9 0 48%, transparent 49%),
+            radial-gradient(100% 100% at 85% 150%, #9dbba5 0 45%, transparent 46%),
+            #e7eee8;
+    color: var(--profile-green);
+}
+
+.site-footer > * {
+    position: relative;
+    z-index: 1;
+}
+
+.footer-brand {
+    font-size: 18px;
+}
+
+.site-footer nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 14px;
+}
+
+.site-footer nav a {
+    color: var(--profile-green);
+    text-decoration: none;
+}
+
+.site-footer nav a:hover {
+    text-decoration: underline;
+}
+
+.success-message {
+    margin: -18px 0 20px;
+    padding: 10px 12px;
+    border: 1px solid #9bc6a8;
+    border-radius: 6px;
+    background: #eef7f0;
+    color: var(--profile-green-dark);
+}
+
+@media (max-width: 760px) {
+    .profile-main {
+        width: min(100% - 32px, 600px);
+        padding-top: 18px;
+    }
+
+    .profile-card {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        min-height: 0;
+        padding: 28px 22px;
+    }
+
+    .profile-card__aside {
+        grid-row: 1;
+        align-items: flex-start;
+        flex-direction: row;
+        padding: 0;
+    }
+
+    .profile-card__aside .avatar-large {
+        width: 82px;
+        height: 82px;
+        flex-basis: 82px;
+        font-size: 22px;
+    }
+
+    .name-fields {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .form-actions {
+        margin-top: 32px;
+    }
+
+    .site-footer {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 18px;
+        padding: 24px 20px;
+    }
+}

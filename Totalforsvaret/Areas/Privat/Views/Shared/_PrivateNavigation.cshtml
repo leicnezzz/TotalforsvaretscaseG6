@@ -67,16 +67,13 @@
                 Mine ressurser
             </a>
 
-            @if (isEgenberedskap)
-            {
-                <a class="active"
-                   aria-current="page"
-                   asp-area="Privat"
-                   asp-controller="Egenberedskap"
-                   asp-action="Index">
-                    Egenberedskap
-                </a>
-            }
+            <a class="@(isEgenberedskap ? "active" : "")"
+               aria-current="@(isEgenberedskap ? "page" : null)"
+               asp-area="Privat"
+               asp-controller="Egenberedskap"
+               asp-action="Index">
+                Egenberedskap
+            </a>
             else
             {
                 <span class="nav-link-upcoming"

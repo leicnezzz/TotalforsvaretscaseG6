@@ -1,5 +1,7 @@
 .account-page {
     --account-green: #2e6840;
+    --wave-dark: #2e6840;
+    --wave-light: #e8efec;
     --account-background: #eef2ee;
     --account-muted: #607078;
     margin: 0;
@@ -414,6 +416,8 @@
 /* Offentlig innlogging bruker samme layout som privat. */
 .account-page-public {
     --account-green: #163c4c;
+    --wave-dark: #163c4c;
+    --wave-light: #e4ebef;
     --account-background: #edf0f2;
 }
 
@@ -433,8 +437,7 @@
     .account-page-public .account-quote {
         color: #46535a;
     }
-    .account-page-public .wave-background img {
-        filter: grayscale(1) sepia(1) hue-rotate(145deg) saturate(0.65);
-    }
+
+
 
 

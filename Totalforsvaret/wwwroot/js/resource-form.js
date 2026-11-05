@@ -33,6 +33,8 @@
 
     if (hasPosition) showPosition(lat, lng);
     if (editable) {
+        // Når brukeren trykker på kartet, fylles koordinatene inn i skjemaet.
+        // Koordinatene sendes til serveren sammen med resten av skjemaet.
         map.on('click', event => {
             latitudeInput.value = event.latlng.lat.toFixed(5);
             longitudeInput.value = event.latlng.lng.toFixed(5);

@@ -102,8 +102,9 @@ public class ResourceController(
 
         if (bruker is null)
             return Challenge();
-
-        var resource = await db.Resources
+		// Søker både ressurs-ID og bruker-ID.
+		// Gjør at brukeren bare redigere sine egne ressurser.
+		var resource = await db.Resources
             .Include(resource => resource.Vehicle)
             .Include(resource => resource.Equipment)
             .SingleOrDefaultAsync(resource =>

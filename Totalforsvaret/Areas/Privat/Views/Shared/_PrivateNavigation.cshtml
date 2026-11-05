@@ -1,8 +1,35 @@
+@using System
+@using System.Linq
 @using Microsoft.AspNetCore.Identity
 @using Totalforsvaret.Models
 @inject UserManager<Bruker> UserManager
 
 @{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    var isDashboard = controller.Equals("Dashboard", StringComparison.OrdinalIgnoreCase);
+
+    var isResourceForm =
+        controller.Equals("Resource", StringComparison.OrdinalIgnoreCase) &&
+        action.Equals("Skjema", StringComparison.OrdinalIgnoreCase);
+
+    var isResourceOverview =
+        controller.Equals("Resource", StringComparison.OrdinalIgnoreCase) &&
+        action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase);
+
+    var isProfile = controller.Equals("Profile", StringComparison.OrdinalIgnoreCase);
+
+    var isEgenberedskap =
+        controller.Equals("Egenberedskap", StringComparison.OrdinalIgnoreCase);
+
+    var sectionName = isDashboard ? "Min side"
+        : isResourceForm ? "Ressursregistrering"
+        : isResourceOverview ? "Mine ressurser"
+        : isProfile ? "Min profil"
+        : isEgenberedskap ? "Egenberedskap"
+        : "Brukeroversikt";
+
     var account = await UserManager.GetUserAsync(User);
     var displayName = account?.Navn ?? User.Identity?.Name ?? "Privat aktør";
 
@@ -16,32 +43,52 @@
 <header class="site-header">
     <nav class="primary-nav" aria-label="Hovedmeny">
         <div class="nav-links">
-            <a asp-area="Privat"
+            <a class="@(isDashboard ? "active" : "")"
+               aria-current="@(isDashboard ? "page" : null)"
+               asp-area="Privat"
                asp-controller="Dashboard"
                asp-action="Index">
                 Min side
             </a>
 
-            <a asp-area="Privat"
+            <a class="@(isResourceForm ? "active" : "")"
+               aria-current="@(isResourceForm ? "page" : null)"
+               asp-area="Privat"
                asp-controller="Resource"
                asp-action="Skjema">
                 Ressursregistrering
             </a>
 
-            <a asp-area="Privat"
+            <a class="@(isResourceOverview ? "active" : "")"
+               aria-current="@(isResourceOverview ? "page" : null)"
+               asp-area="Privat"
                asp-controller="Resource"
                asp-action="Oversikt">
                 Mine ressurser
             </a>
 
-            <span class="nav-link-upcoming"
-                  aria-disabled="true"
-                  title="Kommer senere">
-                Egenberedskap
-            </span>
+            @if (isEgenberedskap)
+            {
+                <a class="active"
+                   aria-current="page"
+                   asp-area="Privat"
+                   asp-controller="Egenberedskap"
+                   asp-action="Index">
+                    Egenberedskap
+                </a>
+            }
+            else
+            {
+                <span class="nav-link-upcoming"
+                      aria-disabled="true"
+                      title="Kommer senere">
+                    Egenberedskap
+                </span>
+            }
         </div>
 
-        <a class="account-link"
+        <a class="account-link @(isProfile ? "active" : "")"
+           aria-current="@(isProfile ? "page" : null)"
            asp-area="Privat"
            asp-controller="Profile"
            asp-action="Index"
@@ -56,9 +103,7 @@
                 <path d="M10 21h4" />
             </svg>
 
-            <span class="avatar avatar-small" aria-hidden="true">
-                @initials
-            </span>
+            <span class="avatar avatar-small" aria-hidden="true">@initials</span>
 
             <span class="account-copy">
                 <strong>@displayName</strong>
@@ -70,6 +115,6 @@
     </nav>
 
     <div class="section-bar">
-        <span>@(ViewData["PrivateSection"] ?? "Brukeroversikt")</span>
+        <span>@sectionName</span>
     </div>
 </header>

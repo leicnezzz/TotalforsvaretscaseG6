@@ -141,6 +141,43 @@ public class AccountController(
         Response.StatusCode = StatusCodes.Status403Forbidden; // Venter på vi tar designet fra figma. 
         return View();
     }
+
+[AllowAnonymous]
+    [HttpGet("/Account/Login/Offentlig")]
+    public IActionResult LoginOffentlig()
+    {
+        ViewData["OffentligLogin"] = true;
+        return View("Login");
+    }
+
+    [AllowAnonymous]
+    [HttpPost("/Account/Login/Offentlig")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LoginOffentlig(LoginInput input)
+    {
+        ViewData["OffentligLogin"] = true;
+
+        if (!ModelState.IsValid)
+            return LoginFeil(input);
+
+        var bruker = await users.FindByEmailAsync(input.Email.Trim());
+
+        // Offentlig innlogging godtar bare en lagret offentlig bruker.
+        if (bruker is not Offentligaktør)
+            return LoginFeil(input);
+
+        var resultat = await signIn.PasswordSignInAsync(
+            bruker,
+            input.Password,
+            isPersistent: input.RememberMe,
+            lockoutOnFailure: true);
+
+        if (!resultat.Succeeded)
+            return LoginFeil(input);
+
+        return RedirectToAction(
+            "Index",
+            "OffentligAktor",
+            new { area = "" });
+    }
 }
-
-

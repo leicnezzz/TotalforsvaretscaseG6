@@ -2,7 +2,12 @@
 
 @{
     Layout = "_AccountLayout";
-    ViewData["Title"] = "Logg inn";
+
+    var offentligLogin = ViewData["OffentligLogin"] is true;
+
+    ViewData["Title"] = offentligLogin
+        ? "Logg inn – Offentlig"
+        : "Logg inn";
 }
 
 <section class="account-card account-card-login"
@@ -26,7 +31,7 @@
 
     <form asp-area=""
           asp-controller="Account"
-          asp-action="Login"
+          asp-action="@(offentligLogin ? "LoginOffentlig" : "Login")"
           method="post">
         <div class="account-field">
             <label asp-for="Email">E-post</label>
@@ -99,11 +104,14 @@
         </button>
 
         <div class="account-links">
-            <a asp-area=""
-               asp-controller="Account"
-               asp-action="Register">
-                Opprett bruker
-            </a>
+            @if (!offentligLogin)
+            {
+                <a asp-area=""
+                   asp-controller="Account"
+                   asp-action="Register">
+                    Opprett bruker
+                </a>
+            }
 
             <a asp-area=""
                asp-controller="Account"

@@ -409,5 +409,32 @@
         justify-content: flex-start;
         gap: 10px;
     }
+
+    /* Offentlig innlogging bruker samme layout som privat. */
+
+    .account-page-public {
+        --account-green: #163c4c;
+        --account-background: #edf0f2;
+    }
+
+    .account-page-public .account-submit:hover {
+        background: #102e3b;
+        border-color: #102e3b;
+    }
+
+    .account-page-public .account-input {
+        background: #edf0f1;
+    }
+
+    .account-page-public .account-password-toggle:hover {
+        background: #dce4e8;
+    }
+
+    .account-page-public .account-quote {
+        color: #46535a;
+    }
+    .account-page-public .wave-background img {
+        filter: grayscale(1) sepia(1) hue-rotate(145deg) saturate(0.65);
+    }
 }
 

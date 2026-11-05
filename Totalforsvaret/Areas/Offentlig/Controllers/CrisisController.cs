@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
 [Area("Offentlig")]
-//[Authorize(Policy = "KunOffentlig")]
-[AllowAnonymous]
+[Authorize(Policy = "KunOffentlig")]
+
 
 public class CrisisController : Controller
 {

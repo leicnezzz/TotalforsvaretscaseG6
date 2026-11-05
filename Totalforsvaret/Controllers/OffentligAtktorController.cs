@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Handlers;
@@ -6,6 +7,7 @@ using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Offentlig.ViewModels;
 namespace Totalforsvaret.Controllers;
 
+[Authorize(Policy = "KunOffentlig")]
 public class OffentligAktorController : Controller
 {
     private readonly ResourceHandler _resourceHandler;

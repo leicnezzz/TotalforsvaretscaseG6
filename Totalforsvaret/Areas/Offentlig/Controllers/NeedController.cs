@@ -11,10 +11,10 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
-//ENDRET MIDLERTIDLIG !!!! 
+
 [Area("Offentlig")]
-// [Authorize(Policy = "KunOffentlig")]
-[AllowAnonymous]
+[Authorize(Policy = "KunOffentlig")]
+
 public class NeedController : Controller
 {
     private readonly AppDbContext _context;

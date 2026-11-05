@@ -18,12 +18,26 @@ public class ProfileController(UserManager<Bruker> users) : Controller
         if (user == null)
             return Challenge();
 
-        return View("Index", new ProfileViewModel
+        var nameParts = user.Navn
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        var fornavn = nameParts.Length > 1
+            ? string.Join(' ', nameParts[..^1])
+            : nameParts.FirstOrDefault() ?? "";
+
+        var etternavn = nameParts.Length > 1
+            ? nameParts[^1]
+            : "";
+
+        var model = new ProfileViewModel
         {
-            Fornavn = user.Navn,
+            Fornavn = fornavn,
+            Etternavn = etternavn,
             Email = user.Email,
             PhoneNumber = user.PhoneNumber
-        });
+        };
+
+        return View("Index", model);
     }
 
     [HttpPost]
@@ -38,10 +52,10 @@ public class ProfileController(UserManager<Bruker> users) : Controller
         if (!ModelState.IsValid)
         {
             model.Email = user.Email;
-            return View(model);
+            return View("Index", model);
         }
 
-        user.Navn = model.Fornavn.Trim();
+        user.Navn = $"{model.Fornavn.Trim()} {model.Etternavn.Trim()}".Trim();
         user.PhoneNumber = model.PhoneNumber?.Trim();
 
         var result = await users.UpdateAsync(user);
@@ -52,7 +66,7 @@ public class ProfileController(UserManager<Bruker> users) : Controller
                 ModelState.AddModelError(string.Empty, error.Description);
 
             model.Email = user.Email;
-            return View(model);
+            return View("Index", model);
         }
 
         TempData["ProfileSaved"] = "Profilen din er oppdatert.";

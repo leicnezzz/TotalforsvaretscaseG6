@@ -16,6 +16,8 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
 
     public DbSet<Crisis> Crises => Set<Crisis>();
     public DbSet<Need> Needs => Set<Need>();
+    public DbSet<ResourceAssignment> ResourceAssignments
+        => Set<ResourceAssignment>();
 
     public DbSet<Resource> Resources => Set<Resource>();
 
@@ -30,6 +32,23 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.Entity<ResourceAssignment>(entity =>
+        {
+            entity.HasKey(a => a.Id);
+
+            entity.HasOne(a => a.Need)
+                .WithMany()
+                .HasForeignKey(a => a.NeedId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(a => a.Resource)
+                .WithMany()
+                .HasForeignKey(a => a.ResourceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(a => new { a.ResourceId, a.Status });
+            entity.HasIndex(a => new { a.NeedId, a.Status });
+        });
 
         builder.Entity<Bruker>()
             .HasDiscriminator<string>("BrukerType")

@@ -8,7 +8,7 @@
         status.textContent = "Kartet kunne ikke lastes.";
         return;
     }
-
+    // laster inn kartet og viser registrerte ressurser for brukeren.
     const map = L.map(element, {
         scrollWheelZoom: false
     }).setView([58.1467, 7.9956], 12);
@@ -84,3 +84,4 @@
             "Kunne ikke hente ressursene. Prøv å laste siden på nytt.";
     }
 })();
+// Viser kart med registrerte ressurser for brukeren.

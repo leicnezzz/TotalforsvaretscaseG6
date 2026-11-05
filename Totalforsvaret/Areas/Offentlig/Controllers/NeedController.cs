@@ -87,7 +87,55 @@ public class NeedController : Controller
         return RedirectToAction(
             "Index", "OffentligAktor", new { area = "" });
     }
+    [HttpGet]
+    public async Task<IActionResult> CreateMultiple()
+    {
+        var viewModel = new MultipleNeedsViewModel
+        {
+            Crises = await GetCrisesAsync()
+        };
 
+        return View(viewModel);
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateMultiple(
+        MultipleNeedsViewModel viewModel)
+    {
+        var crisisExists = await _context.Crises
+            .AnyAsync(c => c.Id == viewModel.CrisisId);
+
+        if (!crisisExists)
+        {
+            ModelState.AddModelError(
+                nameof(viewModel.CrisisId),
+                "Velg en gyldig krise.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            viewModel.Crises = await GetCrisesAsync();
+            return View(viewModel);
+        }
+
+        var needs = viewModel.Needs.Select(item => new Need
+        {
+            Name = item.Name.Trim(),
+            Type = item.Type.Trim(),
+            Description = item.Description.Trim(),
+            Priority = item.Priority,
+            Status = item.Status,
+            CrisisId = viewModel.CrisisId,
+            Latitude = viewModel.Latitude!.Value,
+            Longitude = viewModel.Longitude!.Value
+        }).ToList();
+
+        _context.Needs.AddRange(needs);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(
+            "Index", "OffentligAktor", new { area = "" });
+    }
     // Henter krisene som kan velges i skjemaet.
     private async Task<IEnumerable<SelectListItem>> GetCrisesAsync()
     {
@@ -159,7 +207,7 @@ public async Task<IActionResult> Edit(
             nameof(viewModel.Latitude),
             "Ugyldig breddegrad.");
     }
-
+    
     if (viewModel.Longitude.HasValue &&
         (double.IsNaN(viewModel.Longitude.Value) ||
          viewModel.Longitude < -180 ||

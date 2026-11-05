@@ -1,3 +1,8 @@
+// Kontrollerer passordfeltet og gir feilmelding hvis passordet ikke fyller kravene.
+// Håndterer visning og skuling av passord når brukere klikker på knappen. 
+// Viser informasjonsmeldinger når brukeren klikker på informasjonsknapper.
+// Håndterer aktørvalg og oppdaterer skjemaet basert på valg av aktør.
+// Hindrer vanlig innsending av skjema for glemt passord. 
 document.querySelectorAll('.show-password').forEach(toggle => {
     const password = document.getElementById(toggle.dataset.target || 'password');
     toggle.addEventListener('click', () => {
@@ -6,7 +11,7 @@ document.querySelectorAll('.show-password').forEach(toggle => {
         toggle.setAttribute('aria-pressed', String(visible));
         toggle.setAttribute('aria-label', visible ? 'Skjul passord' : 'Vis passord');
 
-    });
+    }); 
 });
 const message = document.querySelector('#form-message');
 function showMessage(text) { message.textContent = text; message.hidden = false; }

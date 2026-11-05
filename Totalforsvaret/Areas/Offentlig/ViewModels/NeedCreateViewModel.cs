@@ -9,6 +9,8 @@ public class NeedCreateViewModel
     public string Name { get; set; } = "";
 
     [Required(ErrorMessage = "Velg type behov.")]
+    [RegularExpression("^(Transport|Utstyr)$",
+        ErrorMessage = "Velg kjøretøy eller utstyr.")]
     public string Type { get; set; } = "";
 
     [Required(ErrorMessage = "Beskriv behovet.")]

@@ -308,3 +308,329 @@
         padding: 20px;
     }
 }
+/* Søk og filtrering på operativt kart */
+.offentlig-kartfilter {
+    width: 300px;
+    max-width: calc(100vw - 110px);
+    max-height: 50vh;
+    overflow-y: auto;
+    padding: 12px;
+    background: white;
+    color: var(--tekst);
+    border: 1px solid var(--kant);
+    border-radius: 10px;
+    box-shadow: 0 3px 14px #0002;
+    font: 13px/1.4 system-ui, sans-serif;
+}
+
+.offentlig-kartfilter *,
+.offentlig-kartfilter *::before {
+    box-sizing: border-box;
+}
+
+.kart-sokrad {
+    display: flex;
+    gap: 6px;
+}
+
+.kart-sokrad input {
+    min-width: 0;
+    flex: 1;
+    padding: 9px 10px;
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+    font: inherit;
+}
+
+.kart-sokrad button {
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--morkegronn);
+    color: white;
+    font: inherit;
+    cursor: pointer;
+}
+
+.kart-sokrad button:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.offentlig-kartfilter :focus-visible {
+    outline: 3px solid var(--offentlig);
+    outline-offset: 2px;
+}
+
+.kart-sokstatus:empty {
+    display: none;
+}
+
+.kart-sokstatus {
+    margin: 8px 0;
+}
+
+.kart-stedsforslag {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+}
+
+.kart-stedsforslag button {
+    display: block;
+    width: 100%;
+    padding: 9px;
+    border: 0;
+    background: white;
+    color: var(--tekst);
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+}
+
+.kart-stedsforslag button:hover {
+    background: var(--bakgrunn);
+}
+
+.kart-stedsforslag li + li {
+    border-top: 1px solid var(--kant);
+}
+
+.kart-radiusrad {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.kart-radiusrad select {
+    padding: 5px;
+    font: inherit;
+    border: 1px solid var(--kant);
+    border-radius: 4px;
+    background: white;
+}
+
+.kart-nullstill {
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: var(--morkegronn);
+    text-decoration: underline;
+    cursor: pointer;
+    font: inherit;
+}
+
+.kart-sentrum {
+    margin: 8px 0;
+    color: var(--dempet);
+    font-size: 12px;
+}
+
+.kart-typer {
+    border: 0;
+    padding: 8px 0 0;
+    margin: 8px 0 0;
+    border-top: 1px solid var(--kant);
+}
+
+.kart-typer legend {
+    float: none;
+    width: auto;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.kart-typer label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 30px;
+    cursor: pointer;
+}
+
+.kart-typer input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--morkegronn);
+}
+
+/* Symboler i filterlisten */
+.kart-symbol { --symbolfarge: var(--tilgjengelig);
+    width: 11px;
+    height: 11px;
+    background: var(--symbolfarge);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.kart-symbol-behov {
+    border-radius: 0;
+}
+
+.kart-symbol-kriser {
+    background: transparent;
+    border-radius: 0;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 11px solid var(--symbolfarge);
+}
+
+/* Markører på selve kartet */
+.kart-markor {
+    display: block;
+}
+
+.kart-markor-behov {
+    width: 20px;
+    height: 20px;
+    margin: 2px;
+    background: var(--planlagt);
+    border: 3px solid black;
+    box-sizing: border-box;
+    box-shadow: 0 1px 4px #0005;
+}
+.kart-markor-kriser {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    border: 0;
+    background: black;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    filter: none;
+}
+
+.kart-markor-kriser::after {
+    content: "";
+    position: absolute;
+    inset: 4px 4px 3px;
+    background: var(--akutt);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.kart-treff {
+    font-size: 11px;
+    margin: 8px 0 0;
+}
+
+.kart-kilde {
+    margin-top: 8px;
+    font-size: 10px;
+    color: var(--dempet);
+}
+
+/* Fullskjermknappen ligger over Leaflet-teksten */
+.kart-fullskjermknapp {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #0003;
+    border-radius: 5px;
+    background: white;
+    color: var(--tekst);
+    font: 26px/1 system-ui;
+    cursor: pointer;
+}
+
+.kart-fullskjermknapp:focus-visible {
+    outline: 3px solid var(--offentlig);
+    outline-offset: 2px;
+}
+
+.offentlig-dashboard #offentligKart:fullscreen,
+.offentlig-dashboard #offentligKart.kart-fullskjerm {
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-width: none;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+    background: var(--bakgrunn);
+}
+
+.offentlig-dashboard #offentligKart.kart-fullskjerm {
+    position: fixed !important;
+    inset: 0;
+    z-index: 10000;
+}
+
+body.kart-fullskjerm-apen {
+    overflow: hidden;
+}
+
+/* Skjuler etiketten visuelt, men beholder den for skjermlesere */
+.kart-skjult {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 575px) {
+    .offentlig-kartfilter {
+        width: 250px;
+        padding: 9px;
+        max-height: 230px;
+    }
+}
+/* Sammenleggbart søkepanel */
+#kartDetaljer[hidden] {
+    display: none !important;
+}
+
+.kart-sokrad .kart-filterknapp {
+    flex-shrink: 0;
+    width: 32px;
+    padding: 6px;
+    background: var(--bakgrunn);
+    color: var(--morkegronn);
+    border: 1px solid var(--kant);
+    font-size: 18px;
+}
+/* Ett samlet søkefelt med pil */
+.kart-sokrad {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+    background: white;
+}
+
+.kart-sokrad:focus-within {
+    outline: 2px solid var(--offentlig);
+    outline-offset: 1px;
+}
+
+.kart-sokrad input {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.kart-sokrad input:focus-visible {
+    outline: none;
+}
+
+.kart-sokrad button[hidden] {
+    display: none !important;
+}
+
+.kart-sokrad .kart-filterknapp {
+    align-self: stretch;
+    border: 0;
+    border-left: 1px solid var(--kant);
+    border-radius: 0;
+}

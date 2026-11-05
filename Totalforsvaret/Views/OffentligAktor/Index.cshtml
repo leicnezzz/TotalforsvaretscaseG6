@@ -1,5 +1,6 @@
 @using Totalforsvaret.Models.resourcemodels
 @using System.Text.Json
+@using Totalforsvaret.Areas.Offentlig.Models
 @model List<Resource>
 
 @{
@@ -18,7 +19,24 @@
         longitude = ressurs.Longitude
     });
 
-    var ressurserJson = JsonSerializer.Serialize(kartRessurser);
+    var kartBehov = (ViewBag.BehovPaKart as IEnumerable<Need>
+                     ?? Enumerable.Empty<Need>()).Select(behov => new
+    {
+        navn = behov.Name,
+        type = behov.Type,
+        prioritet = behov.Priority,
+        status = behov.Status,
+        beskrivelse = behov.Description,
+        latitude = behov.Latitude,
+        longitude = behov.Longitude
+    });
+
+    var kartJson = JsonSerializer.Serialize(new
+    {
+        ressurser = kartRessurser,
+        behov = kartBehov,
+        kriser = (object?)ViewBag.KriserPaKart ?? Array.Empty<object>()
+    });
 }
 
 <link rel="stylesheet"
@@ -190,182 +208,11 @@
 </div>
 
 @section Scripts {
-    <script>
-        (() => {
-            const kartmelding = document.getElementById('kartmelding');
-
-            if (typeof L === 'undefined') {
-                kartmelding.textContent =
-                    'Kartet kunne ikke lastes. Kontroller internettilkoblingen.';
-                return;
-            }
-
-            // Ressurser hentet gjennom controlleren.
-            const ressurser = @Html.Raw(ressurserJson);
-            const behov = @Html.Raw(JsonSerializer.Serialize(
-            (object?)ViewBag.BehovPaKart,
-            new JsonSerializerOptions
-            {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            })) ?? [];
-
-            // Henter grønnfargen fra CSS-en.
-            const dashboard = document.querySelector('.offentlig-dashboard');
-            const ressursfarge = getComputedStyle(dashboard)
-                .getPropertyValue('--tilgjengelig')
-                .trim() || '#50C832';
-
-            // Kristiansand brukes som utgangspunkt når kartet er tomt.
-            const offentligKart = L.map('offentligKart')
-                .setView([58.1467, 7.9956], 12);
-
-            L.tileLayer(
-                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                {
-                    maxZoom: 19,
-                    attribution:
-                        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                }
-            ).addTo(offentligKart);
-
-            // Samler markørene for ressurser og aktive behov.
-            const ressurslag = L.featureGroup()
-                .addTo(offentligKart);
-
-            const behovslag = L.featureGroup()
-                .addTo(offentligKart);
-
-            let utenGyldigPosisjon = 0;
-
-            // Registrerte verdier vises som tekst, ikke HTML.
-            function lagPopup(ressurs) {
-                const innhold = document.createElement('div');
-                const overskrift = document.createElement('strong');
-
-                overskrift.textContent = ressurs.navn;
-                innhold.appendChild(overskrift);
-
-                const opplysninger = [
-                    ['Kategori', ressurs.kategori],
-                    ['Tilbyder', ressurs.tilbyder || 'Ikke oppgitt'],
-                    ['Kontakt', ressurs.kontaktpunkt || 'Ikke oppgitt'],
-                    [
-                        'Tilgjengelig fra',
-                        ressurs.tilgjengeligFra || 'Ikke oppgitt'
-                    ]
-                ];
-
-                for (const [etikett, verdi] of opplysninger) {
-                    const linje = document.createElement('div');
-                    linje.textContent = `${etikett}: ${verdi}`;
-                    innhold.appendChild(linje);
-                }
-
-                return innhold;
-            }
-
-            // Lager en grønn markør for hver gyldig posisjon.
-            for (const ressurs of ressurser) {
-                const latitude = ressurs.latitude;
-                const longitude = ressurs.longitude;
-
-                const gyldigPosisjon =
-                    Number.isFinite(latitude) &&
-                    Number.isFinite(longitude) &&
-                    latitude >= -90 &&
-                    latitude <= 90 &&
-                    longitude >= -180 &&
-                    longitude <= 180;
-
-                if (!gyldigPosisjon) {
-                    utenGyldigPosisjon++;
-                    continue;
-                }
-
-                L.circleMarker([latitude, longitude], {
-                    radius: 9,
-                    color: '#FFFFFF',
-                    weight: 3,
-                    fillColor: ressursfarge,
-                    fillOpacity: 1
-                })
-                    .bindPopup(lagPopup(ressurs))
-                    .addTo(ressurslag);
-            }
-// Legger aktive behov inn på kartet med røde markører.
-            for (const behovElement of behov) {
-                const latitude = behovElement.latitude;
-                const longitude = behovElement.longitude;
-
-                const gyldigPosisjon =
-                    Number.isFinite(latitude) &&
-                    Number.isFinite(longitude) &&
-                    latitude >= -90 &&
-                    latitude <= 90 &&
-                    longitude >= -180 &&
-                    longitude <= 180;
-
-                if (!gyldigPosisjon) {
-                    continue;
-                }
-
-                const innhold = document.createElement('div');
-                const overskrift = document.createElement('strong');
-
-                overskrift.textContent = behovElement.name;
-                innhold.appendChild(overskrift);
-
-                const opplysninger = [
-                    ['Type', behovElement.type],
-                    ['Prioritet', behovElement.priority],
-                    ['Status', behovElement.status],
-                    ['Beskrivelse', behovElement.description]
-                ];
-
-                for (const [etikett, verdi] of opplysninger) {
-                    const linje = document.createElement('div');
-                    linje.textContent = `${etikett}: ${verdi || 'Ikke oppgitt'}`;
-                    innhold.appendChild(linje);
-                }
-
-                L.circleMarker([latitude, longitude], {
-                    radius: 9,
-                    color: '#FFFFFF',
-                    weight: 3,
-                    fillColor: '#DC3545',
-                    fillOpacity: 1
-                })
-                    .bindPopup(innhold)
-                    .addTo(behovslag);
-            }
-            const antallRessurser = ressurslag.getLayers().length;
-            const antallBehov = behovslag.getLayers().length;
-
-// Samler ressursene og behovene for å tilpasse kartutsnittet.
-            const alleMarkorer = L.featureGroup([
-                ...ressurslag.getLayers(),
-                ...behovslag.getLayers()
-            ]);
-
-            if (alleMarkorer.getLayers().length > 0) {
-                offentligKart.fitBounds(alleMarkorer.getBounds(), {
-                    padding: [40, 40],
-                    maxZoom: 14
-                });
-
-                kartmelding.textContent =
-                    `${antallRessurser} ressurser og ${antallBehov} aktive behov vist. ` +
-                    'Grønne markører viser ressurser, røde viser behov. ' +
-                    'Klikk på en markør for detaljer.';
-            } else {
-                kartmelding.textContent =
-                    'Ingen ressurser eller aktive behov med gyldige kartkoordinater å vise.';
-            }
-
-            if (utenGyldigPosisjon > 0) {
-                kartmelding.textContent +=
-                    ` ${utenGyldigPosisjon} ressurser kunne ikke plasseres i kartet.`;
-            }
-        })();
+    <script id="offentligKartData" type="application/json">
+        @Html.Raw(kartJson)
     </script>
+
+    <script src="~/js/offentlig-kart.js"
+            asp-append-version="true"></script>
+}
 }

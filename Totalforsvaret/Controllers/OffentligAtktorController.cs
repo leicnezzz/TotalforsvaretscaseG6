@@ -51,6 +51,24 @@ public class OffentligAktorController : Controller
             .Take(5)
             .ToList();
         
+        // Henter aktive kriser med kartkoordinater.
+        ViewBag.KriserPaKart = _context?.Crises
+            .AsNoTracking()
+            .Where(c => c.Status == "Aktiv" &&
+                        c.Latitude != null &&
+                        c.Longitude != null)
+            .Select(c => new
+            {
+                navn = c.Name,
+                type = c.Type,
+                alvorlighetsgrad = c.Severity,
+                status = c.Status,
+                beskrivelse = c.Description,
+                latitude = c.Latitude,
+                longitude = c.Longitude
+            })
+            .ToList();
+        
         return View(tilgjengeligeRessurser);
     }
 }

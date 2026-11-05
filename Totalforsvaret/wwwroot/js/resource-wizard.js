@@ -27,7 +27,7 @@
         render();
         saveDraft();
     });
-
+// Gjenopprettet et lagret utkast som viser melding hvis det ikke kan åpnes.
     function setBusy(value) {
         busy = value;
         form.inert = value;
@@ -74,7 +74,7 @@
         }
         return true;
     }
-
+    // Validerer feltene i skjemaet og viser feilmeldinger for manglende eller ugyldige verdier. 
     function renderAccount() {
         document.getElementById('wizard-account-choice').hidden = accountReady;
         document.getElementById('wizard-account-complete').hidden = !accountReady;
@@ -113,7 +113,7 @@
             summary.append(term, description);
         }
     }
-
+// Oppsummerer ressursinformasjon og vises i sammendrag før innsending. 
     function render() {
         const vehicle = kind() === 'vehicle';
         const equipment = kind() === 'equipment';
@@ -170,7 +170,7 @@
         if (stage >= 4) buildSummary();
         if (stage >= 3) requestAnimationFrame(address.refresh);
     }
-
+    
     function moveTo(name) {
         render();
         saveDraft();
@@ -230,7 +230,7 @@
         } catch {
             showMessage('Utkastet kunne ikke åpnes. Du kan starte en ny registrering.');
         }
-    }
+    } // Gjenoppretter utkast fra forrige registrering hvis det finnes, og viser feilmeling hvis utkastet er ugyldig. 
 
     form.addEventListener('input', event => {
         if (event.target.name.startsWith('Preview')) {
@@ -273,7 +273,7 @@
         }
         render();
         saveDraft();
-    });
+    }); // Oppdaterer skjemaet når brukeren velger en ny kategori, og nullstiller feltene som ikke gjelder for ny kategori. 
 
     field('HasRegistrationNumber').forEach(radio => radio.addEventListener('change', () => {
         if (radio.checked && radio.value === 'false') {
@@ -402,7 +402,7 @@
             render();
         });
     });
-
+// Sender ressursdata til serveren for registrering, og gir melding om handlingen lykkes eller feiles. 
     function reset() {
         if (busy) return;
         form.reset();

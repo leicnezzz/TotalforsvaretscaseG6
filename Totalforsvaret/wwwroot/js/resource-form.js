@@ -40,3 +40,5 @@
         });
     }
 })();
+// Viser kart med posisjon for ulike ressurser.  
+// Bruker kan redigere posisjon ved å klikke på kartet. 

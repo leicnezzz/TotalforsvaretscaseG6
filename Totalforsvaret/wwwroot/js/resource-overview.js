@@ -27,7 +27,7 @@
         empty.textContent = cards.length
             ? 'Ingen ressurser passer søket. Prøv et annet navn eller en annen kategori.'
             : 'Du har ingen ressurser å vise. Velg «Registreringen» for å legge til en ressurs.';
-    }
+    } // Filtrerer ressursene etter søk og kategori, oppdaterer antall treff.
 
     function snapshot(form) {
         return [...form.elements].filter(element => element.name).map(element => ({
@@ -47,7 +47,7 @@
         card.querySelector('.resource-availability').replaceChildren(
             document.createTextNode(resource.Available ? 'Tilgjengelig ' : 'Ikke tilgjengelig '), dot
         );
-    }
+    } 
 
     for (const card of list.querySelectorAll('[data-resource-id]')) {
         const form = card.querySelector('form');
@@ -102,7 +102,8 @@
                 localStatus.textContent = text || 'Endringene kunne ikke lagres. Prøv igjen.';
             });
         });
-    }
+    } // Validerer feltene og sender endinger til lagring eller demovisning.
+// Oppdaterer ressurskortet når handlingen lykkes.
 
     list.addEventListener('click', event => {
         const card = event.target.closest('[data-resource-id]');
@@ -128,7 +129,7 @@
         pendingDelete = card;
         document.getElementById('delete-resource-name').textContent = name;
         deleteDialog.showModal();
-    });
+    }); // Håndterer klikk på knapper for å avbryte redigering eller slette ressurser.
 
     deleteDialog.querySelector('[data-delete-confirm]').addEventListener('click', () => {
         const card = pendingDelete;
@@ -159,4 +160,4 @@
     search.addEventListener('input', filterCards);
     filter.addEventListener('change', filterCards);
     filterCards();
-})();
+})(); // Viser en oversikt over ressurser med søk og filter, redigering og sletting. 

@@ -1,0 +1,310 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap");
+
+/* Farger og skrift */
+.offentlig-dashboard {
+    --morkegronn: #3B6E43;
+    --tilgjengelig: #50C832;
+    --planlagt: #F5BD62;
+    --akutt: #DA2727;
+    --offentlig: #4169E1;
+    --tekst: #20343D;
+    --dempet: #687C85;
+    --kant: #DCE5E5;
+    --bakgrunn: #F4F7F6;
+    
+    padding: 24px;
+    background: var(--bakgrunn);
+    color: var(--tekst);
+    font-family: "Roboto", Arial, sans-serif;
+}
+
+.offentlig-dashboard button,
+.offentlig-dashboard input,
+.offentlig-dashboard select,
+.offentlig-dashboard textarea,
+.offentlig-dashboard .leaflet-container {
+    font-family: inherit;
+}
+
+/* Rolle, organisasjon og ansvarsområde */
+.offentlig-dashboard .aktorlinje {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    margin: -24px -24px 24px;
+    padding: 14px 24px;
+    background: #FFFFFF;
+    border-bottom: 1px solid var(--kant);
+}
+
+.offentlig-dashboard .aktor-identitet {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.offentlig-dashboard .aktor-merke {
+    padding: 5px 9px;
+    background: #EDF1FC;
+    border-radius: 5px;
+    color: #294793;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.offentlig-dashboard .aktor-organisasjon {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.offentlig-dashboard .aktor-ansvarsomrade {
+    color: var(--dempet);
+    font-size: 12px;
+}
+
+/* Overskrift */
+.offentlig-dashboard .oversikt-topp {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.offentlig-dashboard .oversikt-topp h1 {
+    margin: 0 0 6px;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.offentlig-dashboard .oversikt-topp p {
+    margin: 0;
+    color: var(--dempet);
+    font-size: 13px;
+}
+
+/* Handlingsknapper */
+.offentlig-dashboard .oversikt-handlinger {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.offentlig-dashboard .registrer-behov-knapp,
+.offentlig-dashboard .tildel-oppdrag-knapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 42px;
+    padding: 10px 18px;
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-decoration: none;
+}
+
+.offentlig-dashboard .registrer-behov-knapp {
+    background: var(--morkegronn);
+    border-color: var(--morkegronn);
+    color: #FFFFFF;
+}
+
+.offentlig-dashboard .registrer-behov-knapp:hover {
+    background: #2E5735;
+    border-color: #2E5735;
+}
+
+.offentlig-dashboard .tildel-oppdrag-knapp {
+    background: #FFFFFF;
+    color: var(--morkegronn);
+}
+
+.offentlig-dashboard .tildel-oppdrag-knapp:not(:disabled):hover {
+    background: #EDF3EE;
+}
+
+.offentlig-dashboard .tildel-oppdrag-knapp:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.offentlig-dashboard .registrer-behov-knapp:focus-visible,
+.offentlig-dashboard .tildel-oppdrag-knapp:focus-visible {
+    outline: 3px solid var(--offentlig);
+    outline-offset: 3px;
+}
+
+/* Statistikkort */
+.offentlig-dashboard .stat-kort {
+    min-height: 104px;
+    margin-bottom: 12px;
+    padding: 16px 18px;
+
+    background: #FFFFFF;
+    border: 1px solid var(--kant);
+    border-left: 4px solid var(--morkegronn);
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgb(32 52 61 / 4%);
+}
+
+.offentlig-dashboard .stat-kort h2 {
+    margin: 0 0 7px;
+    color: var(--dempet);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.offentlig-dashboard .stat-tall {
+    margin: 0 0 4px;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.offentlig-dashboard .stat-kort span {
+    color: var(--dempet);
+    font-size: 11px;
+}
+
+.offentlig-dashboard .behov-kort {
+    border-left-color: #B6B6B6;
+}
+
+.offentlig-dashboard .ressurs-kort {
+    border-left-color: var(--tilgjengelig);
+}
+
+/* Kart og oppfølging */
+.offentlig-arbeidsflate {
+    --kart-hoyde: clamp(520px, calc(100dvh - 310px), 850px);
+}
+
+.offentlig-dashboard .situasjonskart {
+    padding: 0;
+}
+
+.offentlig-dashboard #offentligKart {
+    width: 100%;
+    height: var(--kart-hoyde);
+    border: 1px solid var(--kant);
+    border-radius: 10px;
+}
+
+.offentlig-dashboard #kartmelding {
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* Oppfølgingspanel */
+.offentlig-dashboard .oppfolging-panel {
+    height: var(--kart-hoyde);
+    padding: 20px;
+    overflow-y: auto;
+
+    background: #FFFFFF;
+    border: 1px solid var(--kant);
+    border-radius: 10px;
+}
+
+.offentlig-dashboard .oppfolging-panel h2 {
+    margin: 0 0 18px;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.offentlig-dashboard .oppfolging-innhold {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--kant);
+}
+
+.offentlig-dashboard .oppfolging-innhold h3 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.offentlig-dashboard .oppfolging-innhold p {
+    margin: 0;
+    color: var(--dempet);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Koordinering */
+.offentlig-dashboard .koordinering-panel {
+    margin-top: 20px;
+    padding: 24px;
+
+    background: #FFFFFF;
+    border: 1px solid var(--kant);
+    border-radius: 12px;
+}
+
+.offentlig-dashboard .koordinering-panel h2 {
+    margin: 0 0 14px;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.offentlig-dashboard .koordinering-panel p {
+    margin: 0;
+    color: var(--dempet);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* Stor skjerm */
+@media (min-width: 992px) {
+    .offentlig-arbeidsflate .kart-kolonne {
+        flex: 1 1 0;
+        width: auto;
+        min-width: 0;
+    }
+
+    .offentlig-arbeidsflate .oppfolging-kolonne {
+        flex: 0 0 320px;
+        width: 320px;
+    }
+}
+
+/* Mobil og nettbrett */
+@media (max-width: 991.98px) {
+    .offentlig-dashboard {
+        padding: 16px 8px;
+    }
+
+    .offentlig-dashboard .aktorlinje {
+        margin: -16px -8px 20px;
+        padding: 14px 16px;
+    }
+
+    .offentlig-dashboard .oversikt-topp h1 {
+        font-size: 25px;
+    }
+
+    .offentlig-dashboard #offentligKart {
+        height: 60dvh;
+        min-height: 380px;
+    }
+
+    .offentlig-dashboard .oppfolging-panel {
+        height: auto;
+        margin-top: 16px;
+    }
+
+    .offentlig-dashboard .koordinering-panel {
+        padding: 20px;
+    }
+}

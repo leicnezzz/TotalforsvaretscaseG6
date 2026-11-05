@@ -51,6 +51,15 @@
                             Hjem
                         </a>
                     </li>
+                    <!-- Lenke til oversikten for offentlige aktører -->
+                    <li class="nav-item">
+                        <a class="nav-link text-dark"
+                           asp-area=""
+                           asp-controller="OffentligAktor"
+                           asp-action="Index">
+                            Offentlig aktør
+                        </a>
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link text-dark"
@@ -102,7 +111,7 @@
         </div>
     </nav>
 </header>
-<div class="container">
+<div class="@(ViewData["FullWidth"] is true ? "container-fluid" : "container")">
     <main role="main" class="pb-3">
         @RenderBody()
     </main>

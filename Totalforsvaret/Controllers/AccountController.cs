@@ -34,8 +34,9 @@ public class AccountController(
 
         var email = input.Email.Trim();
 
-        // Vanlig registrering oppretter alltid en privat bruker.
-        var bruker = new Privataktor
+		// Ved selvregistrrering får brukeren en privat konto.
+		// Kontotypen bestemmes på serveren.
+		var bruker = new Privataktor
         {
             UserName = email,
             Email = email,

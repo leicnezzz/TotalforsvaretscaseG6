@@ -84,6 +84,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, new MariaDbServerVersion(new Version(11, 4, 0))));
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    await using var scope = app.Services.CreateAsyncScope();
+
+    await TestUserSeeder.SeedAsync(scope.ServiceProvider);
+}
+
 app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.

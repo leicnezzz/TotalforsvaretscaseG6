@@ -22,40 +22,11 @@
           asp-append-version="true" />
 </head>
 <body class="profile-page">
-    <header class="site-header">
-        <nav class="primary-nav" aria-label="Hovedmeny">
-            <div class="nav-links">
-                <a asp-area="Privat"
-                   asp-controller="Resource"
-                   asp-action="Oversikt">Mine ressurser</a>
+@{
+    ViewData["PrivateSection"] = "Brukeroversikt";
+}
 
-                <a asp-area=""
-                   asp-controller="Home"
-                   asp-action="Map">Kart</a>
-
-                <a href="#contact">Kontaktinformasjon</a>
-            </div>
-
-            <a class="account-link"
-               asp-area="Privat"
-               asp-controller="Dashboard"
-               asp-action="Index"
-               aria-label="Til Min side">
-                <span class="bell" aria-hidden="true">♧</span>
-                <span class="avatar avatar-small" aria-hidden="true">@Model.Initialer</span>
-                <span class="account-copy">
-                    <strong>@Model.Fornavn @Model.Etternavn</strong>
-                    <small>Privat aktør</small>
-                </span>
-                <span class="chevron" aria-hidden="true">⌄</span>
-            </a>
-        </nav>
-
-        <div class="section-bar">
-            <span>Brukeroversikt</span>
-            <span aria-hidden="true">⌄</span>
-        </div>
-    </header>
+<partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
 
     <main class="profile-main">
         <a class="back-link"

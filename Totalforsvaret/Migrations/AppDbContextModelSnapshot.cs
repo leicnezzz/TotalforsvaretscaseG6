@@ -169,6 +169,41 @@ namespace Totalforsvaret.Migrations
                     b.ToTable("Behov");
                 });
 
+            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.ResourceAssignment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AssignedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("ClosedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("NeedId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RequestedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NeedId", "Status");
+
+                    b.HasIndex("ResourceId", "Status");
+
+                    b.ToTable("ResourceAssignments");
+                });
+
             modelBuilder.Entity("Totalforsvaret.Models.Bruker", b =>
                 {
                     b.Property<int>("Id")
@@ -306,78 +341,6 @@ namespace Totalforsvaret.Migrations
                     b.HasIndex("OffentligAktorId");
 
                     b.ToTable("Kriser");
-                });
-
-            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Offentligaktør", b =>
-                {
-                    b.HasBaseType("Totalforsvaret.Models.Bruker");
-
-                    b.Property<string>("Avdeling")
-                        .HasColumnType("longtext");
-
-                    b.HasDiscriminator().HasValue("Offentlig");
-                });
-
-            modelBuilder.Entity("Totalforsvaret.Areas.Privat.Models.Privataktor", b =>
-                {
-                    b.HasBaseType("Totalforsvaret.Models.Bruker");
-
-                    b.Property<string>("Organisasjonnummer")
-                        .HasColumnType("longtext");
-
-                    b.HasDiscriminator().HasValue("Privat");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
-                {
-                    b.HasOne("Totalforsvaret.Models.Bruker", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
-                {
-                    b.HasOne("Totalforsvaret.Models.Bruker", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
-                {
-                    b.HasOne("Totalforsvaret.Models.Bruker", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Need", b =>
-                {
-                    b.HasOne("Totalforsvaret.Models.Crisis", "Crisis")
-                        .WithMany("Needs")
-                        .HasForeignKey("CrisisId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Crisis");
-                });
-
-            modelBuilder.Entity("Totalforsvaret.Models.Crisis", b =>
-                {
-                    b.HasOne("Totalforsvaret.Areas.Offentlig.Models.Offentligaktør", "OffentligAktor")
-                        .WithMany()
-                        .HasForeignKey("OffentligAktorId");
-
-                    b.Navigation("OffentligAktor");
-                });
-
-            modelBuilder.Entity("Totalforsvaret.Models.Crisis", b =>
-                {
-                    b.Navigation("Needs");
                 });
 
             modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.Category", b =>
@@ -560,7 +523,46 @@ namespace Totalforsvaret.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
+            
+            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Need", b =>
+                {
+                    b.HasOne("Totalforsvaret.Models.Crisis", "Crisis")
+                        .WithMany("Needs")
+                        .HasForeignKey("CrisisId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
+                    b.Navigation("Crisis");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.ResourceAssignment", b =>
+                {
+                    b.HasOne("Totalforsvaret.Areas.Offentlig.Models.Need", "Need")
+                        .WithMany()
+                        .HasForeignKey("NeedId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Totalforsvaret.Models.resourcemodels.Resource", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Need");
+
+                    b.Navigation("Resource");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.Crisis", b =>
+                {
+                    b.HasOne("Totalforsvaret.Areas.Offentlig.Models.Offentligaktør", "OffentligAktor")
+                        .WithMany()
+                        .HasForeignKey("OffentligAktorId");
+
+                    b.Navigation("OffentligAktor");
+                });
+            
             modelBuilder.Entity("Totalforsvaret.Areas.Privat.Models.EgenberedskapChecklistStatus", b =>
                 {
                     b.HasOne("Totalforsvaret.Models.Bruker", null)
@@ -609,6 +611,11 @@ namespace Totalforsvaret.Migrations
                         .IsRequired();
 
                     b.Navigation("Resource");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.Crisis", b =>
+                {
+                    b.Navigation("Needs");
                 });
 
             modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.Category", b =>

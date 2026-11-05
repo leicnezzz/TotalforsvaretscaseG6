@@ -78,15 +78,15 @@
 
 .offentlig-dashboard .oversikt-topp h1 {
     margin: 0 0 6px;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.7px;
 }
 
 .offentlig-dashboard .oversikt-topp p {
     margin: 0;
     color: var(--dempet);
-    font-size: 13px;
+    font-size: 15px;
 }
 
 /* Handlingsknapper */
@@ -97,63 +97,64 @@
 }
 
 .offentlig-dashboard .registrer-behov-knapp,
-.offentlig-dashboard .tildel-oppdrag-knapp {
+.offentlig-dashboard .opprett-krise-knapp {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
 
-    min-height: 42px;
-    padding: 10px 18px;
+    min-height: 50px;
+    padding: 13px 22px;
     border: 1px solid var(--kant);
     border-radius: 6px;
 
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
     line-height: 1.4;
     text-decoration: none;
 }
 
 .offentlig-dashboard .registrer-behov-knapp {
-    background: var(--morkegronn);
-    border-color: var(--morkegronn);
+    background: #163C4C;
+    border-color: #163C4C;
     color: #FFFFFF;
 }
 
 .offentlig-dashboard .registrer-behov-knapp:hover {
-    background: #2E5735;
-    border-color: #2E5735;
+    background: #225466;
+    border-color:#225466;
 }
 
-.offentlig-dashboard .tildel-oppdrag-knapp {
+.offentlig-dashboard .opprett-krise-knapp {
     background: #FFFFFF;
-    color: var(--morkegronn);
+    border-color: #163C4C;
+    color: #163C4C;
 }
 
-.offentlig-dashboard .tildel-oppdrag-knapp:not(:disabled):hover {
-    background: #EDF3EE;
+.offentlig-dashboard .opprett-krise-knapp:not(:disabled):hover {
+    background: #EDF3F6;
 }
 
-.offentlig-dashboard .tildel-oppdrag-knapp:disabled {
+.offentlig-dashboard .opprett-krise-knapp:disabled {
     opacity: 0.65;
     cursor: not-allowed;
 }
 
 .offentlig-dashboard .registrer-behov-knapp:focus-visible,
-.offentlig-dashboard .tildel-oppdrag-knapp:focus-visible {
+.offentlig-dashboard .opprett-krise-knapp:focus-visible {
     outline: 3px solid var(--offentlig);
     outline-offset: 3px;
 }
 
 /* Statistikkort */
 .offentlig-dashboard .stat-kort {
-    min-height: 104px;
+    min-height: 125px;
     margin-bottom: 12px;
-    padding: 16px 18px;
+    padding: 20px 22px;
 
     background: #FFFFFF;
     border: 1px solid var(--kant);
-    border-left: 4px solid var(--morkegronn);
+    border-left: 4px solid #163C4C;
     border-radius: 10px;
     box-shadow: 0 3px 12px rgb(32 52 61 / 4%);
 }
@@ -161,20 +162,20 @@
 .offentlig-dashboard .stat-kort h2 {
     margin: 0 0 7px;
     color: var(--dempet);
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
 }
 
 .offentlig-dashboard .stat-tall {
     margin: 0 0 4px;
-    font-size: 27px;
+    font-size: 32px;
     font-weight: 700;
     line-height: 1.1;
 }
 
 .offentlig-dashboard .stat-kort span {
     color: var(--dempet);
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .offentlig-dashboard .behov-kort {
@@ -219,7 +220,7 @@
 
 .offentlig-dashboard .oppfolging-panel h2 {
     margin: 0 0 18px;
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 700;
 }
 
@@ -231,14 +232,14 @@
 
 .offentlig-dashboard .oppfolging-innhold h3 {
     margin: 0 0 8px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
 }
 
 .offentlig-dashboard .oppfolging-innhold p {
     margin: 0;
     color: var(--dempet);
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.6;
 }
 
@@ -307,4 +308,685 @@
     .offentlig-dashboard .koordinering-panel {
         padding: 20px;
     }
+}
+
+/* Søk og filtrering på operativt kart */
+.offentlig-kartfilter {
+    width: 300px;
+    max-width: calc(100vw - 110px);
+    max-height: 50vh;
+    overflow-y: auto;
+    padding: 12px;
+    background: white;
+    color: var(--tekst);
+    border: 1px solid var(--kant);
+    border-radius: 10px;
+    box-shadow: 0 3px 14px #0002;
+    font: 13px/1.4 system-ui, sans-serif;
+}
+
+.offentlig-kartfilter *,
+.offentlig-kartfilter *::before {
+    box-sizing: border-box;
+}
+
+.kart-sokrad {
+    display: flex;
+    gap: 6px;
+}
+
+.kart-sokrad input {
+    min-width: 0;
+    flex: 1;
+    padding: 9px 10px;
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+    font: inherit;
+}
+
+.kart-sokrad button {
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--morkegronn);
+    color: white;
+    font: inherit;
+    cursor: pointer;
+}
+
+.kart-sokrad button:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.offentlig-kartfilter :focus-visible {
+    outline: 3px solid var(--offentlig);
+    outline-offset: 2px;
+}
+
+.kart-sokstatus:empty {
+    display: none;
+}
+
+.kart-sokstatus {
+    margin: 8px 0;
+}
+
+.kart-stedsforslag {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+}
+
+.kart-stedsforslag button {
+    display: block;
+    width: 100%;
+    padding: 9px;
+    border: 0;
+    background: white;
+    color: var(--tekst);
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+}
+
+.kart-stedsforslag button:hover {
+    background: var(--bakgrunn);
+}
+
+.kart-stedsforslag li + li {
+    border-top: 1px solid var(--kant);
+}
+
+.kart-radiusrad {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.kart-radiusrad select {
+    padding: 5px;
+    font: inherit;
+    border: 1px solid var(--kant);
+    border-radius: 4px;
+    background: white;
+}
+
+.kart-nullstill {
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: var(--morkegronn);
+    text-decoration: underline;
+    cursor: pointer;
+    font: inherit;
+}
+
+.kart-sentrum {
+    margin: 8px 0;
+    color: var(--dempet);
+    font-size: 12px;
+}
+
+.kart-typer {
+    border: 0;
+    padding: 8px 0 0;
+    margin: 8px 0 0;
+    border-top: 1px solid var(--kant);
+}
+
+.kart-typer legend {
+    float: none;
+    width: auto;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.kart-typer label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 30px;
+    cursor: pointer;
+}
+
+.kart-typer input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--morkegronn);
+}
+
+/* Symboler i filterlisten */
+.kart-symbol { --symbolfarge: var(--tilgjengelig);
+    width: 11px;
+    height: 11px;
+    background: var(--symbolfarge);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.kart-symbol-behov {
+    border-radius: 0;
+}
+
+.kart-symbol-kriser {
+    background: transparent;
+    border-radius: 0;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 11px solid var(--symbolfarge);
+}
+
+/* Markører på selve kartet */
+.kart-markor {
+    display: block;
+}
+
+.kart-markor-behov {
+    width: 20px;
+    height: 20px;
+    margin: 2px;
+    background: var(--planlagt);
+    border: 3px solid black;
+    box-sizing: border-box;
+    box-shadow: 0 1px 4px #0005;
+}
+.kart-markor-kriser {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    border: 0;
+    background: black;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    filter: none;
+}
+
+.kart-markor-kriser::after {
+    content: "";
+    position: absolute;
+    inset: 4px 4px 3px;
+    background: var(--akutt);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.kart-treff {
+    font-size: 11px;
+    margin: 8px 0 0;
+}
+
+.kart-kilde {
+    margin-top: 8px;
+    font-size: 10px;
+    color: var(--dempet);
+}
+
+/* Fullskjermknappen ligger over Leaflet-teksten */
+.kart-fullskjermknapp {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #0003;
+    border-radius: 5px;
+    background: white;
+    color: var(--tekst);
+    font: 26px/1 system-ui;
+    cursor: pointer;
+}
+
+.kart-fullskjermknapp:focus-visible {
+    outline: 3px solid var(--offentlig);
+    outline-offset: 2px;
+}
+
+.offentlig-dashboard #offentligKart:fullscreen,
+.offentlig-dashboard #offentligKart.kart-fullskjerm {
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-width: none;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+    background: var(--bakgrunn);
+}
+
+.offentlig-dashboard #offentligKart.kart-fullskjerm {
+    position: fixed !important;
+    inset: 0;
+    z-index: 10000;
+}
+
+body.kart-fullskjerm-apen {
+    overflow: hidden;
+}
+
+/* Skjuler etiketten visuelt, men beholder den for skjermlesere */
+.kart-skjult {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 575px) {
+    .offentlig-kartfilter {
+        width: 250px;
+        padding: 9px;
+        max-height: 230px;
+    }
+}
+/* Sammenleggbart søkepanel */
+#kartDetaljer[hidden] {
+    display: none !important;
+}
+
+.kart-sokrad .kart-filterknapp {
+    flex-shrink: 0;
+    width: 32px;
+    padding: 6px;
+    background: var(--bakgrunn);
+    color: var(--morkegronn);
+    border: 1px solid var(--kant);
+    font-size: 18px;
+}
+/* Ett samlet søkefelt med pil */
+.kart-sokrad {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+    background: white;
+}
+
+.kart-sokrad:focus-within {
+    outline: 2px solid var(--offentlig);
+    outline-offset: 1px;
+}
+
+.kart-sokrad input {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.kart-sokrad input:focus-visible {
+    outline: none;
+}
+
+.kart-sokrad button[hidden] {
+    display: none !important;
+}
+
+.kart-sokrad .kart-filterknapp {
+    align-self: stretch;
+    border: 0;
+    border-left: 1px solid var(--kant);
+    border-radius: 0;
+}
+/* Klikkbare oversiktskort */
+.stat-kort[data-oversikt-liste] {
+    cursor: pointer;
+}
+
+.stat-kort[data-oversikt-liste]:hover {
+    box-shadow: 0 3px 12px #0002;
+}
+
+.stat-kort[data-oversikt-liste]:focus-visible {
+    outline: 3px solid var(--offentlig);
+    outline-offset: 3px;
+}
+
+/* Stor tabellvisning */
+#oversiktDialog {
+    width: 96vw;
+    height: 92dvh;
+    max-width: none;
+    max-height: none;
+    margin: auto;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--kant);
+    border-radius: 12px;
+    background: white;
+    color: var(--tekst);
+}
+
+#oversiktDialog[open] {
+    display: flex;
+    flex-direction: column;
+}
+
+#oversiktDialog::backdrop {
+    background: #0008;
+}
+
+.oversikt-dialogtopp {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--kant);
+}
+
+.oversikt-dialogtopp h2 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.oversikt-filtre {
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    gap: 16px;
+    padding: 20px 24px 0;
+}
+
+.oversikt-filtre label {
+    width: 260px;
+    max-width: 100%;
+    font-weight: 600;
+}
+
+.oversikt-filtre select {
+    margin-top: 6px;
+    font-weight: 400;
+}
+
+.oversikt-antall {
+    flex-shrink: 0;
+    margin: 16px 24px;
+    color: var(--dempet);
+}
+
+/* Bare tabellområdet ruller */
+.oversikt-tabellomrade {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 0 24px 24px;
+}
+
+.oversikt-tabell {
+    width: 100%;
+    min-width: 940px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+}
+
+.oversikt-tabell th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 14px 16px;
+    background: var(--bakgrunn);
+    color: var(--tekst);
+    border-top: 1px solid var(--kant);
+    border-bottom: 2px solid var(--kant);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.oversikt-tabell td {
+    padding: 16px;
+    border-bottom: 1px solid var(--kant);
+    vertical-align: middle;
+    overflow-wrap: anywhere;
+}
+
+.oversikt-tabell td:first-child {
+    min-width: 180px;
+    font-weight: 600;
+}
+
+.oversikt-tabell tbody tr:hover {
+    background: var(--bakgrunn);
+}
+
+.oversikt-radhandlinger {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 220px;
+}
+
+.oversikt-radhandlinger .btn {
+    white-space: nowrap;
+}
+
+.oversikt-tom {
+    padding: 24px 0;
+    color: var(--dempet);
+}
+
+@media (max-width: 600px) {
+    .oversikt-dialogtopp,
+    .oversikt-filtre {
+        padding: 16px;
+    }
+
+    .oversikt-filtre label {
+        flex: 1 1 180px;
+    }
+
+    .oversikt-antall {
+        margin: 12px 16px;
+    }
+
+    .oversikt-tabellomrade {
+        padding: 0 16px 16px;
+    }
+}
+
+    .offentlig-dashboard .behov-element {
+        margin-bottom: 14px;
+        padding: 16px;
+        border: 1px solid var(--kant);
+        border-left: 3px solid #163C4C;
+        border-radius: 7px;
+    }
+.offentlig-dashboard .behov-element strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #163C4C;
+    font-size: 16px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+.offentlig-dashboard .behov-element .btn-outline-primary {
+    --bs-btn-color: #163C4C;
+    --bs-btn-border-color: #163C4C;
+    --bs-btn-hover-color: #FFFFFF;
+    --bs-btn-hover-bg: #163C4C;
+    --bs-btn-hover-border-color: #163C4C;
+    --bs-btn-active-color: #FFFFFF;
+    --bs-btn-active-bg: #163C4C;
+    --bs-btn-active-border-color: #163C4C;
+}
+@media (min-width: 1200px) {
+    .offentlig-dashboard .statistikk-rad > .col-lg-3 {
+        flex: 0 0 20%;
+        max-width: 20%;
+    }
+}
+.offentlig-dashboard .kart-forklaring {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 12px 16px;
+    color: var(--dempet);
+    font-size: 13px;
+}
+
+.offentlig-dashboard .kart-prikk {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+    border-radius: 50%;
+}
+
+.offentlig-dashboard .kart-ressurs {
+    background: var(--tilgjengelig);
+}
+
+.offentlig-dashboard .kart-behov {
+    background: #DC3545;
+}
+/* Registrering og endring av behov */
+.offentlig-behov-side,
+.offentlig-krise-side {
+    max-width: 960px;
+    color: #20343D;
+    font-family: "Roboto", Arial, sans-serif;
+}
+
+.offentlig-behov-side h1,
+.offentlig-krise-side h1 {
+    margin-bottom: 8px;
+    color: #163C4C;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.offentlig-behov-side > p,
+.offentlig-krise-side > p {
+    margin-bottom: 24px;
+    color: #687C85;
+    font-size: 15px;
+}
+.offentlig-behov-side .btn-success,
+.offentlig-krise-side .btn-success {
+    --bs-btn-bg: #163C4C;
+    --bs-btn-border-color: #163C4C;
+    --bs-btn-hover-bg: #225466;
+    --bs-btn-hover-border-color: #225466;
+    --bs-btn-active-bg: #225466;
+    --bs-btn-active-border-color: #225466;
+    --bs-btn-color: #FFFFFF;
+    --bs-btn-hover-color: #FFFFFF;
+    --bs-btn-active-color: #FFFFFF;
+}
+.offentlig-behov-side .form-label,
+.offentlig-krise-side .form-label {
+    color: #20343D;
+    font-weight: 600;
+}
+
+.offentlig-behov-side .form-control,
+.offentlig-behov-side .form-select,
+.offentlig-krise-side .form-control,
+.offentlig-krise-side .form-select {
+    min-height: 46px;
+    border-color: #DCE5E5;
+    border-radius: 6px;
+    font-family: inherit;
+}
+.offentlig-behov-side #map,
+.offentlig-behov-side #behovKart,
+.offentlig-krise-side #kriseKart {
+    border: 1px solid #DCE5E5;
+    border-radius: 10px;
+}
+.offentlig-behov-side .btn-success,
+.offentlig-behov-side .btn-outline-secondary,
+.offentlig-krise-side .btn-success,
+.offentlig-krise-side .btn-outline-secondary {
+    min-height: 46px;
+    padding: 11px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.offentlig-behov-side .btn-success,
+.offentlig-krise-side .btn-success {
+    margin-right: 8px;
+}
+.offentlig-behov-side > form:first-of-type,
+.offentlig-krise-side > form:first-of-type {
+    padding: 24px;
+    background: #FFFFFF;
+    border: 1px solid #DCE5E5;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgb(32 52 61 / 4%);
+}
+.offentlig-behov-side .tilbake-oversikt,
+.offentlig-krise-side .tilbake-oversikt {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 8px 12px;
+    border: 1px solid #DCE5E5;
+    border-radius: 6px;
+    background: #FFFFFF;
+    color: #163C4C;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.offentlig-behov-side .tilbake-oversikt:hover,
+.offentlig-krise-side .tilbake-oversikt:hover {
+    background: #EDF3F6;
+    border-color: #163C4C;
+}
+.offentlig-behov-side .krise-skjema-tittel,
+.offentlig-krise-side .krise-skjema-tittel {
+    margin: 0 0 6px;
+    color: #163C4C;
+    font-size: 21px;
+    font-weight: 600;
+}
+
+.offentlig-behov-side .krise-skjema-intro,
+.offentlig-krise-side .krise-skjema-intro {
+    margin: 0 0 24px;
+    color: #687C85;
+    font-size: 14px;
+}
+.offentlig-krise-side .krise-plassering {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #DCE5E5;
+}
+.offentlig-behov-side fieldset.behov-element {
+    min-width: 0;
+    margin-top: 20px;
+    padding: 20px;
+    background: #F4F7F6;
+    border: 1px solid #DCE5E5;
+    border-radius: 10px;
+}
+
+.offentlig-behov-side fieldset.behov-element legend {
+    float: none;
+    width: auto;
+    margin-bottom: 16px;
+    color: #163C4C;
+    font-size: 18px;
+    font-weight: 600;
+}
+.offentlig-dashboard .statistikk-rad > div {
+    display: flex;
+}
+
+.offentlig-dashboard .statistikk-rad .stat-kort {
+    width: 100%;
 }

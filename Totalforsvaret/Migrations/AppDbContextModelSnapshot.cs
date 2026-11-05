@@ -87,20 +87,22 @@ namespace Totalforsvaret.Migrations
                 });
 
             modelBuilder.Entity("Totalforsvaret.Areas.Privat.Models.EgenberedskapChecklistStatus", b =>
-                {
-                    b.Property<int>("BrukerId")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("BrukerId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("ItemId")
-                        .HasMaxLength(80)
-                        .HasColumnType("varchar(80)");
+                b.Property<string>("ItemId")
+                    .HasMaxLength(80)
+                    .HasColumnType("varchar(80)");
 
-                    b.Property<bool>("IsComplete")
-                        .HasColumnType("tinyint(1)");
+                b.Property<bool>("IsComplete")
+                    .HasColumnType("tinyint(1)");
 
-                    b.HasKey("BrukerId", "ItemId");
+                b.HasKey("BrukerId", "ItemId");
 
-                    b.ToTable("EgenberedskapChecklistStatuses");
+                b.ToTable("EgenberedskapChecklistStatuses");
+                
+            });
             modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Need", b =>
                 {
                     b.Property<int>("Id")

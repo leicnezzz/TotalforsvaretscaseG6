@@ -102,7 +102,7 @@ namespace Totalforsvaret.Migrations
 
                 b.ToTable("EgenberedskapChecklistStatuses");
                 
-            });
+                });
             modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.Need", b =>
                 {
                     b.Property<int>("Id")

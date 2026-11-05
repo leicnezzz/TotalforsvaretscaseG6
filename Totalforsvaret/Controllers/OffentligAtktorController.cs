@@ -69,6 +69,24 @@ public class OffentligAktorController : Controller
             })
             .ToList();
         
+        // Alle aktive og løste behov til kortenes lister.
+        ViewBag.BehovTilLister = _context?.Needs
+            .AsNoTracking()
+            .Where(n => n.Status == "Åpen" ||
+                        n.Status == "Under behandling" ||
+                        n.Status == "Løst")
+            .Select(n => new
+            {
+                id = n.Id,
+                navn = n.Name,
+                type = n.Type,
+                prioritet = n.Priority,
+                status = n.Status,
+                krise = n.Crisis != null ? n.Crisis.Name : "",
+                latitude = n.Latitude,
+                longitude = n.Longitude
+            })
+            .ToList();
         return View(tilgjengeligeRessurser);
     }
 }

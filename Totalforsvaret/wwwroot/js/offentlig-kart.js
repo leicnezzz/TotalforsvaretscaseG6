@@ -134,6 +134,7 @@
                     fillOpacity: 1
                 });
 
+            markor.oversiktId = element.id;
             markor.bindPopup(popup(element, type.felter));
             type.markorer.push(markor);
         }
@@ -605,5 +606,46 @@
         }
     });
 
+    // Åpner en valgt oppføring fra kortenes lister.
+    document.addEventListener('oversikt:vis-pa-kart', event => {
+        const valgt = event.detail;
+        const type = typer.find(t => t.key === valgt.type);
+
+        const markor = type?.markorer.find(
+            m => m.oversiktId === valgt.id
+        );
+
+        if (!markor) return;
+
+        // Slår på typen dersom den er skjult i kartfilteret.
+        type.boks.checked = true;
+
+        // Fjerner radius hvis den skjuler den valgte oppføringen.
+        if (
+            sentrum &&
+            sentrum.distanceTo(markor.getLatLng()) > Number(radius.value)
+        ) {
+            sentrum = null;
+
+            sirkel?.remove();
+            sentrumsmarkor?.remove();
+
+            sirkel = null;
+            sentrumsmarkor = null;
+
+            sentrumtekst.textContent =
+                'Radius fjernet for å vise valgt oppføring.';
+        }
+
+        filtrer();
+
+        kart.setView(
+            markor.getLatLng(),
+            Math.max(kart.getZoom(), 15)
+        );
+
+        markor.openPopup();
+    });
+    
     filtrer(true);
 })();

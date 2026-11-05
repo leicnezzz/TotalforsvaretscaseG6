@@ -634,3 +634,160 @@ body.kart-fullskjerm-apen {
     border-left: 1px solid var(--kant);
     border-radius: 0;
 }
+/* Klikkbare oversiktskort */
+.stat-kort[data-oversikt-liste] {
+    cursor: pointer;
+}
+
+.stat-kort[data-oversikt-liste]:hover {
+    box-shadow: 0 3px 12px #0002;
+}
+
+.stat-kort[data-oversikt-liste]:focus-visible {
+    outline: 3px solid var(--offentlig);
+    outline-offset: 3px;
+}
+
+/* Stor tabellvisning */
+#oversiktDialog {
+    width: 96vw;
+    height: 92dvh;
+    max-width: none;
+    max-height: none;
+    margin: auto;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--kant);
+    border-radius: 12px;
+    background: white;
+    color: var(--tekst);
+}
+
+#oversiktDialog[open] {
+    display: flex;
+    flex-direction: column;
+}
+
+#oversiktDialog::backdrop {
+    background: #0008;
+}
+
+.oversikt-dialogtopp {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--kant);
+}
+
+.oversikt-dialogtopp h2 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.oversikt-filtre {
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    gap: 16px;
+    padding: 20px 24px 0;
+}
+
+.oversikt-filtre label {
+    width: 260px;
+    max-width: 100%;
+    font-weight: 600;
+}
+
+.oversikt-filtre select {
+    margin-top: 6px;
+    font-weight: 400;
+}
+
+.oversikt-antall {
+    flex-shrink: 0;
+    margin: 16px 24px;
+    color: var(--dempet);
+}
+
+/* Bare tabellområdet ruller */
+.oversikt-tabellomrade {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 0 24px 24px;
+}
+
+.oversikt-tabell {
+    width: 100%;
+    min-width: 940px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+}
+
+.oversikt-tabell th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 14px 16px;
+    background: var(--bakgrunn);
+    color: var(--tekst);
+    border-top: 1px solid var(--kant);
+    border-bottom: 2px solid var(--kant);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.oversikt-tabell td {
+    padding: 16px;
+    border-bottom: 1px solid var(--kant);
+    vertical-align: middle;
+    overflow-wrap: anywhere;
+}
+
+.oversikt-tabell td:first-child {
+    min-width: 180px;
+    font-weight: 600;
+}
+
+.oversikt-tabell tbody tr:hover {
+    background: var(--bakgrunn);
+}
+
+.oversikt-radhandlinger {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 220px;
+}
+
+.oversikt-radhandlinger .btn {
+    white-space: nowrap;
+}
+
+.oversikt-tom {
+    padding: 24px 0;
+    color: var(--dempet);
+}
+
+@media (max-width: 600px) {
+    .oversikt-dialogtopp,
+    .oversikt-filtre {
+        padding: 16px;
+    }
+
+    .oversikt-filtre label {
+        flex: 1 1 180px;
+    }
+
+    .oversikt-antall {
+        margin: 12px 16px;
+    }
+
+    .oversikt-tabellomrade {
+        padding: 0 16px 16px;
+    }
+}

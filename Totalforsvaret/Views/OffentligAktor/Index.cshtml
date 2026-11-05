@@ -10,6 +10,7 @@
     // Sender bare opplysningene kartet trenger.
     var kartRessurser = Model.Select(ressurs => new
     {
+        id = ressurs.ResourceId,
         navn = ressurs.Object,
         kategori = ressurs.Category?.Name ?? "Uten kategori",
         tilbyder = ressurs.Navn,
@@ -22,6 +23,7 @@
     var kartBehov = (ViewBag.BehovPaKart as IEnumerable<Need>
                      ?? Enumerable.Empty<Need>()).Select(behov => new
     {
+        id = behov.Id,
         navn = behov.Name,
         type = behov.Type,
         prioritet = behov.Priority,
@@ -36,6 +38,21 @@
         ressurser = kartRessurser,
         behov = kartBehov,
         kriser = (object?)ViewBag.KriserPaKart ?? Array.Empty<object>()
+    });
+    
+    var oversiktJson = JsonSerializer.Serialize(new
+    {
+        behov = (object?)ViewBag.BehovTilLister ?? Array.Empty<object>(),
+        ressurser = Model.Select(r => new
+        {
+            id = r.ResourceId,
+            navn = r.Object,
+            kategoriId = r.CategoryId,
+            tilbyder = r.Navn,
+            kontaktpunkt = r.Kontaktpunkt,
+            latitude = r.Latitude,
+            longitude = r.Longitude
+        })
     });
 }
 
@@ -91,7 +108,12 @@
     <!-- Statistikkort -->
     <div class="row">
         <div class="col-lg-3 col-md-6">
-            <div class="stat-kort behov-kort">
+            <div class="stat-kort behov-kort"
+                 role="button"
+                 tabindex="0"
+                 aria-haspopup="dialog"
+                 aria-controls="oversiktDialog"
+                 data-oversikt-liste="aktive">
                 <h2>Aktive behov</h2>
                 <p class="stat-tall">@ViewBag.AktiveBehov</p>
                 <span>Behov som venter på oppfølging</span>
@@ -99,7 +121,12 @@
         </div>
 
         <div class="col-lg-3 col-md-6">
-            <div class="stat-kort ressurs-kort">
+            <div class="stat-kort ressurs-kort"
+                 role="button"
+                 tabindex="0"
+                 aria-haspopup="dialog"
+                 aria-controls="oversiktDialog"
+                 data-oversikt-liste="ressurser">
                 <h2>Tilgjengelige ressurser</h2>
                 <p class="stat-tall">@Model.Count</p>
                 <span>Registrert som tilgjengelige</span>
@@ -115,7 +142,12 @@
         </div>
 
         <div class="col-lg-3 col-md-6">
-            <div class="stat-kort lost-kort">
+            <div class="stat-kort lost-kort"
+                 role="button"
+                 tabindex="0"
+                 aria-haspopup="dialog"
+                 aria-controls="oversiktDialog"
+                 data-oversikt-liste="loste">
                 <h2>Løste behov</h2>
                 <p class="stat-tall">@ViewBag.LosteBehov</p>
                 <span>Behov som er løst</span>
@@ -193,6 +225,42 @@
         </div>
     </div>
 
+    <dialog id="oversiktDialog"
+            class="oversikt-dialog"
+            aria-labelledby="oversiktListeTittel"
+            data-endre-behov="@Url.Action("Edit", "Need", new { area = "Offentlig" })">
+
+        <div class="oversikt-dialogtopp">
+            <h2 id="oversiktListeTittel">Aktive behov</h2>
+
+            <button id="oversiktLukk"
+                    type="button"
+                    class="btn btn-outline-secondary">
+                Lukk
+            </button>
+        </div>
+
+        <div class="oversikt-filtre">
+            <label for="oversiktType">
+                Type
+                <select id="oversiktType" class="form-select"></select>
+            </label>
+
+            <label for="oversiktSortering">
+                Sortering
+                <select id="oversiktSortering"
+                        class="form-select"></select>
+            </label>
+        </div>
+
+        <p id="oversiktAntall"
+           class="oversikt-antall"
+           role="status"
+           aria-live="polite"></p>
+
+        <div id="oversiktListe" class="oversikt-tabellomrade"></div>
+    </dialog>
+    
     <!-- Koordinering -->
     <section class="koordinering-panel"
              aria-labelledby="koordinering-tittel">
@@ -206,13 +274,19 @@
     </section>
 
 </div>
-
 @section Scripts {
     <script id="offentligKartData" type="application/json">
         @Html.Raw(kartJson)
     </script>
 
+    <script id="oversiktListeData" type="application/json">
+        @Html.Raw(oversiktJson)
+    </script>
+
     <script src="~/js/offentlig-kart.js"
+            asp-append-version="true"></script>
+
+    <script src="~/js/oversikt-lister.js"
             asp-append-version="true"></script>
 }
 }

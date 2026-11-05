@@ -5,7 +5,7 @@ using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Privat.Controllers;
-
+//Arver fra Usermanagement for at kun privat brukere har tilgang
 [Area("Privat")]
 [Authorize(Policy = "KunPrivat")]
 public class ProfileController(UserManager<Bruker> users) : Controller

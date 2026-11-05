@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace Totalforsvaret.Areas.Privat.Models;
-
+//I profil delen kan de forandre navn og telefonnummer, mens epost er satt
 public class ProfileViewModel
 {
     [Required(ErrorMessage = "Skriv inn fornavn.")]

@@ -53,7 +53,7 @@
             <a class="registrer-behov-knapp"
                asp-area="Offentlig"
                asp-controller="Need"
-               asp-action="Create">
+               asp-action="CreateMultiple">
                 + Registrer behov
             </a>
             <a class="opprett-krise-knapp"
@@ -94,8 +94,8 @@
         <div class="col-lg-3 col-md-6">
             <div class="stat-kort treff-kort">
                 <h2>Foreslåtte treff</h2>
-                <p class="stat-tall">–</p>
-                <span>Avventer matching</span>
+                <p class="stat-tall">@ViewBag.ForeslatteTreff</p>
+                <span>Koblinger mellom behov og ressurs</span>
             </div>
         </div>
 
@@ -175,7 +175,158 @@
 
                 <div class="oppfolging-innhold">
                     <h3>Foreslåtte treff</h3>
-                    <p>Ingen treff hentet ennå.</p>
+
+                    @{
+                        var matchForslag = ViewBag.MatchForslag as
+                                               List<Totalforsvaret.Areas.Offentlig.ViewModels.MatchSuggestionViewModel>
+                                           ?? new();
+                        var aktiveTildelinger = ViewBag.AktiveTildelinger as
+                                                    List<Totalforsvaret.Areas.Offentlig.Models.ResourceAssignment>
+                                                ?? new();
+                    }
+
+                    @if (matchForslag.Count > 0)
+                    {
+                        <p class="mb-3">
+                            Kategoribaserte forslag som må vurderes før tildeling.
+                        </p>
+
+                        @foreach (var treff in matchForslag)
+                        { 
+                            var tildeling = aktiveTildelinger.FirstOrDefault(a =>
+                                a.NeedId == treff.NeedId &&
+                                a.ResourceId == treff.ResourceId);
+                            var ressursOpptatt = aktiveTildelinger.Any(a =>
+                                a.ResourceId == treff.ResourceId);
+                            <div class="behov-element">
+                                <strong>@treff.NeedName</strong>
+                                <p>Ressurs: @treff.ResourceName</p>
+
+                                @if (treff.DistanceKm.HasValue)
+                                {
+                                    <p>
+                                        Luftlinje:
+                                        @(treff.DistanceKm.Value.ToString("0.0")) km
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p>Avstand ikke tilgjengelig.</p>
+                                }
+
+                               
+                                <div class="d-flex flex-column gap-2 mt-3">
+                                    @if (tildeling?.Status == Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Requested)
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            Til vurdering
+                                        </span>
+                                        <form asp-area=""
+                                              asp-controller="OffentligAktor"
+                                              asp-action="TildelRessurs"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="assignmentId"
+                                                   value="@tildeling.Id"/>
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-success w-100">
+                                                Tildel ressurs
+                                            </button>
+                                        </form>
+                                        
+                                        <form asp-area=""
+                                              asp-controller="OffentligAktor"
+                                              asp-action="AvslaRessurs"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="assignmentId"
+                                                   value="@tildeling.Id" />
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger w-100">
+                                                Avslå ressurs
+                                            </button>
+                                        </form>
+
+                                    }
+                                    
+                                    @if (tildeling?.Status ==
+                                         Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned)
+                                    {
+                                        <span class="badge bg-success">
+                                            Tildelt
+                                        </span>
+                                        
+                                        <form asp-area=""
+                                              asp-controller="OffentligAktor"
+                                              asp-action="FrigiRessurs"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="assignmentId"
+                                                   value="@tildeling.Id" />
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-secondary w-100">
+                                                Frigi ressurs
+                                            </button>
+                                        </form>
+
+                                    }
+
+                                    @if (tildeling == null && !ressursOpptatt)
+                                    {
+                                        <form asp-area=""
+                                              asp-controller="OffentligAktor"
+                                              asp-action="VurderRessurs"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="needId"
+                                                   value="@treff.NeedId"/>
+
+                                            <input type="hidden"
+                                                   name="resourceId"
+                                                   value="@treff.ResourceId"/>
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-primary w-100">
+                                                Vurder ressurs
+                                            </button>
+                                        </form>
+                                    }
+
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-area="Offentlig"
+                                       asp-controller="Need"
+                                       asp-action="Edit"
+                                       asp-route-id="@treff.NeedId">
+                                        Se og endre behov
+                                    </a>
+
+                                </div>
+
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>
+                            Ingen forslag funnet. Forslag krever et aktivt behov
+                            og en tilgjengelig ressurs i tilsvarende kategori.
+                        </p>
+                    }
                 </div>
 
             </section>

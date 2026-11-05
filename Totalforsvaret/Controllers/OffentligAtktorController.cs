@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Handlers;
 using Totalforsvaret.DataAccess;
-
+using Totalforsvaret.Areas.Offentlig.Models;
+using Totalforsvaret.Areas.Offentlig.ViewModels;
 namespace Totalforsvaret.Controllers;
 
 public class OffentligAktorController : Controller
@@ -54,6 +55,271 @@ public class OffentligAktorController : Controller
         // Teller kriser med status Aktiv.
         ViewBag.AktiveKriser = _context?.Set<Totalforsvaret.Models.Crisis>()
             .Count(k => k.Status == "Aktiv") ?? 0;
+        var forslag = new List<MatchSuggestionViewModel>();
+        var aktiveTildelinger = _context?.ResourceAssignments
+            .AsNoTracking()
+            .Where(a => a.Status == AssignmentStatus.Requested ||
+                        a.Status == AssignmentStatus.Assigned)
+            .ToList() ?? new List<ResourceAssignment>();
+
+        ViewBag.AktiveTildelinger = aktiveTildelinger;
+
+        if (_context != null)
+        {
+            var aktiveBehov = _context.Needs
+                .AsNoTracking()
+                .Where(n => n.Status == "Åpen" ||
+                            n.Status == "Under behandling")
+                .ToList();
+
+            var na = DateTime.Now;
+
+            var kandidater = _context.Resources
+                .AsNoTracking()
+                .Include(r => r.Category)
+                .Where(r => r.Available &&
+                            (r.TilgjengeligFra == null ||
+                             r.TilgjengeligFra <= na))
+                .ToList();
+
+            foreach (var behov in aktiveBehov)
+            {
+                var kategori = behov.Type switch
+                {
+                    "Transport" => "Vehicles",
+                    "Utstyr" => "Equipment",
+                    _ => null
+                };
+
+                if (kategori == null)
+                    continue;
+
+                foreach (var ressurs in kandidater.Where(
+                             r => r.Category.Name == kategori))
+                {
+                    forslag.Add(new MatchSuggestionViewModel
+                    {
+                        NeedId = behov.Id,
+                        NeedName = behov.Name,
+                        ResourceId = ressurs.ResourceId,
+                        ResourceName = ressurs.Object,
+                        DistanceKm = BeregnAvstandKm(
+                            behov.Latitude,
+                            behov.Longitude,
+                            ressurs.Latitude,
+                            ressurs.Longitude)
+                    });
+                }
+            }
+        }
+
+        ViewBag.MatchForslag = forslag
+            .OrderBy(f => f.DistanceKm ?? double.MaxValue)
+            .ThenBy(f => f.NeedId)
+            .ThenBy(f => f.ResourceId)
+            .ToList();
+
+        ViewBag.ForeslatteTreff = forslag.Count;
         return View(tilgjengeligeRessurser);
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> VurderRessurs(int needId, int resourceId)
+    {
+        if (_context == null)
+            return StatusCode(500, "Databasen er ikke tilgjengelig.");
+
+        // Kontroller at behovet fortsatt er aktivt.
+        var behovFinnes = await _context.Needs.AnyAsync(n =>
+            n.Id == needId &&
+            (n.Status == "Åpen" || n.Status == "Under behandling"));
+
+        if (!behovFinnes)
+            return BadRequest("Behovet finnes ikke eller er avsluttet.");
+
+        // Kontroller at ressursen er tilgjengelig.
+        var ressursFinnes = await _context.Resources.AnyAsync(r =>
+            r.ResourceId == resourceId &&
+            r.Available &&
+            (r.TilgjengeligFra == null ||
+             r.TilgjengeligFra <= DateTime.Now));
+
+        if (!ressursFinnes)
+            return BadRequest("Ressursen er ikke tilgjengelig.");
+
+        // Ressursen må ikke allerede være under vurdering eller tildelt.
+        var opptatt = await _context.ResourceAssignments.AnyAsync(a =>
+            a.ResourceId == resourceId &&
+            (a.Status == AssignmentStatus.Requested ||
+             a.Status == AssignmentStatus.Assigned));
+
+        if (opptatt)
+            return BadRequest("Ressursen er allerede under vurdering eller tildelt.");
+
+        var tildeling = new ResourceAssignment
+        {
+            NeedId = needId,
+            ResourceId = resourceId,
+            Status = AssignmentStatus.Requested,
+            RequestedAtUtc = DateTime.UtcNow
+        };
+
+        _context.ResourceAssignments.Add(tildeling);
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Ressursen er sendt til vurdering.";
+
+        return RedirectToAction(nameof(Index));
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> TildelRessurs(int assignmentId)
+    {
+        if (_context == null)
+            return StatusCode(500, "Databasen er ikke tilgjengelig.");
+
+        // Finn vurderingen som skal godkjennes.
+        var tildeling = await _context.ResourceAssignments
+            .FirstOrDefaultAsync(a => a.Id == assignmentId);
+
+        if (tildeling == null)
+            return NotFound("Ressursvurderingen finnes ikke.");
+
+        // Bare ressurser til vurdering kan tildeles.
+        if (tildeling.Status != AssignmentStatus.Requested)
+            return BadRequest("Ressursen er ikke til vurdering.");
+
+        // Behovet må fortsatt være aktivt.
+        var aktivtBehov = await _context.Needs.AnyAsync(n =>
+            n.Id == tildeling.NeedId &&
+            (n.Status == "Åpen" || n.Status == "Under behandling"));
+
+        if (!aktivtBehov)
+            return BadRequest("Behovet er ikke lenger aktivt.");
+
+        // Ressursen må fortsatt være tilgjengelig.
+        var tilgjengeligRessurs = await _context.Resources.AnyAsync(r =>
+            r.ResourceId == tildeling.ResourceId &&
+            r.Available &&
+            (r.TilgjengeligFra == null ||
+             r.TilgjengeligFra <= DateTime.Now));
+
+        if (!tilgjengeligRessurs)
+            return BadRequest("Ressursen er ikke tilgjengelig.");
+
+        // Hindre tildeling dersom ressursen allerede er tildelt.
+        var alleredeTildelt = await _context.ResourceAssignments
+            .AnyAsync(a =>
+                a.ResourceId == tildeling.ResourceId &&
+                a.Id != tildeling.Id &&
+                (a.Status == AssignmentStatus.Requested ||
+                 a.Status == AssignmentStatus.Assigned));
+
+        if (alleredeTildelt)
+            return BadRequest("Ressursen er allerede opptatt.");
+
+        tildeling.Status = AssignmentStatus.Assigned;
+        tildeling.AssignedAtUtc = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Ressursen er tildelt.";
+
+        return RedirectToAction(nameof(Index));
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> FrigiRessurs(int assignmentId)
+    {
+        if (_context == null)
+            return StatusCode(500, "Databasen er ikke tilgjengelig.");
+
+        // Finn den eksisterende tildelingen.
+        var tildeling = await _context.ResourceAssignments
+            .FirstOrDefaultAsync(a => a.Id == assignmentId);
+
+        if (tildeling == null)
+            return NotFound("Tildelingen finnes ikke.");
+
+        // Bare tildelte ressurser kan frigis.
+        if (tildeling.Status != AssignmentStatus.Assigned)
+            return BadRequest("Ressursen er ikke tildelt.");
+
+        // Avslutt tildelingen og behold historikken.
+        tildeling.Status = AssignmentStatus.Released;
+        tildeling.ClosedAtUtc = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Ressursen er frigitt.";
+
+        return RedirectToAction(nameof(Index));
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AvslaRessurs(int assignmentId)
+    {
+        if (_context == null)
+            return StatusCode(500, "Databasen er ikke tilgjengelig.");
+
+        var tildeling = await _context.ResourceAssignments
+            .FirstOrDefaultAsync(a => a.Id == assignmentId);
+
+        if (tildeling == null)
+            return NotFound("Ressursvurderingen finnes ikke.");
+
+        // Bare vurderinger kan avslås.
+        if (tildeling.Status != AssignmentStatus.Requested)
+            return BadRequest("Ressursen er ikke til vurdering.");
+
+        // Avslutt vurderingen, men behold historikken.
+        tildeling.Status = AssignmentStatus.Rejected;
+        tildeling.ClosedAtUtc = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Ressursforslaget er avslått.";
+
+        return RedirectToAction(nameof(Index));
+    }
+    
+    private static double? BeregnAvstandKm(
+        double? behovLatitude,
+        double? behovLongitude,
+        decimal ressursLatitude,
+        decimal ressursLongitude)
+    {
+        if (!behovLatitude.HasValue || !behovLongitude.HasValue)
+            return null;
+        
+        var lat1 = behovLatitude.Value;
+        var lon1 = behovLongitude.Value;
+        var lat2 = (double)ressursLatitude;
+        var lon2 = (double)ressursLongitude;
+
+        if (!double.IsFinite(lat1) || !double.IsFinite(lon1) ||
+            lat1 < -90 || lat1 > 90 ||
+            lon1 < -180 || lon1 > 180 ||
+            lat2 < -90 || lat2 > 90 ||
+            lon2 < -180 || lon2 > 180)
+            return null;
+
+        const double jordradiusKm = 6371;
+        const double radianer = Math.PI / 180;
+
+        var deltaLat = (lat2 - lat1) * radianer;
+        var deltaLon = (lon2 - lon1) * radianer;
+
+        var a = Math.Pow(Math.Sin(deltaLat / 2), 2) +
+                Math.Cos(lat1 * radianer) *
+                Math.Cos(lat2 * radianer) *
+                Math.Pow(Math.Sin(deltaLon / 2), 2);
+
+        return jordradiusKm * 2 *
+               Math.Asin(Math.Sqrt(Math.Clamp(a, 0, 1)));
     }
 }

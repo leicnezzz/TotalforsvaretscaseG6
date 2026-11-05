@@ -7,10 +7,19 @@
         : "Opprett krise";
 }
 
-<div class="container py-4">
+<link rel="stylesheet"
+      href="~/css/offentlig-aktor.css"
+      asp-append-version="true" />
+
+<div class="container py-4 offentlig-krise-side">
+    <a asp-area=""
+       asp-controller="OffentligAktor"
+       asp-action="Index"
+       class="tilbake-oversikt">
+        ← Tilbake til oversikten
+    </a>
     <h1>@ViewData["Title"]</h1>
     <p>Registrer krisen før du legger til behov.</p>
-
     <form asp-area="Offentlig"
           asp-controller="Crisis"
           asp-action="@(ViewData["EditId"] != null ? "Edit" : "Create")"
@@ -18,58 +27,73 @@
           method="post">
 
         <div asp-validation-summary="All" class="text-danger"></div>
+        
+        <h2 class="krise-skjema-tittel">Hva har skjedd?</h2>
+        <p class="krise-skjema-intro">
+            Beskriv situasjonen og velg området som er berørt.
+        </p>
 
-        <div class="mb-3">
-            <label asp-for="Name" class="form-label">Navn på krisen</label>
-            <input asp-for="Name" class="form-control"
-                   placeholder="For eksempel Flom i Otra"
-                   maxlength="100" required />
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Name" class="form-label">Navn på krisen</label>
+                <input asp-for="Name" class="form-control"
+                       placeholder="For eksempel Flom i Kristiansand sentrum"
+                       maxlength="100" required />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label asp-for="Type" class="form-label">Type krise</label>
+                <select asp-for="Type" class="form-select" required>
+                    <option value="">Velg type</option>
+                    <option value="Flom">Flom</option>
+                    <option value="Brann">Brann</option>
+                    <option value="Strømbrudd">Strømbrudd</option>
+                    <option value="Ekstremvær">Ekstremvær</option>
+                    <option value="Annet">Annet</option>
+                </select>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="Type" class="form-label">Type krise</label>
-            <select asp-for="Type" class="form-select" required>
-                <option value="">Velg type</option>
-                <option value="Flom">Flom</option>
-                <option value="Brann">Brann</option>
-                <option value="Strømbrudd">Strømbrudd</option>
-                <option value="Ekstremvær">Ekstremvær</option>
-                <option value="Annet">Annet</option>
-            </select>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Area" class="form-label">Område</label>
+                <input asp-for="Area" class="form-control"
+                       placeholder="For eksempel Kristiansand"
+                       maxlength="100" required />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label asp-for="Severity" class="form-label">Alvorlighetsgrad</label>
+                <select asp-for="Severity" class="form-select" required>
+                    <option value="">Velg alvorlighetsgrad</option>
+                    <option value="Lav">Lav</option>
+                    <option value="Middels">Middels</option>
+                    <option value="Høy">Høy</option>
+                    <option value="Kritisk">Kritisk</option>
+                </select>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="Area" class="form-label">Område</label>
-            <input asp-for="Area" class="form-control"
-                   placeholder="For eksempel Kristiansand"
-                   maxlength="100" required />
-        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="StartTime" class="form-label">Starttidspunkt</label>
+                <input asp-for="StartTime"
+                       type="datetime-local"
+                       asp-format="{0:yyyy-MM-ddTHH:mm}"
+                       step="60"
+                       class="form-control"
+                       required/>
+            </div>
 
-        <div class="mb-3">
-            <label asp-for="Severity" class="form-label">Alvorlighetsgrad</label>
-            <select asp-for="Severity" class="form-select" required>
-                <option value="">Velg alvorlighetsgrad</option>
-                <option value="Lav">Lav</option>
-                <option value="Middels">Middels</option>
-                <option value="Høy">Høy</option>
-                <option value="Kritisk">Kritisk</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="StartTime" class="form-label">Starttidspunkt</label>
-            <input asp-for="StartTime" type="datetime-local"
-                   class="form-control" required />
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="Status" class="form-label">Status</label>
-            <select asp-for="Status" class="form-select" required>
-                <option value="">Velg status</option>
-                <option value="Aktiv">Aktiv</option>
-                <option value="Under kontroll">Under kontroll</option>
-                <option value="Avsluttet">Avsluttet</option>
-            </select>
+            <div class="col-md-6 mb-3">
+                <label asp-for="Status" class="form-label">Status</label>
+                <select asp-for="Status" class="form-select" required>
+                    <option value="">Velg status</option>
+                    <option value="Aktiv">Aktiv</option>
+                    <option value="Under kontroll">Under kontroll</option>
+                    <option value="Avsluttet">Avsluttet</option>
+                </select>
+            </div>
         </div>
 
         <div class="mb-3">
@@ -78,31 +102,33 @@
                       rows="5" maxlength="1500" required></textarea>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3 krise-plassering">
             <label class="form-label">Velg plassering på kartet</label>
             <p>Klikk på kartet for å plassere krisen.</p>
 
             <div id="kriseKart" style="height: 350px; width: 100%;"></div>
 
-            <input asp-for="Latitude" type="hidden" id="Latitude" />
-            <input asp-for="Longitude" type="hidden" id="Longitude" />
+            <input asp-for="Latitude" type="hidden" id="Latitude"/>
+            <input asp-for="Longitude" type="hidden" id="Longitude"/>
 
             <p id="kriseKartmelding" class="small text-muted mt-2">
                 Ingen plassering valgt.
             </p>
         </div>
-        
-        <button type="submit" class="btn btn-success">
-            @(ViewData["EditId"] != null ? "Endre krise" : "Opprett krise")
-        </button>
+        <div class="krise-handlinger">
+            <button type="submit" class="btn btn-success">
+                @(ViewData["EditId"] != null ? "Endre krise" : "Opprett krise")
+            </button>
 
-        <a asp-area=""
-           asp-controller="OffentligAktor"
-           asp-action="Index"
-           class="btn btn-outline-secondary">
-            Avbryt
-        </a>
+            <a asp-area=""
+               asp-controller="OffentligAktor"
+               asp-action="Index"
+               class="btn btn-outline-secondary">
+                Avbryt
+            </a>
+        </div>
     </form>
+    
     @if (ViewData["EditId"] != null)
     {
         <form asp-area="Offentlig"

@@ -365,3 +365,144 @@
 .offentlig-dashboard .kart-behov {
     background: #DC3545;
 }
+/* Registrering og endring av behov */
+.offentlig-behov-side,
+.offentlig-krise-side {
+    max-width: 960px;
+    color: #20343D;
+    font-family: "Roboto", Arial, sans-serif;
+}
+
+.offentlig-behov-side h1,
+.offentlig-krise-side h1 {
+    margin-bottom: 8px;
+    color: #163C4C;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.offentlig-behov-side > p,
+.offentlig-krise-side > p {
+    margin-bottom: 24px;
+    color: #687C85;
+    font-size: 15px;
+}
+.offentlig-behov-side .btn-success,
+.offentlig-krise-side .btn-success {
+    --bs-btn-bg: #163C4C;
+    --bs-btn-border-color: #163C4C;
+    --bs-btn-hover-bg: #225466;
+    --bs-btn-hover-border-color: #225466;
+    --bs-btn-active-bg: #225466;
+    --bs-btn-active-border-color: #225466;
+    --bs-btn-color: #FFFFFF;
+    --bs-btn-hover-color: #FFFFFF;
+    --bs-btn-active-color: #FFFFFF;
+}
+.offentlig-behov-side .form-label,
+.offentlig-krise-side .form-label {
+    color: #20343D;
+    font-weight: 600;
+}
+
+.offentlig-behov-side .form-control,
+.offentlig-behov-side .form-select,
+.offentlig-krise-side .form-control,
+.offentlig-krise-side .form-select {
+    min-height: 46px;
+    border-color: #DCE5E5;
+    border-radius: 6px;
+    font-family: inherit;
+}
+.offentlig-behov-side #map,
+.offentlig-behov-side #behovKart,
+.offentlig-krise-side #kriseKart {
+    border: 1px solid #DCE5E5;
+    border-radius: 10px;
+}
+.offentlig-behov-side .btn-success,
+.offentlig-behov-side .btn-outline-secondary,
+.offentlig-krise-side .btn-success,
+.offentlig-krise-side .btn-outline-secondary {
+    min-height: 46px;
+    padding: 11px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.offentlig-behov-side .btn-success,
+.offentlig-krise-side .btn-success {
+    margin-right: 8px;
+}
+.offentlig-behov-side > form:first-of-type,
+.offentlig-krise-side > form:first-of-type {
+    padding: 24px;
+    background: #FFFFFF;
+    border: 1px solid #DCE5E5;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgb(32 52 61 / 4%);
+}
+.offentlig-behov-side .tilbake-oversikt,
+.offentlig-krise-side .tilbake-oversikt {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 8px 12px;
+    border: 1px solid #DCE5E5;
+    border-radius: 6px;
+    background: #FFFFFF;
+    color: #163C4C;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.offentlig-behov-side .tilbake-oversikt:hover,
+.offentlig-krise-side .tilbake-oversikt:hover {
+    background: #EDF3F6;
+    border-color: #163C4C;
+}
+.offentlig-behov-side .krise-skjema-tittel,
+.offentlig-krise-side .krise-skjema-tittel {
+    margin: 0 0 6px;
+    color: #163C4C;
+    font-size: 21px;
+    font-weight: 600;
+}
+
+.offentlig-behov-side .krise-skjema-intro,
+.offentlig-krise-side .krise-skjema-intro {
+    margin: 0 0 24px;
+    color: #687C85;
+    font-size: 14px;
+}
+.offentlig-krise-side .krise-plassering {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #DCE5E5;
+}
+.offentlig-behov-side fieldset.behov-element {
+    min-width: 0;
+    margin-top: 20px;
+    padding: 20px;
+    background: #F4F7F6;
+    border: 1px solid #DCE5E5;
+    border-radius: 10px;
+}
+
+.offentlig-behov-side fieldset.behov-element legend {
+    float: none;
+    width: auto;
+    margin-bottom: 16px;
+    color: #163C4C;
+    font-size: 18px;
+    font-weight: 600;
+}
+.offentlig-dashboard .statistikk-rad > div {
+    display: flex;
+}
+
+.offentlig-dashboard .statistikk-rad .stat-kort {
+    width: 100%;
+}

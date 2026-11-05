@@ -18,9 +18,9 @@ public class ProfileController(UserManager<Bruker> users) : Controller
         if (user == null)
             return Challenge();
 
-        return View(new ProfileViewModel
+        return View("Index", new ProfileViewModel
         {
-            Navn = user.Navn,
+            Fornavn = user.Navn,
             Email = user.Email,
             PhoneNumber = user.PhoneNumber
         });
@@ -41,7 +41,7 @@ public class ProfileController(UserManager<Bruker> users) : Controller
             return View(model);
         }
 
-        user.Navn = model.Navn.Trim();
+        user.Navn = model.Fornavn.Trim();
         user.PhoneNumber = model.PhoneNumber?.Trim();
 
         var result = await users.UpdateAsync(user);

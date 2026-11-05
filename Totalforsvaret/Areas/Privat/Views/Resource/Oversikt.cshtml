@@ -24,50 +24,11 @@
     <link rel="stylesheet" href="~/css/resource-overview.css" asp-append-version="true" />
 </head>
 <body class="private-home resource-overview">
-    <header class="site-header">
-        <nav class="primary-nav" aria-label="Hovedmeny">
-            <div class="nav-links">
-                <a
+@{
+    ViewData["PrivateSection"] = "Oversikt over ressurser";
+}
 
-                   asp-area="Privat"
-                   asp-controller="Dashboard"
-                   asp-action="Index">
-                    Min side
-                </a>
-
-                <a asp-area="Privat"
-                   asp-controller="Resource"
-                   asp-action="Skjema">
-                    Ressursregistrering
-                </a>
-
-                <a asp-area="Privat"
-                   asp-controller="Resource"
-                   asp-action="Oversikt" class="active" aria-current="page">
-                    Mine ressurser
-                </a>
-            </div>
-
-            <div class="profile">
-                <svg class="bell"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     aria-hidden="true">
-                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
-                    <path d="M10 21h4" />
-                </svg>
-
-                <span class="avatar avatar-small" aria-hidden="true">
-                    @initialer
-                </span>
-
-                <span class="profile-name">@navn</span>
-            </div>
-        </nav>
-
-        <partial name="/Views/Shared/_PrivateBreadcrumb.cshtml" />
-    </header>
+<partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
     <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
     <main class="overview-content">
         <partial name="/Views/Shared/_IncidentAlert.cshtml" />

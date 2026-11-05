@@ -1,0 +1,141 @@
+@model Totalforsvaret.Areas.Privat.Models.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Min profil";
+    ViewData["PrivateSection"] = "Min profil";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Min profil – Paratus</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap"
+          rel="stylesheet" />
+    
+    <link rel="stylesheet"
+          href="~/css/site-header.css"
+          asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/css/profile.css"
+          asp-append-version="true" />
+
+
+</head>
+<body class="profile-page">
+@{
+    ViewData["PrivateSection"] = "Brukeroversikt";
+}
+
+<partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
+
+    <main class="profile-main">
+        <a class="back-link"
+           asp-area="Privat"
+           asp-controller="Dashboard"
+           asp-action="Index">
+            <span aria-hidden="true">←</span> Tilbake
+        </a>
+
+        <section class="profile-card" aria-labelledby="profile-title">
+            <div class="profile-card__main">
+                <h1 id="profile-title">Hei, @Model.Fornavn @Model.Etternavn</h1>
+
+                @if (TempData["ProfileSaved"] is string message)
+                {
+                    <div class="success-message" role="status">@message</div>
+                }
+
+                <form asp-area="Privat"
+                      asp-controller="Profile"
+                      asp-action="Index"
+                      method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="validation-summary"
+                         role="alert"></div>
+
+                    <div class="section-heading">
+                        <h2>Konto informasjon</h2>
+                    </div>
+
+                    <div class="name-fields">
+                        <div class="field">
+                            <label asp-for="Fornavn"></label>
+                            <input asp-for="Fornavn" autocomplete="given-name" />
+                            <span asp-validation-for="Fornavn" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label asp-for="Etternavn"></label>
+                            <input asp-for="Etternavn" autocomplete="family-name" />
+                            <span asp-validation-for="Etternavn" class="field-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Email"></label>
+                        <input asp-for="Email" readonly />
+                        <small>E-postadressen kan ikke endres her.</small>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="PhoneNumber"></label>
+                        <input asp-for="PhoneNumber" autocomplete="tel" />
+                        <span asp-validation-for="PhoneNumber" class="field-error"></span>
+                    </div>
+
+                    <div class="section-heading security-heading">
+                        <h2>Sikkerhet og passord</h2>
+                    </div>
+
+                    <a class="password-link"
+                       asp-area="Identity"
+                       asp-page="/Account/Manage/ChangePassword">
+                        Glemt passord? <span aria-hidden="true">|</span> Endre passord
+                    </a>
+
+                    <div class="form-actions">
+                        <button class="button button-danger"
+                                type="button"
+                                disabled
+                                title="Kontosletting må settes opp separat">
+                            Slett konto
+                        </button>
+
+                        <button class="button button-primary" type="submit">Lagre</button>
+                    </div>
+                </form>
+            </div>
+
+            <aside class="profile-card__aside">
+                <span class="avatar avatar-large" aria-hidden="true">@Model.Initialer</span>
+                <button class="change-avatar" type="button" disabled>
+                    Endre profilbilde
+                </button>
+            </aside>
+        </section>
+    </main>
+
+    <footer class="site-footer" id="contact">
+        <div class="footer-brand">Paratus</div>
+        <nav aria-label="Bunnmeny">
+            <a asp-area=""
+               asp-controller="Home"
+               asp-action="Privacy">Personvern</a>
+            <span aria-hidden="true">·</span>
+            <a href="#accessibility">Tilgjengelighet</a>
+            <span aria-hidden="true">·</span>
+            <a href="#contact">Kontakt</a>
+        </nav>
+    </footer>
+</body>
+</html>

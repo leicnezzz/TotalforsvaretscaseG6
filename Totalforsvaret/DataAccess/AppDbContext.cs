@@ -26,6 +26,9 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
 
     public DbSet<EquipmentDetails> EquipmentDetails =>
         Set<EquipmentDetails>();
+    
+    public DbSet<EgenberedskapChecklistStatus> EgenberedskapChecklistStatuses =>
+        Set<EgenberedskapChecklistStatus>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -105,5 +108,15 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
                 Name = "Equipment"
             }
         );
+        builder.Entity<EgenberedskapChecklistStatus>(entity =>
+        {
+            entity.HasKey(status => new { status.BrukerId, status.ItemId });
+            entity.Property(status => status.ItemId).HasMaxLength(80);
+
+            entity.HasOne<Bruker>()
+                .WithMany()
+                .HasForeignKey(status => status.BrukerId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }

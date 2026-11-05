@@ -1,0 +1,109 @@
+@using System
+@using System.Linq
+@using Microsoft.AspNetCore.Identity
+@using Totalforsvaret.Models
+@inject UserManager<Bruker> UserManager
+
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    var isDashboard = controller.Equals("Dashboard", StringComparison.OrdinalIgnoreCase);
+
+    var isResourceForm =
+        controller.Equals("Resource", StringComparison.OrdinalIgnoreCase) &&
+        action.Equals("Skjema", StringComparison.OrdinalIgnoreCase);
+
+    var isResourceOverview =
+        controller.Equals("Resource", StringComparison.OrdinalIgnoreCase) &&
+        action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase);
+
+    var isProfile = controller.Equals("Profile", StringComparison.OrdinalIgnoreCase);
+
+    var isEgenberedskap =
+        controller.Equals("Egenberedskap", StringComparison.OrdinalIgnoreCase);
+
+    var sectionName = isDashboard ? "Min side"
+        : isResourceForm ? "Ressursregistrering"
+        : isResourceOverview ? "Mine ressurser"
+        : isProfile ? "Min profil"
+        : isEgenberedskap ? "Egenberedskap"
+        : "Brukeroversikt";
+
+    var account = await UserManager.GetUserAsync(User);
+    var displayName = account?.Navn ?? User.Identity?.Name ?? "Privat aktør";
+
+    var initials = string.Concat(
+        displayName
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Take(2)
+            .Select(part => char.ToUpperInvariant(part[0])));
+}
+
+<header class="site-header">
+    <nav class="primary-nav" aria-label="Hovedmeny">
+        <div class="nav-links">
+            <a class="@(isDashboard ? "active" : "")"
+               aria-current="@(isDashboard ? "page" : null)"
+               asp-area="Privat"
+               asp-controller="Dashboard"
+               asp-action="Index">
+                Min side
+            </a>
+
+            <a class="@(isResourceForm ? "active" : "")"
+               aria-current="@(isResourceForm ? "page" : null)"
+               asp-area="Privat"
+               asp-controller="Resource"
+               asp-action="Skjema">
+                Ressursregistrering
+            </a>
+
+            <a class="@(isResourceOverview ? "active" : "")"
+               aria-current="@(isResourceOverview ? "page" : null)"
+               asp-area="Privat"
+               asp-controller="Resource"
+               asp-action="Oversikt">
+                Mine ressurser
+            </a>
+
+            <a class="@(isEgenberedskap ? "active" : "")"
+               aria-current="@(isEgenberedskap ? "page" : null)"
+               asp-area="Privat"
+               asp-controller="Egenberedskap"
+               asp-action="Index">
+                Egenberedskap
+            </a>
+        </div>
+
+        <a class="account-link @(isProfile ? "active" : "")"
+           aria-current="@(isProfile ? "page" : null)"
+           asp-area="Privat"
+           asp-controller="Profile"
+           asp-action="Index"
+           aria-label="Åpne profilen til @displayName">
+
+            <svg class="bell"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 aria-hidden="true">
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
+                <path d="M10 21h4" />
+            </svg>
+
+            <span class="avatar avatar-small" aria-hidden="true">@initials</span>
+
+            <span class="account-copy">
+                <strong>@displayName</strong>
+                <small>Privat aktør</small>
+            </span>
+
+            <span class="chevron" aria-hidden="true">⌄</span>
+        </a>
+    </nav>
+
+    <div class="section-bar">
+        <span>@sectionName</span>
+    </div>
+</header>

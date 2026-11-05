@@ -1,3 +1,5 @@
+@inject Microsoft.AspNetCore.Identity.UserManager<Totalforsvaret.Models.Bruker> UserManager 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +10,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/Totalforsvaret.styles.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/egenberedskap.css" asp-append-version="true" />
     <link rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
@@ -79,8 +82,23 @@
                 </ul>
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <span class="navbar-text me-3">Hei, @User.Identity.Name</span>
-                    <form method="post" asp-area="" asp-controller="Account" asp-action="Logout">
+                    var currentUser = await UserManager.GetUserAsync(User);
+
+                    <a class="nav-link"
+                       asp-area="Privat"
+                       asp-controller="Profile"
+                       asp-action="Index">
+                        Min profil
+                    </a>
+
+                    <span class="navbar-text me-3">
+                        Hei, @(currentUser?.Navn ?? User.Identity?.Name)
+                    </span>
+
+                    <form method="post"
+                          asp-area=""
+                          asp-controller="Account"
+                          asp-action="Logout">
                         <button type="submit" class="btn btn-outline-secondary">Logg ut</button>
                     </form>
                 }

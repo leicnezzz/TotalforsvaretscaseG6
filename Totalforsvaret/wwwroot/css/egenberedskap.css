@@ -1,73 +1,136 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: #eef2ee;
+    color: #173e4d;
+    font-family: "Roboto", sans-serif;
+}
+
 .beredskap-container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 2rem;
+    width: min(100% - 40px, 1200px);
+    margin: 0 auto;
+    padding: 48px 0 64px;
 }
 
 .page-header {
-    margin-bottom: 3rem;
+    margin-bottom: 48px;
 }
 
 .page-header h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
+    margin: 0 0 12px;
+    color: #2e6840;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    line-height: 1.15;
 }
 
 .page-header p {
-    color: #59635B;
+    margin: 0;
+    color: #59635b;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.checklist-section,
+.courses-section {
+    margin-top: 48px;
+}
+
+.checklist-section h2,
+.courses-section h2 {
+    margin: 0;
+    color: #2e6840;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    line-height: 1.25;
 }
 
 .checklist-grid,
 .courses-grid {
     display: grid;
-    gap: 2rem;
-    margin-top: 2rem;
+    gap: 24px;
+    margin-top: 24px;
 }
 
 .checklist-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .courses-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.card,
-.course-card {
-    background: white;
-    padding: 1.5rem;
+.preparedness-card {
+    min-height: 100%;
+    padding: 28px;
+    border: 1px solid #d8dfda;
     border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(0,0,0,.15);
+    background: #fff;
+    box-shadow: 0 4px 14px rgb(23 44 52 / 10%);
 }
 
-.card h3,
-.course-card h3 {
-    margin-bottom: 1rem;
-    color: #2E6840;
+.preparedness-card h3 {
+    margin: 0 0 18px;
+    color: #2e6840;
+    font-size: 1.5rem;
+    line-height: 1.25;
 }
 
-.card ul,
-.course-card ul {
-    padding-left: 1.2rem;
+.preparedness-card ul {
+    margin: 0;
+    padding-left: 1.4rem;
 }
 
-.card li,
-.course-card li {
-    margin-bottom: .5rem;
+.preparedness-card li {
+    margin: 0 0 12px;
+    padding-left: 3px;
+    font-size: 1.05rem;
+    line-height: 1.5;
 }
 
-@media (max-width: 768px) {
+.preparedness-card li:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 850px) {
+    .courses-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .beredskap-container {
+        width: min(100% - 32px, 520px);
+        padding: 32px 0 48px;
+    }
+
+    .page-header {
+        margin-bottom: 36px;
+    }
+
+    .checklist-section,
+    .courses-section {
+        margin-top: 36px;
+    }
 
     .checklist-grid,
     .courses-grid {
         grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 18px;
     }
 
-    .page-header h1 {
-        font-size: 2rem;
+    .preparedness-card {
+        padding: 22px;
     }
 
-    .beredskap-container {
-        padding: 1rem;
+    .preparedness-card h3 {
+        font-size: 1.3rem;
+    }
+
+    .preparedness-card li {
+        font-size: 1rem;
     }
 }

@@ -86,6 +86,23 @@ namespace Totalforsvaret.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Totalforsvaret.Areas.Privat.Models.EgenberedskapChecklistStatus", b =>
+                {
+                    b.Property<int>("BrukerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ItemId")
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)");
+
+                    b.Property<bool>("IsComplete")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("BrukerId", "ItemId");
+
+                    b.ToTable("EgenberedskapChecklistStatuses");
+                });
+
             modelBuilder.Entity("Totalforsvaret.Models.Bruker", b =>
                 {
                     b.Property<int>("Id")
@@ -343,6 +360,15 @@ namespace Totalforsvaret.Migrations
                     b.HasOne("Totalforsvaret.Models.Bruker", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Areas.Privat.Models.EgenberedskapChecklistStatus", b =>
+                {
+                    b.HasOne("Totalforsvaret.Models.Bruker", null)
+                        .WithMany()
+                        .HasForeignKey("BrukerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

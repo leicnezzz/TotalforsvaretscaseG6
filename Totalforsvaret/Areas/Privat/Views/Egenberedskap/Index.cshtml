@@ -1,6 +1,12 @@
+@using System.Collections.Generic
+
 @{
     ViewData["Title"] = "Egenberedskap";
     Layout = null;
+
+    var completedItems =
+        ViewData["CompletedChecklistItems"] as HashSet<string>
+        ?? new HashSet<string>();
 }
 
 <!DOCTYPE html>
@@ -32,87 +38,353 @@
             <p>For deg som ønsker å bli en bedre ressurs for samfunnet.</p>
         </header>
 
-        <section class="checklist-section" aria-labelledby="checklist-title">
-            <h2 id="checklist-title">Sjekkliste for beredskap</h2>
+        <nav class="contents-card" aria-label="Innhold på siden">
+            <h2>Innhold</h2>
+            <p>Her er en oversikt over informasjon du finner på denne siden.</p>
+            <a href="#checklist">— &nbsp; Sjekkliste for beredskap</a>
+            <a href="#courses">— &nbsp; Oversikt over diverse kurs</a>
+        </nav>
+
+        <section id="checklist"
+                 class="checklist-section"
+                 aria-labelledby="checklist-title">
+            <header class="section-heading">
+                <h2 id="checklist-title">Sjekkliste for beredskap</h2>
+                <p>Her er en sjekkliste for hva som er viktig å tenke på før en krise oppstår.</p>
+            </header>
 
             <div class="checklist-grid">
                 <article class="preparedness-card">
                     <h3>Mat og vann</h3>
                     <ul>
-                        <li>Rent drikkevann lagret på kanner eller flasker</li>
-                        <li>Mat som tåler lagring i romtemperatur</li>
-                        <li>Grill, kokeapparat eller stormkjøkken</li>
-                        <li>Ekstra gassbeholder eller brennstoff</li>
-                        <li>Mat og vann til kjæledyr</li>
-                        <li>Litt kontanter og flere betalingskort</li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="water" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("water") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("water") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Rent drikkevann lagret på kanner eller flasker</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="stored-food" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("stored-food") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("stored-food") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Mat som tåler lagring i romtemperatur</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="cooking-equipment" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("cooking-equipment") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("cooking-equipment") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Grill, kokeapparat eller stormkjøkken</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="fuel" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("fuel") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("fuel") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Ekstra gassbeholder eller brennstoff</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="pet-supplies" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("pet-supplies") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("pet-supplies") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Mat og vann til kjæledyr</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="cash" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("cash") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("cash") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Litt kontanter og flere betalingskort</span>
+                                </label>
+                            </form>
+                        </li>
                     </ul>
                 </article>
 
                 <article class="preparedness-card">
                     <h3>Varme og lys</h3>
                     <ul>
-                        <li>Varme klær og pledd</li>
-                        <li>Fyrstikker eller stearinlys</li>
-                        <li>Ved dersom du har peis</li>
-                        <li>Gass- eller parafinovn</li>
-                        <li>Avtale om overnatting</li>
-                        <li>Lommelykter eller hodelykter</li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="warm-clothes" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("warm-clothes") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("warm-clothes") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Varme klær og pledd, dyner eller soveposer</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="matches" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("matches") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("matches") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Fyrstikker eller stearinlys</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="firewood" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("firewood") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("firewood") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Ved dersom du har vedovn eller peis</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="heater" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("heater") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("heater") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Gass- eller parafinovn beregnet for innendørs bruk</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="overnight" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("overnight") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("overnight") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Avtale om overnatting</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="flashlights" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("flashlights") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("flashlights") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Lommelykter eller hodelykter som går på batterier, sveiv eller solceller</span>
+                                </label>
+                            </form>
+                        </li>
                     </ul>
                 </article>
 
                 <article class="preparedness-card">
                     <h3>Informasjon</h3>
                     <ul>
-                        <li>DAB-radio</li>
-                        <li>Batterier og batteribank</li>
-                        <li>Liste over viktige telefonnummer</li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="radio" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("radio") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("radio") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>DAB-radio som går på batterier, sveiv eller solceller</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="batteries" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("batteries") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("batteries") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Batterier og ladet batteribank</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="phone-list" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("phone-list") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("phone-list") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Liste på papir med viktige telefonnummer, som nødnummer, legevakt, veterinær, familie, venner og naboer</span>
+                                </label>
+                            </form>
+                        </li>
                     </ul>
                 </article>
 
                 <article class="preparedness-card">
                     <h3>Legemidler og hygiene</h3>
                     <ul>
-                        <li>Legemidler og førstehjelpsutstyr</li>
-                        <li>Jodtabletter</li>
-                        <li>Hygieneartikler</li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="medicine" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("medicine") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("medicine") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Legemidler og førstehjelpsutstyr</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="iodine" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("iodine") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("iodine") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Jodtabletter for barn og voksne under 40 år, gravide og ammende</span>
+                                </label>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="Privat" asp-controller="Egenberedskap"
+                                  asp-action="SetChecklistStatus" method="post">
+                                <input type="hidden" name="itemId" value="hygiene" />
+                                <input type="hidden" name="isComplete"
+                                       value="@(completedItems.Contains("hygiene") ? "true" : "false")" />
+                                <label class="checklist-item">
+                                    <input type="checkbox"
+                                           checked="@(completedItems.Contains("hygiene") ? "checked" : null)"
+                                           onchange="this.form.elements['isComplete'].value = this.checked; this.form.requestSubmit();" />
+                                    <span>Hygieneartikler som våtservietter, håndsprit, bleier, toalettpapir, bind og tamponger</span>
+                                </label>
+                            </form>
+                        </li>
                     </ul>
                 </article>
             </div>
         </section>
 
-        <section class="courses-section" aria-labelledby="courses-title">
-            <h2 id="courses-title">Oversikt over diverse kurs</h2>
+        <section id="courses"
+                 class="courses-section"
+                 aria-labelledby="courses-title">
+            <header class="section-heading">
+                <h2 id="courses-title">Oversikt over diverse kurs</h2>
+                <p>Her er en oversikt over kurs som kan forbedre dine ferdigheter.</p>
+            </header>
 
             <div class="courses-grid">
-                <article class="preparedness-card">
-                    <h3>Norske Luftambulanse</h3>
+                <a class="course-card"
+                   href="https://example.com/norsk-luftambulanse-kurs"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    <h3>Norsk Luftambulanse online kurs</h3>
+                    <p>Her får du gratis online kurs som tilbyr:</p>
                     <ul>
                         <li>CPR</li>
                         <li>Hjertestarter</li>
                         <li>Førstehjelp for barn</li>
                         <li>Gjenkjenne slag</li>
-                        <li>Akutte situasjoner</li>
+                        <li>Hvordan reagere i akutte situasjoner</li>
                     </ul>
-                </article>
+                    <span class="course-link-text">Åpne kursoversikten ↗</span>
+                </a>
 
-                <article class="preparedness-card">
+                <a class="course-card"
+                   href="https://example.com/roede-kors-kurs"
+                   target="_blank"
+                   rel="noopener noreferrer">
                     <h3>Røde Kors</h3>
+                    <p>Her kan du finne kurs for:</p>
                     <ul>
                         <li>Førstehjelp grunnkurs</li>
                         <li>Førstehjelp ved ulykker</li>
                         <li>Psykisk førstehjelp</li>
                         <li>Frivillig akuttberedskap</li>
                     </ul>
-                </article>
+                    <span class="course-link-text">Åpne kursoversikten ↗</span>
+                </a>
 
-                <article class="preparedness-card">
+                <a class="course-card"
+                   href="https://example.com/brannvernforeningen-kurs"
+                   target="_blank"
+                   rel="noopener noreferrer">
                     <h3>Brannvernforeningen</h3>
+                    <p>Her kan du finne kurs for:</p>
                     <ul>
                         <li>Brannforebygging</li>
                         <li>Slukkeutstyr</li>
                         <li>Evakueringsrutiner</li>
                     </ul>
-                </article>
+                    <span class="course-link-text">Åpne kursoversikten ↗</span>
+                </a>
             </div>
         </section>
     </main>

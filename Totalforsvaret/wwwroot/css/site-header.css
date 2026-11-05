@@ -191,4 +191,13 @@
     .profile-link:hover .profile-name {
         text-decoration: underline;
     }
+    .nav-link-upcoming {
+        display: inline-flex;
+        align-items: center;
+        padding: 18px 0;
+        color: #607078;
+        font-size: 15px;
+        line-height: 1.4;
+        opacity: 0.75;
+    }
 }

@@ -1,0 +1,75 @@
+@using Microsoft.AspNetCore.Identity
+@using Totalforsvaret.Models
+@inject UserManager<Bruker> UserManager
+
+@{
+    var account = await UserManager.GetUserAsync(User);
+    var displayName = account?.Navn ?? User.Identity?.Name ?? "Privat aktør";
+
+    var initials = string.Concat(
+        displayName
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Take(2)
+            .Select(part => char.ToUpperInvariant(part[0])));
+}
+
+<header class="site-header">
+    <nav class="primary-nav" aria-label="Hovedmeny">
+        <div class="nav-links">
+            <a asp-area="Privat"
+               asp-controller="Dashboard"
+               asp-action="Index">
+                Min side
+            </a>
+
+            <a asp-area="Privat"
+               asp-controller="Resource"
+               asp-action="Skjema">
+                Ressursregistrering
+            </a>
+
+            <a asp-area="Privat"
+               asp-controller="Resource"
+               asp-action="Oversikt">
+                Mine ressurser
+            </a>
+
+            <span class="nav-link-upcoming"
+                  aria-disabled="true"
+                  title="Kommer senere">
+                Egenberedskap
+            </span>
+        </div>
+
+        <a class="account-link"
+           asp-area="Privat"
+           asp-controller="Profile"
+           asp-action="Index"
+           aria-label="Åpne profilen til @displayName">
+
+            <svg class="bell"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 aria-hidden="true">
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
+                <path d="M10 21h4" />
+            </svg>
+
+            <span class="avatar avatar-small" aria-hidden="true">
+                @initials
+            </span>
+
+            <span class="account-copy">
+                <strong>@displayName</strong>
+                <small>Privat aktør</small>
+            </span>
+
+            <span class="chevron" aria-hidden="true">⌄</span>
+        </a>
+    </nav>
+
+    <div class="section-bar">
+        <span>@(ViewData["PrivateSection"] ?? "Brukeroversikt")</span>
+    </div>
+</header>

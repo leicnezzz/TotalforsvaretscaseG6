@@ -268,8 +268,8 @@
                                 <div class="d-flex flex-column gap-2 mt-3">
                                     @if (tildeling?.Status == Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Requested)
                                     {
-                                        <span class="badge bg-warning text-dark">
-                                            Til vurdering
+                                        <span class="status-merkelapp status-vurderes">
+                                            Status: Til vurdering
                                         </span>
                                         <form asp-area=""
                                               asp-controller="OffentligAktor"
@@ -310,8 +310,8 @@
                                     @if (tildeling?.Status ==
                                          Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned)
                                     {
-                                        <span class="badge bg-success">
-                                            Tildelt
+                                        <span class="status-merkelapp status-tildelt">
+                                            Status: Tildelt
                                         </span>
                                         
                                         <form asp-area=""
@@ -326,8 +326,9 @@
                                                    value="@tildeling.Id" />
 
                                             <button type="submit"
-                                                    class="btn btn-sm btn-outline-secondary w-100">
-                                                Frigi ressurs
+                                                    class="btn btn-sm btn-link text-danger w-100"
+                                                    onclick="return confirm('Avslå denne ressursen? Handlingen kan ikke angres her.');">
+                                                Avslå ressurs
                                             </button>
                                         </form>
 
@@ -357,7 +358,7 @@
                                         </form>
                                     }
 
-                                    <a class="btn btn-sm btn-outline-primary"
+                                    <a class="btn btn-sm btn-sm btn-link"
                                        asp-area="Offentlig"
                                        asp-controller="Need"
                                        asp-action="Edit"
@@ -446,4 +447,10 @@
 
     <script src="~/js/oversikt-lister.js"
             asp-append-version="true"></script>
+    <script src="~/js/oversikt-lister.js"
+            asp-append-version="true"></script>
+
+    <script src="~/js/offentlig-scroll.js"
+            asp-append-version="true"></script>
+}
 }

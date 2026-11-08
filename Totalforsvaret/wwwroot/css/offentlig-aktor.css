@@ -1008,3 +1008,40 @@ body.kart-fullskjerm-apen {
 .offentlig-dashboard .status-tildelt {
     background: #BFE6B5;
 }
+/* «Se og endre behov» i Foreslåtte treff */
+.offentlig-dashboard .se-behov-lenke {
+    align-self: flex-start;
+    padding: 4px 0;
+    color: #163C4C;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.offentlig-dashboard .se-behov-lenke::after {
+    content: " →";
+}
+
+.offentlig-dashboard .se-behov-lenke:hover {
+    color: #225466;
+    border-bottom-color: #225466;
+}
+
+.offentlig-dashboard .se-behov-lenke:focus-visible {
+    outline: 3px solid var(--offentlig);
+    outline-offset: 2px;
+}
+/* Tildel og Avslå ved siden av hverandre */
+.offentlig-dashboard .knapperad {
+    display: flex;
+    gap: 10px;
+}
+
+.offentlig-dashboard .knapperad form {
+    flex: 1;
+}
+
+.offentlig-dashboard .knapperad .btn {
+    width: 100%;
+}

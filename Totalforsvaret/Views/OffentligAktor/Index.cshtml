@@ -271,6 +271,7 @@
                                         <span class="status-merkelapp status-vurderes">
                                             Status: Til vurdering
                                         </span>
+                                        <div class="knapperad">
                                         <form asp-area=""
                                               asp-controller="OffentligAktor"
                                               asp-action="TildelRessurs"
@@ -283,7 +284,7 @@
                                                    value="@tildeling.Id"/>
 
                                             <button type="submit"
-                                                    class="btn btn-sm btn-success w-100">
+                                                    class="btn btn-sm btn-success">
                                                 Tildel ressurs
                                             </button>
                                         </form>
@@ -300,10 +301,12 @@
                                                    value="@tildeling.Id" />
 
                                             <button type="submit"
-                                                    class="btn btn-sm btn-outline-danger w-100">
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    onclick="return confirm('Avslå denne ressursen?');">
                                                 Avslå ressurs
                                             </button>
                                         </form>
+                                        </div>
 
                                     }
                                     
@@ -326,9 +329,9 @@
                                                    value="@tildeling.Id" />
 
                                             <button type="submit"
-                                                    class="btn btn-sm btn-link text-danger w-100"
-                                                    onclick="return confirm('Avslå denne ressursen? Handlingen kan ikke angres her.');">
-                                                Avslå ressurs
+                                                     class="btn btn-sm btn-outline-secondary w-100"
+                                                     onclick="return confirm('Frigi denne ressursen?');">
+                                                Frigi ressurs
                                             </button>
                                         </form>
 
@@ -358,7 +361,7 @@
                                         </form>
                                     }
 
-                                    <a class="btn btn-sm btn-sm btn-link"
+                                    <a class="se-behov-lenke"
                                        asp-area="Offentlig"
                                        asp-controller="Need"
                                        asp-action="Edit"
@@ -447,10 +450,8 @@
 
     <script src="~/js/oversikt-lister.js"
             asp-append-version="true"></script>
-    <script src="~/js/oversikt-lister.js"
-            asp-append-version="true"></script>
-
+    
     <script src="~/js/offentlig-scroll.js"
             asp-append-version="true"></script>
 }
-}
+

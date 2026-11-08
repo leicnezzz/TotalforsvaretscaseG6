@@ -1045,3 +1045,41 @@ body.kart-fullskjerm-apen {
 .offentlig-dashboard .knapperad .btn {
     width: 100%;
 }
+/* Utskrift av ressursliste */
+.print-bare {
+    display: none;
+}
+
+@media print {
+    nav,
+    header,
+    footer {
+        display: none !important;
+    }
+
+    .offentlig-dashboard > *:not(.print-bare) {
+        display: none !important;
+    }
+
+    .offentlig-dashboard {
+        padding: 0;
+        background: #fff;
+    }
+
+    .print-bare {
+        display: block !important;
+    }
+
+    .print-tabell {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+
+    .print-tabell th,
+    .print-tabell td {
+        border: 1px solid #000;
+        padding: 4px 8px;
+        text-align: left;
+    }
+}

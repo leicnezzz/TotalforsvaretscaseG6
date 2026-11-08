@@ -97,6 +97,11 @@
                asp-action="Create">
                 + Opprett krise
             </a>
+            <button type="button"
+                    class="opprett-krise-knapp"
+                    onclick="window.print()">
+                Skriv ut ressursliste
+            </button>
         </div>
     </div>
 
@@ -422,7 +427,35 @@
 
         <div id="oversiktListe" class="oversikt-tabellomrade"></div>
     </dialog>
-    
+    <!-- Ressursliste som bare vises ved utskrift -->
+    <section class="print-bare" aria-label="Ressursliste for utskrift">
+        <h1>Ressursliste – Kristiansand kommune</h1>
+        <p>Utskrift: @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p>
+
+        <table class="print-tabell">
+            <thead>
+            <tr>
+                <th>Ressurs</th>
+                <th>Kategori</th>
+                <th>Tilbyder</th>
+                <th>Kontakt</th>
+                <th>Tilgjengelig fra</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.Object</td>
+                    <td>@(r.Category?.Name ?? "Uten kategori")</td>
+                    <td>@r.Navn</td>
+                    <td>@r.Kontaktpunkt</td>
+                    <td>@(r.TilgjengeligFra?.ToString("dd.MM.yyyy HH:mm") ?? "Ikke oppgitt")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </section>
     <!-- Koordinering -->
     <section class="koordinering-panel"
              aria-labelledby="koordinering-tittel">

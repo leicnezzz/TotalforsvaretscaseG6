@@ -990,3 +990,21 @@ body.kart-fullskjerm-apen {
 .offentlig-dashboard .statistikk-rad .stat-kort {
     width: 100%;
 }
+/* Statusmerkelapper (ikke klikkbare) */
+.offentlig-dashboard .status-merkelapp {
+    align-self: flex-start;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--tekst);
+    cursor: default;
+}
+
+.offentlig-dashboard .status-vurderes {
+    background: var(--planlagt);
+}
+
+.offentlig-dashboard .status-tildelt {
+    background: #BFE6B5;
+}

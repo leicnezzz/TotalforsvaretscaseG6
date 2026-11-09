@@ -12,7 +12,7 @@
     --kant: #DCE5E5;
     --bakgrunn: #F4F7F6;
 
-    padding: 24px;
+    padding: 24px 24px 80px;
     background: var(--bakgrunn);
     color: var(--tekst);
     font-family: "Roboto", Arial, sans-serif;

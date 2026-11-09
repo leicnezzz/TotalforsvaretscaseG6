@@ -42,6 +42,7 @@
     
     var oversiktJson = JsonSerializer.Serialize(new
     {
+        kriser = (object?)ViewBag.KriserTilLister ?? Array.Empty<object>(),
         behov = (object?)ViewBag.BehovTilLister ?? Array.Empty<object>(),
         ressurser = Model.Select(r => new
         {
@@ -108,7 +109,12 @@
     <!-- Statistikkort -->
     <div class="row statistikk-rad">
         <div class="col-lg-3 col-md-6">
-            <div class="stat-kort krise-kort">
+            <div class="stat-kort krise-kort"
+                 role="button"
+                 tabindex="0"
+                 aria-haspopup="dialog"
+                 aria-controls="oversiktDialog"
+                 data-oversikt-liste="kriser">
                 <h2>Aktive kriser</h2>
                 <p class="stat-tall">@ViewBag.AktiveKriser</p>
                 <span>Kriser med status Aktiv</span>
@@ -167,13 +173,26 @@
     <div class="row mt-3 gx-3 offentlig-arbeidsflate">
 
         <div class="col-lg-9 kart-kolonne">
-            <section class="situasjonskart"
-                     aria-label="Kart over registrerte ressurser">
+        <section class="situasjonskart"
+                 aria-label="Kart over ressurser, behov og kriser">
 
-                <div id="offentligKart"></div>
-                <div class="kart-forklaring">
-                    <span><span class="kart-prikk kart-ressurs"></span> Tilgjengelig ressurs</span>
-                    <span><span class="kart-prikk kart-behov"></span> Aktivt behov</span>
+            <div id="offentligKart"></div>
+
+            <div class="kart-forklaring">
+                    <span>
+                        <span class="kart-tegn kart-tegn-ressurs" aria-hidden="true"></span>
+                        Tilgjengelig ressurs
+                    </span>
+
+                    <span>
+                        <span class="kart-tegn kart-tegn-behov" aria-hidden="true"></span>
+                        Aktivt behov
+                    </span>
+
+                    <span>
+                        <span class="kart-tegn kart-tegn-krise" aria-hidden="true"></span>
+                        Aktiv krise
+                    </span>
                 </div>
             </section>
 
@@ -395,6 +414,7 @@
     <dialog id="oversiktDialog"
             class="oversikt-dialog"
             aria-labelledby="oversiktListeTittel"
+            data-endre-krise="@Url.Action("Edit", "Crisis", new { area = "Offentlig" })"
             data-endre-behov="@Url.Action("Edit", "Need", new { area = "Offentlig" })">
 
         <div class="oversikt-dialogtopp">
@@ -456,6 +476,14 @@
             </tbody>
         </table>
     </section>
+    <form id="avsluttKriseSkjema"
+          asp-area="Offentlig"
+          asp-controller="Crisis"
+          asp-action="Avslutt"
+          method="post"
+          hidden>
+        <input type="hidden" name="id" />
+    </form>
     <!-- Koordinering -->
     <section class="koordinering-panel"
              aria-labelledby="koordinering-tittel">
@@ -487,4 +515,3 @@
     <script src="~/js/offentlig-scroll.js"
             asp-append-version="true"></script>
 }
-

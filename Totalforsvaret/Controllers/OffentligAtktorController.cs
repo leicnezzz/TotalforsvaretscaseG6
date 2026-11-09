@@ -189,6 +189,59 @@ public class OffentligAktorController : Controller
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> NyRessurs(
+        [FromForm(Name = "Object")] string objekt,
+        int categoryId,
+        string? navn,
+        string kontaktpunkt,
+        string address,
+        decimal latitude,
+        decimal longitude,
+        string? condition,
+        string? additionalInformation)
+    {
+        if (_context == null)
+            return StatusCode(500, "Databasen er ikke tilgjengelig.");
+
+        var brukerIdTekst = User.FindFirst(
+            System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (!int.TryParse(brukerIdTekst, out var brukerId))
+            return Challenge();
+
+        var kategoriFinnes = _resourceHandler.GetCategories()
+            .Any(c => c.CategoryId == categoryId);
+
+        if (!kategoriFinnes)
+        {
+            TempData["ErrorMessage"] = "Kategorien finnes ikke.";
+            return RedirectToAction(nameof(NyRessurs));
+        }
+
+        var ressurs = new Totalforsvaret.Models.resourcemodels.Resource
+        {
+            Object = objekt.Trim(),
+            BrukerId = brukerId,
+            CategoryId = categoryId,
+            Available = true,
+            Navn = navn?.Trim() ?? string.Empty,
+            Kontaktpunkt = kontaktpunkt.Trim(),
+            Address = address.Trim(),
+            Latitude = latitude,
+            Longitude = longitude,
+            Condition = condition?.Trim() ?? string.Empty,
+            AdditionalInformation = additionalInformation?.Trim() ?? string.Empty
+        };
+
+        _context.Resources.Add(ressurs);
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Ressursen er registrert.";
+
+        return RedirectToAction(nameof(Index));
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> VurderRessurs(int needId, int resourceId)
     {
         if (_context == null)

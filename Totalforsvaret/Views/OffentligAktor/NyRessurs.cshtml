@@ -2,7 +2,7 @@
     ViewData["Title"] = "Legg til egen ressurs";
 }
 
-<div class="container py-4" style="max-width: 640px;">
+<div class="container pt-4 pb-5 mb-5" style="max-width: 640px;">
     <h1 class="mb-1">Legg til egen ressurs</h1>
     <p class="text-muted">Registrer en ressurs som din organisasjon kan stille til rådighet.</p>
 
@@ -15,10 +15,17 @@
         <div class="mb-3">
             <label class="form-label" for="CategoryId">Kategori</label>
             <select class="form-select" id="CategoryId" name="CategoryId" required>
-                <option value="">Velg kategori</option>
+                <option value="">Ressurstype</option>
                 @foreach (var k in ViewBag.Kategorier)
                 {
-                    <option value="@k.CategoryId">@k.Name</option>
+                    string kategorinavn = k.Name;
+                    string visningsnavn = kategorinavn switch
+                    {
+                        "Vehicles" => "Kjøretøy",
+                        "Equipment" => "Utstyr",
+                        _ => kategorinavn
+                    };
+                    <option value="@k.CategoryId">@visningsnavn</option>
                 }
             </select>
         </div>
@@ -37,16 +44,16 @@
             <label class="form-label" for="Address">Adresse</label>
             <input class="form-control" id="Address" name="Address" maxlength="250" required />
         </div>
-
-        <div class="row">
-            <div class="col mb-3">
-                <label class="form-label" for="Latitude">Breddegrad</label>
-                <input class="form-control" id="Latitude" name="Latitude" type="number" step="any" required />
-            </div>
-            <div class="col mb-3">
-                <label class="form-label" for="Longitude">Lengdegrad</label>
-                <input class="form-control" id="Longitude" name="Longitude" type="number" step="any" required />
-            </div>
+        
+        <div class="mb-3">
+            <label class="form-label" for="velgPosisjonKart">Posisjon</label>
+            <p class="form-text mb-2">Klikk på kartet for å velge hvor ressursen står.</p>
+            <div id="velgPosisjonKart" class="border rounded" style="height: 320px;"></div>
+            <p class="text-danger small mt-1 mb-0" id="posisjonFeil" hidden>
+                Velg en posisjon på kartet.
+            </p>
+            <input type="hidden" id="Latitude" name="Latitude" />
+            <input type="hidden" id="Longitude" name="Longitude" />
         </div>
 
         <div class="mb-3">
@@ -65,3 +72,6 @@
         </div>
     </form>
 </div>
+@section Scripts {
+    <script src="~/js/offentlig-velg-posisjon.js" asp-append-version="true"></script>
+}

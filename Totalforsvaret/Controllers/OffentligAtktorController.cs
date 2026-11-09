@@ -203,11 +203,7 @@ public class OffentligAktorController : Controller
         if (_context == null)
             return StatusCode(500, "Databasen er ikke tilgjengelig.");
 
-        var brukerIdTekst = User.FindFirst(
-            System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-        if (!int.TryParse(brukerIdTekst, out var brukerId))
-            return Challenge();
+        if (!TryHentBrukerId(out var brukerId)) return Challenge();
 
         var kategoriFinnes = _resourceHandler.GetCategories()
             .Any(c => c.CategoryId == categoryId);
@@ -402,6 +398,11 @@ public class OffentligAktorController : Controller
         TempData["SuccessMessage"] = "Ressursforslaget er avslått.";
 
         return RedirectToAction(nameof(Index));
+    }
+    private bool TryHentBrukerId(out int brukerId)
+    {
+        var tekst = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        return int.TryParse(tekst, out brukerId);
     }
     
     private static double? BeregnAvstandKm(

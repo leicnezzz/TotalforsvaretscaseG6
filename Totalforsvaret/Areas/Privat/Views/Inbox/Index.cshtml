@@ -1,0 +1,258 @@
+@model Totalforsvaret.Areas.Privat.Models.InboxViewModel
+@using Totalforsvaret.Areas.Offentlig.Models
+
+@{
+    Layout = null;
+    ViewData["PrivateSection"] = "Innboks";
+    ViewData["PrivateBack"] = false;
+}
+
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Innboks – Paratus</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+          rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="~/css/private-home.css"
+          asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/css/site-header.css"
+          asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/css/inbox.css"
+          asp-append-version="true" />
+</head>
+
+<body class="private-home inbox-page">
+    <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
+
+    <main class="inbox-main">
+        <a class="inbox-back"
+           asp-area="Privat"
+           asp-controller="Dashboard"
+           asp-action="Index">
+            <span aria-hidden="true">←</span> Tilbake
+        </a>
+
+        <section class="inbox-card" aria-labelledby="inbox-title">
+            <h1 id="inbox-title">Innboks</h1>
+
+            @if (TempData["InboxMessage"] is string message)
+            {
+                <p class="inbox-flash" role="status">@message</p>
+            }
+
+            @if (Model.Items.Count == 0)
+            {
+                <div class="inbox-empty">
+                    <h2>Ingen forespørsler ennå</h2>
+                    <p>
+                        Forespørsler om ressursene dine vises her når de blir sendt
+                        til vurdering.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="inbox-layout">
+                    <nav class="inbox-list" aria-label="Ressursforespørsler">
+                        @foreach (var listItem in Model.Items)
+                        {
+                            var selected = listItem.AssignmentId == Model.SelectedId;
+
+                            <a class="inbox-list-item @(selected ? "is-selected" : "")"
+                               asp-area="Privat"
+                               asp-controller="Inbox"
+                               asp-action="Index"
+                               asp-route-selectedId="@listItem.AssignmentId"
+                               aria-current="@(selected ? "true" : null)">
+                                <span class="inbox-list-icon" aria-hidden="true">
+                                    @(listItem.CategoryName == "Vehicles" ? "🚜" : "🧰")
+                                </span>
+                                <span class="inbox-list-copy">
+                                    <strong>@listItem.ResourceName</strong>
+                                    <span>@listItem.NeedName</span>
+                                    <small>@listItem.StatusLabel</small>
+                                </span>
+                            </a>
+                        }
+                    </nav>
+
+                    <div class="inbox-detail">
+                        @if (Model.SelectedItem is { } item)
+                        {
+                            <div class="inbox-detail-heading">
+                                <div>
+                                    <p class="inbox-eyebrow">Forespørsel om ressurs</p>
+                                    <h2>@item.ResourceName</h2>
+                                </div>
+                                <span class="inbox-status">@item.StatusLabel</span>
+                            </div>
+
+                            <div class="inbox-content">
+                                <section class="inbox-section">
+                                    <h3>Behov</h3>
+                                    <dl class="inbox-facts">
+                                        <div>
+                                            <dt>Navn</dt>
+                                            <dd>@item.NeedName</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Type</dt>
+                                            <dd>@item.NeedType</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Prioritet</dt>
+                                            <dd>@item.NeedPriority</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Status</dt>
+                                            <dd>@item.NeedStatus</dd>
+                                        </div>
+                                        @if (item.NeedDeadline.HasValue)
+                                        {
+                                            <div>
+                                                <dt>Frist</dt>
+                                                <dd>@item.NeedDeadline.Value.ToString("dd.MM.yyyy HH:mm")</dd>
+                                            </div>
+                                        }
+                                    </dl>
+                                    @if (!string.IsNullOrWhiteSpace(item.NeedDescription))
+                                    {
+                                        <p class="inbox-description">@item.NeedDescription</p>
+                                    }
+                                </section>
+
+                                <section class="inbox-section">
+                                    <h3>Ressurs</h3>
+                                    <dl class="inbox-facts">
+                                        <div>
+                                            <dt>Kategori</dt>
+                                            <dd>@(item.CategoryName == "Vehicles" ? "Kjøretøy" : "Utstyr")</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Tilgjengelig</dt>
+                                            <dd>@(item.ResourceAvailable ? "Ja" : "Nei")</dd>
+                                        </div>
+                                        @if (!string.IsNullOrWhiteSpace(item.ResourceAddress))
+                                        {
+                                            <div>
+                                                <dt>Plassering</dt>
+                                                <dd>@item.ResourceAddress</dd>
+                                            </div>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(item.ResourceCondition))
+                                        {
+                                            <div>
+                                                <dt>Tilstand</dt>
+                                                <dd>@item.ResourceCondition</dd>
+                                            </div>
+                                        }
+                                    </dl>
+                                    @if (!string.IsNullOrWhiteSpace(item.ResourceInformation))
+                                    {
+                                        <p class="inbox-description">@item.ResourceInformation</p>
+                                    }
+                                </section>
+
+                                <section class="inbox-section">
+                                    <h3>Kontakt og tidspunkt</h3>
+                                    <dl class="inbox-facts">
+                                        <div>
+                                            <dt>Forespurt</dt>
+                                            <dd>@item.RequestedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</dd>
+                                        </div>
+                                        @if (!string.IsNullOrWhiteSpace(item.NeedContactPerson))
+                                        {
+                                            <div>
+                                                <dt>Kontaktperson</dt>
+                                                <dd>@item.NeedContactPerson</dd>
+                                            </div>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(item.NeedContactPoint))
+                                        {
+                                            <div>
+                                                <dt>Kontaktpunkt</dt>
+                                                <dd>@item.NeedContactPoint</dd>
+                                            </div>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(item.NeedPhoneNumber))
+                                        {
+                                            <div>
+                                                <dt>Telefon</dt>
+                                                <dd>@item.NeedPhoneNumber</dd>
+                                            </div>
+                                        }
+                                    </dl>
+                                </section>
+
+                                @if (item.Status == AssignmentStatus.Requested)
+                                {
+                                    <div class="inbox-actions">
+                                        <form asp-action="Decline" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden"
+                                                   name="assignmentId"
+                                                   value="@item.AssignmentId" />
+                                            <button class="inbox-button inbox-button-secondary"
+                                                    type="submit">
+                                                Avslå forespørsel
+                                            </button>
+                                        </form>
+
+                                        <form asp-action="Accept" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden"
+                                                   name="assignmentId"
+                                                   value="@item.AssignmentId" />
+                                            <button class="inbox-button inbox-button-primary"
+                                                    type="submit">
+                                                Godta forespørsel
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                                else if (item.Status == AssignmentStatus.Assigned)
+                                {
+                                    <div class="inbox-actions">
+                                        <form asp-action="Release" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden"
+                                                   name="assignmentId"
+                                                   value="@item.AssignmentId" />
+                                            <button class="inbox-button inbox-button-secondary"
+                                                    type="submit">
+                                                Frigi ressurs
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </section>
+    </main>
+
+    <footer class="inbox-footer">
+        <span>Paratus</span>
+        <nav aria-label="Bunnmeny">
+            <a asp-area=""
+               asp-controller="Home"
+               asp-action="Privacy">Personvern</a>
+            <span aria-hidden="true">·</span>
+            <span>Tilgjengelighet</span>
+            <span aria-hidden="true">·</span>
+            <span>Kontakt</span>
+        </nav>
+    </footer>
+</body>
+</html>

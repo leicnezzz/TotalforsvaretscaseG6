@@ -6,6 +6,14 @@
 <div class="container pt-4 pb-5 mb-5" style="max-width: 900px;">
     <h1>Mine ressurser</h1>
     <p>Ressurser du har registrert selv.</p>
+    @if (TempData["SuccessMessage"] is string suksess)
+    {
+        <div class="alert alert-success">@suksess</div>
+    }
+    @if (TempData["ErrorMessage"] is string feil)
+    {
+        <div class="alert alert-danger">@feil</div>
+    }
 
     @if (!Model.Any())
     {

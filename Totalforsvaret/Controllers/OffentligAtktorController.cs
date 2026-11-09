@@ -178,6 +178,10 @@ public class OffentligAktorController : Controller
                 longitude = c.Longitude
             })
             .ToList();
+ 
+        // Brukes til å markere egne ressurser på kartet.
+        TryHentBrukerId(out var minBrukerId);
+        ViewBag.MinBrukerId = minBrukerId;
 
         return View(tilgjengeligeRessurser);
     }

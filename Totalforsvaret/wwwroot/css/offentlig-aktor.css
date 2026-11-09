@@ -1118,9 +1118,17 @@ body.kart-fullskjerm-apen {
     box-sizing: border-box;
 }
 
+.kart-tegn-ressurs,
+.kart-tegn-egen {
+    border-radius: 50%;
+}
+
 .kart-tegn-ressurs {
     background: var(--tilgjengelig);
-    border-radius: 50%;
+}
+
+.kart-tegn-egen {
+    background: var(--offentlig);
 }
 
 .kart-tegn-behov {

@@ -130,7 +130,7 @@
                     radius: 9,
                     color: '#000000',
                     weight: 3,
-                    fillColor: type.farge,
+                    fillColor: element.egen ? farge('--offentlig') : type.farge,
                     fillOpacity: 1
                 });
 

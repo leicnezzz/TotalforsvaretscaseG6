@@ -17,7 +17,8 @@
         kontaktpunkt = ressurs.Kontaktpunkt,
         tilgjengeligFra = ressurs.TilgjengeligFra?.ToString("dd.MM.yyyy HH:mm"),
         latitude = ressurs.Latitude,
-        longitude = ressurs.Longitude
+        longitude = ressurs.Longitude,
+        egen = ressurs.BrukerId == (int?)ViewBag.MinBrukerId
     });
 
     var kartBehov = (ViewBag.BehovPaKart as IEnumerable<Need>
@@ -235,7 +236,12 @@
                         <span class="kart-tegn kart-tegn-krise" aria-hidden="true"></span>
                         Aktiv krise
                     </span>
-                </div>
+                    
+                    <span>
+                        <span class="kart-tegn kart-tegn-egen" aria-hidden="true"></span>
+                        Egen ressurs
+                    </span>
+            </div>
             </section>
 
             <p id="kartmelding"

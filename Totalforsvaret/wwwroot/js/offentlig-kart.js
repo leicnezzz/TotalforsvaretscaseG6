@@ -395,7 +395,7 @@
             (sentrum
                 ? ' innenfor ' + (avstand / 1000) + ' km'
                 : '') +
-            '. Grønn sirkel: ressurs. Gul firkant: behov. ' +
+            '. Grønn sirkel: ressurs. Blå sirkel: egen ressurs. Gul firkant: behov. ' +
             'Rød trekant: krise. Klikk for detaljer.';
 
         if (!typer.some(type => type.boks.checked)) {

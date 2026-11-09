@@ -2,9 +2,45 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    margin: 0;
     background: #eef3ef;
     color: #172c34;
     font-family: Roboto, Arial, sans-serif;
+}
+
+.inbox-page .site-header {
+    margin-top: 0;
+}
+
+.inbox-page .primary-nav {
+    align-items: center;
+}
+
+.inbox-page .account-actions {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    width: auto;
+    margin-left: auto;
+}
+
+.inbox-page .inbox-icon-link {
+    display: flex;
+    flex: 0 0 40px;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.inbox-page .account-link {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
 }
 
 .inbox-main {
@@ -228,7 +264,8 @@
 
 .inbox-button:focus-visible,
 .inbox-list-item:focus-visible,
-.inbox-back:focus-visible {
+.inbox-back:focus-visible,
+.inbox-icon-link:focus-visible {
     outline: 3px solid #163c4c;
     outline-offset: 3px;
 }

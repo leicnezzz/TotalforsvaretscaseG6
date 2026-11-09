@@ -78,22 +78,14 @@
                 Egenberedskap
             </a>
             
-            <a class="@(isInbox ? "active" : "")"
-               aria-current="@(isInbox ? "page" : null)"
-               asp-area="Privat"
-               asp-controller="Inbox"
-               asp-action="Index">
-                Innboks
-            </a>
         </div>
 
-        <a class="account-link @(isProfile ? "active" : "")"
-           aria-current="@(isProfile ? "page" : null)"
+        <a class="inbox-icon-link"
            asp-area="Privat"
-           asp-controller="Profile"
+           asp-controller="Inbox"
            asp-action="Index"
-           aria-label="Åpne profilen til @displayName">
-
+           aria-label="Åpne innboksen"
+           aria-current="@(isInbox ? "page" : null)">
             <svg class="bell"
                  viewBox="0 0 24 24"
                  fill="none"
@@ -102,6 +94,14 @@
                 <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
                 <path d="M10 21h4" />
             </svg>
+        </a>
+
+        <a class="account-link @(isProfile ? "active" : "")"
+           aria-current="@(isProfile ? "page" : null)"
+           asp-area="Privat"
+           asp-controller="Profile"
+           asp-action="Index"
+           aria-label="Åpne profilen til @displayName">
 
             <span class="avatar avatar-small" aria-hidden="true">@initials</span>
 
@@ -112,9 +112,14 @@
 
             <span class="chevron" aria-hidden="true">⌄</span>
         </a>
+        
     </nav>
 
-    <div class="section-bar">
-        <span>@sectionName</span>
-    </div>
+    @if (!isInbox)
+    {
+        <div class="section-bar">
+            <span>@sectionName</span>
+        </div>
+    }
+    
 </header>

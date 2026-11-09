@@ -118,19 +118,26 @@
             <h1>Operativ oversikt</h1>
             <p>Situasjonsbilde for Kristiansand kommune</p>
         </div>
-
-        <div class="oversikt-handlinger">
-            <a class="registrer-behov-knapp"
-               asp-area="Offentlig"
-               asp-controller="Need"
-               asp-action="CreateMultiple">
-                + Registrer behov
-            </a>
-            <a class="opprett-krise-knapp"
-               asp-area="Offentlig"
-               asp-controller="Crisis"
-               asp-action="Create">
-                + Opprett krise
+        <div class="oversikt-handlinger-kolonne">
+            <div class="oversikt-handlinger">
+                <a class="registrer-behov-knapp"
+                   asp-area="Offentlig"
+                   asp-controller="Need"
+                   asp-action="CreateMultiple">
+                    + Registrer behov
+                </a>
+                <a class="opprett-krise-knapp"
+                   asp-area="Offentlig"
+                   asp-controller="Crisis"
+                   asp-action="Create">
+                    + Opprett krise
+                </a>
+            </div>
+            <a class="egen-ressurs-lenke"
+               asp-area=""
+               asp-controller="OffentligAktor"
+               asp-action="NyRessurs">
+                Legg til egen ressurs
             </a>
         </div>
     </div>

@@ -24,6 +24,10 @@
 
     var isEgenberedskap =
         controller.Equals("Egenberedskap", StringComparison.OrdinalIgnoreCase);
+    
+    var isPrivacy =
+        controller.Equals("Home", StringComparison.OrdinalIgnoreCase) &&
+        action.Equals("Privacy", StringComparison.OrdinalIgnoreCase);
 
     var sectionName = isDashboard ? "Min side"
         : isResourceForm ? "Ressursregistrering"
@@ -31,6 +35,7 @@
         : isProfile ? "Min profil"
         : isEgenberedskap ? "Egenberedskap"
         : isInbox ? "Innboks"
+        : isPrivacy ? "Personvern"
         : "Brukeroversikt";
 
     var account = await UserManager.GetUserAsync(User);

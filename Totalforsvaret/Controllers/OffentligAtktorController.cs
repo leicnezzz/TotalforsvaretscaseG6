@@ -60,6 +60,7 @@ public class OffentligAktorController : Controller
                         c.Longitude != null)
             .Select(c => new
             {
+                id = c.Id,
                 navn = c.Name,
                 type = c.Type,
                 alvorlighetsgrad = c.Severity,
@@ -157,6 +158,24 @@ public class OffentligAktorController : Controller
             .ToList();
 
         ViewBag.ForeslatteTreff = forslag.Count;
+        
+        ViewBag.KriserTilLister = _context?.Crises
+            .AsNoTracking()
+            .Where(c => c.Status == "Aktiv")
+            .Select(c => new
+            {
+                id = c.Id,
+                navn = c.Name,
+                type = c.Type,
+                omrade = c.Area,
+                alvorlighetsgrad = c.Severity,
+                starttidspunkt = c.StartTime,
+                status = c.Status,
+                beskrivelse = c.Description,
+                latitude = c.Latitude,
+                longitude = c.Longitude
+            })
+            .ToList();
 
         return View(tilgjengeligeRessurser);
     }

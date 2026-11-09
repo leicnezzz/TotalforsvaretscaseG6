@@ -309,4 +309,23 @@ public async Task<IActionResult> Delete(int id)
         "OffentligAktor",
         new { area = "" });
 }
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Avslutt(int id)
+{
+    var finnes = await _context.Crises
+        .AnyAsync(c => c.Id == id);
+
+    if (!finnes)
+        return NotFound();
+
+    // Endrer bare status og tåler gjentatte innsendinger.
+    await _context.Crises
+        .Where(c => c.Id == id && c.Status == "Aktiv")
+        .ExecuteUpdateAsync(oppdatering => oppdatering
+            .SetProperty(c => c.Status, "Avsluttet"));
+
+    return RedirectToAction(
+        "Index", "OffentligAktor", new { area = "" });
+}
 }

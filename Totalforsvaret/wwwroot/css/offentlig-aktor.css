@@ -990,3 +990,57 @@ body.kart-fullskjerm-apen {
 .offentlig-dashboard .statistikk-rad .stat-kort {
     width: 100%;
 }
+.oversikt-tabell--kriser {
+    min-width: 1600px;
+}
+
+.oversikt-tabell--kriser td:nth-child(7) {
+    min-width: 240px;
+    max-width: 360px;
+    white-space: pre-wrap;
+}
+
+.oversikt-tabell--kriser td:last-child {
+    min-width: 280px;
+}
+
+.kart-forklaring > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kart-tegn {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    border: 2px solid black;
+    box-sizing: border-box;
+}
+
+.kart-tegn-ressurs {
+    background: var(--tilgjengelig);
+    border-radius: 50%;
+}
+
+.kart-tegn-behov {
+    background: var(--planlagt);
+}
+
+.kart-tegn-krise {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    border: 0;
+    background: black;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.kart-tegn-krise::after {
+    content: "";
+    position: absolute;
+    inset: 4px 4px 2px;
+    background: var(--akutt);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}

@@ -1066,11 +1066,7 @@ body.kart-fullskjerm-apen {
         padding: 0;
         background: #fff;
     }
-
-    .print-bare {
-        display: block !important;
-    }
-
+    
     .print-tabell {
         width: 100%;
         border-collapse: collapse;

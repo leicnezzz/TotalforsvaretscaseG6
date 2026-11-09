@@ -126,13 +126,14 @@
 }
 
 .offentlig-dashboard .opprett-krise-knapp {
-    background: #FFFFFF;
-    border-color: #163C4C;
-    color: #163C4C;
+    background: transparent;
+    border-color: #D93025;
+    color: #D93025;
+    box-shadow: inset 0 0 0 1px #D93025;
 }
 
 .offentlig-dashboard .opprett-krise-knapp:not(:disabled):hover {
-    background: #EDF3F6;
+    background: #FDECEA;
 }
 
 .offentlig-dashboard .opprett-krise-knapp:disabled {

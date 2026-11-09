@@ -19,6 +19,8 @@
         action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase);
 
     var isProfile = controller.Equals("Profile", StringComparison.OrdinalIgnoreCase);
+    
+    var isInbox = controller.Equals("Inbox", StringComparison.OrdinalIgnoreCase);
 
     var isEgenberedskap =
         controller.Equals("Egenberedskap", StringComparison.OrdinalIgnoreCase);
@@ -28,6 +30,7 @@
         : isResourceOverview ? "Mine ressurser"
         : isProfile ? "Min profil"
         : isEgenberedskap ? "Egenberedskap"
+        : isInbox ? "Innboks"
         : "Brukeroversikt";
 
     var account = await UserManager.GetUserAsync(User);
@@ -73,6 +76,14 @@
                asp-controller="Egenberedskap"
                asp-action="Index">
                 Egenberedskap
+            </a>
+            
+            <a class="@(isInbox ? "active" : "")"
+               aria-current="@(isInbox ? "page" : null)"
+               asp-area="Privat"
+               asp-controller="Inbox"
+               asp-action="Index">
+                Innboks
             </a>
         </div>
 

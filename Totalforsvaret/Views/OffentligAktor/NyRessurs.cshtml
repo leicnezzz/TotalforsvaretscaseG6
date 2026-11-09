@@ -5,6 +5,7 @@
 <div class="container pt-4 pb-5 mb-5" style="max-width: 640px;">
     <h1 class="mb-1">Legg til egen ressurs</h1>
     <p class="text-muted">Registrer en ressurs som din organisasjon kan stille til rådighet.</p>
+    
 
     <form asp-action="NyRessurs" method="post">
         <div class="mb-3">
@@ -31,8 +32,17 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label" for="Navn">Navn</label>
-            <input class="form-control" id="Navn" name="Navn" maxlength="200" />
+            <label class="form-label" for="Navn">Registreres som</label>
+            <input class="form-control" id="Navn" name="Navn" list="aktorer" maxlength="100"
+                   placeholder="Velg i listen, eller skriv inn selv" />
+            <datalist id="aktorer">
+                <option value="Kristiansand kommune"></option>
+                <option value="Politiet"></option>
+                <option value="Brannvesenet"></option>
+                <option value="Sivilforsvaret"></option>
+                <option value="Forsvaret"></option>
+                <option value="Røde Kors"></option>
+            </datalist>
         </div>
 
         <div class="mb-3">

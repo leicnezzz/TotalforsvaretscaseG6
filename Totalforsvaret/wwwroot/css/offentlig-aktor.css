@@ -1137,3 +1137,39 @@ body.kart-fullskjerm-apen {
     background: var(--akutt);
     clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
+@media print {
+    .print-bare {
+        display: none !important;
+    }
+
+    body[data-utskrift="ressurser"] .print-ressurser,
+    body[data-utskrift="behov"] .print-behov {
+        display: block !important;
+    }
+}
+/* Skriv ut-knapp i aktørlinjen */
+.offentlig-dashboard .aktor-hoyre {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.offentlig-dashboard .skriv-ut-knapp {
+    padding: 6px 12px;
+    background: #FFFFFF;
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+    color: #163C4C;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.offentlig-dashboard .skriv-ut-knapp:hover {
+    background: #EDF3F6;
+    border-color: #163C4C;
+}
+
+.offentlig-dashboard .skriv-ut-knapp:focus-visible {
+    outline: 3px solid var(--offentlig);
+    outline-offset: 2px;
+}

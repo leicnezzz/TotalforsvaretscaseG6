@@ -236,6 +236,56 @@ public class OffentligAktorController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+    [HttpGet]
+    public async Task<IActionResult> MineRessurser()
+    {
+        if (_context == null)
+            return StatusCode(500, "Databasen er ikke tilgjengelig.");
+
+        if (!TryHentBrukerId(out var brukerId)) return Challenge();
+
+        var ressurser = await _context.Resources
+            .AsNoTracking()
+            .Include(r => r.Category)
+            .Where(r => r.BrukerId == brukerId)
+            .OrderByDescending(r => r.ResourceId)
+            .ToListAsync();
+
+        return View(ressurser);
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SlettRessurs(int resourceId)
+    {
+        if (_context == null)
+            return StatusCode(500, "Databasen er ikke tilgjengelig.");
+
+        if (!TryHentBrukerId(out var brukerId)) return Challenge();
+
+        // Bare egne ressurser kan slettes.
+        var ressurs = await _context.Resources.FirstOrDefaultAsync(r =>
+            r.ResourceId == resourceId && r.BrukerId == brukerId);
+
+        if (ressurs == null)
+            return NotFound("Ressursen finnes ikke.");
+
+        // Ressurser som har vært i en tildeling beholdes på grunn av historikken.
+        var harTildeling = await _context.ResourceAssignments
+            .AnyAsync(a => a.ResourceId == resourceId);
+
+        if (harTildeling)
+        {
+            TempData["ErrorMessage"] = "Ressursen har vært brukt i en tildeling og kan ikke slettes.";
+            return RedirectToAction(nameof(MineRessurser));
+        }
+
+        _context.Resources.Remove(ressurs);
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Ressursen er slettet.";
+
+        return RedirectToAction(nameof(MineRessurser));
+    }
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> VurderRessurs(int needId, int resourceId)

@@ -1,0 +1,49 @@
+@model IEnumerable<Totalforsvaret.Models.resourcemodels.Resource>
+@{
+    ViewData["Title"] = "Mine ressurser";
+}
+
+<div class="container pt-4 pb-5 mb-5" style="max-width: 900px;">
+    <h1>Mine ressurser</h1>
+    <p>Ressurser du har registrert selv.</p>
+
+    @if (!Model.Any())
+    {
+        <p>Du har ikke registrert noen ressurser ennå.</p>
+    }
+    else
+    {
+        <table class="table align-middle">
+            <thead>
+            <tr>
+                <th>Ressurs</th>
+                <th>Registrert som</th>
+                <th>Adresse</th>
+                <th>Kontaktpunkt</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.Object</td>
+                    <td>@r.Navn</td>
+                    <td>@r.Address</td>
+                    <td>@r.Kontaktpunkt</td>
+                    <td class="text-end">
+                        <form asp-action="SlettRessurs" method="post"
+                              onsubmit="return confirm('Vil du slette denne ressursen?');">
+                            <input type="hidden" name="resourceId" value="@r.ResourceId" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Slett</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+
+    <a class="btn btn-outline-secondary" asp-action="Index">Tilbake til oversikten</a>
+    <a class="btn btn-primary" asp-action="NyRessurs">Legg til ressurs</a>
+</div>

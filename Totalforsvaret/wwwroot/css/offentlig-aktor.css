@@ -333,15 +333,25 @@
 
 .kart-sokrad {
     display: flex;
-    gap: 6px;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+    background: white;
+}
+
+.kart-sokrad:focus-within {
+    outline: 2px solid var(--offentlig);
+    outline-offset: 1px;
 }
 
 .kart-sokrad input {
     min-width: 0;
     flex: 1;
     padding: 9px 10px;
-    border: 1px solid var(--kant);
-    border-radius: 6px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
     font: inherit;
 }
 
@@ -596,33 +606,16 @@ body.kart-fullskjerm-apen {
 
 .kart-sokrad .kart-filterknapp {
     flex-shrink: 0;
+    align-self: stretch;
     width: 32px;
     padding: 6px;
     background: var(--bakgrunn);
     color: var(--morkegronn);
-    border: 1px solid var(--kant);
+    border: 0;
+    border-left: 1px solid var(--kant);
+    border-radius: 0;
     font-size: 18px;
 }
-/* Ett samlet søkefelt med pil */
-.kart-sokrad {
-    gap: 0;
-    overflow: hidden;
-    border: 1px solid var(--kant);
-    border-radius: 6px;
-    background: white;
-}
-
-.kart-sokrad:focus-within {
-    outline: 2px solid var(--offentlig);
-    outline-offset: 1px;
-}
-
-.kart-sokrad input {
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-}
-
 .kart-sokrad input:focus-visible {
     outline: none;
 }
@@ -631,12 +624,6 @@ body.kart-fullskjerm-apen {
     display: none !important;
 }
 
-.kart-sokrad .kart-filterknapp {
-    align-self: stretch;
-    border: 0;
-    border-left: 1px solid var(--kant);
-    border-radius: 0;
-}
 /* Klikkbare oversiktskort */
 .stat-kort[data-oversikt-liste] {
     cursor: pointer;

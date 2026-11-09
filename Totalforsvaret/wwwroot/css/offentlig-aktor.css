@@ -11,7 +11,7 @@
     --dempet: #687C85;
     --kant: #DCE5E5;
     --bakgrunn: #F4F7F6;
-    
+
     padding: 24px;
     background: var(--bakgrunn);
     color: var(--tekst);
@@ -512,6 +512,7 @@
     box-sizing: border-box;
     box-shadow: 0 1px 4px #0005;
 }
+
 .kart-markor-kriser {
     position: relative;
     width: 24px;
@@ -599,6 +600,7 @@ body.kart-fullskjerm-apen {
         max-height: 230px;
     }
 }
+
 /* Sammenleggbart søkepanel */
 #kartDetaljer[hidden] {
     display: none !important;
@@ -616,6 +618,7 @@ body.kart-fullskjerm-apen {
     border-radius: 0;
     font-size: 18px;
 }
+
 .kart-sokrad input:focus-visible {
     outline: none;
 }
@@ -797,6 +800,7 @@ body.kart-fullskjerm-apen {
     font-weight: 600;
     overflow-wrap: anywhere;
 }
+
 .offentlig-dashboard .behov-element .btn-outline-primary {
     --bs-btn-color: #163C4C;
     --bs-btn-border-color: #163C4C;
@@ -807,12 +811,14 @@ body.kart-fullskjerm-apen {
     --bs-btn-active-bg: #163C4C;
     --bs-btn-active-border-color: #163C4C;
 }
+
 @media (min-width: 1200px) {
     .offentlig-dashboard .statistikk-rad > .col-lg-3 {
         flex: 0 0 20%;
         max-width: 20%;
     }
 }
+
 .offentlig-dashboard .kart-forklaring {
     display: flex;
     flex-wrap: wrap;
@@ -837,6 +843,7 @@ body.kart-fullskjerm-apen {
 .offentlig-dashboard .kart-behov {
     background: #DC3545;
 }
+
 /* Registrering og endring av behov */
 .offentlig-behov-side,
 .offentlig-krise-side {
@@ -859,6 +866,7 @@ body.kart-fullskjerm-apen {
     color: #687C85;
     font-size: 15px;
 }
+
 .offentlig-behov-side .btn-success,
 .offentlig-krise-side .btn-success {
     --bs-btn-bg: #163C4C;
@@ -871,6 +879,7 @@ body.kart-fullskjerm-apen {
     --bs-btn-hover-color: #FFFFFF;
     --bs-btn-active-color: #FFFFFF;
 }
+
 .offentlig-behov-side .form-label,
 .offentlig-krise-side .form-label {
     color: #20343D;
@@ -886,12 +895,14 @@ body.kart-fullskjerm-apen {
     border-radius: 6px;
     font-family: inherit;
 }
+
 .offentlig-behov-side #map,
 .offentlig-behov-side #behovKart,
 .offentlig-krise-side #kriseKart {
     border: 1px solid #DCE5E5;
     border-radius: 10px;
 }
+
 .offentlig-behov-side .btn-success,
 .offentlig-behov-side .btn-outline-secondary,
 .offentlig-krise-side .btn-success,
@@ -907,6 +918,7 @@ body.kart-fullskjerm-apen {
 .offentlig-krise-side .btn-success {
     margin-right: 8px;
 }
+
 .offentlig-behov-side > form:first-of-type,
 .offentlig-krise-side > form:first-of-type {
     padding: 24px;
@@ -915,6 +927,7 @@ body.kart-fullskjerm-apen {
     border-radius: 10px;
     box-shadow: 0 3px 12px rgb(32 52 61 / 4%);
 }
+
 .offentlig-behov-side .tilbake-oversikt,
 .offentlig-krise-side .tilbake-oversikt {
     display: inline-flex;
@@ -935,6 +948,7 @@ body.kart-fullskjerm-apen {
     background: #EDF3F6;
     border-color: #163C4C;
 }
+
 .offentlig-behov-side .krise-skjema-tittel,
 .offentlig-krise-side .krise-skjema-tittel {
     margin: 0 0 6px;
@@ -949,11 +963,13 @@ body.kart-fullskjerm-apen {
     color: #687C85;
     font-size: 14px;
 }
+
 .offentlig-krise-side .krise-plassering {
     margin-top: 24px;
     padding-top: 24px;
     border-top: 1px solid #DCE5E5;
 }
+
 .offentlig-behov-side fieldset.behov-element {
     min-width: 0;
     margin-top: 20px;
@@ -971,6 +987,7 @@ body.kart-fullskjerm-apen {
     font-size: 18px;
     font-weight: 600;
 }
+
 .offentlig-dashboard .statistikk-rad > div {
     display: flex;
 }
@@ -978,6 +995,7 @@ body.kart-fullskjerm-apen {
 .offentlig-dashboard .statistikk-rad .stat-kort {
     width: 100%;
 }
+
 /* Statusmerkelapper (ikke klikkbare) */
 .offentlig-dashboard .status-merkelapp {
     align-self: flex-start;
@@ -996,6 +1014,7 @@ body.kart-fullskjerm-apen {
 .offentlig-dashboard .status-tildelt {
     background: #BFE6B5;
 }
+
 /* «Se og endre behov» i Foreslåtte treff */
 .offentlig-dashboard .se-behov-lenke {
     align-self: flex-start;
@@ -1020,6 +1039,7 @@ body.kart-fullskjerm-apen {
     outline: 3px solid var(--offentlig);
     outline-offset: 2px;
 }
+
 /* Tildel og Avslå ved siden av hverandre */
 .offentlig-dashboard .knapperad {
     display: flex;
@@ -1033,6 +1053,7 @@ body.kart-fullskjerm-apen {
 .offentlig-dashboard .knapperad .btn {
     width: 100%;
 }
+
 /* Utskrift av ressursliste */
 .print-bare {
     display: none;
@@ -1053,7 +1074,7 @@ body.kart-fullskjerm-apen {
         padding: 0;
         background: #fff;
     }
-    
+
     .print-tabell {
         width: 100%;
         border-collapse: collapse;
@@ -1067,6 +1088,7 @@ body.kart-fullskjerm-apen {
         text-align: left;
     }
 }
+
 .oversikt-tabell--kriser {
     min-width: 1600px;
 }
@@ -1121,6 +1143,7 @@ body.kart-fullskjerm-apen {
     background: var(--akutt);
     clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
+
 @media print {
     .print-bare {
         display: none !important;
@@ -1131,6 +1154,7 @@ body.kart-fullskjerm-apen {
         display: block !important;
     }
 }
+
 /* Skriv ut-knapp i aktørlinjen */
 .offentlig-dashboard .aktor-hoyre {
     display: flex;
@@ -1158,6 +1182,7 @@ body.kart-fullskjerm-apen {
     outline: 3px solid var(--offentlig);
     outline-offset: 2px;
 }
+
 /* Legg til egen ressurs: rolig lenke under hovedknappene */
 .offentlig-dashboard .oversikt-handlinger-kolonne {
     display: flex;

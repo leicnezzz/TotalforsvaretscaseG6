@@ -342,4 +342,8 @@
     .inbox-footer {
         flex-direction: column;
     }
+    .inbox-page .primary-nav .account-actions .inbox-icon-link,
+    .inbox-page .primary-nav .account-actions .account-link {
+        align-self: center;
+    }
 }

@@ -181,7 +181,12 @@ public class OffentligAktorController : Controller
 
         return View(tilgjengeligeRessurser);
     }
-    
+    [HttpGet]
+    public IActionResult NyRessurs()
+    {
+        ViewBag.Kategorier = _resourceHandler.GetCategories();
+        return View();
+    }
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> VurderRessurs(int needId, int resourceId)

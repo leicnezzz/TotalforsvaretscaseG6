@@ -1,0 +1,67 @@
+@{
+    ViewData["Title"] = "Legg til egen ressurs";
+}
+
+<div class="container py-4" style="max-width: 640px;">
+    <h1 class="mb-1">Legg til egen ressurs</h1>
+    <p class="text-muted">Registrer en ressurs som din organisasjon kan stille til rådighet.</p>
+
+    <form asp-action="NyRessurs" method="post">
+        <div class="mb-3">
+            <label class="form-label" for="Object">Type ressurs</label>
+            <input class="form-control" id="Object" name="Object" maxlength="100" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="CategoryId">Kategori</label>
+            <select class="form-select" id="CategoryId" name="CategoryId" required>
+                <option value="">Velg kategori</option>
+                @foreach (var k in ViewBag.Kategorier)
+                {
+                    <option value="@k.CategoryId">@k.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="Navn">Navn</label>
+            <input class="form-control" id="Navn" name="Navn" maxlength="200" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="Kontaktpunkt">Kontaktpunkt</label>
+            <input class="form-control" id="Kontaktpunkt" name="Kontaktpunkt" maxlength="200" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="Address">Adresse</label>
+            <input class="form-control" id="Address" name="Address" maxlength="250" required />
+        </div>
+
+        <div class="row">
+            <div class="col mb-3">
+                <label class="form-label" for="Latitude">Breddegrad</label>
+                <input class="form-control" id="Latitude" name="Latitude" type="number" step="any" required />
+            </div>
+            <div class="col mb-3">
+                <label class="form-label" for="Longitude">Lengdegrad</label>
+                <input class="form-control" id="Longitude" name="Longitude" type="number" step="any" required />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="Condition">Tilstand</label>
+            <input class="form-control" id="Condition" name="Condition" maxlength="100" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="AdditionalInformation">Tilleggsinformasjon</label>
+            <textarea class="form-control" id="AdditionalInformation" name="AdditionalInformation" maxlength="200" rows="3"></textarea>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Lagre ressurs</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Avbryt</a>
+        </div>
+    </form>
+</div>

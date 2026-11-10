@@ -25,7 +25,7 @@
 
     <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
     <link rel="stylesheet"
-          href="~/css/private-home.css"
+          href="~/css/Private-home.css"
           asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/incident-alert.css" asp-append-version="true" />
@@ -48,9 +48,16 @@
 
         <section class="greeting" aria-labelledby="greeting-title">
             <h1 id="greeting-title">Hei, @Model.Navn</h1>
-            <span class="avatar avatar-large" aria-hidden="true">
-                @Model.Initialer
-            </span>
+            @if (Model.HasPhoto)
+{
+    <img class="avatar avatar-large"
+         src="@Url.Action("Photo", "Profile", new { area = "Privat" })"
+         alt="Profilbilde" />
+}
+else
+{
+    <span class="avatar avatar-large" aria-hidden="true">@Model.Initialer</span>
+}
         </section>
 
         <section class="action-cards" aria-label="Dine valg">

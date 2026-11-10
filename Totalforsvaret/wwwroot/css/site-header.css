@@ -68,6 +68,10 @@
 }
 
 /* Profilboksen til høyre i privatmenyen */
+.account-menu {
+    position: relative;
+}
+
 .account-link {
     display: flex;
     min-height: 72px;
@@ -76,8 +80,65 @@
     gap: 14px;
     border-bottom: 3px solid transparent;
     color: #173e4d;
-    text-decoration: none;
+    list-style: none;
+    cursor: pointer;
 }
+
+    .account-link::-webkit-details-marker {
+        display: none;
+    }
+
+.account-menu[open] .chevron {
+    transform: rotate(180deg);
+}
+
+.account-menu-list {
+    position: absolute;
+    z-index: 1200;
+    top: 100%;
+    right: 0;
+    min-width: 168px;
+    margin: 0;
+    padding: 6px;
+    border: 1px solid #d7e1d9;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 6px 16px rgb(0 0 0 / 12%);
+    list-style: none;
+}
+
+    .account-menu-list form {
+        margin: 0;
+    }
+
+    .account-menu-list a,
+    .account-menu-list button {
+        display: flex;
+        width: 100%;
+        min-height: 40px;
+        align-items: center;
+        padding: 8px 12px;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: var(--header-green);
+        font: inherit;
+        font-size: 14px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+        .account-menu-list a:hover,
+        .account-menu-list button:hover,
+        .account-menu-list a[aria-current="page"] {
+            background: #eef2ee;
+        }
+
+        .account-menu-list a:focus-visible,
+        .account-menu-list button:focus-visible {
+            outline: 2px solid var(--header-green);
+            outline-offset: -2px;
+        }
 
 .account-link.active {
     border-bottom-color: var(--header-green);
@@ -95,6 +156,7 @@
 }
 
 .account-link .avatar-small {
+    object-fit: cover;
     display: grid;
     width: 42px;
     height: 42px;
@@ -301,10 +363,13 @@
         font-size: 13px;
     }
 
+    .account-menu {
+        align-self: flex-end;
+    }
+
     .account-link {
         width: max-content;
         min-height: 54px;
-        align-self: flex-end;
         justify-content: flex-end;
     }
 

@@ -263,7 +263,7 @@
                     {
                         @foreach (var behov in ViewBag.AktiveBehovListe)
                         {
-                            <div class="behov-element">
+                            <div class="behov-element" data-prioritet="@behov.Priority">
                                 <strong>@behov.Name</strong>
                                 <p>Type: @behov.Type</p>
                                 <p>Prioritet: @behov.Priority</p>

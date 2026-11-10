@@ -792,6 +792,16 @@ body.kart-fullskjerm-apen {
         border-left: 3px solid #163C4C;
         border-radius: 7px;
     }
+
+.offentlig-dashboard .behov-element[data-prioritet="Kritisk"] {
+    border-left-color: var(--akutt);
+}
+
+.offentlig-dashboard .behov-element[data-prioritet="Høy"] {
+    border-left-color: var(--planlagt);
+}
+
+
 .offentlig-dashboard .behov-element strong {
     display: block;
     margin-bottom: 8px;

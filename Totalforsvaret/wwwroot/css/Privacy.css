@@ -24,7 +24,10 @@
 /* Offentlig aktør får blågrønn aksentfarge */
 .privacy-page.privacy-public {
     --privacy-green: #163c4c;
+    --wave-light: #dfeaf0;
+    --wave-dark: #4b8499;
 }
+
 
 /* Hold innholdet over bølgene */
 .privacy-page .site-header,

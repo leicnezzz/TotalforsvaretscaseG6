@@ -992,5 +992,28 @@ body.kart-fullskjerm-apen {
 }
 body.offentlig-page {
     min-height: 100vh;
-    background-color: #EEF0F2;
+    background-color: #163C4C;
+}
+
+.offentlig-page .offentlig-site-header {
+    background-color: #163C4C;
+}
+
+.offentlig-page .offentlig-site-header .nav-links a {
+    color: #fff;
+}
+
+.offentlig-page .offentlig-site-header .nav-links a:hover,
+.offentlig-page .offentlig-site-header .nav-links a:focus-visible,
+.offentlig-page .offentlig-site-header .nav-links a.active {
+    color: #fff;
+}
+
+.offentlig-page .offentlig-site-header .nav-links a.active {
+    border-bottom-color: #fff;
+}
+
+.offentlig-page .offentlig-site-header .account-summary,
+.offentlig-page .offentlig-site-header .account-copy small {
+    color: #fff;
 }

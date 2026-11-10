@@ -10,7 +10,8 @@
     --privacy-page: #eef2ee;
     --privacy-text: #263b32;
     --privacy-muted: #607078;
-
+    
+    position : relative;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -45,15 +46,18 @@
     font-weight: 700;
 }
 
-.wave-background {
+.privacy-page > .wave-background {
     position: absolute;
+    top: auto;
     right: 0;
     bottom: 0;
     left: 0;
     z-index: 0;
     height: min(48vh, 580px);
+    overflow: hidden;
     pointer-events: none;
 }
+
 
 .privacy-main {
     width: min(1100px, calc(100% - 40px));

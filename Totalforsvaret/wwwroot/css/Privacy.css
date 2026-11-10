@@ -257,3 +257,6 @@
         transition: background-color 150ms ease;
     }
 }
+.privacy-page .site-header .account-link {
+    color: var(--privacy-green);
+}

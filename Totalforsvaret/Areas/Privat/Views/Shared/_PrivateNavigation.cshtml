@@ -1,8 +1,11 @@
 @using System
 @using System.Linq
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using Totalforsvaret.DataAccess
 @using Totalforsvaret.Models
 @inject UserManager<Bruker> UserManager
+@inject AppDbContext Db
 
 @{
     var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
@@ -32,6 +35,7 @@
 
     var account = await UserManager.GetUserAsync(User);
     var displayName = account?.Navn ?? User.Identity?.Name ?? "Privat aktør";
+    var hasPhoto = account != null && await Db.ProfilePhotos.AnyAsync(photo => photo.BrukerId == account.Id);
 
     var initials = string.Concat(
         displayName
@@ -76,31 +80,58 @@
             </a>
         </div>
 
-        <a class="account-link @(isProfile ? "active" : "")"
-           aria-current="@(isProfile ? "page" : null)"
-           asp-area="Privat"
-           asp-controller="Profile"
-           asp-action="Index"
-           aria-label="Åpne profilen til @displayName">
+        <details class="account-menu">
+            <summary class="account-link @(isProfile ? "active" : "")"
+                     aria-label="Brukermeny for @displayName">
+                <svg class="bell"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     aria-hidden="true">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
+                    <path d="M10 21h4" />
+                </svg>
 
-            <svg class="bell"
-                 viewBox="0 0 24 24"
-                 fill="none"
-                 stroke="currentColor"
-                 aria-hidden="true">
-                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
-                <path d="M10 21h4" />
-            </svg>
+                @if (hasPhoto)
+                {
+                    <img class="avatar avatar-small"
+                         src="@Url.Action("Photo", "Profile", new { area = "Privat" })"
+                         alt="" />
+                }
+                else
+                {
+                    <span class="avatar avatar-small" aria-hidden="true">@initials</span>
+                }
 
-            <span class="avatar avatar-small" aria-hidden="true">@initials</span>
+                <span class="account-copy">
+                    <strong>@displayName</strong>
+                    <small>Privat aktør</small>
+                </span>
 
-            <span class="account-copy">
-                <strong>@displayName</strong>
-                <small>Privat aktør</small>
-            </span>
+                <span class="chevron" aria-hidden="true">⌄</span>
+            </summary>
 
-            <span class="chevron" aria-hidden="true">⌄</span>
-        </a>
+            <ul class="account-menu-list">
+                <li>
+                    <a asp-area="Privat" asp-controller="Profile" asp-action="Index"
+                       aria-current="@(isProfile ? "page" : null)">Min profil</a>
+                </li>
+                <li>
+                    <a asp-area="Privat" asp-controller="Dashboard" asp-action="Index"
+                       aria-current="@(isDashboard ? "page" : null)">Min side</a>
+                </li>
+                <li>
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Personvern</a>
+                </li>
+                <li>
+                    <form id="private-logout"
+                          asp-area="" asp-controller="Account" asp-action="Logout" method="post"
+                          onsubmit="return window.confirm('Er du sikker på at du vil logge ut?');">
+                        <button type="submit">Logg ut</button>
+                    </form>
+                </li>
+            </ul>
+        </details>
     </nav>
 
     <div class="section-bar">

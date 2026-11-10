@@ -1,0 +1,40 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Slett konto – Paratus</title>
+    <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Profile.css" asp-append-version="true" />
+</head>
+<body class="profile-page">
+    <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
+
+    <main class="profile-main">
+        <section class="profile-card profile-card__main delete-account-card" aria-labelledby="delete-title">
+            <h1 id="delete-title">Slett konto</h1>
+            <p>
+                Kontoen, profilbildet, beredskapssjekklisten og ressursene dine med tilhørende tildelinger slettes permanent.
+                Dette kan ikke angres, alt vil bli slettet.
+            </p>
+
+            <form asp-area="Privat" asp-controller="Profile" asp-action="DeleteAccount" method="post">
+                <div asp-validation-summary="ModelOnly" class="validation-summary" role="alert"></div>
+
+                <div class="field">
+                    <label for="delete-password">Bekreft med passordet ditt</label>
+                    <input id="delete-password" name="password" type="password" autocomplete="current-password" required />
+                </div>
+
+                <div class="form-actions">
+                    <a class="button button-primary" asp-area="Privat" asp-controller="Profile" asp-action="Index">Avbryt</a>
+                    <button class="button button-danger" type="submit">Slett kontoen permanent</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

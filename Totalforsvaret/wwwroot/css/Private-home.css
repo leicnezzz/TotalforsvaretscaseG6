@@ -105,12 +105,14 @@
 .avatar-small {
     width: clamp(24px, 2vw, 40px);
     aspect-ratio: 1;
+    object-fit: cover;
     font-size: clamp(9px, .75vw, 14px);
 }
 
 .avatar-large {
     width: clamp(52px, 5.2vw, 100px);
     aspect-ratio: 1;
+    object-fit: cover;
     font-size: clamp(18px, 1.8vw, 35px);
 }
 

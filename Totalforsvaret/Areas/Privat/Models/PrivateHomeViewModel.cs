@@ -2,7 +2,8 @@
 
 public class PrivateHomeViewModel
 {
-    public string Navn { get; init; } = "";
+	public bool HasPhoto { get; init; }
+	public string Navn { get; init; } = "";
 
     public string Initialer
     {

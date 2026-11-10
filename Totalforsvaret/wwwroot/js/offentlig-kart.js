@@ -61,6 +61,7 @@
         {
             key: 'ressurser',
             navn: 'Tilgjengelige ressurser',
+            entall: 'tilgjengelig ressurs',
             farge: farge('--tilgjengelig'),
             felter: [
                 ['Kategori', 'kategori'],
@@ -72,6 +73,7 @@
         {
             key: 'behov',
             navn: 'Aktive behov',
+            entall: 'aktivt behov',
             farge: farge('--planlagt'),
             felter: [
                 ['Type', 'type'],
@@ -83,6 +85,7 @@
         {
             key: 'kriser',
             navn: 'Aktive kriser',
+            entall: 'aktiv krise',
             farge: farge('--akutt'),
             felter: [
                 ['Type', 'type'],
@@ -347,10 +350,12 @@
                 }
             }
 
+            const antallVist = type.lag.getLayers().length;
+
             antall.push(
-                type.lag.getLayers().length +
+                antallVist +
                 ' ' +
-                type.navn.toLowerCase()
+                (antallVist === 1 ? type.entall : type.navn.toLowerCase())
             );
         }
 

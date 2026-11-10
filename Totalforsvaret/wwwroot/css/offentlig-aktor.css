@@ -990,3 +990,7 @@ body.kart-fullskjerm-apen {
 .offentlig-dashboard .statistikk-rad .stat-kort {
     width: 100%;
 }
+body.offentlig-page {
+    min-height: 100vh;
+    background-color: #EEF0F2;
+}

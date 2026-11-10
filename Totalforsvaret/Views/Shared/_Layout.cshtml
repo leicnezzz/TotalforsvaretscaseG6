@@ -1,134 +1,179 @@
-@inject Microsoft.AspNetCore.Identity.UserManager<Totalforsvaret.Models.Bruker> UserManager 
+@using System
+@inject Microsoft.AspNetCore.Identity.UserManager<Totalforsvaret.Models.Bruker> UserManager
+
+@{
+    var area = ViewContext.RouteData.Values["area"]?.ToString() ?? "";
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+
+    var isOffentligPage =
+        area.Equals("Offentlig", StringComparison.OrdinalIgnoreCase) ||
+        controller.Equals("OffentligAktor", StringComparison.OrdinalIgnoreCase);
+}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nb">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Totalforsvaret</title>
+
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/Totalforsvaret.styles.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/css/egenberedskap.css" asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/Totalforsvaret.styles.css"
+          asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/css/egenberedskap.css"
+          asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/css/site-header.css"
+          asp-append-version="true" />
     <link rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
-<body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container-fluid">
 
-            <a class="navbar-brand"
-               asp-area=""
-               asp-controller="Home"
-               asp-action="Index">
-                Totalforsvaret
-            </a>
-
-            <button class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target=".navbar-collapse"
-                    aria-controls="navbarSupportedContent"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="Privat" asp-controller="Resource" asp-action="Skjema">Registrer ressurs</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link text-dark"
-                           asp-area=""
-                           asp-controller="Home"
-                           asp-action="Index">
-                            Hjem
-                        </a>
-                    </li>
-                    <!-- Lenke til oversikten for offentlige aktører -->
-                    <li class="nav-item">
-                        <a class="nav-link text-dark"
-                           asp-area=""
-                           asp-controller="OffentligAktor"
-                           asp-action="Index">
-                            Offentlig aktør
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link text-dark"
-                           asp-area=""
-                           asp-controller="Home"
-                           asp-action="Map">
-                            Kart
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link text-dark"
-                           asp-area=""
-                           asp-controller="Home"
-                           asp-action="Privacy">
-                            Privacy
-                        </a>
-                    </li>
-
-                </ul>
-                @if (User.Identity?.IsAuthenticated == true)
-                {
-                    var currentUser = await UserManager.GetUserAsync(User);
-
-                    <a class="nav-link"
-                       asp-area="Privat"
-                       asp-controller="Profile"
+<body class="@(isOffentligPage ? "offentlig-page" : "")">
+    @if (isOffentligPage)
+    {
+        <partial name="/Areas/Offentlig/Views/Shared/_OffentligNavigation.cshtml" />
+    }
+    else
+    {
+        <header>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="container-fluid">
+                    <a class="navbar-brand"
+                       asp-area=""
+                       asp-controller="Home"
                        asp-action="Index">
-                        Min profil
+                        Totalforsvaret
                     </a>
 
-                    <span class="navbar-text me-3">
-                        Hei, @(currentUser?.Navn ?? User.Identity?.Name)
-                    </span>
+                    <button class="navbar-toggler"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target=".navbar-collapse"
+                            aria-controls="navbarSupportedContent"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                    <form method="post"
-                          asp-area=""
-                          asp-controller="Account"
-                          asp-action="Logout">
-                        <button type="submit" class="btn btn-outline-secondary">Logg ut</button>
-                    </form>
-                }
-                else
-                {
-                    <a class="btn btn-outline-secondary" asp-area="" asp-controller="Account" asp-action="Login">Logg inn</a>
-                }
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-area="Privat"
+                                   asp-controller="Resource"
+                                   asp-action="Skjema">
+                                    Registrer ressurs
+                                </a>
+                            </li>
 
-            </div>
-        </div>
-    </nav>
-</header>
-<div class="@(ViewData["FullWidth"] is true ? "container-fluid" : "container")">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-area=""
+                                   asp-controller="Home"
+                                   asp-action="Index">
+                                    Hjem
+                                </a>
+                            </li>
 
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2026 - Totalforsvaret - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-area=""
+                                   asp-controller="OffentligAktor"
+                                   asp-action="Index">
+                                    Offentlig aktør
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-area=""
+                                   asp-controller="Home"
+                                   asp-action="Map">
+                                    Kart
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-area=""
+                                   asp-controller="Home"
+                                   asp-action="Privacy">
+                                    Privacy
+                                </a>
+                            </li>
+                        </ul>
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            var currentUser = await UserManager.GetUserAsync(User);
+
+                            <a class="nav-link"
+                               asp-area="Privat"
+                               asp-controller="Profile"
+                               asp-action="Index">
+                                Min profil
+                            </a>
+
+                            <span class="navbar-text me-3">
+                                Hei, @(currentUser?.Navn ?? User.Identity?.Name)
+                            </span>
+
+                            <form method="post"
+                                  asp-area=""
+                                  asp-controller="Account"
+                                  asp-action="Logout">
+                                <button type="submit"
+                                        class="btn btn-outline-secondary">
+                                    Logg ut
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-secondary"
+                               asp-area=""
+                               asp-controller="Account"
+                               asp-action="Login">
+                                Logg inn
+                            </a>
+                        }
+                    </div>
+                </div>
+            </nav>
+        </header>
+    }
+
+    <div class="@(ViewData["FullWidth"] is true ? "container-fluid" : "container")">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
     </div>
-</footer>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 - Totalforsvaret -
+            <a asp-area=""
+               asp-controller="Home"
+               asp-action="Privacy">
+                Privacy
+            </a>
+        </div>
+    </footer>
 
-@await RenderSectionAsync("Scripts", required: false)
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

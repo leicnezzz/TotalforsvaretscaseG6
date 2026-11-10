@@ -565,10 +565,41 @@
 
         <h2 id="koordinering-tittel">Koordinering</h2>
 
-        <p>
-            Ingen notater ennå.
-            Her skal siste avklaringer og oppdateringer vises.
-        </p>
+        @if (ViewBag.SisteTildelinger != null &&
+             ViewBag.SisteTildelinger.Count > 0)
+        {
+            <ul class="koordinering-liste">
+                @foreach (var tildeling in ViewBag.SisteTildelinger)
+                {
+                    string statusKode = tildeling.status.ToString();
+                    string statusTekst = statusKode switch
+                    {
+                        "Requested" => "Til vurdering",
+                        "Assigned" => "Tildelt",
+                        "Released" => "Frigitt",
+                        "Rejected" => "Avslått",
+                        _ => statusKode
+                    };
+
+                    <li>
+                        <strong>@tildeling.ressurs</strong>
+                        til behovet
+                        <strong>@tildeling.behov</strong>
+                        <span>
+                            @statusTekst ·
+                            @(((DateTime)tildeling.tidspunkt).ToLocalTime().ToString("dd.MM.yyyy HH:mm"))
+                        </span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>
+                Ingen tildelinger ennå.
+                Her vises de siste avklaringene mellom behov og ressurser.
+            </p>
+        }
     </section>
 
 </div>

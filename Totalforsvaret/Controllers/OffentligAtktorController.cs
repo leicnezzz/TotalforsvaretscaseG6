@@ -182,7 +182,27 @@ public class OffentligAktorController : Controller
         // Brukes til å markere egne ressurser på kartet.
         TryHentBrukerId(out var minBrukerId);
         ViewBag.MinBrukerId = minBrukerId;
-
+        
+        // Henter de fem siste tildelingene til Koordinering-boksen.
+        ViewBag.SisteTildelinger = _context?.ResourceAssignments
+            .AsNoTracking()
+            .OrderByDescending(a => a.RequestedAtUtc)
+            .Take(5)
+            .Select(a => new
+            {
+                behov = _context.Needs
+                    .Where(n => n.Id == a.NeedId)
+                    .Select(n => n.Name)
+                    .FirstOrDefault(),
+                ressurs = _context.Resources
+                    .Where(r => r.ResourceId == a.ResourceId)
+                    .Select(r => r.Object)
+                    .FirstOrDefault(),
+                status = a.Status,
+                tidspunkt = a.RequestedAtUtc
+            })
+            .ToList();
+      
         return View(tilgjengeligeRessurser);
     }
     [HttpGet]

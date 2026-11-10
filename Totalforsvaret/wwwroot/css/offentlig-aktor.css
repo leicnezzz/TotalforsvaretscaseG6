@@ -260,6 +260,27 @@
     border-radius: 12px;
 }
 
+.offentlig-dashboard .koordinering-liste {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.offentlig-dashboard .koordinering-liste li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--kant);
+}
+
+.offentlig-dashboard .koordinering-liste li:last-child {
+    border-bottom: 0;
+}
+
+.offentlig-dashboard .koordinering-liste span {
+    display: block;
+    color: var(--dempet);
+    font-size: 13px;
+}
+
 .offentlig-dashboard .koordinering-panel h2 {
     margin: 0 0 14px;
     font-size: 21px;

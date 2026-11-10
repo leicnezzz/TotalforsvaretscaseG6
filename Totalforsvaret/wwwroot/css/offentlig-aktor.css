@@ -1019,10 +1019,3 @@ body.offentlig-page {
 .offentlig-page .offentlig-site-header .account-copy small {
     color: #fff;
 }
-body.offentlig-page .offentlig-site-header .nav-links a:hover,
-body.offentlig-page .offentlig-site-header .nav-links a:focus-visible,
-.privacy-page.privacy-public .offentlig-site-header .nav-links a:hover,
-.privacy-page.privacy-public .offentlig-site-header .nav-links a:focus-visible {
-    color: #fff;
-    border-bottom-color: #fff;
-}

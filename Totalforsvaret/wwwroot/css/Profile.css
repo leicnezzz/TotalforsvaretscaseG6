@@ -321,3 +321,6 @@ body.profile-page {
         padding: 24px 20px;
     }
 }
+.privacy-page .site-header .account-link {
+    color: var(--privacy-green);
+}

@@ -5,7 +5,7 @@
 @inject UserManager<Bruker> UserManager
 
 @*Gjenbruker koden fra Privatnavigation*@
-
+@*Felles OffentligNavigation, hvis du skal ha en ny page, legg den inn her for å vises på navigation bar*@
 @{
     var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";

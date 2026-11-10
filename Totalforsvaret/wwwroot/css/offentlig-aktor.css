@@ -990,6 +990,8 @@ body.kart-fullskjerm-apen {
 .offentlig-dashboard .statistikk-rad .stat-kort {
     width: 100%;
 }
+
+/*Navigation bar og bakgrunnsfarge for Offentlig Aktør*/
 body.offentlig-page {
     min-height: 100vh;
     background-color: #EEF0F2;

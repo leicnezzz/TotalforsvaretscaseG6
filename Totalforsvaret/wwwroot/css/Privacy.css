@@ -23,7 +23,7 @@
 
 /* Offentlig aktør får blågrønn aksentfarge */
 .privacy-page.privacy-public {
-    --privacy-green: #163c4c;
+    --privacy-green: #2e6840;
     --wave-light: #dfeaf0;
     --wave-dark: #4b8499;
 }
@@ -235,12 +235,6 @@
 .privacy-public .offentlig-site-header .nav-links a {
     color: #fff;
     transition: color 150ms ease, border-color 150ms ease;
-}
-
-.privacy-public .offentlig-site-header .nav-links a:hover,
-.privacy-public .offentlig-site-header .nav-links a:focus-visible {
-    color: #b9e4d0;
-    border-bottom-color: #b9e4d0;
 }
 
 .privacy-public .offentlig-site-header .nav-links a.active {

@@ -116,6 +116,14 @@ app.MapControllerRoute(
     pattern: "Home/Skjema",
     defaults: new { area = "Privat", controller = "Resource", action = "Skjema" });
 
+app.MapGet("/OffentligAktor/Behov", () => Results.LocalRedirect("~/Behov"));
+
+app.MapControllerRoute(
+    name: "behov",
+    pattern: "Behov",
+    defaults: new { area = "Offentlig", controller = "Need", action = "Create" });
+
+
 app.MapControllerRoute(
     name: "legacy-need",
     pattern: "Need/{action=Create}/{id?}",

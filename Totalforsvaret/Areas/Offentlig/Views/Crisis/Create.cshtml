@@ -5,190 +5,148 @@
     ViewData["Title"] = ViewData["EditId"] != null
         ? "Endre krise"
         : "Opprett krise";
+    ViewData["FullWidth"] = true;
+    ViewData["RegistrationFooter"] = true;
 }
+<link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/resource-registration.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/resource-wizard.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/need-registration.css" asp-append-version="true" />
 
-<link rel="stylesheet"
-      href="~/css/offentlig-aktor.css"
-      asp-append-version="true" />
+<div class="need-page">
+    <div class="private-page-actions">
+        <a asp-area="" asp-controller="OffentligAktor" asp-action="Index"
+           class="private-page-action">← Tilbake</a>
+    </div>
+    <div class="registration-content need-registration">
+        <section class="registration-intro" aria-labelledby="need-title">
+            <h1 id="need-title">@ViewData["Title"]</h1>
+            <p>Beskriv situasjonen og oppgi hvilket område som er berørt.</p>
+        </section>
 
-<div class="container py-4 offentlig-krise-side">
-    <a asp-area=""
-       asp-controller="OffentligAktor"
-       asp-action="Index"
-       class="tilbake-oversikt">
-        ← Tilbake til oversikten
-    </a>
-    <h1>@ViewData["Title"]</h1>
-    <p>Registrer krisen før du legger til behov.</p>
-    <form asp-area="Offentlig"
+        <form asp-area="Offentlig"
           asp-controller="Crisis"
           asp-action="@(ViewData["EditId"] != null ? "Edit" : "Create")"
           asp-route-id="@(ViewData["EditId"])"
-          method="post">
+          method="post" class="resource-wizard need-card" data-need-wizard>
 
-        <div asp-validation-summary="All" class="text-danger"></div>
-        
-        <h2 class="krise-skjema-tittel">Hva har skjedd?</h2>
-        <p class="krise-skjema-intro">
-            Beskriv situasjonen og velg området som er berørt.
-        </p>
+            <div asp-validation-summary="All" class="text-danger"></div>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label asp-for="Name" class="form-label">Navn på krisen</label>
-                <input asp-for="Name" class="form-control"
-                       placeholder="For eksempel Flom i Kristiansand sentrum"
-                       maxlength="100" required />
+            <section data-need-step>
+                <h2 class="need-step-title" tabindex="-1">Hva har skjedd?</h2>
+                <p class="need-step-intro">
+                    Fyll ut opplysningene om krisen.
+                </p>
+                <div class="row gy-3">
+                    <div class="col-md-6 wizard-fields">
+                        <label asp-for="Name" class="form-label">Navn på krisen</label>
+                        <input asp-for="Name" class="form-control"
+                               placeholder="For eksempel Flom i Kristiansand sentrum"
+                               maxlength="100" required />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 wizard-fields">
+                        <label asp-for="Type" class="form-label">Type krise</label>
+                        <select asp-for="Type" class="form-select" required>
+                            <option value="">Velg type</option>
+                            <option value="Flom">Flom</option>
+                            <option value="Brann">Brann</option>
+                            <option value="Strømbrudd">Strømbrudd</option>
+                            <option value="Ekstremvær">Ekstremvær</option>
+                            <option value="Annet">Annet</option>
+                        </select>
+                        <span asp-validation-for="Type" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 wizard-fields">
+                        <label asp-for="Area" class="form-label">Område</label>
+                        <input asp-for="Area" class="form-control"
+                               placeholder="For eksempel Kristiansand"
+                               maxlength="100" required />
+                        <span asp-validation-for="Area" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 wizard-fields">
+                        <label asp-for="Severity" class="form-label">Alvorlighetsgrad</label>
+                        <select asp-for="Severity" class="form-select" required>
+                            <option value="">Velg alvorlighetsgrad</option>
+                            <option value="Lav">Lav</option>
+                            <option value="Middels">Middels</option>
+                            <option value="Høy">Høy</option>
+                            <option value="Kritisk">Kritisk</option>
+                        </select>
+                        <span asp-validation-for="Severity" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 wizard-fields">
+                        <label asp-for="StartTime" class="form-label">Starttidspunkt</label>
+                        <input asp-for="StartTime"
+                               type="datetime-local"
+                               asp-format="{0:yyyy-MM-ddTHH:mm}"
+                               step="any"
+                               class="form-control"
+                               required/>
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 wizard-fields">
+                        <label asp-for="Status" class="form-label">Status</label>
+                        <select asp-for="Status" class="form-select" required>
+                            <option value="">Velg status</option>
+                            <option value="Aktiv">Aktiv</option>
+                            <option value="Under kontroll">Under kontroll</option>
+                            <option value="Avsluttet">Avsluttet</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+                    <div class="col-12 wizard-fields">
+                        <label asp-for="Description" class="form-label">Beskriv krisen</label>
+                        <textarea asp-for="Description" class="form-control"
+                                  rows="5" maxlength="1500" required></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+            </section>
+
+            <input asp-for="Latitude" type="hidden" />
+            <input asp-for="Longitude" type="hidden" />
+
+            <section data-need-step hidden>
+                <h2 class="need-step-title" tabindex="-1">Se over informasjonen</h2>
+                <p class="need-step-intro">Kontroller opplysningene før du lagrer krisen.</p>
+                <dl class="need-review" data-need-review></dl>
+            </section>
+
+            <div class="need-actions">
+                <div>
+                    <a asp-area="" asp-controller="OffentligAktor" asp-action="Index"
+                   class="public-button public-button-outline" data-need-cancel>Avbryt</a>
+                    <button type="button" class="public-button public-button-outline" data-need-back hidden>← Tilbake</button>
+                </div>
+                <button type="button" class="public-button public-button-primary" data-need-next hidden>Neste →</button>
+                <button type="submit" class="public-button public-button-primary" data-need-submit>
+                    @(ViewData["EditId"] != null ? "Lagre endringer" : "Opprett krise")
+                </button>
             </div>
+        </form>
 
-            <div class="col-md-6 mb-3">
-                <label asp-for="Type" class="form-label">Type krise</label>
-                <select asp-for="Type" class="form-select" required>
-                    <option value="">Velg type</option>
-                    <option value="Flom">Flom</option>
-                    <option value="Brann">Brann</option>
-                    <option value="Strømbrudd">Strømbrudd</option>
-                    <option value="Ekstremvær">Ekstremvær</option>
-                    <option value="Annet">Annet</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label asp-for="Area" class="form-label">Område</label>
-                <input asp-for="Area" class="form-control"
-                       placeholder="For eksempel Kristiansand"
-                       maxlength="100" required />
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label asp-for="Severity" class="form-label">Alvorlighetsgrad</label>
-                <select asp-for="Severity" class="form-select" required>
-                    <option value="">Velg alvorlighetsgrad</option>
-                    <option value="Lav">Lav</option>
-                    <option value="Middels">Middels</option>
-                    <option value="Høy">Høy</option>
-                    <option value="Kritisk">Kritisk</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label asp-for="StartTime" class="form-label">Starttidspunkt</label>
-                <input asp-for="StartTime"
-                       type="datetime-local"
-                       asp-format="{0:yyyy-MM-ddTHH:mm}"
-                       step="60"
-                       class="form-control"
-                       required/>
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label asp-for="Status" class="form-label">Status</label>
-                <select asp-for="Status" class="form-select" required>
-                    <option value="">Velg status</option>
-                    <option value="Aktiv">Aktiv</option>
-                    <option value="Under kontroll">Under kontroll</option>
-                    <option value="Avsluttet">Avsluttet</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="Description" class="form-label">Beskriv krisen</label>
-            <textarea asp-for="Description" class="form-control"
-                      rows="5" maxlength="1500" required></textarea>
-        </div>
-
-        <div class="mb-3 krise-plassering">
-            <label class="form-label">Velg plassering på kartet</label>
-            <p>Klikk på kartet for å plassere krisen.</p>
-
-            <div id="kriseKart" style="height: 350px; width: 100%;"></div>
-
-            <input asp-for="Latitude" type="hidden" id="Latitude"/>
-            <input asp-for="Longitude" type="hidden" id="Longitude"/>
-
-            <p id="kriseKartmelding" class="small text-muted mt-2">
-                Ingen plassering valgt.
-            </p>
-        </div>
-        <div class="krise-handlinger">
-            <button type="submit" class="btn btn-success">
-                @(ViewData["EditId"] != null ? "Endre krise" : "Opprett krise")
-            </button>
-
-            <a asp-area=""
-               asp-controller="OffentligAktor"
-               asp-action="Index"
-               class="btn btn-outline-secondary">
-                Avbryt
-            </a>
-        </div>
-    </form>
-    
-    @if (ViewData["EditId"] != null)
-    {
-        <form asp-area="Offentlig"
+        @if (ViewData["EditId"] != null)
+        {
+            <form asp-area="Offentlig"
               asp-controller="Crisis"
               asp-action="Delete"
               asp-route-id="@(ViewData["EditId"])"
               method="post"
-              class="mt-3"
+              class="resource-wizard mt-3"
               onsubmit="return confirm('Er du sikker på at du vil slette hele denne krisen og ALLE behov som er knyttet til den? Behovene fjernes også fra aktive behov og kartet. Dette kan ikke angres.');">
 
-            <button type="submit" class="btn btn-danger">
-                Slett krise og tilknyttede behov
-            </button>
-        </form>
-    }
+                <button type="submit" class="public-button public-button-outline need-delete">
+                    Slett krise og tilknyttede behov
+                </button>
+            </form>
+        }
+    </div>
 </div>
 
 @section Scripts {
-    <script>
-        (() => {
-            const kartElement = document.getElementById('kriseKart');
-            const melding = document.getElementById('kriseKartmelding');
-            const latitudeInput = document.getElementById('Latitude');
-            const longitudeInput = document.getElementById('Longitude');
-
-            if (typeof L === 'undefined') {
-                melding.textContent = 'Kartet kunne ikke lastes.';
-                return;
-            }
-
-            const kart = L.map('kriseKart')
-                .setView([58.1467, 7.9956], 12);
-
-            L.tileLayer(
-                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                {
-                    maxZoom: 19,
-                    attribution: '&copy; OpenStreetMap contributors'
-                }
-            ).addTo(kart);
-
-            let markor = null;
-
-            kart.on('click', function (e) {
-                const latitude = e.latlng.lat;
-                const longitude = e.latlng.lng;
-
-                latitudeInput.value = latitude;
-                longitudeInput.value = longitude;
-
-                if (markor) {
-                    kart.removeLayer(markor);
-                }
-
-                markor = L.marker([latitude, longitude])
-                    .addTo(kart);
-
-                melding.textContent =
-                    `Valgt plassering: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-            });
-        })();
-    </script>
+    <script src="~/js/need-registration.js" asp-append-version="true"></script>
 }

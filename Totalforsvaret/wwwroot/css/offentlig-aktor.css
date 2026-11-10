@@ -990,3 +990,119 @@ body.kart-fullskjerm-apen {
 .offentlig-dashboard .statistikk-rad .stat-kort {
     width: 100%;
 }
+
+/* Operativ oversikt */
+body:has(.offentlig-dashboard) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    margin-bottom: 0;
+    background: #eef0f2;
+}
+
+body:has(.offentlig-dashboard) > .container-fluid {
+    flex: 1;
+    padding-inline: 0;
+}
+
+body:has(.offentlig-dashboard) > .registration-footer,
+body:has(.offentlig-dashboard) > .registration-footer a {
+    color: #163c4c;
+}
+
+.offentlig-dashboard {
+    max-width: 1440px;
+    padding: clamp(16px, 3vw, 40px);
+    background: transparent;
+}
+
+.offentlig-dashboard .oversikt-topp {
+    margin-bottom: 24px;
+}
+
+.offentlig-dashboard .statistikk-rad {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    gap: 12px;
+}
+
+.offentlig-dashboard .statistikk-rad .stat-kort {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0;
+    min-height: 7.75rem;
+    padding: 14px 16px;
+    border: 1px solid var(--kant);
+    color: #163c4c;
+    text-align: left;
+}
+
+.offentlig-dashboard .stat-kort :is(h2, .stat-navn) {
+    margin: 0;
+    color: #163c4c;
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+.offentlig-dashboard .stat-kort .stat-tall {
+    color: inherit;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.offentlig-dashboard .stat-kort .stat-handling {
+    margin-top: auto;
+    color: #163c4c;
+    text-decoration: underline;
+    text-underline-offset: .15em;
+}
+
+.offentlig-dashboard .stat-kort[data-oversikt-liste]:hover {
+    border-color: #163c4c;
+    background: #f7fafb;
+}
+
+.offentlig-dashboard .offentlig-arbeidsflate {
+    --kart-hoyde: clamp(360px, 58dvh, 620px);
+    align-items: start;
+}
+
+.offentlig-dashboard .situasjonskart,
+.offentlig-dashboard .oppfolging-panel {
+    height: auto;
+    padding: 16px;
+    overflow: visible;
+    border: 1px solid var(--kant);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.offentlig-dashboard .situasjonskart h2,
+.offentlig-dashboard .oppfolging-panel h2 {
+    margin: 0 0 16px;
+    color: #163c4c;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.offentlig-dashboard #offentligKart:not(:fullscreen):not(.kart-fullskjerm) {
+    height: var(--kart-hoyde);
+    min-height: 0;
+}
+
+@media (max-width: 575px) {
+    .offentlig-dashboard .oversikt-handlinger {
+        width: 100%;
+    }
+
+    .offentlig-dashboard .oversikt-handlinger a {
+        flex: 1 1 9rem;
+        padding-inline: 10px;
+    }
+
+    .offentlig-dashboard .offentlig-arbeidsflate {
+        --kart-hoyde: clamp(300px, 55dvh, 420px);
+    }
+}

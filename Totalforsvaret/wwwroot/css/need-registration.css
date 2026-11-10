@@ -1,0 +1,178 @@
+body:has(.need-page) {
+    background: #eef0f2;
+}
+
+body:has(.need-page) > .container-fluid {
+    padding-inline: 0;
+}
+
+.need-page {
+    --header-green: #163c4c;
+    --muted: #607078;
+    font-family: "Roboto", Arial, sans-serif;
+    color: var(--header-green);
+}
+
+.need-page .private-page-action:hover {
+    text-decoration: underline;
+}
+
+.need-registration {
+    width: min(calc(100% - 32px), 760px);
+    padding-bottom: 64px;
+}
+
+.need-registration .registration-intro {
+    margin-top: 16px;
+}
+
+.need-registration .registration-intro h1,
+.need-step-title {
+    font-weight: 700;
+}
+
+.need-card {
+    margin-top: 0;
+    padding: clamp(24px, 5vw, 48px);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.need-step-title {
+    margin: 0;
+    font-size: clamp(24px, 2.3vw, 35px);
+    line-height: 1.1;
+}
+
+.need-step-intro {
+    margin: 16px 0 24px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.need-card .wizard-fields > :is(input, select, textarea) {
+    margin-bottom: 0;
+    border-color: var(--header-green);
+}
+
+.need-card .wizard-address-results button,
+.need-registration .public-button {
+    border-color: var(--header-green);
+    color: var(--header-green);
+}
+
+.need-card .wizard-address-results button:hover,
+.need-card .wizard-address-results button:focus-visible,
+.need-registration .public-button-outline:hover {
+    background: #eef0f2;
+}
+
+.need-registration .public-button-primary {
+    background: var(--header-green);
+    color: #fff;
+}
+
+.need-registration .public-button-primary:hover {
+    background: #225466;
+}
+
+.need-registration .need-delete {
+    border-color: #8b2d22;
+    color: #8b2d22;
+}
+
+.need-map {
+    height: clamp(240px, 48vh, 450px);
+}
+
+.need-review-map {
+    height: clamp(200px, 36vh, 340px);
+}
+
+.need-review {
+    display: grid;
+    grid-template-columns: minmax(8rem, 1fr) minmax(0, 2fr);
+    gap: 12px 20px;
+}
+
+.need-review dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.need-actions {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.need-registration .public-button {
+    width: auto;
+    transition: background-color 150ms ease;
+}
+
+@media (max-width: 575px) {
+    .need-review {
+        display: block;
+    }
+
+    .need-review dd + dt {
+        margin-top: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .need-card [data-need-step].is-entering {
+        animation: need-step-enter 180ms ease-out both;
+    }
+
+    @keyframes need-step-enter {
+        from { opacity: .5; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .need-registration .public-button {
+        transition: none;
+    }
+}
+
+.need-card .wizard-fields > select {
+    appearance: auto;
+}
+
+body:has(.need-page) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100svh;
+    margin-bottom: 0;
+}
+
+body:has(.need-page) > .container-fluid {
+    flex: 1;
+}
+
+body:has(.need-page) > .registration-footer {
+    color: #163c4c;
+    font-family: "Roboto", Arial, sans-serif;
+}
+
+body:has(.need-page) > .registration-footer a {
+    color: inherit;
+}
+
+.need-actions [data-need-next] {
+    min-width: 11rem;
+}
+
+@media (max-width: 420px) {
+    .need-actions [data-need-next] {
+        flex: 1;
+        min-width: 8rem;
+    }
+}

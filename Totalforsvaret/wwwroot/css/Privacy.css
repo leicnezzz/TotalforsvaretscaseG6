@@ -260,3 +260,12 @@
 .privacy-page .site-header .account-link {
     color: var(--privacy-green);
 }
+.privacy-page .site-header .nav-links a {
+    transition: color 150ms ease, border-color 150ms ease;
+}
+
+.privacy-page .site-header .nav-links a:hover,
+.privacy-page .site-header .nav-links a:focus-visible {
+    color: var(--privacy-green);
+    border-bottom-color: var(--privacy-green);
+}

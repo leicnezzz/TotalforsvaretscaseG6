@@ -168,6 +168,31 @@
     font-size: 13px;
     font-weight: 700;
 }
+/* Bjelle og profil samlet til høyre i toppmenyen */
+.account-actions {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    margin-left: auto;
+}
+
+.inbox-icon-link {
+    display: flex;
+    flex: 0 0 40px;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: #607078;
+}
+
+.inbox-icon-link:focus-visible {
+    outline: 3px solid #00c8b3;
+    outline-offset: 3px;
+}
 
 .account-copy {
     display: grid;

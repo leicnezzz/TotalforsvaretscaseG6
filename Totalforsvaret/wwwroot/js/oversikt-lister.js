@@ -98,7 +98,10 @@
         return treff;
     }
 
-    function tegnListe() {
+    function tegnListe() { if (visning === 'kriser') {
+        tegnKriseliste();
+        return;
+    }
         const erRessurser = visning === 'ressurser';
         const treff = utvalg();
 
@@ -260,7 +263,242 @@
         tabell.append(tbody);
         liste.append(tabell);
     }
+
+    function tegnKriseliste() {
+        let treff = [...(data.kriser ?? [])];
+
+        if (typevalg.value !== 'alle') {
+            treff = treff.filter(
+                krise => krise.type === typevalg.value
+            );
+        }
+
+        treff.sort((a, b) => {
+            const datoA = Date.parse(a.starttidspunkt) || 0;
+            const datoB = Date.parse(b.starttidspunkt) || 0;
+
+            if (sortering.value === 'alvorlighet') {
+                return prioritet(b.alvorlighetsgrad) -
+                    prioritet(a.alvorlighetsgrad) ||
+                    datoB - datoA ||
+                    b.id - a.id;
+            }
+
+            if (sortering.value === 'navn') {
+                return a.navn.localeCompare(b.navn, 'nb') ||
+                    b.id - a.id;
+            }
+
+            return sortering.value === 'dato-eldste'
+                ? datoA - datoB || a.id - b.id
+                : datoB - datoA || b.id - a.id;
+        });
+
+        antall.textContent = treff.length + ' treff';
+        liste.replaceChildren();
+
+        if (!treff.length) {
+            liste.append(element(
+                'p',
+                'Ingen aktive kriser passer til valget.',
+                'oversikt-tom'
+            ));
+            return;
+        }
+
+        const tabell = element(
+            'table',
+            null,
+            'oversikt-tabell oversikt-tabell--kriser'
+        );
+
+        tabell.append(element(
+            'caption',
+            'Aktive kriser',
+            'visually-hidden'
+        ));
+
+        const hode = element('thead');
+        const hoderad = element('tr');
+
+        const kolonner = [
+            'Navn',
+            'Type',
+            'Område',
+            'Alvorlighetsgrad',
+            'Starttidspunkt',
+            'Status',
+            'Beskrivelse',
+            'Handlinger'
+        ];
+
+        for (const navn of kolonner) {
+            const th = element('th', navn);
+            th.scope = 'col';
+            hoderad.append(th);
+        }
+
+        hode.append(hoderad);
+        tabell.append(hode);
+
+        const kropp = element('tbody');
+
+        for (const krise of treff) {
+            const rad = element('tr');
+            const dato = new Date(krise.starttidspunkt);
+
+            const datotekst = Number.isFinite(dato.getTime())
+                ? dato.toLocaleString('nb-NO', {
+                    dateStyle: 'short',
+                    timeStyle: 'short'
+                })
+                : 'Ikke oppgitt';
+
+            const verdier = [
+                krise.navn,
+                krise.type,
+                krise.omrade,
+                krise.alvorlighetsgrad,
+                datotekst,
+                krise.status,
+                krise.beskrivelse
+            ];
+
+            for (const verdi of verdier) {
+                rad.append(element(
+                    'td',
+                    verdi || 'Ikke oppgitt'
+                ));
+            }
+
+            const celle = element('td');
+            const handlinger = element(
+                'div',
+                null,
+                'oversikt-radhandlinger'
+            );
+
+            // Vis krisen på kartet.
+            const kartknapp = element(
+                'button',
+                'Vis på kart',
+                'btn btn-sm btn-outline-secondary'
+            );
+
+            kartknapp.type = 'button';
+            kartknapp.disabled = !gyldigPosisjon(krise);
+
+            if (kartknapp.disabled) {
+                kartknapp.title =
+                    'Krisen mangler gyldige kartkoordinater.';
+            }
+
+            kartknapp.addEventListener('click', () => {
+                dialog.close();
+
+                document.dispatchEvent(
+                    new CustomEvent('oversikt:vis-pa-kart', {
+                        detail: {
+                            type: 'kriser',
+                            id: krise.id
+                        }
+                    })
+                );
+
+                document.getElementById('offentligKart')
+                    .scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+            });
+
+            handlinger.append(kartknapp);
+
+            // Åpne eksisterende redigeringsskjema.
+            const endre = element(
+                'a',
+                'Endre krise',
+                'btn btn-sm btn-outline-primary'
+            );
+
+            const url = new URL(
+                dialog.dataset.endreKrise,
+                window.location.origin
+            );
+
+            url.searchParams.set('id', String(krise.id));
+            endre.href = url.href;
+            handlinger.append(endre);
+
+            // Avslutt krisen etter bekreftelse.
+            const avslutt = element(
+                'button',
+                'Avslutt krise',
+                'btn btn-sm btn-outline-danger'
+            );
+
+            avslutt.type = 'button';
+
+            avslutt.addEventListener('click', () => {
+                const bekreftet = window.confirm(
+                    'Vil du avslutte «' + krise.navn +
+                    '»? Tilknyttede behov beholder sin status.'
+                );
+
+                if (!bekreftet) return;
+
+                const skjema = document.getElementById(
+                    'avsluttKriseSkjema'
+                );
+
+                skjema.querySelector('[name="id"]').value =
+                    krise.id;
+
+                skjema.requestSubmit();
+            });
+
+            handlinger.append(avslutt);
+            celle.append(handlinger);
+            rad.append(celle);
+            kropp.append(rad);
+        }
+
+        tabell.append(kropp);
+        liste.append(tabell);
+    }
+
+    function apneKriser() {
+        visning = 'kriser';
+        tittel.textContent = 'Aktive kriser';
+
+        const typer = [
+            ...new Set((data.kriser ?? []).map(
+                krise => krise.type
+            ))
+        ]
+            .filter(Boolean)
+            .sort((a, b) => a.localeCompare(b, 'nb'));
+
+        valg(typevalg, [
+            ['alle', 'Alle'],
+            ...typer.map(type => [type, type])
+        ]);
+
+        valg(sortering, [
+            ['alvorlighet', 'Høyest alvorlighetsgrad først'],
+            ['navn', 'Navn A–Å'],
+            ['dato-nyeste', 'Starttidspunkt – nyeste først'],
+            ['dato-eldste', 'Starttidspunkt – eldste først']
+        ]);
+
+        tegnKriseliste();
+        dialog.showModal();
+    }
     function apne(type) {
+        if (type === 'kriser') {
+            apneKriser();
+            return;
+        }
         visning = type;
         const erRessurser = type === 'ressurser';
 
@@ -268,7 +506,7 @@
             ? 'Tilgjengelige ressurser'
             : type === 'loste'
                 ? 'Løste behov'
-                : 'Aktive behov';
+                : (type === 'kriser' ? 'Aktive kriser' : 'Aktive behov');
 
         valg(typevalg, erRessurser
             ? [

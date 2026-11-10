@@ -22,15 +22,23 @@
         action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase);
 
     var isProfile = controller.Equals("Profile", StringComparison.OrdinalIgnoreCase);
+    
+    var isInbox = controller.Equals("Inbox", StringComparison.OrdinalIgnoreCase);
 
     var isEgenberedskap =
         controller.Equals("Egenberedskap", StringComparison.OrdinalIgnoreCase);
+    
+    var isPrivacy =
+        controller.Equals("Home", StringComparison.OrdinalIgnoreCase) &&
+        action.Equals("Privacy", StringComparison.OrdinalIgnoreCase);
 
     var sectionName = isDashboard ? "Min side"
         : isResourceForm ? "Ressursregistrering"
         : isResourceOverview ? "Mine ressurser"
         : isProfile ? "Min profil"
         : isEgenberedskap ? "Egenberedskap"
+        : isInbox ? "Innboks"
+        : isPrivacy ? "Personvern"
         : "Brukeroversikt";
 
     var account = await UserManager.GetUserAsync(User);
@@ -78,11 +86,16 @@
                asp-action="Index">
                 Egenberedskap
             </a>
+            
         </div>
 
-        <details class="account-menu">
-            <summary class="account-link @(isProfile ? "active" : "")"
-                     aria-label="Brukermeny for @displayName">
+        <div class="account-actions">
+            <a class="inbox-icon-link"
+               asp-area="Privat"
+               asp-controller="Inbox"
+               asp-action="Index"
+               aria-label="Åpne innboksen"
+               aria-current="@(isInbox ? "page" : null)">
                 <svg class="bell"
                      viewBox="0 0 24 24"
                      fill="none"
@@ -91,50 +104,57 @@
                     <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
                     <path d="M10 21h4" />
                 </svg>
+            </a>
 
-                @if (hasPhoto)
-                {
-                    <img class="avatar avatar-small"
-                         src="@Url.Action("Photo", "Profile", new { area = "Privat" })"
-                         alt="" />
-                }
-                else
-                {
-                    <span class="avatar avatar-small" aria-hidden="true">@initials</span>
-                }
+            <details class="account-menu">
+                <summary class="account-link @(isProfile ? "active" : "")"
+                         aria-label="Brukermeny for @displayName">
+                    @if (hasPhoto)
+                    {
+                        <img class="avatar avatar-small"
+                             src="@Url.Action("Photo", "Profile", new { area = "Privat" })"
+                             alt="" />
+                    }
+                    else
+                    {
+                        <span class="avatar avatar-small" aria-hidden="true">@initials</span>
+                    }
 
-                <span class="account-copy">
-                    <strong>@displayName</strong>
-                    <small>Privat aktør</small>
-                </span>
+                    <span class="account-copy">
+                        <strong>@displayName</strong>
+                        <small>Privat aktør</small>
+                    </span>
+                    <span class="chevron" aria-hidden="true">⌄</span>
+                </summary>
 
-                <span class="chevron" aria-hidden="true">⌄</span>
-            </summary>
-
-            <ul class="account-menu-list">
-                <li>
-                    <a asp-area="Privat" asp-controller="Profile" asp-action="Index"
-                       aria-current="@(isProfile ? "page" : null)">Min profil</a>
-                </li>
-                <li>
-                    <a asp-area="Privat" asp-controller="Dashboard" asp-action="Index"
-                       aria-current="@(isDashboard ? "page" : null)">Min side</a>
-                </li>
-                <li>
-                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Personvern</a>
-                </li>
-                <li>
-                    <form id="private-logout"
-                          asp-area="" asp-controller="Account" asp-action="Logout" method="post"
-                          onsubmit="return window.confirm('Er du sikker på at du vil logge ut?');">
-                        <button type="submit">Logg ut</button>
-                    </form>
-                </li>
-            </ul>
-        </details>
+                <ul class="account-menu-list">
+                    <li>
+                        <a asp-area="Privat" asp-controller="Profile" asp-action="Index"
+                           aria-current="@(isProfile ? "page" : null)">Min profil</a>
+                    </li>
+                    <li>
+                        <a asp-area="Privat" asp-controller="Dashboard" asp-action="Index"
+                           aria-current="@(isDashboard ? "page" : null)">Min side</a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-controller="Home" asp-action="Privacy"
+                           aria-current="@(isPrivacy ? "page" : null)">Personvern</a>
+                    </li>
+                    <li>
+                        <form id="private-logout"
+                              asp-area="" asp-controller="Account" asp-action="Logout" method="post"
+                              onsubmit="return window.confirm('Er du sikker på at du vil logge ut?');">
+                            <button type="submit">Logg ut</button>
+                        </form>
+                    </li>
+                </ul>
+            </details>
+        </div>
     </nav>
 
+   
     <div class="section-bar">
         <span>@sectionName</span>
     </div>
+    
 </header>

@@ -62,6 +62,7 @@ public class OffentligAktorController : Controller
                         c.Longitude != null)
             .Select(c => new
             {
+                id = c.Id,
                 navn = c.Name,
                 type = c.Type,
                 alvorlighetsgrad = c.Severity,
@@ -159,10 +160,156 @@ public class OffentligAktorController : Controller
             .ToList();
 
         ViewBag.ForeslatteTreff = forslag.Count;
-
+        
+        ViewBag.KriserTilLister = _context?.Crises
+            .AsNoTracking()
+            .Where(c => c.Status == "Aktiv")
+            .Select(c => new
+            {
+                id = c.Id,
+                navn = c.Name,
+                type = c.Type,
+                omrade = c.Area,
+                alvorlighetsgrad = c.Severity,
+                starttidspunkt = c.StartTime,
+                status = c.Status,
+                beskrivelse = c.Description,
+                latitude = c.Latitude,
+                longitude = c.Longitude
+            })
+            .ToList();
+ 
+        // Brukes til å markere egne ressurser på kartet.
+        TryHentBrukerId(out var minBrukerId);
+        ViewBag.MinBrukerId = minBrukerId;
+        
+        // Henter de fem siste tildelingene til Koordinering-boksen.
+        ViewBag.SisteTildelinger = _context?.ResourceAssignments
+            .AsNoTracking()
+            .OrderByDescending(a => a.RequestedAtUtc)
+            .Take(5)
+            .Select(a => new
+            {
+                behov = _context.Needs
+                    .Where(n => n.Id == a.NeedId)
+                    .Select(n => n.Name)
+                    .FirstOrDefault(),
+                ressurs = _context.Resources
+                    .Where(r => r.ResourceId == a.ResourceId)
+                    .Select(r => r.Object)
+                    .FirstOrDefault(),
+                status = a.Status,
+                tidspunkt = a.RequestedAtUtc
+            })
+            .ToList();
+      
         return View(tilgjengeligeRessurser);
     }
-    
+    [HttpGet]
+    public IActionResult NyRessurs()
+    {
+        ViewBag.Kategorier = _resourceHandler.GetCategories();
+        return View();
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> NyRessurs(
+        [FromForm(Name = "Object")] string objekt,
+        int categoryId,
+        string? navn,
+        string kontaktpunkt,
+        string address,
+        decimal latitude,
+        decimal longitude,
+        string? condition,
+        string? additionalInformation)
+    {
+        if (_context == null)
+            return StatusCode(500, "Databasen er ikke tilgjengelig.");
+
+        if (!TryHentBrukerId(out var brukerId)) return Challenge();
+
+        var kategoriFinnes = _resourceHandler.GetCategories()
+            .Any(c => c.CategoryId == categoryId);
+
+        if (!kategoriFinnes)
+        {
+            TempData["ErrorMessage"] = "Kategorien finnes ikke.";
+            return RedirectToAction(nameof(NyRessurs));
+        }
+
+        var ressurs = new Totalforsvaret.Models.resourcemodels.Resource
+        {
+            Object = objekt.Trim(),
+            BrukerId = brukerId,
+            CategoryId = categoryId,
+            Available = true,
+            Navn = navn?.Trim() ?? string.Empty,
+            Kontaktpunkt = kontaktpunkt.Trim(),
+            Address = address.Trim(),
+            Latitude = latitude,
+            Longitude = longitude,
+            Condition = condition?.Trim() ?? string.Empty,
+            AdditionalInformation = additionalInformation?.Trim() ?? string.Empty
+        };
+
+        _context.Resources.Add(ressurs);
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Ressursen er registrert.";
+
+        return RedirectToAction(nameof(Index));
+    }
+    [HttpGet]
+    public async Task<IActionResult> MineRessurser()
+    {
+        if (_context == null)
+            return StatusCode(500, "Databasen er ikke tilgjengelig.");
+
+        if (!TryHentBrukerId(out var brukerId)) return Challenge();
+
+        var ressurser = await _context.Resources
+            .AsNoTracking()
+            .Include(r => r.Category)
+            .Where(r => r.BrukerId == brukerId)
+            .OrderByDescending(r => r.ResourceId)
+            .ToListAsync();
+
+        return View(ressurser);
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SlettRessurs(int resourceId)
+    {
+        if (_context == null)
+            return StatusCode(500, "Databasen er ikke tilgjengelig.");
+
+        if (!TryHentBrukerId(out var brukerId)) return Challenge();
+
+        // Bare egne ressurser kan slettes.
+        var ressurs = await _context.Resources.FirstOrDefaultAsync(r =>
+            r.ResourceId == resourceId && r.BrukerId == brukerId);
+
+        if (ressurs == null)
+            return NotFound("Ressursen finnes ikke.");
+
+        // Ressurser som har vært i en tildeling beholdes på grunn av historikken.
+        var harTildeling = await _context.ResourceAssignments
+            .AnyAsync(a => a.ResourceId == resourceId);
+
+        if (harTildeling)
+        {
+            TempData["ErrorMessage"] = "Ressursen har vært brukt i en tildeling og kan ikke slettes.";
+            return RedirectToAction(nameof(MineRessurser));
+        }
+
+        _context.Resources.Remove(ressurs);
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Ressursen er slettet.";
+
+        return RedirectToAction(nameof(MineRessurser));
+    }
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> VurderRessurs(int needId, int resourceId)
@@ -325,6 +472,11 @@ public class OffentligAktorController : Controller
         TempData["SuccessMessage"] = "Ressursforslaget er avslått.";
 
         return RedirectToAction(nameof(Index));
+    }
+    private bool TryHentBrukerId(out int brukerId)
+    {
+        var tekst = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        return int.TryParse(tekst, out brukerId);
     }
     
     private static double? BeregnAvstandKm(

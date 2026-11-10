@@ -18,11 +18,7 @@
 
     var isCrisisPage =
         controller.Equals("Crisis", StringComparison.OrdinalIgnoreCase);
-
-    var sectionName = isOverview ? "Oversikt"
-        : isNeedPage ? "Behov"
-        : isCrisisPage ? "Kriser"
-        : "Offentlig aktør";
+    
 
     var account = await UserManager.GetUserAsync(User);
     var displayName = account?.Navn ?? User.Identity?.Name ?? "Offentlig aktør";

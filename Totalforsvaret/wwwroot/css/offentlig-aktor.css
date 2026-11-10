@@ -160,6 +160,12 @@
     box-shadow: 0 3px 12px rgb(32 52 61 / 4%);
 }
 
+.offentlig-dashboard a.stat-kort {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
 .offentlig-dashboard .stat-kort h2 {
     margin: 0 0 7px;
     color: var(--dempet);

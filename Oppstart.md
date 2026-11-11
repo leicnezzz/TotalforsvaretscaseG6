@@ -29,9 +29,17 @@ Databasepassordet må samsvare med den lokale databasen.
 Passord og sertifikatfiler skal ikke legges i Git.
 
 ### Kjøring
-1. Start Docker Desktop.
-2. Start Totalforsvaret.AppHost med HTTPS-profilen.
-3. Åpne webappens HTTPS-lenke i Aspire-dashboardet.
+###Visual Studio 
+1. Start Docker Desktop og vent til det kjører.
+2. Åpne Totalforsvaret.slnx fra prosjektets rotmappe.
+3. Velg https som oppstartsprofil og trykk på den grønne startknappen. 
+4. Når tjenestene er klare, åpner du HTTPS-lenken til totalforsvaret i Aspire-dashboardet. 
+###Rider
+1. Start Docker Desktop og vent til det kjører.
+2. Åpne Totalforsvaret.ApphHost: https i nedtrekksmenyen øverst. 
+3. Åpne totalforsvaret.AppHost: https i nedtrekksmenyen øverst.
+4. Trykk på den grønne startknappen.
+5. Når tjenestene er klare, åpner du HTTPS-lenken til totalforsvaret i Aspire-dashboardet. 
 
 Ikke start Docker Compose samtidig med Aspire.
 
@@ -42,4 +50,4 @@ dotnet ef database update --project Totalforsvaret --startup-project Totalforsva
 
 ### Verifisering
 - Windows/Visual Studio: begge containere starter, og innlogging fungerer.
-- Mac/Rider: ikke verifisert ennå.
+- Mac/Rider: begge containerne starter, migrasjonene kjører uten feil, og webappen åpnes og fungerer lokalt via HTTPS. 

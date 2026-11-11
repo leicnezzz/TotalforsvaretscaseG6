@@ -7,7 +7,9 @@
     const step = name => form.querySelector('[data-step="' + name + '"]');
     const category = field('CategoryId');
     const kind = () => category.selectedOptions[0]?.dataset.resourceKind;
-    let authenticated = form.dataset.authenticated === 'true';
+    const compact = form.dataset.compact === 'true';
+    let authenticated = compact || form.dataset.authenticated === 'true';
+    const compactBack = form.querySelector('[data-compact-back]');
     const message = document.getElementById('wizard-message');
     const submit = document.getElementById('vehicle-submit');
     const draftKey = 'paratus.resource-draft.v2';
@@ -99,6 +101,10 @@
                 ['Førerkortklasse', data.Vehicle.RequiredLicense || 'Ikke oppgitt']);
         }
         if (data.Equipment) rows.push(['Utstyrstype', data.Equipment.EquipmentType], ['Antall', String(data.Equipment.Quantity)]);
+        if (compact) {
+            rows.push(['Kontaktperson', [data.ContactFirstName, data.ContactLastName].join(' ')],
+                ['E-post', data.ContactEmail]);
+        }
         rows.push(['Tilleggsinformasjon', data.AdditionalInformation || 'Ingen'],
             ['Telefon', data.Kontaktpunkt], ['Tilgjengelig', data.Available ? 'Ja' : 'Ikke akkurat nå'],
             ['Tilgjengelig fra', data.TilgjengeligFra?.replace('T', ' ') || (data.Available ? 'Fra registreringstidspunktet' : 'Ikke oppgitt')],
@@ -123,9 +129,13 @@
         showStep('registration-choice', supported && vehicle);
         showStep('registration-number', supported && vehicle && numbered);
         showStep('resource-details', supported && (equipment || Boolean(field('HasRegistrationNumber').value)));
-        showStep('additional', supported && stage >= 1);
+        showStep('additional', supported && (compact || stage >= 1));
         showStep('availability', supported && stage >= 2);
         showStep('location', supported && stage >= 3);
+        if (compact) {
+            form.dataset.phase = completed ? 'done' : stage >= 4 ? 'review' : stage === 3 ? 'map' : stage === 2 ? 'contact' : 'details';
+            compactBack.hidden = completed || stage < 2;
+        }
         showStep('account', supported && stage >= 4 && !authenticated);
         showStep('confirmation', supported && stage >= 4 && accountReady);
         const unsupported = document.getElementById('wizard-category-note');
@@ -156,6 +166,7 @@
         document.getElementById('vehicle-additional-count').textContent = field('AdditionalInformation').value.length;
         document.getElementById('wizard-progress').textContent = completed ? 'Registreringen er fullført.'
             : !supported ? 'Velg en ressurstype for å begynne.'
+            : compact ? (stage >= 4 ? 'Kontroller og bekreft' : stage === 3 ? 'Velg plassering' : stage === 2 ? 'Kontakt og tilgjengelighet' : 'Fyll ut ressursopplysningene')
             : ['1 av 5 · Ressursinformasjon', '2 av 5 · Ytterligere informasjon', '3 av 5 · Kontakt og tilgjengelighet',
                 '4 av 5 · Plassering', '5 av 5 · Kontroller og bekreft'][stage];
         form.querySelectorAll('.wizard-step:not(.wizard-step-confirm)').forEach(element => {
@@ -168,7 +179,7 @@
         refreshValidity();
         submit.disabled = busy || completed || stage < 4 || !accountReady || !field('Confirmed').checked;
         if (stage >= 4) buildSummary();
-        if (stage >= 3) requestAnimationFrame(address.refresh);
+        if (!step('location').hidden && (!compact || stage === 3)) requestAnimationFrame(address.refresh);
     }
     
     function moveTo(name) {
@@ -177,6 +188,13 @@
         const heading = step(name).querySelector('h3');
         heading.tabIndex = -1;
         heading.focus({ preventScroll: true });
+        if (compact) {
+            if (form.getBoundingClientRect().top < 0) {
+                form.scrollIntoView({ block: 'start', behavior: 'instant' });
+            }
+            return;
+        }
+
         step(name).scrollIntoView({
             block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
         });
@@ -289,21 +307,27 @@
         saveDraft();
     }));
 
-    form.querySelector('[data-continue="details"]').addEventListener('click', () => {
+    function validateDetails() {
         if (kind() === 'vehicle') {
-            if (!validate(step('registration-choice'))) return;
-            if (field('HasRegistrationNumber').value === 'true' && !validate(step('registration-number'))) return;
+            if (!validate(step('registration-choice'))) return false;
+            if (field('HasRegistrationNumber').value === 'true' && !validate(step('registration-number'))) return false;
         }
-        if (!validate(step('resource-details'))) return;
+        if (!validate(step('resource-details'))) return false;
         if (kind() === 'vehicle' && field('HasRegistrationNumber').value === 'true' && field('VehicleInfoCorrect').value !== 'true') {
             showMessage('Rett opplysningene og velg «Ja, informasjonen stemmer» før du fortsetter.');
-            return;
+            return false;
         }
         showMessage('');
+        return true;
+    }
+
+    form.querySelector('[data-continue="details"]').addEventListener('click', () => {
+        if (!validateDetails()) return;
         stage = 1;
         moveTo('additional');
     });
     document.getElementById('wizard-additional-next').addEventListener('click', () => {
+        if (compact && !validateDetails()) return;
         if (!validate(step('additional'))) return;
         stage = 2;
         moveTo('availability');
@@ -359,6 +383,25 @@
             if (form.dispatchEvent(event)) fail('Kontotjenesten kunne ikke lastes. Last siden på nytt.');
         });
     }
+    compactBack?.addEventListener('click', () => {
+        field('Confirmed').checked = false;
+        if (stage === 4) {
+            stage = 3;
+            moveTo('location');
+        } else if (stage === 3) {
+            stage = 2;
+            moveTo('availability');
+        } else {
+            stage = 0;
+            render();
+            saveDraft();
+            category.focus({ preventScroll: true });
+            if (form.getBoundingClientRect().top < 0) {
+                form.scrollIntoView({ block: 'start', behavior: 'instant' });
+            }
+        }
+    });
+
     document.getElementById('wizard-account-edit').addEventListener('click', () => {
         accountReady = false;
         field('Confirmed').checked = false;

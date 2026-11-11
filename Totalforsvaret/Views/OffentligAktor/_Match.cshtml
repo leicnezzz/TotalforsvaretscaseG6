@@ -1,0 +1,70 @@
+<link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
+
+<div class="private-page-actions match-page-actions">
+    <a class="private-page-action" asp-area="" asp-controller="OffentligAktor" asp-action="Index">← Tilbake</a>
+</div>
+
+<section id="match" class="match-page">
+    <header class="match-intro">
+        <h1>Match</h1>
+        <p>En enkel måte å bidra for alles sikkerhet</p>
+    </header>
+
+    <div class="match-columns">
+        <section aria-labelledby="match-needs">
+            <h2 id="match-needs">Behov</h2>
+            <label class="match-choice"><input type="checkbox" data-match-multiple="behov" /> Marker flere behov</label>
+            <label class="visually-hidden" for="match-need-search">Søk etter behov</label>
+            <div class="match-search">
+                <input id="match-need-search" type="search" class="form-control" placeholder="Søk etter behov" data-match-search="behov" />
+                <button type="button" data-match-clear="behov" aria-label="Tøm søket">×</button>
+            </div>
+            <ul class="match-results" data-match-results="behov"></ul>
+        </section>
+
+        <section aria-labelledby="match-resources">
+            <h2 id="match-resources">Ressurser</h2>
+            <label class="match-choice"><input type="checkbox" data-match-multiple="ressurser" /> Marker flere ressurser</label>
+            <label class="visually-hidden" for="match-resource-search">Søk etter ressurser</label>
+            <div class="match-search">
+                <input id="match-resource-search" type="search" class="form-control" placeholder="Søk etter ressurser" data-match-search="ressurser" />
+                <button type="button" data-match-clear="ressurser" aria-label="Tøm søket">×</button>
+            </div>
+            <ul class="match-results" data-match-results="ressurser"></ul>
+        </section>
+    </div>
+
+    <template id="match-need-icon">
+        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M20 4 37 34H3Z" stroke-linejoin="round" />
+            <path d="M20 14v10" />
+            <circle cx="20" cy="29" r="1" fill="currentColor" />
+        </svg>
+    </template>
+
+    <div class="match-map-section">
+        <div class="match-map" data-match-map aria-label="Kart over behov og ressurser"></div>
+        <p class="match-hint">Blå markører viser behov. Grønne markører viser ressurser.</p>
+        <p data-match-map-status class="match-hint" role="status"></p>
+    </div>
+
+    <div class="match-actions">
+        <button type="button" class="match-button" data-match-confirm disabled>Match</button>
+        <p class="match-hint" data-match-summary role="status">Velg minst ett behov og én ressurs.</p>
+    </div>
+
+    <div class="match-columns match-shortcuts">
+        <section>
+            <h2>Opprett et nytt behov</h2>
+            <p>Her kan du starte registreringen av et nytt behov.</p>
+            <strong class="match-shortcut-label">Registrering</strong>
+            <a asp-route="behov" class="match-button">Nytt behov</a>
+        </section>
+        <section>
+            <h2>Registrer en ressurs</h2>
+            <p>Her kan du starte en ressursregistrering.</p>
+            <strong class="match-shortcut-label">Registrering</strong>
+            <a asp-route="ressursregistrering" class="match-button">Ny ressurs <span aria-hidden="true">→</span></a>
+        </section>
+    </div>
+</section>

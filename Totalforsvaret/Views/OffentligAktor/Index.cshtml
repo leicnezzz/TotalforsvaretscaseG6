@@ -4,7 +4,8 @@
 @model List<Resource>
 
 @{
-    ViewData["Title"] = "Operativ oversikt";
+    var isMatch = ViewContext.RouteData.Values["match"] is true;
+    ViewData["Title"] = isMatch ? "Match" : "Operativ oversikt";
     ViewData["FullWidth"] = true;
     ViewData["RegistrationFooter"] = true;
 
@@ -49,6 +50,8 @@
             id = r.ResourceId,
             navn = r.Object,
             kategoriId = r.CategoryId,
+            kategori = r.Category?.Name,
+            adresse = r.Address,
             tilbyder = r.Navn,
             kontaktpunkt = r.Kontaktpunkt,
             latitude = r.Latitude,
@@ -62,7 +65,9 @@
       asp-append-version="true" />
 <link rel="stylesheet" href="~/css/resource-registration.css" asp-append-version="true" />
 
-<div class="container-fluid offentlig-dashboard">
+<link rel="stylesheet" href="~/css/offentlig-match.css" asp-append-version="true" />
+
+<div class="container-fluid offentlig-dashboard" hidden="@isMatch">
 
     <!-- Overskrift og handlinger -->
     <div class="oversikt-topp">
@@ -390,7 +395,16 @@
     
 
 </div>
+@if (isMatch)
+{
+    <partial name="_Match" />
+}
+
 @section Scripts {
+    @if (isMatch)
+    {
+        <script src="~/js/offentlig-match.js" asp-append-version="true" defer></script>
+    }
     <script id="offentligKartData" type="application/json">
         @Html.Raw(kartJson)
     </script>

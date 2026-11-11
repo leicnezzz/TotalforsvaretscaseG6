@@ -20,6 +20,7 @@ public class FormDataModelTests
             Does.Contain(nameof(FormDataModel.Navn))); // Kontrollerer at valideringsfeilen gjelder navnet. 
     }
 
+    
     [Test]
     public void Validering_KartplasseringMangler_GirFeilForKoordinater() 
     {

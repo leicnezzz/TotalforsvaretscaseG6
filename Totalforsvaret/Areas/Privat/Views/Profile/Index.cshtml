@@ -22,7 +22,7 @@
           href="~/css/site-header.css"
           asp-append-version="true" />
     <link rel="stylesheet"
-          href="~/css/profile.css"
+          href="~/css/Profile.css"
           asp-append-version="true" />
 
 
@@ -51,7 +51,7 @@
                     <div class="success-message" role="status">@message</div>
                 }
 
-                <form asp-area="Privat"
+                <form id="profile-edit" asp-area="Privat"
                       asp-controller="Profile"
                       asp-action="Index"
                       method="post">
@@ -100,26 +100,53 @@
                        asp-page="/Account/Manage/ChangePassword">
                         Glemt passord? <span aria-hidden="true">|</span> Endre passord
                     </a>
-
-                    <div class="form-actions">
-                        <button class="button button-danger"
-                                type="button"
-                                disabled
-                                title="Kontosletting må settes opp separat">
-                            Slett konto
-                        </button>
-
-                        <button class="button button-primary" type="submit">Lagre</button>
-                    </div>
                 </form>
             </div>
 
             <aside class="profile-card__aside">
-                <span class="avatar avatar-large" aria-hidden="true">@Model.Initialer</span>
-                <button class="change-avatar" type="button" disabled>
-                    Endre profilbilde
-                </button>
+                @if (Model.HasPhoto)
+                {
+                    <img class="avatar avatar-large profile-photo"
+                         src="@Url.Action("Photo", "Profile", new { area = "Privat" })"
+                         alt="Profilbilde" />
+                }
+                else
+                {
+                    <span class="avatar avatar-large" aria-hidden="true">@Model.Initialer</span>
+                }
+
+                <form class="photo-form"
+                      asp-area="Privat"
+                      asp-controller="Profile"
+                      asp-action="UploadPhoto"
+                      method="post"
+                      enctype="multipart/form-data">
+                    <input name="image" type="file" accept="image/jpeg,image/png" hidden
+                           onchange="if (this.files.length) this.form.requestSubmit();" />
+
+                    <button class="button button-photo" type="button"
+                            onclick="this.form.elements['image'].click();">
+                        @(Model.HasPhoto ? "Endre profilbilde" : "Legg til profilbilde")
+                    </button>
+
+                    @if (TempData["PhotoError"] is string photoError)
+                    {
+                        <span class="field-error" role="alert">@photoError</span>
+                    }
+                </form>
             </aside>
+                    <div class="profile-actions">
+                        <div class="form-actions">
+                            <a class="button button-danger"
+                               asp-area="Privat"
+                               asp-controller="Profile"
+                               asp-action="DeleteAccount">Slett konto</a>
+
+                            <button class="button button-primary" type="submit" form="profile-edit">Lagre</button>
+                        </div>
+
+                        <button class="profile-logout" type="submit" form="private-logout">Logg ut</button>
+                    </div>
         </section>
     </main>
 

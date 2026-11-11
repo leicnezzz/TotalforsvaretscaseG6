@@ -31,8 +31,8 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
     
     public DbSet<EgenberedskapChecklistStatus> EgenberedskapChecklistStatuses =>
         Set<EgenberedskapChecklistStatus>();
-
-    protected override void OnModelCreating(ModelBuilder builder)
+	public DbSet<ProfilePhoto> ProfilePhotos => Set<ProfilePhoto>();
+	protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         builder.Entity<ResourceAssignment>(entity =>
@@ -53,7 +53,18 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
             entity.HasIndex(a => new { a.NeedId, a.Status });
         });
 
-        builder.Entity<Bruker>()
+		builder.Entity<ProfilePhoto>(entity =>
+		{
+			entity.HasKey(photo => photo.BrukerId);
+			entity.Property(photo => photo.ContentType).HasMaxLength(16);
+
+			entity.HasOne<Privataktor>()
+				.WithOne()
+				.HasForeignKey<ProfilePhoto>(photo => photo.BrukerId)
+				.OnDelete(DeleteBehavior.Cascade);
+		});
+
+		builder.Entity<Bruker>()
             .HasDiscriminator<string>("BrukerType")
             .HasValue<Privataktor>("Privat")
             .HasValue<Offentligaktør>("Offentlig");

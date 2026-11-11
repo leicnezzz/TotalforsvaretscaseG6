@@ -28,13 +28,14 @@ Sertifikatpassordet må samsvare med det eksporterte sertifikatet.
 Databasepassordet må samsvare med den lokale databasen.
 Passord og sertifikatfiler skal ikke legges i Git.
 
-### Kjøring
-###Visual Studio 
+### Kjøring 
+**Visual Studio**
 1. Start Docker Desktop og vent til det kjører.
 2. Åpne Totalforsvaret.slnx fra prosjektets rotmappe.
 3. Velg https som oppstartsprofil og trykk på den grønne startknappen. 
-4. Når tjenestene er klare, åpner du HTTPS-lenken til totalforsvaret i Aspire-dashboardet. 
-###Rider
+4. Når tjenestene er klare, åpner du HTTPS-lenken til totalforsvaret i Aspire-dashboardet.
+
+**Rider**
 1. Start Docker Desktop og vent til det kjører.
 2. Åpne Totalforsvaret.ApphHost: https i nedtrekksmenyen øverst. 
 3. Åpne totalforsvaret.AppHost: https i nedtrekksmenyen øverst.

@@ -1033,6 +1033,34 @@ body.kart-fullskjerm-apen {
     width: 100%;
 }
 
+/*Navigation bar og bakgrunnsfarge for Offentlig Aktør*/
+body.offentlig-page {
+    min-height: 100vh;
+    background-color: #EEF0F2;
+}
+
+.offentlig-page .offentlig-site-header {
+    background-color: #163C4C;
+}
+
+.offentlig-page .offentlig-site-header .nav-links a {
+    color: #fff;
+}
+
+.offentlig-page .offentlig-site-header .nav-links a:hover,
+.offentlig-page .offentlig-site-header .nav-links a:focus-visible,
+.offentlig-page .offentlig-site-header .nav-links a.active {
+    color: #fff;
+}
+
+.offentlig-page .offentlig-site-header .nav-links a.active {
+    border-bottom-color: #fff;
+}
+
+.offentlig-page .offentlig-site-header .account-summary,
+.offentlig-page .offentlig-site-header .account-copy small {
+    color: #fff;
+}
 /* Statusmerkelapper (ikke klikkbare) */
 .offentlig-dashboard .status-merkelapp {
     align-self: flex-start;

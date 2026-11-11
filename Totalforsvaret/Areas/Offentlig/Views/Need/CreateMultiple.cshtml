@@ -8,7 +8,7 @@
       href="~/css/offentlig-aktor.css"
       asp-append-version="true" />
 
-<div class="container py-4 offentlig-behov-side">
+<div class="container pt-4 pb-5 mb-5 offentlig-behov-side">
     <a asp-area=""
        asp-controller="OffentligAktor"
        asp-action="Index"
@@ -19,26 +19,13 @@
     <h1>@ViewData["Title"]</h1>
     <p>Velg en krise og registrer ressursbehovene som hører til.</p>
 
-    <form asp-area="Offentlig"
+    <form id="flereBehovSkjema" asp-area="Offentlig"
           asp-controller="Need"
           asp-action="CreateMultiple"
           method="post">
 
         <div asp-validation-summary="All"
              class="text-danger"></div>
-
-        <div class="mb-3">
-            <label asp-for="CrisisId" class="form-label">
-                Tilknyttet krise
-            </label>
-            <select asp-for="CrisisId"
-                    asp-items="Model.Crises"
-                    class="form-select">
-                <option value="">Velg krise</option>
-            </select>
-            <span asp-validation-for="CrisisId"
-                  class="text-danger"></span>
-        </div>
 
         <div id="behov-liste">
             @for (var i = 0; i < Model.Needs.Count; i++)
@@ -57,7 +44,7 @@
                             </label>
                             <input asp-for="Needs[i].Name"
                                    class="form-control"
-                                   placeholder="For eksempel Transport av personer"
+                                   placeholder="For eksempel Sand til Vennesla"
                                    maxlength="100" />
                             <span asp-validation-for="Needs[i].Name"
                                   class="text-danger"></span>
@@ -114,6 +101,7 @@
                         <textarea asp-for="Needs[i].Description"
                           class="form-control"
                           rows="3"
+                          placeholder="Beskriv situasjonen, omfanget og hva det er behov for"
                           maxlength="1500"></textarea>
                         <span asp-validation-for="Needs[i].Description"
                               class="text-danger"></span>
@@ -122,14 +110,7 @@
             }
         </div>
 
-        <button type="button"
-                id="legg-til-behov"
-                class="btn btn-outline-secondary">
-            + Legg til behov
-        </button>
-    
-
-        <div class="mt-4 pt-4 border-top">
+        <div class="mt-4 pt-4 border-top" data-behovplassering>
             <h2 class="h5">Hvor trengs ressursene?</h2>
             <p class="text-muted">
                 Velg en felles plassering for behovene på kartet.
@@ -139,6 +120,8 @@
 
             <input asp-for="Latitude" type="hidden" />
             <input asp-for="Longitude" type="hidden" />
+            <input name="__Invariant" type="hidden" value="Latitude" />
+            <input name="__Invariant" type="hidden" value="Longitude" />
 
             <span asp-validation-for="Latitude" class="text-danger"></span>
             <span asp-validation-for="Longitude" class="text-danger"></span>
@@ -149,6 +132,12 @@
         </div>
 
         <div class="d-flex flex-wrap gap-2 mt-4">
+            <button type="button"
+                    id="legg-til-behov"
+                    class="btn btn-outline-secondary me-auto">
+                + Legg til behov
+            </button>
+
             <button type="submit" class="btn btn-success">
                 Registrer behovene
             </button>
@@ -156,7 +145,7 @@
             <a asp-area=""
                asp-controller="OffentligAktor"
                asp-action="Index"
-               class="btn btn-outline-secondary">
+               class="btn btn-outline-secondary" data-avbryt-behov>
                 Avbryt
             </a>
         </div>
@@ -164,110 +153,10 @@
 </div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/behov-liste.js" asp-append-version="true"></script>
 
     <script>
-        const behovListe = document.getElementById('behov-liste');
-        const leggTilKnapp = document.getElementById('legg-til-behov');
-        function oppdaterFjernKnapper() {
-            const bareEttBehov =
-                behovListe.querySelectorAll('fieldset').length <= 1;
-
-            behovListe.querySelectorAll('.fjern-behov').forEach(knapp => {
-                knapp.hidden = bareEttBehov;
-            });
-        }
-
-        oppdaterFjernKnapper();
-        behovListe.addEventListener('click', e => {
-            const knapp = e.target.closest('.fjern-behov');
-
-            if (!knapp) return;
-
-            const behov = behovListe.querySelectorAll('fieldset');
-
-            // Behold alltid minst ett behov.
-            if (behov.length <= 1) return;
-
-            knapp.closest('fieldset').remove();
-            oppdaterFjernKnapper();
-
-            // Oppdater nummer og feltnavn etter sletting.
-            behovListe.querySelectorAll('fieldset').forEach((blokk, indeks) => {
-                blokk.querySelector('legend').textContent =
-                    `Behov ${indeks + 1}`;
-
-                blokk.querySelectorAll('*').forEach(element => {
-                    ['name', 'id', 'for', 'data-valmsg-for'].forEach(attributt => {
-                        const verdi = element.getAttribute(attributt);
-
-                        if (verdi) {
-                            element.setAttribute(
-                                attributt,
-                                verdi
-                                    .replace(/Needs\[\d+\]/g, `Needs[${indeks}]`)
-                                    .replace(/Needs_\d+__/g, `Needs_${indeks}__`)
-                            );
-                        }
-                    });
-                });
-            });
-
-            const skjema = $(behovListe.closest('form'));
-            skjema.removeData('validator');
-            skjema.removeData('unobtrusiveValidation');
-            $.validator.unobtrusive.parse(skjema);
-        });
-
-        leggTilKnapp.addEventListener('click', () => {
-            const indeks = behovListe.querySelectorAll('fieldset').length;
-            const nyttBehov = behovListe
-                .querySelector('fieldset')
-                .cloneNode(true);
-
-            nyttBehov.querySelector('legend').textContent =
-                `Behov ${indeks + 1}`;
-
-            nyttBehov.querySelectorAll('*').forEach(element => {
-                ['name', 'id', 'for', 'data-valmsg-for'].forEach(attributt => {
-                    const verdi = element.getAttribute(attributt);
-
-                    if (verdi) {
-                        element.setAttribute(
-                            attributt,
-                            verdi
-                                .replace(/Needs\[\d+\]/g, `Needs[${indeks}]`)
-                                .replace(/Needs_\d+__/g, `Needs_${indeks}__`)
-                        );
-                    }
-                });
-            });
-
-            nyttBehov.querySelectorAll('input, textarea').forEach(felt => {
-                felt.value = '';
-                felt.classList.remove('input-validation-error');
-            });
-
-            nyttBehov.querySelectorAll('select').forEach(felt => {
-                felt.selectedIndex = 0;
-                felt.classList.remove('input-validation-error');
-            });
-
-            nyttBehov.querySelectorAll('[data-valmsg-for]').forEach(melding => {
-                melding.textContent = '';
-                melding.classList.remove('field-validation-error');
-                melding.classList.add('field-validation-valid');
-            });
-
-            behovListe.appendChild(nyttBehov);
-            oppdaterFjernKnapper(); 
-
-            const skjema = $(behovListe.closest('form'));
-            skjema.removeData('validator');
-            skjema.removeData('unobtrusiveValidation');
-            $.validator.unobtrusive.parse(skjema);
-
-            nyttBehov.querySelector('input').focus();
-        });
+        window.kobleBehovsliste(document.getElementById('flereBehovSkjema'));
         const kartmelding = document.getElementById('behovKartmelding');
         const latitudeInput = document.getElementById('Latitude');
         const longitudeInput = document.getElementById('Longitude');

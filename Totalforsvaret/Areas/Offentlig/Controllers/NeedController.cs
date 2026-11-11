@@ -88,35 +88,18 @@ public class NeedController : Controller
             "Index", "OffentligAktor", new { area = "" });
     }
     [HttpGet]
-    public async Task<IActionResult> CreateMultiple()
+    public IActionResult CreateMultiple()
     {
-        var viewModel = new MultipleNeedsViewModel
-        {
-            Crises = await GetCrisesAsync()
-        };
-
-        return View(viewModel);
+        return View(new MultipleNeedsViewModel());
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateMultiple(
         MultipleNeedsViewModel viewModel)
     {
-        var crisisExists = await _context.Crises
-            .AnyAsync(c => c.Id == viewModel.CrisisId);
-
-        if (!crisisExists)
-        {
-            ModelState.AddModelError(
-                nameof(viewModel.CrisisId),
-                "Velg en gyldig krise.");
-        }
-
         if (!ModelState.IsValid)
-        {
-            viewModel.Crises = await GetCrisesAsync();
             return View(viewModel);
-        }
 
         var needs = viewModel.Needs.Select(item => new Need
         {
@@ -125,13 +108,24 @@ public class NeedController : Controller
             Description = item.Description.Trim(),
             Priority = item.Priority,
             Status = item.Status,
-            CrisisId = viewModel.CrisisId,
             Latitude = viewModel.Latitude!.Value,
             Longitude = viewModel.Longitude!.Value
         }).ToList();
 
         _context.Needs.AddRange(needs);
         await _context.SaveChangesAsync();
+
+        TempData["NeedSuccessMessage"] = needs.Count == 1
+            ? "Behovet er registrert."
+            : $"{needs.Count} behov er registrert.";
+
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            return Json(new
+            {
+                redirectUrl = Url.Action("Index", "OffentligAktor", new { area = "" })
+            });
+        }
 
         return RedirectToAction(
             "Index", "OffentligAktor", new { area = "" });
@@ -188,10 +182,8 @@ public async Task<IActionResult> Edit(
     if (need == null)
         return NotFound();
 
-    var crisisExists = await _context.Crises
-        .AnyAsync(c => c.Id == viewModel.CrisisId);
-
-    if (!crisisExists)
+    if (viewModel.CrisisId is int crisisId &&
+        !await _context.Crises.AnyAsync(c => c.Id == crisisId))
     {
         ModelState.AddModelError(
             nameof(viewModel.CrisisId),

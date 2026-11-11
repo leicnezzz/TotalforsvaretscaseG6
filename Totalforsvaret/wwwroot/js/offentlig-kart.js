@@ -4,6 +4,20 @@
     const melding = document.getElementById('kartmelding');
     if (!melding) return;
 
+    const kartElement = document.getElementById('offentligKart');
+    const bekreftelse = kartElement.querySelector('.kart-bekreftelse');
+    const bekreftelsestekst = bekreftelse.querySelector('.kart-bekreftelsestekst');
+    bekreftelse.querySelector('.btn-close').addEventListener('click', () => {
+        bekreftelse.hidden = true;
+        bekreftelsestekst.textContent = '';
+        kartElement.focus({ preventScroll: true });
+    });
+
+    function visBekreftelse(tekst) {
+        bekreftelse.hidden = false;
+        bekreftelsestekst.textContent = tekst;
+    }
+
     if (!window.L) {
         melding.textContent =
             'Kartet kunne ikke lastes. Kontroller internettilkoblingen.';
@@ -14,15 +28,103 @@
         document.getElementById('offentligKartData').textContent
     );
 
-    const kart = L.map('offentligKart')
-        .setView([58.1467, 7.9956], 12);
+    function oppdaterKarthoyde() {
+        const topp = kartElement.getBoundingClientRect().top + window.scrollY;
+        kartElement.style.setProperty('--kart-topp', Math.ceil(topp) + 'px');
+    }
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">' +
-            'OpenStreetMap</a> contributors'
-    }).addTo(kart);
+    oppdaterKarthoyde();
+
+    const standardvisning = { sentrum: [58.1467, 7.9956], zoom: 13 };
+    const kart = L.map(kartElement, { zoomControl: false, maxZoom: 19 })
+        .setView(standardvisning.sentrum, standardvisning.zoom);
+
+    L.DomEvent.disableClickPropagation(bekreftelse);
+
+    L.control.zoom({ position: 'bottomleft' }).addTo(kart);
+
+    // Bruk kartfliser mens det sammenhengende kartbildet lastes.
+    kart.createPane('terrengbilde').style.zIndex = 225;
+    kart.createPane('dybdelag').style.zIndex = 240;
+
+    const terreng = L.tileLayer(
+        'https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png',
+        { attribution: '&copy; Kartverket', maxNativeZoom: 18 }
+    );
+    const dybde = L.tileLayer.wms('https://wms.geonorge.no/skwms1/wms.dybdedata2', {
+        layers: 'Dybdekontur,Dybdepunkt',
+        pane: 'dybdelag',
+        format: 'image/png',
+        transparent: true,
+        version: '1.3.0',
+        attribution: 'Dybdedata: &copy; Kartverket'
+    });
+    const satellitt = L.tileLayer(
+        'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        { attribution: 'Esri, Vantor, Earthstar Geographics og GIS User Community' }
+    );
+    const bakgrunnskart = {
+        vanlig: L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }),
+        terreng: L.layerGroup([terreng, dybde]),
+        satellitt
+    };
+    let aktivtKart = bakgrunnskart.vanlig.addTo(kart);
+
+    let terrengbilde = null;
+    let lasterTerrengbilde = null;
+
+    function oppdaterTerrengbilde() {
+        if (aktivtKart !== bakgrunnskart.terreng) return;
+
+        const storrelse = kart.getSize();
+        if (!storrelse.x || !storrelse.y) return;
+
+        const marg = L.point(96, 96);
+        const utsnitt = storrelse.add(marg.multiplyBy(2));
+        const skala = Math.min(1, 2048 / Math.max(utsnitt.x, utsnitt.y));
+        const crs = kart.options.crs;
+        const sorvest = kart.containerPointToLatLng(L.point(-marg.x, storrelse.y + marg.y));
+        const nordost = kart.containerPointToLatLng(L.point(storrelse.x + marg.x, -marg.y));
+        const nedre = crs.project(sorvest);
+        const ovre = crs.project(nordost);
+        const parametre = new URLSearchParams({
+            service: 'WMS',
+            request: 'GetMap',
+            version: '1.3.0',
+            layers: 'topo',
+            styles: '',
+            crs: crs.code,
+            bbox: [nedre.x, nedre.y, ovre.x, ovre.y].join(','),
+            width: Math.round(utsnitt.x * skala),
+            height: Math.round(utsnitt.y * skala),
+            format: 'image/png'
+        });
+
+        lasterTerrengbilde?.remove();
+        const bilde = L.imageOverlay(
+            'https://wms.geonorge.no/skwms1/wms.topo?' + parametre,
+            L.latLngBounds(sorvest, nordost),
+            { pane: 'terrengbilde', opacity: 0 }
+        );
+        lasterTerrengbilde = bilde;
+        bilde.once('load', () => {
+            if (lasterTerrengbilde !== bilde) return;
+            terrengbilde?.remove();
+            terrengbilde = bilde.setOpacity(1);
+            lasterTerrengbilde = null;
+        });
+        bilde.once('error', () => {
+            if (lasterTerrengbilde !== bilde) return;
+            bilde.remove();
+            lasterTerrengbilde = null;
+        });
+        bilde.addTo(kart);
+    }
+
+    kart.on('moveend', oppdaterTerrengbilde);
+    oppdaterTerrengbilde();
 
     function gyldig(lat, lon) {
         return Number.isFinite(lat) &&
@@ -61,7 +163,6 @@
         {
             key: 'ressurser',
             navn: 'Tilgjengelige ressurser',
-            entall: 'tilgjengelig ressurs',
             farge: farge('--tilgjengelig'),
             felter: [
                 ['Kategori', 'kategori'],
@@ -73,7 +174,6 @@
         {
             key: 'behov',
             navn: 'Aktive behov',
-            entall: 'aktivt behov',
             farge: farge('--planlagt'),
             felter: [
                 ['Type', 'type'],
@@ -85,7 +185,6 @@
         {
             key: 'kriser',
             navn: 'Aktive kriser',
-            entall: 'aktiv krise',
             farge: farge('--akutt'),
             felter: [
                 ['Type', 'type'],
@@ -93,6 +192,16 @@
                 ['Status', 'status'],
                 ['Beskrivelse', 'beskrivelse']
             ]
+        },
+        {
+            key: 'veihindringer',
+            navn: 'Veihindringer',
+            farge: '#a24512'
+        },
+        {
+            key: 'soner',
+            navn: 'Soner',
+            farge: '#6e42a1'
         }
     ];
 
@@ -109,24 +218,20 @@
         });
     }
 
-    let ugyldige = 0;
-
-    // Oppretter markørene for de tre typene.
+    // Bruker de samme markørlagene for kartdata og midlertidige markeringer.
     for (const type of typer) {
         type.lag = L.featureGroup().addTo(kart);
         type.markorer = [];
 
         for (const element of data[type.key] ?? []) {
-            if (!gyldig(element.latitude, element.longitude)) {
-                ugyldige++;
-                continue;
-            }
+            if (!gyldig(element.latitude, element.longitude)) continue;
 
             const punkt = [element.latitude, element.longitude];
 
             const markor = type.key !== 'ressurser'
                 ? L.marker(punkt, {
                     icon: ikon(type.key),
+                    bubblingMouseEvents: true,
                     title: element.navn || type.navn
                 })
                 : L.circleMarker(punkt, {
@@ -143,7 +248,7 @@
         }
     }
 
-    // Søkepanelet starter sammenlagt.
+    // Stedssøk og filter deler den eksisterende filtreringen.
     const panel = L.DomUtil.create('div', 'offentlig-kartfilter');
 
     panel.innerHTML = [
@@ -151,25 +256,38 @@
         '<label for="kartSted" class="kart-skjult">Sted eller adresse</label>',
         '<div class="kart-sokrad">',
         '<input id="kartSted" type="search" placeholder="Søk etter sted" autocomplete="off" minlength="2" required />',
-        '<button type="submit" hidden tabindex="-1" aria-hidden="true">Søk</button>',
-        '<button type="button" class="kart-filterknapp" aria-label="Åpne kartfiltre" aria-expanded="false" aria-controls="kartDetaljer">▾</button>',
+        '<button type="submit">Søk</button>',
         '</div>',
-        '</form>',
-        '<div id="kartDetaljer" hidden>',
-        '<p class="kart-sokstatus" role="status" aria-live="polite"></p>',
+        '<p class="kart-sokstatus" role="status"></p>',
         '<ul class="kart-stedsforslag" aria-label="Stedsforslag" hidden></ul>',
+        '</form>',
+        '<div class="kart-filterhandlinger">',
+        '<button type="button" class="kart-filterknapp" aria-expanded="false" aria-controls="kartSoneliste">Markerte soner</button>',
+        '<button type="button" class="kart-filterknapp" aria-expanded="false" aria-controls="kartDetaljer">Filter</button>',
+        '</div>',
+        '<section id="kartSoneliste" class="kart-sidepanel" aria-labelledby="kartSonelisteTittel" hidden>',
+        '<h2 id="kartSonelisteTittel">Markerte soner</h2>',
+        '<p class="kart-soneliste-tom">Ingen soner er markert.</p>',
+        '<ul class="kart-sonerader"></ul>',
+        '</section>',
+        '<div id="kartDetaljer" class="kart-sidepanel" hidden>',
+        '<fieldset class="kart-typer kart-bakgrunn"><legend>Karttype</legend>',
+        '<label><input type="radio" name="karttype" value="vanlig" checked> Standard</label>',
+        '<label><input type="radio" name="karttype" value="terreng"> Terreng (høyde og dybde)</label>',
+        '<label><input type="radio" name="karttype" value="satellitt"> Satellitt</label>',
+        '</fieldset>',
         '<div class="kart-radiusrad">',
         '<label for="kartRadius">Radius</label>',
         '<select id="kartRadius">',
+        '<option value="0" selected>Ingen radius</option>',
         '<option value="1000">1 km</option>',
-        '<option value="5000" selected>5 km</option>',
+        '<option value="5000">5 km</option>',
         '<option value="10000">10 km</option>',
         '</select>',
         '<button class="kart-nullstill" type="button">Nullstill søk</button>',
         '</div>',
         '<p class="kart-sentrum">Alle steder vises. Velg et sted for å bruke radius.</p>',
         '<fieldset class="kart-typer"><legend>Vis på kartet</legend></fieldset>',
-        '<p class="kart-treff" role="status" aria-live="polite"></p>',
         '<div class="kart-kilde">Stedssøk: <a href="https://photon.komoot.io/" target="_blank" rel="noopener noreferrer">Photon</a> · OpenStreetMap</div>',
         '</div>'
     ].join('');
@@ -177,47 +295,63 @@
     L.DomEvent.disableClickPropagation(panel);
     L.DomEvent.disableScrollPropagation(panel);
 
-    const kontroll = L.control({ position: 'topright' });
-    kontroll.onAdd = () => panel;
-    kontroll.addTo(kart);
+    kartElement.append(panel);
 
     const form = panel.querySelector('form');
-    const sok = panel.querySelector('input[type="search"]');
-    const sokstatus = panel.querySelector('.kart-sokstatus');
-    const resultater = panel.querySelector('.kart-stedsforslag');
+    const sokToolbar = document.getElementById('kartSokToolbar');
+    sokToolbar.append(form);
+    const sok = form.querySelector('input[type="search"]');
+    const sokstatus = form.querySelector('.kart-sokstatus');
+    const resultater = form.querySelector('.kart-stedsforslag');
     const radius = panel.querySelector('select');
     const sentrumtekst = panel.querySelector('.kart-sentrum');
-    const trefftekst = panel.querySelector('.kart-treff');
     const detaljer = panel.querySelector('#kartDetaljer');
-    const filterknapp = panel.querySelector('.kart-filterknapp');
+    const filterknapp = panel.querySelector('[aria-controls="kartDetaljer"]');
+    const soneliste = panel.querySelector('#kartSoneliste');
+    const sonelisteknapp = panel.querySelector('[aria-controls="kartSoneliste"]');
+
+    function visSoneliste(apent) {
+        soneliste.hidden = !apent;
+        sonelisteknapp.setAttribute('aria-expanded', String(apent));
+    }
+
+    sonelisteknapp.addEventListener('click', () => {
+        const apent = soneliste.hidden;
+        if (apent) {
+            visKartfiltre(false);
+            if (mobilvisning.matches) visHandling(null);
+            oppdaterSoneliste();
+        }
+        visSoneliste(apent);
+    });
 
     function visKartfiltre(apent) {
         detaljer.hidden = !apent;
-
-        filterknapp.textContent = apent ? '▴' : '▾';
         filterknapp.setAttribute('aria-expanded', String(apent));
-        filterknapp.setAttribute(
-            'aria-label',
-            apent ? 'Lukk kartfiltre' : 'Åpne kartfiltre'
-        );
-
-        sok.setAttribute('aria-expanded', String(apent));
     }
 
-    sok.setAttribute('aria-controls', 'kartDetaljer');
-
-    sok.addEventListener('focus', () => visKartfiltre(true));
-    form.addEventListener('submit', () => visKartfiltre(true));
-
     filterknapp.addEventListener('click', () => {
+        if (detaljer.hidden) {
+            visSoneliste(false);
+            if (mobilvisning.matches) visHandling(null);
+        }
         visKartfiltre(detaljer.hidden);
     });
 
-    visKartfiltre(false);
+    for (const valg of panel.querySelectorAll('input[name="karttype"]')) {
+        valg.addEventListener('change', () => {
+            terrengbilde?.remove();
+            lasterTerrengbilde?.remove();
+            terrengbilde = null;
+            lasterTerrengbilde = null;
+            kart.removeLayer(aktivtKart);
+            aktivtKart = bakgrunnskart[valg.value].addTo(kart);
+            oppdaterSonefarger();
+            oppdaterTerrengbilde();
+        });
+    }
 
     // Fullskjerm inkluderer kart, søk, filtre og zoomknapper.
-    const kartElement = document.getElementById('offentligKart');
-
     const fullKnapp = L.DomUtil.create(
         'button',
         'kart-fullskjermknapp'
@@ -237,6 +371,9 @@
             document.fullscreenElement === kartElement ||
             kartElement.classList.contains('kart-fullskjerm');
 
+        const sokPlass = aktiv ? panel : sokToolbar;
+        if (form.parentElement !== sokPlass) sokPlass.append(form);
+
         fullKnapp.textContent = aktiv ? '⤡' : '⤢';
         fullKnapp.title = aktiv
             ? 'Avslutt fullskjerm'
@@ -246,6 +383,7 @@
         fullKnapp.setAttribute('aria-pressed', String(aktiv));
 
         requestAnimationFrame(() => {
+            if (!aktiv) oppdaterKarthoyde();
             kart.invalidateSize({ pan: false });
         });
     }
@@ -298,13 +436,18 @@
     document.addEventListener('keydown', event => {
         if (
             event.key === 'Escape' &&
-            kartElement.classList.contains('kart-fullskjerm')
+            kartElement.classList.contains('kart-fullskjerm') &&
+            !event.defaultPrevented
         ) {
             sideFullskjerm(false);
         }
     });
 
     window.addEventListener('resize', oppdaterFullskjerm);
+    const hoydeObserver = new ResizeObserver(oppdaterFullskjerm);
+    for (const element of document.querySelectorAll('.offentlig-site-header, .kart-oversiktsrad')) {
+        hoydeObserver.observe(element);
+    }
     oppdaterFullskjerm();
 
     let sentrum = null;
@@ -313,53 +456,234 @@
     let foresporsel = null;
     let versjon = 0;
 
-    function tilpassAlle() {
-        const markorer = typer.flatMap(
-            type => type.lag.getLayers()
-        );
+    function fjernSokesentrum() {
+        sentrum = null;
+        sirkel?.remove();
+        sentrumsmarkor?.remove();
+        sirkel = null;
+        sentrumsmarkor = null;
+    }
 
-        if (markorer.length) {
-            kart.fitBounds(
-                L.featureGroup(markorer).getBounds(),
-                {
-                    padding: [40, 40],
-                    maxZoom: 14
+    const samlelag = L.featureGroup().addTo(kart);
+    const soneetiketter = L.layerGroup().addTo(kart);
+    const samlemarkorer = new Map();
+
+    function grupperEtterPlass(markorer) {
+        const avstand = 26;
+        const ruter = new Map();
+        const grupper = [];
+
+        for (const oppforing of markorer) {
+            const punkt = kart.project(oppforing.markor.getLatLng());
+            const x = Math.floor(punkt.x / avstand);
+            const y = Math.floor(punkt.y / avstand);
+            let funnet;
+
+            for (let kolonne = x - 1; kolonne <= x + 1 && !funnet; kolonne++) {
+                for (let rad = y - 1; rad <= y + 1 && !funnet; rad++) {
+                    const naboer = ruter.get(`${kolonne},${rad}`) ?? [];
+                    funnet = naboer.find(gruppe => gruppe.punkt.distanceTo(punkt) <= avstand);
                 }
-            );
+            }
+
+            if (funnet) {
+                funnet.oppforinger.push(oppforing);
+            } else {
+                const gruppe = { punkt, oppforinger: [oppforing] };
+                const nokkel = `${x},${y}`;
+                if (!ruter.has(nokkel)) ruter.set(nokkel, []);
+                ruter.get(nokkel).push(gruppe);
+                grupper.push(gruppe.oppforinger);
+            }
+        }
+
+        return grupper;
+    }
+
+    function grupperMarkorer(grupper) {
+        for (const gruppe of grupper) {
+            if (gruppe.length === 1) {
+                const [{ markor, type }] = gruppe;
+                type.lag.addLayer(markor);
+                continue;
+            }
+
+            const innhold = document.createElement('div');
+            innhold.className = 'kart-samleinnhold';
+            const tittel = document.createElement('strong');
+            tittel.textContent = `${gruppe.length} oppføringer på dette stedet`;
+            innhold.append(tittel);
+
+            const merke = L.marker(gruppe[0].markor.getLatLng(), {
+                icon: L.divIcon({
+                    className: 'kart-samlemarkor',
+                    html: String(gruppe.length),
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15],
+                    popupAnchor: [0, -15]
+                }),
+                bubblingMouseEvents: true,
+                title: tittel.textContent
+            }).bindPopup(innhold, { maxHeight: 230 }).addTo(samlelag);
+
+            for (const { markor, type } of gruppe) {
+                const detalj = document.createElement('details');
+                const etikett = document.createElement('summary');
+                const kort = markor.getPopup().getContent();
+                etikett.textContent = type.navn + ' · ' + kort.firstElementChild.textContent;
+                detalj.append(etikett, kort);
+                innhold.append(detalj);
+                samlemarkorer.set(markor, { merke, detalj });
+            }
+        }
+    }
+
+    function apneMarkor(markor) {
+        const samlet = samlemarkorer.get(markor);
+        if (samlet) {
+            samlet.detalj.open = true;
+            samlet.merke.openPopup();
+        } else {
+            markor.openPopup();
+        }
+    }
+
+    function prioriterteSoner() {
+        return soneType.lag.getLayers().sort((a, b) =>
+            risikoPrioritet[a.sonedata.risiko] - risikoPrioritet[b.sonedata.risiko]);
+    }
+
+    function soneSnitt(punkter, y) {
+        const kryss = [];
+        for (let i = 0, j = punkter.length - 1; i < punkter.length; j = i++) {
+            const a = punkter[i];
+            const b = punkter[j];
+            if ((a.y > y) !== (b.y > y)) {
+                kryss.push(a.x + (y - a.y) * (b.x - a.x) / (b.y - a.y));
+            }
+        }
+
+        kryss.sort((a, b) => a - b);
+        const intervaller = [];
+        for (let i = 0; i < kryss.length; i += 2) intervaller.push([kryss[i], kryss[i + 1]]);
+        return intervaller;
+    }
+
+    function synligeSonesnitt(sone, dekkende, y) {
+        let intervaller = soneSnitt(sone, y);
+        for (const polygon of dekkende) {
+            for (const [fra, til] of soneSnitt(polygon, y)) {
+                intervaller = intervaller.flatMap(([venstre, hoyre]) => {
+                    if (til <= venstre || fra >= hoyre) return [[venstre, hoyre]];
+
+                    const synlige = [];
+                    if (fra > venstre) synlige.push([venstre, fra]);
+                    if (til < hoyre) synlige.push([til, hoyre]);
+                    return synlige;
+                });
+            }
+        }
+        return intervaller;
+    }
+
+    function etikettFaarPlass(sone, dekkende, x, y, bredde, hoyde) {
+        const venstre = x - bredde / 2;
+        const hoyre = x + bredde / 2;
+        const topp = y - hoyde / 2;
+        const bunn = y + hoyde / 2;
+        const hjorner = [
+            { x: venstre, y: topp }, { x: hoyre, y: topp },
+            { x: hoyre, y: bunn }, { x: venstre, y: bunn }
+        ];
+        if (!synligeSonesnitt(sone, dekkende, y).some(([fra, til]) =>
+            fra < venstre && til > hoyre)) return false;
+
+        // En kant eller et helt polygon inne i boksen betyr at boksen krysser en sonegrense.
+        return [sone, ...dekkende].every(polygon => polygon.every((a, i) => {
+            if (a.x >= venstre && a.x <= hoyre && a.y >= topp && a.y <= bunn) return false;
+            const b = polygon[(i + 1) % polygon.length];
+            return !hjorner.some((c, j) => kanterBerorer(a, b, c, hjorner[(j + 1) % hjorner.length]));
+        }));
+    }
+
+    function oppdaterSoneetiketter() {
+        soneetiketter.clearLayers();
+        if (kart.getZoom() < 14) return;
+
+        const soner = prioriterteSoner();
+        const flater = soner.map(sone => sone.getLatLngs()[0].map(punkt => kart.project(punkt)));
+        for (const [indeks, sone] of soner.entries()) {
+            const etikett = sone.kartetikett;
+            const flate = flater[indeks];
+            const dekkende = flater.slice(indeks + 1);
+            const hoyder = flate.map(punkt => punkt.y);
+            const topp = Math.min(...hoyder);
+            const bunn = Math.max(...hoyder);
+            const midt = (topp + bunn) / 2;
+            const kandidater = [];
+
+            // Finn plass i de synlige delene, også når en sone er delt i flere biter.
+            for (let i = 1; i < 20; i++) {
+                const y = topp + (bunn - topp) * i / 20;
+                for (const [fra, til] of synligeSonesnitt(flate, dekkende, y)) {
+                    const bredde = til - fra;
+                    if (bredde >= 64) kandidater.push({ x: (fra + til) / 2, y, bredde });
+                }
+            }
+            kandidater.sort((a, b) => Math.abs(a.y - midt) - Math.abs(b.y - midt) || b.bredde - a.bredde);
+
+            let boks;
+            let plassert = false;
+            for (const { x, y, bredde } of kandidater) {
+                etikett.style.maxWidth = Math.min(bredde - 8, 180) + 'px';
+                const posisjon = kart.unproject(L.point(x, y));
+                if (!boks) {
+                    boks = L.tooltip({ direction: 'center', className: 'kart-soneetikett', opacity: 0 })
+                        .setLatLng(posisjon).setContent(etikett).addTo(soneetiketter);
+                }
+
+                if (etikett.offsetWidth && etikettFaarPlass(flate, dekkende, x, y,
+                    etikett.offsetWidth + 6, etikett.offsetHeight + 6)) {
+                    boks.setLatLng(posisjon).setOpacity(1);
+                    plassert = true;
+                    break;
+                }
+            }
+
+            if (boks && !plassert) soneetiketter.removeLayer(boks);
         }
     }
 
     function filtrer(tilpass = false) {
-        const avstand = Number(radius.value);
-        const antall = [];
+        const avstand = sentrum ? Number(radius.value) : 0;
+        melding.textContent = '';
+        const punktmarkorer = [];
+        samlelag.clearLayers();
+        samlemarkorer.clear();
 
         for (const type of typer) {
             type.lag.clearLayers();
 
             if (type.boks.checked) {
                 for (const markor of type.markorer) {
-                    const innenforRadius =
-                        !sentrum ||
-                        sentrum.distanceTo(
-                            markor.getLatLng()
-                        ) <= avstand;
+                    const punkt = markor.getLatLng?.();
+                    const posisjon = punkt ?? markor.getBounds().getCenter();
+                    if (avstand && sentrum.distanceTo(posisjon) > avstand) continue;
 
-                    if (innenforRadius) {
+                    if (punkt) {
+                        punktmarkorer.push({ markor, type });
+                    } else {
                         type.lag.addLayer(markor);
                     }
                 }
             }
-
-            const antallVist = type.lag.getLayers().length;
-
-            antall.push(
-                antallVist +
-                ' ' +
-                (antallVist === 1 ? type.entall : type.navn.toLowerCase())
-            );
         }
 
-        if (sentrum) {
+        grupperMarkorer(grupperEtterPlass(punktmarkorer));
+        oppdaterSoneetiketter();
+        planleggSonemasker();
+
+        if (avstand) {
             if (sirkel) {
                 sirkel.setLatLng(sentrum).setRadius(avstand);
             } else {
@@ -371,7 +695,12 @@
                     interactive: false
                 }).addTo(kart);
             }
+        } else {
+            sirkel?.remove();
+            sirkel = null;
+        }
 
+        if (sentrum) {
             if (sentrumsmarkor) {
                 sentrumsmarkor.setLatLng(sentrum);
             } else {
@@ -385,41 +714,18 @@
                 }).addTo(kart);
             }
 
-            if (tilpass) {
+            if (tilpass && sirkel) {
                 kart.fitBounds(sirkel.getBounds(), {
                     padding: [30, 30]
                 });
             }
-        } else if (tilpass) {
-            tilpassAlle();
         }
-
-        melding.textContent =
-            antall.join(', ') +
-            ' vist' +
-            (sentrum
-                ? ' innenfor ' + (avstand / 1000) + ' km'
-                : '') +
-            '. Grønn sirkel: ressurs. Blå sirkel: egen ressurs. Gul firkant: behov. ' +
-            'Rød trekant: krise. Klikk for detaljer.';
-
-        if (!typer.some(type => type.boks.checked)) {
-            melding.textContent =
-                'Ingen typer er valgt. ' +
-                'Merk av det du vil vise på kartet.';
-        }
-
-        if (ugyldige) {
-            melding.textContent +=
-                ' ' + ugyldige +
-                ' oppføringer mangler gyldig posisjon.';
-        }
-
-        trefftekst.textContent = antall.join(' · ');
     }
 
+    kart.on('zoomend', () => filtrer());
+
     // Lager avkrysningsboksene.
-    const felt = panel.querySelector('fieldset');
+    const felt = panel.querySelector('.kart-typer:not(.kart-bakgrunn)');
 
     for (const type of typer) {
         const label = document.createElement('label');
@@ -472,18 +778,14 @@
             avbryt();
 
             sok.value = '';
-            sentrum = null;
-
-            sirkel?.remove();
-            sentrumsmarkor?.remove();
-
-            sirkel = null;
-            sentrumsmarkor = null;
+            radius.value = '0';
+            fjernSokesentrum();
 
             sentrumtekst.textContent =
                 'Alle steder vises. Velg et sted for å bruke radius.';
 
-            filtrer(true);
+            filtrer();
+            kart.setView(standardvisning.sentrum, standardvisning.zoom);
             sok.focus();
         });
 
@@ -576,12 +878,17 @@
 
                     sentrum = L.latLng(lat, lon);
                     sok.value = etikett;
+                    radius.value = '0';
 
                     sentrumtekst.textContent =
-                        'Radius fra: ' + etikett;
+                        'Valgt sted: ' + etikett + '. Radius er valgfritt.';
 
                     avbryt();
-                    filtrer(true);
+                    filtrer();
+                    kart.setView(sentrum, feature.properties.housenumber ? 17 : 15);
+                    if (markeringSkjema?.dataset.kartmarkering === 'behov' && !markeringSkjema.inert) {
+                        velgBehovplassering(sentrum, etikett);
+                    }
                     sok.focus();
                 });
 
@@ -611,6 +918,586 @@
         }
     });
 
+    const handlinger = kartElement.querySelector('.kart-handlinger');
+    const handlingsknapper = [...handlinger.querySelectorAll('.kart-handlingsrad button')];
+
+    L.DomEvent.disableClickPropagation(handlinger);
+    L.DomEvent.disableScrollPropagation(handlinger);
+
+    const mobilvisning = window.matchMedia('(max-width: 940px)');
+    let aktivKnapp = null;
+    let markeringSkjema = null;
+    let plassering = null;
+    const sonehjorner = [];
+    const forhandsvisning = L.layerGroup().addTo(kart);
+    const soneType = typer.find(type => type.key === 'soner');
+
+    const sonerenderer = L.svg();
+    const sonerader = soneliste.querySelector('.kart-sonerader');
+    const tomSoneliste = soneliste.querySelector('.kart-soneliste-tom');
+    const risikoNavn = { lav: 'Lav risiko', moderat: 'Moderat risiko', hoy: 'Høy risiko' };
+    const risikoKant = { lav: null, moderat: '2 4', hoy: '8 5' };
+    const risikoPrioritet = { lav: 0, moderat: 1, hoy: 2 };
+    const svgNavnerom = 'http://www.w3.org/2000/svg';
+    let sonemasker;
+    let sonemaskeRamme;
+
+    const satellittSonefarger = { lav: '#48f4bf', moderat: '#ffdc3d', hoy: '#ff4168' };
+
+    function sonestil(risiko) {
+        const erSatellitt = aktivtKart === satellitt;
+        return {
+            color: erSatellitt ? satellittSonefarger[risiko] : farge('--sone-' + risiko),
+            dashArray: risikoKant[risiko],
+            weight: erSatellitt ? 5 : 4,
+            fillOpacity: erSatellitt ? 0.62 : 0.34
+        };
+    }
+
+    function oppdaterSonefarger() {
+        for (const sone of soneType.markorer) {
+            const stil = sonestil(sone.sonedata.risiko);
+            sone.setStyle(stil);
+            sone.kartetikett.style.setProperty('--sonefarge', stil.color);
+        }
+
+        if (markeringSkjema?.dataset.kartmarkering === 'soner') visSoneutkast();
+    }
+
+    function oppdaterSoneliste() {
+        sonerader.replaceChildren();
+        tomSoneliste.hidden = soneType.markorer.length > 0;
+
+        for (const [indeks, sone] of soneType.markorer.entries()) {
+            const { navn, risiko } = sone.sonedata;
+            const rad = document.createElement('li');
+            rad.className = 'kart-sonerad kart-sonevalg-' + risiko;
+
+            const prove = document.createElement('span');
+            prove.className = 'kart-soneproeve';
+            prove.setAttribute('aria-hidden', 'true');
+            const tekst = document.createElement('span');
+            const tittel = document.createElement('strong');
+            tittel.textContent = navn;
+            const niva = document.createElement('small');
+            niva.textContent = risikoNavn[risiko];
+            tekst.append(tittel, niva);
+
+            const slett = document.createElement('button');
+            slett.type = 'button';
+            slett.className = 'btn btn-sm btn-outline-danger';
+            slett.textContent = 'Slett';
+            slett.setAttribute('aria-label', 'Slett sone ' + navn);
+            slett.addEventListener('click', () => {
+                soneType.markorer.splice(indeks, 1);
+                filtrer();
+                oppdaterSoneliste();
+                const knapper = sonerader.querySelectorAll('button');
+                (knapper[indeks] ?? knapper[knapper.length - 1] ?? sonelisteknapp).focus();
+            });
+
+            rad.append(prove, tekst, slett);
+            sonerader.append(rad);
+        }
+    }
+
+    // Høyere risiko dekker lavere risiko. Ved lik risiko ligger den sist tegnede øverst.
+    function planleggSonemasker() {
+        if (sonemaskeRamme !== undefined) return;
+        sonemaskeRamme = requestAnimationFrame(() => {
+            sonemaskeRamme = undefined;
+            const soner = prioriterteSoner();
+            for (const sone of soner) sone.bringToFront();
+            const flater = soner.map(sone => sone.getElement()).filter(Boolean);
+            sonemasker?.remove();
+            for (const flate of flater) flate.removeAttribute('mask');
+            if (flater.length < 2) return;
+
+            const svg = flater[0].ownerSVGElement;
+            const { x, y, width, height } = svg.viewBox.baseVal;
+            sonemasker = document.createElementNS(svgNavnerom, 'defs');
+            for (let indeks = flater.length - 2; indeks >= 0; indeks--) {
+                const maske = document.createElementNS(svgNavnerom, 'mask');
+                const id = 'offentlig-sonemaske-' + indeks;
+                maske.id = id;
+                maske.setAttribute('maskUnits', 'userSpaceOnUse');
+
+                const bakgrunn = document.createElementNS(svgNavnerom, 'rect');
+                for (const [attributt, verdi] of Object.entries({ x, y, width, height })) {
+                    maske.setAttribute(attributt, verdi);
+                    bakgrunn.setAttribute(attributt, verdi);
+                }
+                bakgrunn.setAttribute('fill', 'white');
+                maske.append(bakgrunn);
+
+                for (const nyere of flater.slice(indeks + 1)) {
+                    const utsnitt = document.createElementNS(svgNavnerom, 'path');
+                    utsnitt.setAttribute('d', nyere.getAttribute('d'));
+                    utsnitt.setAttribute('fill', 'black');
+                    maske.append(utsnitt);
+                }
+
+                sonemasker.append(maske);
+                flater[indeks].setAttribute('mask', 'url(#' + id + ')');
+            }
+            svg.prepend(sonemasker);
+        });
+    }
+
+    sonerenderer.on('update', planleggSonemasker);
+
+    const hindringPanel = document.getElementById('kartVeihindring');
+    const hindringHint = document.getElementById('kartVelgVeihindring');
+    const behovPanel = document.getElementById('kartNyttBehov');
+    const behovInnhold = behovPanel.querySelector('.kart-behovskjema');
+    const behovStatus = behovPanel.querySelector('.kart-behovstatus');
+    let henterBehov = false;
+
+    function visPlassering(punkt) {
+        forhandsvisning.clearLayers();
+        forhandsvisning.addLayer(L.circleMarker(punkt, {
+            radius: 6,
+            color: '#163c4c',
+            fillColor: '#fff',
+            fillOpacity: 1,
+            interactive: false
+        }));
+        markeringSkjema.querySelector('.kart-posisjon').textContent =
+            `Valgt posisjon: ${punkt.lat.toFixed(5)}, ${punkt.lng.toFixed(5)}`;
+        markeringSkjema.querySelector('[type="submit"]').disabled = false;
+    }
+
+    function velgBehovplassering(punkt, etikett) {
+        const { Latitude, Longitude } = markeringSkjema.elements;
+        Latitude.value = punkt.lat.toFixed(6);
+        Longitude.value = punkt.lng.toFixed(6);
+        visPlassering(punkt);
+        if (etikett) markeringSkjema.querySelector('.kart-posisjon').textContent = etikett;
+    }
+
+    function aktiverBehovplassering(skjema) {
+        markeringSkjema = skjema;
+        kartElement.classList.add('kart-plassering-aktiv');
+
+        const { Latitude, Longitude } = skjema.elements;
+        if (Latitude.value && Longitude.value) {
+            const lat = Number(Latitude.value.replace(',', '.'));
+            const lon = Number(Longitude.value.replace(',', '.'));
+            if (gyldig(lat, lon)) visPlassering(L.latLng(lat, lon));
+        }
+    }
+
+    function oppdaterPrioritetsvalg(blokk) {
+        const felt = blokk.querySelector('select[name$=".Priority"]');
+        if (!felt.value) felt.value = 'Middels';
+        for (const knapp of blokk.querySelectorAll('[data-prioritet]')) {
+            knapp.setAttribute('aria-pressed', String(knapp.dataset.prioritet === felt.value));
+        }
+    }
+
+    function visPrioritetsvalg(skjema) {
+        for (const blokk of skjema.querySelectorAll('#behov-liste fieldset')) {
+            const felt = blokk.querySelector('select[name$=".Priority"]');
+            const valg = document.createElement('div');
+            valg.className = 'kart-piller';
+            valg.setAttribute('role', 'group');
+            valg.setAttribute('aria-label', 'Prioritet');
+            for (const alternativ of Array.from(felt.options).filter(alternativ => alternativ.value)) {
+                const knapp = document.createElement('button');
+                knapp.type = 'button';
+                knapp.dataset.prioritet = alternativ.value;
+                knapp.textContent = alternativ.value === 'Middels' ? 'Normal' : alternativ.textContent;
+                valg.append(knapp);
+            }
+
+            felt.hidden = true;
+            felt.after(valg);
+            oppdaterPrioritetsvalg(blokk);
+        }
+
+        skjema.addEventListener('click', event => {
+            const knapp = event.target.closest('[data-prioritet]');
+            if (!knapp) return;
+            const blokk = knapp.closest('fieldset');
+            blokk.querySelector('select[name$=".Priority"]').value = knapp.dataset.prioritet;
+            oppdaterPrioritetsvalg(blokk);
+        });
+    }
+
+    function visBehovskjema(skjema) {
+        skjema.dataset.kartmarkering = 'behov';
+        const posisjonsfelt = skjema.querySelector('[data-behovplassering]');
+        posisjonsfelt.querySelector('#behovKart').remove();
+        posisjonsfelt.querySelector('h2').textContent = 'Sted eller område';
+        posisjonsfelt.querySelector('p').remove();
+        posisjonsfelt.className = 'kart-behovplassering';
+        const sted = posisjonsfelt.querySelector('#behovKartmelding');
+        sted.classList.add('kart-posisjon');
+        sted.textContent = 'Søk etter adresse eller marker i kartet';
+
+        for (const blokk of skjema.querySelectorAll('#behov-liste fieldset')) {
+            const beskrivelse = blokk.querySelector('textarea').closest('.mb-3');
+            const prioritet = blokk.querySelector('select[name$=".Priority"]').closest('.row');
+            prioritet.before(beskrivelse);
+            blokk.querySelector('select[name$=".Status"]').closest('.mb-3').hidden = true;
+        }
+
+        skjema.querySelector('[type="submit"]').parentElement.className = 'kart-panelknapper';
+        skjema.querySelector('[type="submit"]').textContent = 'Registrer behov';
+
+        const avbryt = skjema.querySelector('[data-avbryt-behov]');
+        const avbrytKnapp = document.createElement('button');
+        avbrytKnapp.type = 'button';
+        avbrytKnapp.className = avbryt.className;
+        avbrytKnapp.textContent = avbryt.textContent.trim();
+        avbrytKnapp.addEventListener('click', lukkHandling);
+        avbryt.replaceWith(avbrytKnapp);
+
+        skjema.querySelector('[type="submit"]').disabled = true;
+        visPrioritetsvalg(skjema);
+        window.kobleBehovsliste(skjema, oppdaterPrioritetsvalg);
+        behovInnhold.replaceChildren(skjema);
+        if (!behovPanel.hidden) aktiverBehovplassering(skjema);
+    }
+
+    async function hentBehovskjema() {
+        if (henterBehov) return;
+        henterBehov = true;
+        behovStatus.textContent = 'Henter skjema …';
+
+        try {
+            const svar = await fetch(behovPanel.dataset.skjemaUrl);
+            if (!svar.ok) throw new Error('Skjema utilgjengelig');
+
+            const side = new DOMParser().parseFromString(await svar.text(), 'text/html');
+            const skjema = side.getElementById('flereBehovSkjema');
+            if (!skjema) throw new Error('Skjema mangler');
+
+            visBehovskjema(skjema);
+            behovStatus.textContent = '';
+        } catch {
+            behovStatus.textContent = 'Skjemaet kunne ikke hentes. Lukk og åpne panelet for å prøve igjen.';
+        } finally {
+            henterBehov = false;
+        }
+    }
+
+    behovPanel.addEventListener('submit', async event => {
+        event.preventDefault();
+        const skjema = event.target;
+        if (skjema.inert || !skjema.elements.Latitude.value || !skjema.elements.Longitude.value) return;
+
+        const data = new FormData(skjema);
+        skjema.inert = true;
+        behovStatus.textContent = 'Registrerer behov …';
+
+        try {
+            const svar = await fetch(skjema.action, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: data
+            });
+            if (!svar.ok) throw new Error('Registrering utilgjengelig');
+
+            if (svar.headers.get('Content-Type')?.includes('application/json')) {
+                const { redirectUrl } = await svar.json();
+                if (!redirectUrl) throw new Error('Oversikten kunne ikke åpnes');
+
+                window.location.assign(redirectUrl);
+                return;
+            }
+
+            const side = new DOMParser().parseFromString(await svar.text(), 'text/html');
+            const oppdatertSkjema = side.getElementById('flereBehovSkjema');
+            if (!oppdatertSkjema) throw new Error('Uventet svar');
+
+            visBehovskjema(oppdatertSkjema);
+            behovStatus.textContent = 'Se meldingene i skjemaet og prøv igjen.';
+            behovPanel.scrollTop = 0;
+        } catch {
+            skjema.inert = false;
+            behovStatus.textContent = 'Kunne ikke bekrefte registreringen. Sjekk oversikten før du prøver igjen.';
+        }
+    });
+
+    function kryssprodukt(a, b, c) {
+        return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+    }
+
+    function kanterBerorer(a, b, c, d) {
+        const retning = (p, q, r) => {
+            const kryss = kryssprodukt(p, q, r);
+            return Math.abs(kryss) < 0.01 ? 0 : Math.sign(kryss);
+        };
+        const paKant = (p, q, r) =>
+            r.x >= Math.min(p.x, q.x) && r.x <= Math.max(p.x, q.x) &&
+            r.y >= Math.min(p.y, q.y) && r.y <= Math.max(p.y, q.y);
+
+        const abc = retning(a, b, c);
+        const abd = retning(a, b, d);
+        const cda = retning(c, d, a);
+        const cdb = retning(c, d, b);
+
+        return (abc * abd < 0 && cda * cdb < 0) ||
+            (abc === 0 && paKant(a, b, c)) ||
+            (abd === 0 && paKant(a, b, d)) ||
+            (cda === 0 && paKant(c, d, a)) ||
+            (cdb === 0 && paKant(c, d, b));
+    }
+
+    function gyldigSone(hjorner) {
+        const antall = hjorner.length;
+        if (antall < 3) return false;
+
+        const punkter = hjorner.map(punkt => kart.options.crs.project(punkt));
+        let dobbeltAreal = 0;
+
+        for (let i = 0; i < antall; i++) {
+            const a = punkter[i];
+            const b = punkter[(i + 1) % antall];
+            const c = punkter[(i + 2) % antall];
+            dobbeltAreal += kryssprodukt(punkter[0], a, b);
+
+            // Nabokanter kan dele et hjørne, men ikke gå tilbake langs samme kant.
+            const bakover = (b.x - a.x) * (c.x - b.x) + (b.y - a.y) * (c.y - b.y) < 0;
+            if (bakover && Math.abs(kryssprodukt(a, b, c)) < 0.01) return false;
+
+            for (let j = i + 2; j < antall; j++) {
+                if (i === 0 && j === antall - 1) continue;
+                if (kanterBerorer(a, b, punkter[j], punkter[(j + 1) % antall])) return false;
+            }
+        }
+
+        return Math.abs(dobbeltAreal) >= 0.01;
+    }
+
+    function lagSoneetikett(navn, fargekode) {
+        const etikett = document.createElement('div');
+        etikett.style.setProperty('--sonefarge', fargekode);
+        etikett.textContent = navn;
+        return etikett;
+    }
+
+    function visSoneutkast() {
+        const antall = sonehjorner.length;
+        const gyldig = gyldigSone(sonehjorner);
+        const risiko = markeringSkjema.elements.risiko.value;
+        const stil = { ...sonestil(risiko), interactive: false };
+        forhandsvisning.clearLayers();
+
+        if (gyldig) {
+            forhandsvisning.addLayer(L.polygon(sonehjorner, stil));
+        } else if (antall > 1) {
+            forhandsvisning.addLayer(L.polyline(sonehjorner, stil));
+        }
+
+        for (const hjorne of sonehjorner) {
+            forhandsvisning.addLayer(L.circleMarker(hjorne, {
+                ...stil, radius: 5, weight: 2, fillColor: '#fff', fillOpacity: 1
+            }));
+        }
+
+        let status = 'Klikk minst tre hjørner langs kanten av sonen.';
+        if (antall >= 3 && !gyldig) {
+            status = 'Hjørnene må danne et område uten kryssende kanter. Angre siste hjørne og prøv igjen.';
+        } else if (gyldig) {
+            status = `${antall} hjørner valgt. Fortsett å tegne eller velg Godta sone.`;
+        } else if (antall) {
+            status = `${antall} av minst 3 hjørner valgt. Fortsett langs kanten.`;
+        }
+
+        markeringSkjema.querySelector('.kart-posisjon').textContent = status;
+        markeringSkjema.querySelector('[type="submit"]').disabled = !gyldig;
+        markeringSkjema.querySelector('[data-angre-hjorne]').disabled = antall === 0;
+    }
+
+    function nullstillPlassering() {
+        plassering = null;
+        sonehjorner.length = 0;
+        forhandsvisning.clearLayers();
+
+        if (!markeringSkjema) return;
+        if (markeringSkjema.dataset.kartmarkering === 'soner') {
+            visSoneutkast();
+        } else {
+            markeringSkjema.querySelector('.kart-posisjon').textContent =
+                'Klikk i kartet for å velge plassering.';
+            markeringSkjema.querySelector('[type="submit"]').disabled = true;
+        }
+    }
+
+    function visHandling(knapp) {
+        nullstillPlassering();
+        if (knapp && mobilvisning.matches) {
+            visKartfiltre(false);
+            visSoneliste(false);
+        }
+        aktivKnapp = knapp;
+        markeringSkjema = null;
+        hindringHint.textContent = '';
+
+        for (const handling of handlingsknapper) {
+            const seksjon = document.getElementById(handling.getAttribute('aria-controls'));
+            const apen = handling === knapp;
+            const venterPaPlassering = apen && seksjon === hindringPanel;
+            seksjon.hidden = !apen || venterPaPlassering;
+            handling.setAttribute('aria-expanded', String(!seksjon.hidden));
+            handling.toggleAttribute('data-venter-plassering', venterPaPlassering);
+
+            if (apen) {
+                markeringSkjema = seksjon.querySelector('[data-kartmarkering]');
+                if (venterPaPlassering) {
+                    hindringHint.textContent = 'Klikk i kartet der veihindringen ligger.';
+                }
+                if (seksjon === behovPanel) {
+                    if (markeringSkjema) aktiverBehovplassering(markeringSkjema);
+                    else hentBehovskjema();
+                }
+            }
+        }
+
+        kartElement.classList.toggle('kart-plassering-aktiv', Boolean(markeringSkjema));
+    }
+
+    for (const knapp of handlingsknapper) {
+        knapp.addEventListener('click', () => visHandling(aktivKnapp === knapp ? null : knapp));
+    }
+
+    function lukkHandling() {
+        aktivKnapp?.focus();
+        visHandling(null);
+    }
+
+    for (const knapp of handlinger.querySelectorAll('[data-kartavbryt]')) {
+        knapp.addEventListener('click', lukkHandling);
+    }
+
+    const matchPanel = document.getElementById('kartMatch');
+    const matchSok = document.getElementById('kartMatchSok');
+    const matchStatus = matchPanel.querySelector('.kart-matchstatus');
+    const matchTreff = [...matchPanel.querySelectorAll('.kart-matchtreff')];
+
+    function filtrerMatch() {
+        if (!matchStatus) return;
+        const tekst = matchSok.value.trim().toLocaleLowerCase('nb-NO');
+        const type = matchPanel.querySelector('input[name="matchtype"]:checked').value;
+
+        for (const treff of matchTreff) {
+            treff.hidden = (type && treff.dataset.matchType !== type) ||
+                !treff.dataset.matchSok.toLocaleLowerCase('nb-NO').includes(tekst);
+        }
+
+        matchStatus.hidden = matchTreff.some(treff => !treff.hidden);
+    }
+
+    matchSok.addEventListener('input', filtrerMatch);
+    matchPanel.querySelector('.kart-valgfelt').addEventListener('change', filtrerMatch);
+
+    kartElement.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && aktivKnapp) {
+            event.preventDefault();
+            lukkHandling();
+        }
+    });
+
+    kart.on('click', event => {
+        if (!markeringSkjema) return;
+
+        if (markeringSkjema.dataset.kartmarkering === 'soner') {
+            const hjorne = event.latlng;
+            if (sonehjorner.some(punkt => punkt.equals(hjorne))) return;
+
+            sonehjorner.push(hjorne);
+            visSoneutkast();
+            return;
+        }
+
+        plassering = kart.wrapLatLng(event.latlng);
+        if (markeringSkjema.dataset.kartmarkering === 'behov') {
+            if (markeringSkjema.inert) return;
+            kart.closePopup();
+            velgBehovplassering(plassering);
+            return;
+        }
+
+        if (markeringSkjema.dataset.kartmarkering === 'veihindringer') {
+            kart.closePopup();
+            if (hindringPanel.hidden) {
+                hindringHint.textContent = '';
+                hindringPanel.hidden = false;
+                aktivKnapp.removeAttribute('data-venter-plassering');
+                aktivKnapp.setAttribute('aria-expanded', 'true');
+                markeringSkjema.elements.navn.focus({ preventScroll: true });
+            }
+        }
+
+        visPlassering(plassering);
+    });
+
+    handlinger.querySelector('.kart-sonevalg').addEventListener('change', visSoneutkast);
+
+    handlinger.querySelector('[data-angre-hjorne]').addEventListener('click', () => {
+        sonehjorner.pop();
+        visSoneutkast();
+    });
+
+    for (const skjema of handlinger.querySelectorAll('[data-kartmarkering]')) {
+        skjema.addEventListener('submit', event => {
+            event.preventDefault();
+            if (skjema !== markeringSkjema) return;
+
+            const erSone = skjema.dataset.kartmarkering === 'soner';
+            if (erSone ? !gyldigSone(sonehjorner) : !plassering) return;
+
+            const navn = skjema.elements.navn.value.trim();
+            if (!navn) {
+                skjema.elements.navn.focus();
+                return;
+            }
+
+            const type = typer.find(t => t.key === skjema.dataset.kartmarkering);
+            const risiko = skjema.elements.risiko?.value;
+            const stil = erSone ? sonestil(risiko) : null;
+            const markor = erSone
+                ? L.polygon(sonehjorner, { ...stil, renderer: sonerenderer, interactive: false })
+                : L.marker(plassering, { icon: ikon(type.key), title: navn, bubblingMouseEvents: true });
+
+            if (erSone) {
+                markor.kartetikett = lagSoneetikett(navn, stil.color);
+                markor.sonedata = { navn, risiko };
+            } else {
+                const merknad = skjema.elements.beskrivelse?.value.trim();
+                const pavirkning = skjema.elements.pavirkning?.value;
+                const felter = [];
+                if (merknad) felter.push(['Beskrivelse', 'merknad']);
+                if (pavirkning) felter.push(['Påvirkning på fremkommelighet', 'pavirkning']);
+                const innhold = popup({ navn, merknad, pavirkning }, felter);
+                const fjern = document.createElement('button');
+                fjern.type = 'button';
+                fjern.className = 'btn btn-sm btn-outline-secondary mt-2';
+                fjern.textContent = 'Fjern markering';
+                fjern.addEventListener('click', () => {
+                    type.markorer.splice(type.markorer.indexOf(markor), 1);
+                    filtrer();
+                });
+
+                innhold.append(fjern);
+                markor.bindPopup(innhold);
+            }
+            type.markorer.push(markor);
+            if (erSone) oppdaterSoneliste();
+            type.boks.checked = true;
+
+            skjema.reset();
+            aktivKnapp.focus();
+            visHandling(null);
+            filtrer();
+            const synlig = type.lag.hasLayer(markor) || samlemarkorer.has(markor);
+            const bekreftelsestekst = erSone ? 'Sonen er opprettet.' : 'Veihindringen er opprettet.';
+            visBekreftelse(synlig ? bekreftelsestekst : bekreftelsestekst + ' Den ligger utenfor valgt søkeradius.');
+        });
+    }
+
     // Åpner en valgt oppføring fra kortenes lister.
     document.addEventListener('oversikt:vis-pa-kart', event => {
         const valgt = event.detail;
@@ -627,16 +1514,10 @@
 
         // Fjerner radius hvis den skjuler den valgte oppføringen.
         if (
-            sentrum &&
+            sentrum && Number(radius.value) &&
             sentrum.distanceTo(markor.getLatLng()) > Number(radius.value)
         ) {
-            sentrum = null;
-
-            sirkel?.remove();
-            sentrumsmarkor?.remove();
-
-            sirkel = null;
-            sentrumsmarkor = null;
+            radius.value = '0';
 
             sentrumtekst.textContent =
                 'Radius fjernet for å vise valgt oppføring.';
@@ -646,11 +1527,12 @@
 
         kart.setView(
             markor.getLatLng(),
-            Math.max(kart.getZoom(), 15)
+            Math.max(kart.getZoom(), 15),
+            { animate: false }
         );
 
-        markor.openPopup();
+        apneMarkor(markor);
     });
     
-    filtrer(true);
+    filtrer();
 })();

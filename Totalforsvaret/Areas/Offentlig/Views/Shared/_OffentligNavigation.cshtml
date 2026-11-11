@@ -58,6 +58,11 @@
             </a>
         </div>
 
+        @if (isOverview && action.Equals("Index", StringComparison.OrdinalIgnoreCase))
+        {
+            <div id="kartSokToolbar"></div>
+        }
+
         <div class="account-summary"
              aria-label="Innlogget som @displayName, offentlig aktør">
             <span class="avatar avatar-small" aria-hidden="true">@initials</span>

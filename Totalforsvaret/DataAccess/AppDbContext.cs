@@ -72,7 +72,8 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
         builder.Entity<Need>()
             .HasOne(n => n.Crisis)
             .WithMany(c => c.Needs)
-            .HasForeignKey(n => n.CrisisId);
+            .HasForeignKey(n => n.CrisisId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<Need>()
             .Ignore(n => n.OffentligAktor);

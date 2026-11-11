@@ -94,7 +94,7 @@ namespace Totalforsvaret.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CrisisId")
+                    b.Property<int?>("CrisisId")
                         .HasColumnType("int")
                         .HasColumnName("HendelseId");
 
@@ -548,8 +548,7 @@ namespace Totalforsvaret.Migrations
                     b.HasOne("Totalforsvaret.Models.Crisis", "Crisis")
                         .WithMany("Needs")
                         .HasForeignKey("CrisisId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Crisis");
                 });

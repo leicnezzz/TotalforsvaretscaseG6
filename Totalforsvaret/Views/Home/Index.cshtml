@@ -72,6 +72,18 @@
                 <p class="paratus-hero-eyebrow">Forberedt. Tilgjengelig. Sammen.</p>
                 <h1>Når noe skjer,<br />står vi <span>sammen.</span></h1>
                 <p class="paratus-hero-lead">Det viktigste vi har, er hverandre.</p>
+               
+                @* Knappene vises bare når brukeren ikke er innlogget. Headeren viser Min side og Logg ut. *@
+                @if (User.Identity?.IsAuthenticated != true)
+                {
+                    <div class="paratus-hero-actions">
+                        <a class="public-button public-button-primary" asp-area="" asp-controller="Account" asp-action="Register">Registrer deg</a>
+                        <a class="public-button public-button-outline" asp-area="" asp-controller="Account" asp-action="Login">Logg inn</a>
+                    </div>
+                    <p class="paratus-hero-offentlig">
+                        <a asp-area="" asp-controller="Account" asp-action="LoginOffentlig">Offentlig aktør? Logg inn her</a>
+                    </p>
+                }
             </div>
         </div>
         <div class="public-content">

@@ -151,3 +151,37 @@
 .paratus-hero-lead {
     font-size: clamp(16px, 1.6vw, 22px);
 }
+
+/* Knappene i hero-delen. .public-button har bredde 100 % som standard, så den settes tilbake til auto. */
+.paratus-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.paratus-hero-actions .public-button {
+    width: auto;
+    min-width: 160px;
+    justify-content: center;
+}
+
+/* Bakgrunnen er mørk, så den grønne knappen får den lyse aksentfargen. !important trengs fordi .public-button-primary bruker det på tekstfargen. */
+.paratus-hero-actions .public-button-primary {
+    border-color: var(--paratus-accent);
+    background: var(--paratus-accent);
+    color: var(--public-green) !important;
+}
+
+/* .public-home a arver tekstfargen fra hero-delen (hvit), så den hvite knappen må få grønn tekst eksplisitt. */
+.paratus-hero-actions .public-button-outline {
+    color: var(--public-green);
+}
+
+.paratus-hero-offentlig {
+    font-size: 14px;
+}
+
+.paratus-hero-offentlig a {
+    text-decoration: underline;
+}

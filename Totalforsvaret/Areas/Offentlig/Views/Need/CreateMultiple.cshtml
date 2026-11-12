@@ -17,7 +17,7 @@
     </a>
 
     <h1>@ViewData["Title"]</h1>
-    <p>Velg en krise og registrer ressursbehovene som hører til.</p>
+    <p>Velg en hendelse og registrer ressursbehovene som hører til.</p>
 
     <form id="flereBehovSkjema" asp-area="Offentlig"
           asp-controller="Need"
@@ -28,13 +28,13 @@
              class="text-danger"></div>
 
         <div class="mb-3">
-            <label asp-for="CrisisId" class="form-label">Tilknyttet krise</label>
+            <label asp-for="CrisisId" class="form-label">Tilknyttet hendelse</label>
             <select asp-for="CrisisId" asp-items="Model.Crises" class="form-select" required>
-                <option value="">Velg krise</option>
+                <option value="">Velg hendelse</option>
             </select>
             @if (!Model.Crises.Any())
             {
-                <p class="form-text">Opprett en krise før du registrerer behov.</p>
+                <p class="form-text">Opprett en hendelse før du registrerer behov.</p>
             }
             <span asp-validation-for="CrisisId" class="text-danger"></span>
         </div>
@@ -124,9 +124,9 @@
         </div>
 
         <div class="mt-4 pt-4 border-top" data-behovplassering>
-            <h2 class="h5">Hvor trengs ressursene?</h2>
+            <h2 class="h5">Hvor trengs behovene?</h2>
             <p class="text-muted">
-                Velg en aktiv krise i listen eller på kartet for å bruke krisens plassering. Du kan også klikke et annet sted på kartet.
+                Velg en aktiv hendelse i listen eller på kartet for å bruke hendelsens plassering. Du kan også klikke et annet sted på kartet.
             </p>
 
             <div id="behovKart" style="height: 350px; width: 100%;"></div>

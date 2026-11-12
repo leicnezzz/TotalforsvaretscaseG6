@@ -24,7 +24,7 @@
           asp-action="CreateMultiple"
           method="post">
 
-        <div asp-validation-summary="All"
+        <div asp-validation-summary="ModelOnly"
              class="text-danger"></div>
 
         <div class="mb-3">
@@ -39,6 +39,7 @@
             <span asp-validation-for="CrisisId" class="text-danger"></span>
         </div>
 
+        <span asp-validation-for="Needs" class="text-danger"></span>
         <div id="behov-liste">
             @for (var i = 0; i < Model.Needs.Count; i++)
             {

@@ -102,7 +102,7 @@
             }
         } // Oppdaterer kartet med valgt adresse og koordinater.
 
-        function reset() {
+        function clearSearch() {
             clearTimeout(timer);
             request?.abort();
             request = null;
@@ -110,6 +110,10 @@
             results.hidden = true;
             address.setAttribute('aria-expanded', 'false');
             status.textContent = '';
+        }
+
+        function reset() {
+            clearSearch();
             refresh();
         }
 
@@ -118,13 +122,14 @@
             latitude.value = lat.toFixed(6);
             longitude.value = lon.toFixed(6);
             address.setCustomValidity('');
-            reset();
+            clearSearch();
+            refresh();
             status.textContent = message;
             onChange();
         }
 
         async function selectMapPoint(point) {
-            reset();
+            clearSearch();
             latitude.value = '';
             longitude.value = '';
             address.setCustomValidity('Vent mens plasseringen velges.');
@@ -203,7 +208,7 @@
         // Om bruker velger et forslag, fylles adressefelt og koordinater i skjemaet. 
 
         address.addEventListener('input', () => {
-            reset();
+            clearSearch();
             latitude.value = '';
             longitude.value = '';
             address.setCustomValidity('Velg en adresse fra forslagene eller klikk i kartet.');

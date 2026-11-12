@@ -1,20 +1,115 @@
+/* Felles uttrykk for offentlige sider. */
+body:has(:is(.crisis-overview, .match-page, .need-page)) {
+    --offentlig-width: 920px;
+    --offentlig-gutter: clamp(16px, 3vw, 28px);
+    --offentlig-space: clamp(16px, 3vw, 24px);
+    --offentlig-blue: #163c4c;
+    --offentlig-blue-hover: #225466;
+    --offentlig-muted: #526671;
+    --offentlig-border: #dce5e9;
+    --offentlig-radius: 10px;
+    background: #eef0f2;
+}
+
+:is(.match-page, .match-page-actions, .crisis-overview, .need-page .need-registration) {
+    width: min(calc(100% - 2 * var(--offentlig-gutter)), var(--offentlig-width));
+    max-width: none;
+    margin-inline: auto;
+    font-family: Roboto, Arial, sans-serif;
+    color: var(--offentlig-blue);
+}
+
+:is(.match-page, .crisis-overview) {
+    padding: var(--offentlig-space) 0 64px;
+}
+
+.match-page-actions + .match-page {
+    padding-top: var(--offentlig-space);
+}
+
+:is(.need-page, .match-page-actions) {
+    --header-green: var(--offentlig-blue);
+}
+
+.need-page .private-page-actions {
+    width: min(calc(100% - 2 * var(--offentlig-gutter)), var(--offentlig-width));
+    margin-inline: auto;
+    padding: 0;
+}
+
+:is(.need-page .registration-intro, .crisis-overview .registration-intro, .match-page .match-intro) {
+    margin: 0 0 var(--offentlig-space);
+    text-align: center;
+}
+
+:is(.need-page .registration-intro, .crisis-overview .registration-intro, .match-page .match-intro) h1 {
+    margin: 0;
+    color: var(--offentlig-blue);
+    font-size: clamp(26px, 4vw, 36px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: normal;
+}
+
+:is(.need-page .registration-intro, .crisis-overview .registration-intro, .match-page .match-intro) p {
+    margin: 8px auto 0;
+    color: var(--offentlig-muted);
+    font-size: 1rem;
+    line-height: 1.45;
+}
+
+.match-page .match-columns {
+    gap: var(--offentlig-space);
+}
+
+:is(.match-result button, .match-shortcuts section, .match-map, .crisis-create, .crisis-card,
+    .need-page .need-card, .public-resource-registration .resource-wizard) {
+    border-radius: var(--offentlig-radius);
+}
+
+:is(.match-shortcuts section, .crisis-create, .need-page .need-card, .public-resource-registration .resource-wizard) {
+    padding: clamp(16px, 3vw, 28px);
+    border: 1px solid var(--offentlig-border);
+    background: #fff;
+    box-shadow: 0 2px 8px rgb(36 56 70 / 6%);
+}
+
+:is(.match-page .match-button, .crisis-overview .crisis-button, .need-page .public-button) {
+    min-height: 44px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: .875rem;
+    font-weight: 700;
+}
+
+:is(.match-page .match-button, .crisis-overview .crisis-button:not(.crisis-button-outline),
+    .need-page .public-button-primary, .public-resource-registration #vehicle-submit) {
+    border-color: var(--offentlig-blue);
+    background: var(--offentlig-blue);
+    color: #fff;
+}
+
+:is(.match-page .match-button, .crisis-overview .crisis-button:not(.crisis-button-outline),
+    .need-page .public-button-primary, .public-resource-registration #vehicle-submit):hover:not(:disabled) {
+    border-color: var(--offentlig-blue-hover);
+    background: var(--offentlig-blue-hover);
+    color: #fff;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-    :is(.crisis-overview, .match-page, .match-page-actions, .need-page, .offentlig-dashboard)
+    :is(.crisis-overview, .match-page, .match-page-actions, .need-page)
         :is(a, button, input, textarea, select, .crisis-card) {
         transition: background-color 160ms ease, border-color 160ms ease,
             color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
     }
 
-    :is(.crisis-overview, .match-page, .offentlig-dashboard) :is(.registration-intro, .match-intro, .oversikt-topp),
+    :is(.crisis-overview, .match-page, .need-page)
+        :is(.registration-intro, .match-intro),
     .crisis-details:not([hidden]),
+    .need-card [data-need-step].is-entering,
     .public-resource-registration .wizard-step:not([hidden]),
     .public-resource-registration .wizard-success:not([hidden]) {
         animation: offentlig-fade-in 180ms ease-out both;
-    }
-
-    .match-result button[aria-pressed="true"],
-    .crisis-card.is-marked {
-        box-shadow: 0 2px 8px rgb(36 56 70 / 10%);
     }
 
     @keyframes offentlig-fade-in {

@@ -1,7 +1,8 @@
 @model IReadOnlyList<Totalforsvaret.Models.Crisis>
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Hendelser";
+    ViewData["FullWidth"] = true;
     var groups = new[]
     {
         new { Title = "Aktive hendelser", Key = "active", Items = Model.Where(crisis => crisis.Status is "Aktiv" or "Under kontroll").ToList() },
@@ -9,89 +10,83 @@
     };
 }
 
-<!DOCTYPE html>
-<html lang="nb">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hendelser – Paratus</title>
-    <link rel="stylesheet" href="~/css/crisis-overview.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
-</head>
-<body>
-    <main class="crisis-overview">
-        <section class="registration-intro" aria-labelledby="crisis-title">
-            <h1 id="crisis-title">Hendelser</h1>
-            <p>En enkel måte å bidra for alles sikkerhet</p>
-        </section>
+<link rel="stylesheet" href="~/css/crisis-overview.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
 
-        <section class="crisis-create">
-            <div><h2>Opprett ny hendelse</h2><p>Her kan du lage en ny</p></div>
-            <div class="crisis-create-action"><strong>Ny hendelse</strong>
-            <a class="crisis-button" asp-area="Offentlig" asp-controller="Crisis" asp-action="Create">Hendelsesregistrering <span aria-hidden="true">→</span></a></div>
-        </section>
+<div class="crisis-overview">
+    <section class="registration-intro" aria-labelledby="crisis-title">
+        <h1 id="crisis-title">Hendelser</h1>
+        <p>En enkel måte å bidra for alles sikkerhet</p>
+    </section>
 
-        @foreach (var group in groups)
-        {
-            <section class="crisis-group" aria-labelledby="crisis-@group.Key" data-crisis-group>
-                <h2 id="crisis-@group.Key">@group.Title</h2>
-                <p class="crisis-group-intro">Trykk på en eller flere hendelser for å åpne dem</p>
-                @if (group.Items.Count == 0)
+    <section class="crisis-create">
+        <div><h2>Opprett ny hendelse</h2><p>Her kan du lage en ny</p></div>
+        <div class="crisis-create-action"><strong>Ny hendelse</strong>
+        <a class="crisis-button" asp-area="Offentlig" asp-controller="Crisis" asp-action="Create">Hendelsesregistrering <span aria-hidden="true">→</span></a></div>
+    </section>
+
+    @foreach (var group in groups)
+    {
+        <section class="crisis-group" aria-labelledby="crisis-@group.Key" data-crisis-group>
+            <h2 id="crisis-@group.Key">@group.Title</h2>
+            <p class="crisis-group-intro">Trykk på en eller flere hendelser for å åpne dem</p>
+            @if (group.Items.Count == 0)
+            {
+                <p class="crisis-empty">Ingen @group.Title.ToLowerInvariant().</p>
+            }
+            else
+            {
+                @if (group.Key == "active")
                 {
-                    <p class="crisis-empty">Ingen @group.Title.ToLowerInvariant().</p>
+                    <label class="crisis-multiple" data-crisis-controls hidden>
+                        <input type="checkbox" data-crisis-multiple /> Marker flere hendelser
+                    </label>
                 }
-                else
+
+                @foreach (var crisis in group.Items)
                 {
-                    @if (group.Key == "active")
-                    {
-                        <label class="crisis-multiple" data-crisis-controls hidden>
-                            <input type="checkbox" data-crisis-multiple /> Marker flere hendelser
-                        </label>
-                    }
-
-                    @foreach (var crisis in group.Items)
-                    {
-                        <article class="crisis-card" data-crisis-card data-active="@(group.Key == "active" ? "true" : "false")">
-                            <div class="crisis-card-header">
-                                <button type="button" class="crisis-card-toggle" data-crisis-select aria-expanded="false" aria-controls="crisis-details-@crisis.Id">
-                                <span class="crisis-icon" aria-hidden="true">
-                                    <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M20 4 37 34H3Z" stroke-linejoin="round" />
-                                        <path d="M20 14v10" />
-                                        <circle cx="20" cy="29" r="1" fill="currentColor" />
-                                    </svg>
-                                </span>
-                                <span class="crisis-card-name">
-                                    <strong class="crisis-card-title">@crisis.Name</strong>
-                                    <span>@crisis.Area</span>
-                                    <strong class="@(crisis.Severity == "Kritisk" ? "crisis-critical" : "")">@crisis.Severity</strong>
-                                </span>
-                                </button>
-                                <div class="crisis-card-actions">
-                                    <span class="crisis-status" data-active="@(group.Key == "active" ? "true" : "false")">@crisis.Status</span>
-                                    <a class="crisis-button" asp-area="Offentlig" asp-controller="Crisis" asp-action="Edit" asp-route-id="@crisis.Id" aria-label="Rediger @crisis.Name">Rediger <span aria-hidden="true">↓</span></a>
-                                </div>
+                    <article class="crisis-card" data-crisis-card data-active="@(group.Key == "active" ? "true" : "false")">
+                        <div class="crisis-card-header">
+                            <button type="button" class="crisis-card-toggle" data-crisis-select aria-expanded="false" aria-controls="crisis-details-@crisis.Id">
+                            <span class="crisis-icon" aria-hidden="true">
+                                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 4 37 34H3Z" stroke-linejoin="round" />
+                                    <path d="M20 14v10" />
+                                    <circle cx="20" cy="29" r="1" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span class="crisis-card-name">
+                                <strong class="crisis-card-title">@crisis.Name</strong>
+                                <span>@crisis.Area</span>
+                                <strong class="@(crisis.Severity == "Kritisk" ? "crisis-critical" : "")">@crisis.Severity</strong>
+                            </span>
+                            </button>
+                            <div class="crisis-card-actions">
+                                <span class="crisis-status" data-active="@(group.Key == "active" ? "true" : "false")">@crisis.Status</span>
+                                <a class="crisis-button" asp-area="Offentlig" asp-controller="Crisis" asp-action="Edit" asp-route-id="@crisis.Id" aria-label="Rediger @crisis.Name">Rediger <span aria-hidden="true">↓</span></a>
                             </div>
-                            <div class="crisis-details" id="crisis-details-@crisis.Id" hidden>
-                                <dl>
-                                    <dt>Type</dt><dd>@crisis.Type</dd>
-                                    <dt>Starttidspunkt</dt><dd>@crisis.StartTime.ToString("dd.MM.yyyy HH:mm")</dd>
-                                    <dt>Beskrivelse</dt><dd>@crisis.Description</dd>
-                                </dl>
-                            </div>
-                        </article>
-                    }
-
-                    @if (group.Key == "active")
-                    {
-                        <div class="crisis-batch" data-crisis-controls hidden>
-                            <button class="crisis-button crisis-button-outline" type="button" data-crisis-open disabled>Åpne markerte hendelser</button>
                         </div>
-                    }
+                        <div class="crisis-details" id="crisis-details-@crisis.Id" hidden>
+                            <dl>
+                                <dt>Type</dt><dd>@crisis.Type</dd>
+                                <dt>Starttidspunkt</dt><dd>@crisis.StartTime.ToString("dd.MM.yyyy HH:mm")</dd>
+                                <dt>Beskrivelse</dt><dd>@crisis.Description</dd>
+                            </dl>
+                        </div>
+                    </article>
                 }
-            </section>
-        }
-    </main>
+
+                @if (group.Key == "active")
+                {
+                    <div class="crisis-batch" data-crisis-controls hidden>
+                        <button class="crisis-button crisis-button-outline" type="button" data-crisis-open disabled>Åpne markerte hendelser</button>
+                    </div>
+                }
+            }
+        </section>
+    }
+</div>
+
+@section Scripts {
     <script src="~/js/crisis-overview.js" asp-append-version="true"></script>
-</body>
-</html>
+}

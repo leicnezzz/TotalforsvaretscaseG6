@@ -84,8 +84,7 @@
             heading.focus({ preventScroll: true });
             const bounds = heading.getBoundingClientRect();
             if (bounds.top < 0 || bounds.bottom > window.innerHeight) {
-                const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                heading.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'instant' : 'smooth' });
+                heading.scrollIntoView({ block: 'nearest', behavior: 'instant' });
             }
         }
     }

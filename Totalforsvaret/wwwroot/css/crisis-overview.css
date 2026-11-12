@@ -206,16 +206,22 @@
     }
 }
 
-* { box-sizing: border-box; }
-
-body {
-    margin: 0;
+body:has(.crisis-overview) {
     background: #eef0f2;
+}
+
+body:has(.crisis-overview) > .footer {
+    display: none;
+}
+
+.crisis-overview {
     color: #243846;
     font: 16px/1.4 Roboto, Arial, sans-serif;
 }
 
-button, input { font: inherit; }
+.crisis-overview :is(button, input) {
+    font: inherit;
+}
 
 .crisis-overview {
     width: min(100% - 32px, 760px);
@@ -258,7 +264,7 @@ button, input { font: inherit; }
 .crisis-group-intro { margin-bottom: 12px; }
 
 .crisis-multiple { min-height: 32px; margin-bottom: 4px; }
-.crisis-card { padding: 8px 12px; }
+.crisis-card { padding: 16px 12px; }
 .crisis-card.is-marked { border-color: var(--crisis-green); }
 .crisis-card[data-active="false"] { opacity: .64; }
 .crisis-card[data-active="false"]:focus-within,

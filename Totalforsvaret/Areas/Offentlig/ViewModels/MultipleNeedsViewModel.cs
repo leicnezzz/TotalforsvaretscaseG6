@@ -1,9 +1,15 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace Totalforsvaret.Areas.Offentlig.ViewModels;
 
 public class MultipleNeedsViewModel
 {
+    [Required(ErrorMessage = "Velg en krise.")]
+    public int? CrisisId { get; set; }
+
+    public IEnumerable<SelectListItem> Crises { get; set; } = Array.Empty<SelectListItem>();
+
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
     [Range(-90d, 90d, ErrorMessage = "Ugyldig breddegrad.")]
     public double? Latitude { get; set; }

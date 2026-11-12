@@ -27,6 +27,18 @@
         <div asp-validation-summary="All"
              class="text-danger"></div>
 
+        <div class="mb-3">
+            <label asp-for="CrisisId" class="form-label">Tilknyttet krise</label>
+            <select asp-for="CrisisId" asp-items="Model.Crises" class="form-select" required>
+                <option value="">Velg krise</option>
+            </select>
+            @if (!Model.Crises.Any())
+            {
+                <p class="form-text">Opprett en krise før du registrerer behov.</p>
+            }
+            <span asp-validation-for="CrisisId" class="text-danger"></span>
+        </div>
+
         <div id="behov-liste">
             @for (var i = 0; i < Model.Needs.Count; i++)
             {

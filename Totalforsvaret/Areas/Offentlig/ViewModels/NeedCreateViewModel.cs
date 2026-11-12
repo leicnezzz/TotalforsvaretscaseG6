@@ -22,6 +22,7 @@ public class NeedCreateViewModel
     [Required(ErrorMessage = "Velg status.")]
     public string Status { get; set; } = "";
 
+    [Required(ErrorMessage = "Velg en krise.")]
     public int? CrisisId { get; set; }
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]

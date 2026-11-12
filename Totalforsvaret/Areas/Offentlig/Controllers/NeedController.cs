@@ -50,11 +50,8 @@ public class NeedController : Controller
         // if (bruker is not Offentligaktør offentligAktor)
         //    return Forbid();
 
-        // Kontrollerer at den valgte krisen finnes.
-        var crisisExists = await _context.Crises
-            .AnyAsync(c => c.Id == viewModel.CrisisId);
-
-        if (!crisisExists)
+        if (viewModel.CrisisId is int crisisId &&
+            !await _context.Crises.AnyAsync(c => c.Id == crisisId))
         {
             ModelState.AddModelError(
                 nameof(viewModel.CrisisId),
@@ -88,9 +85,12 @@ public class NeedController : Controller
             "Index", "OffentligAktor", new { area = "" });
     }
     [HttpGet]
-    public IActionResult CreateMultiple()
+    public async Task<IActionResult> CreateMultiple()
     {
-        return View(new MultipleNeedsViewModel());
+        return View(new MultipleNeedsViewModel
+        {
+            Crises = await GetCrisesAsync()
+        });
     }
 
     [HttpPost]
@@ -98,8 +98,17 @@ public class NeedController : Controller
     public async Task<IActionResult> CreateMultiple(
         MultipleNeedsViewModel viewModel)
     {
+        if (viewModel.CrisisId is int crisisId &&
+            !await _context.Crises.AnyAsync(c => c.Id == crisisId))
+        {
+            ModelState.AddModelError(nameof(viewModel.CrisisId), "Velg en gyldig krise.");
+        }
+
         if (!ModelState.IsValid)
+        {
+            viewModel.Crises = await GetCrisesAsync();
             return View(viewModel);
+        }
 
         var needs = viewModel.Needs.Select(item => new Need
         {
@@ -108,6 +117,7 @@ public class NeedController : Controller
             Description = item.Description.Trim(),
             Priority = item.Priority,
             Status = item.Status,
+            CrisisId = viewModel.CrisisId,
             Latitude = viewModel.Latitude!.Value,
             Longitude = viewModel.Longitude!.Value
         }).ToList();

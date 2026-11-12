@@ -416,5 +416,14 @@
             </div>
         </section>
     </main>
+<script src="~/lib/leaflet/leaflet.js"></script>
+<script>
+    const tilfluktsromKart = L.map('tilfluktsrom-kart')
+        .setView([65, 15], 5);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(tilfluktsromKart);
+</script>
 </body>
 </html>

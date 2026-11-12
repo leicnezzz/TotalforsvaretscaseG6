@@ -44,7 +44,7 @@
             <div class="col-md-6 mb-3">
                 <label asp-for="CrisisId" class="form-label">Tilknyttet krise</label>
                 <select asp-for="CrisisId" asp-items="Model.Crises"
-                        class="form-select">
+                        class="form-select" required>
                     <option value="">Velg krise</option>
                 </select>
                 <span asp-validation-for="CrisisId" class="text-danger"></span>

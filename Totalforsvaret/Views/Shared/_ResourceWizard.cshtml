@@ -153,20 +153,20 @@
         <legend class="wizard-sr-only">Plassering</legend>
         <div class="wizard-description">
             <h3>Hvor finnes ressursen?</h3>
-            <p>Begynn å skrive gateadresse og poststed. Velg riktig adresse fra forslagene under feltet, og kontroller plasseringen på kartet.</p>
+            <p>Velg en adresse fra forslagene eller klikk på kartet der ressursen befinner seg.</p>
         </div>
         <div class="wizard-fields">
             <label for="vehicle-address">Adresse *</label>
             <input id="vehicle-address" name="Address" maxlength="250" autocomplete="street-address"
                    placeholder="Eks. Rådhusgata 18, Kristiansand" aria-controls="vehicle-address-results" aria-expanded="false" aria-describedby="vehicle-address-help vehicle-address-status" required />
-            <p id="vehicle-address-help" class="wizard-hint">Søket sendes til Kartverket, med Photon/OpenStreetMap som reserve. Velg et forslag for å plassere adressen på kartet.</p>
+            <p id="vehicle-address-help" class="wizard-hint">Adressesøk sendes til Kartverket eller Photon/OpenStreetMap. Ved kartklikk brukes Kartverket til å finne nærmeste adresse.</p>
             <p id="vehicle-address-status" data-address-status class="wizard-hint" role="status"></p>
             <ul id="vehicle-address-results" data-address-results class="wizard-address-results" aria-label="Adresser som passer søket" hidden></ul>
-            @* Ressursmodellen bruker fortsatt Latitude og Longitude. Brukeren fyller kun inn adressen. *@
+            @* Adresseforslag og kartklikk fyller inn koordinatene. *@
             <input id="vehicle-latitude" name="Latitude" type="hidden" />
             <input id="vehicle-longitude" name="Longitude" type="hidden" />
         </div>
-        <div id="vehicle-location-map" data-address-map class="wizard-map" role="region" aria-label="Kart over valgt adresse"></div>
+        <div id="vehicle-location-map" data-address-map class="wizard-map" role="region" aria-label="Kart for valg av ressursens plassering"></div>
         <button type="button" class="public-button public-button-primary wizard-location-next" data-continue="location">Kontroller opplysningene ↓</button>
     </fieldset>
 

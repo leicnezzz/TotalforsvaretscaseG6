@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="~/css/private-home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Private-home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/incident-alert.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
@@ -30,10 +30,12 @@
 }
 
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
-    <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
+    <div class="resource-incident-row">
+        <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
+        <partial name="/Views/Shared/_IncidentAlert.cshtml" />
+    </div>
     <main class="registration-main">
         <div class="registration-content">
-            <partial name="/Views/Shared/_IncidentAlert.cshtml" />
             <section class="registration-intro" aria-labelledby="registration-title">
                 <h1 id="registration-title">Registrere en ressurs til disposisjon</h1>
                 <p>Registrer kjøretøy, utstyr eller andre ressurser som kan bidra i en beredskapssituasjon.</p>
@@ -50,6 +52,7 @@
         </div>
     </footer>
     <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/js/map-zoom.js" asp-append-version="true"></script>
     <script src="~/js/resource-fields.js" asp-append-version="true"></script>
     <script src="~/js/resource-address.js" asp-append-version="true"></script>
     <script src="~/js/resource-wizard.js" asp-append-version="true"></script>

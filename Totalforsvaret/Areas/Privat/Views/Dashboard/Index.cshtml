@@ -41,10 +41,12 @@
 
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
 
-    <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
+    <div class="dashboard-intro">
+        <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
+        <partial name="/Views/Shared/_IncidentAlert.cshtml" />
+    </div>
 
     <main class="home-content">
-        <partial name="/Views/Shared/_IncidentAlert.cshtml" />
 
         <section class="greeting" aria-labelledby="greeting-title">
             <h1 id="greeting-title">Hei, @Model.Navn</h1>
@@ -173,6 +175,7 @@ else
     </footer>
 
     <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/js/map-zoom.js" asp-append-version="true"></script>
     <script src="~/js/private-home.js"
             asp-append-version="true"></script>
 </body>

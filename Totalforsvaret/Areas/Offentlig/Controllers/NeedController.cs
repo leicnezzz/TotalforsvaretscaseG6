@@ -84,6 +84,7 @@ public class NeedController : Controller
         return RedirectToAction(
             "Index", "OffentligAktor", new { area = "" });
     }
+
     [HttpGet]
     public async Task<IActionResult> CreateMultiple()
     {
@@ -140,6 +141,7 @@ public class NeedController : Controller
         return RedirectToAction(
             "Index", "OffentligAktor", new { area = "" });
     }
+
     // Henter krisene som kan velges i skjemaet.
     private async Task<IEnumerable<SelectListItem>> GetCrisesAsync()
     {
@@ -152,111 +154,113 @@ public class NeedController : Controller
             })
             .ToListAsync();
     }
+
     [HttpGet]
-public async Task<IActionResult> Edit(int id)
-{
-    var need = await _context.Needs
-        .AsNoTracking()
-        .SingleOrDefaultAsync(n => n.Id == id);
-
-    if (need == null)
-        return NotFound();
-
-    ViewData["EditId"] = id;
-
-    var viewModel = new NeedCreateViewModel
+    public async Task<IActionResult> Edit(int id)
     {
-        Name = need.Name,
-        Type = need.Type,
-        Description = need.Description,
-        Priority = need.Priority,
-        Status = need.Status,
-        CrisisId = need.CrisisId,
-        Latitude = need.Latitude,
-        Longitude = need.Longitude,
-        Crises = await GetCrisesAsync()
-    };
+        var need = await _context.Needs
+            .AsNoTracking()
+            .SingleOrDefaultAsync(n => n.Id == id);
 
-    return View("Create", viewModel);
-}
+        if (need == null)
+            return NotFound();
 
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Edit(
-    int id,
-    NeedCreateViewModel viewModel)
-{
-    var need = await _context.Needs
-        .SingleOrDefaultAsync(n => n.Id == id);
-
-    if (need == null)
-        return NotFound();
-
-    if (viewModel.CrisisId is int crisisId &&
-        !await _context.Crises.AnyAsync(c => c.Id == crisisId))
-    {
-        ModelState.AddModelError(
-            nameof(viewModel.CrisisId),
-            "Velg en gyldig krise.");
-    }
-
-    if (viewModel.Latitude.HasValue &&
-        (double.IsNaN(viewModel.Latitude.Value) ||
-         viewModel.Latitude < -90 ||
-         viewModel.Latitude > 90))
-    {
-        ModelState.AddModelError(
-            nameof(viewModel.Latitude),
-            "Ugyldig breddegrad.");
-    }
-    
-    if (viewModel.Longitude.HasValue &&
-        (double.IsNaN(viewModel.Longitude.Value) ||
-         viewModel.Longitude < -180 ||
-         viewModel.Longitude > 180))
-    {
-        ModelState.AddModelError(
-            nameof(viewModel.Longitude),
-            "Ugyldig lengdegrad.");
-    }
-
-    if (!ModelState.IsValid)
-    {
         ViewData["EditId"] = id;
-        viewModel.Crises = await GetCrisesAsync();
+
+        var viewModel = new NeedCreateViewModel
+        {
+            Name = need.Name,
+            Type = need.Type,
+            Description = need.Description,
+            Priority = need.Priority,
+            Status = need.Status,
+            CrisisId = need.CrisisId,
+            Latitude = need.Latitude,
+            Longitude = need.Longitude,
+            Crises = await GetCrisesAsync()
+        };
+
         return View("Create", viewModel);
     }
 
-    need.Name = viewModel.Name.Trim();
-    need.Type = viewModel.Type.Trim();
-    need.Description = viewModel.Description.Trim();
-    need.Priority = viewModel.Priority;
-    need.Status = viewModel.Status;
-    need.CrisisId = viewModel.CrisisId;
-    need.Latitude = viewModel.Latitude;
-    need.Longitude = viewModel.Longitude;
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(
+        int id,
+        NeedCreateViewModel viewModel)
+    {
+        var need = await _context.Needs
+            .SingleOrDefaultAsync(n => n.Id == id);
 
-    await _context.SaveChangesAsync();
+        if (need == null)
+            return NotFound();
 
-    return RedirectToAction(
-        "Index", "OffentligAktor", new { area = "" });
-}
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Delete(int id)
-{
-    var need = await _context.Needs
-        .SingleOrDefaultAsync(n => n.Id == id);
+        if (viewModel.CrisisId is int crisisId &&
+            !await _context.Crises.AnyAsync(c => c.Id == crisisId))
+        {
+            ModelState.AddModelError(
+                nameof(viewModel.CrisisId),
+                "Velg en gyldig krise.");
+        }
 
-    if (need == null)
-        return NotFound();
+        if (viewModel.Latitude.HasValue &&
+            (double.IsNaN(viewModel.Latitude.Value) ||
+             viewModel.Latitude < -90 ||
+             viewModel.Latitude > 90))
+        {
+            ModelState.AddModelError(
+                nameof(viewModel.Latitude),
+                "Ugyldig breddegrad.");
+        }
 
-    _context.Needs.Remove(need);
-    await _context.SaveChangesAsync();
+        if (viewModel.Longitude.HasValue &&
+            (double.IsNaN(viewModel.Longitude.Value) ||
+             viewModel.Longitude < -180 ||
+             viewModel.Longitude > 180))
+        {
+            ModelState.AddModelError(
+                nameof(viewModel.Longitude),
+                "Ugyldig lengdegrad.");
+        }
 
-    return RedirectToAction(
-        "Index",
-        "OffentligAktor",
-        new { area = "" });
-}
+        if (!ModelState.IsValid)
+        {
+            ViewData["EditId"] = id;
+            viewModel.Crises = await GetCrisesAsync();
+            return View("Create", viewModel);
+        }
+
+        need.Name = viewModel.Name.Trim();
+        need.Type = viewModel.Type.Trim();
+        need.Description = viewModel.Description.Trim();
+        need.Priority = viewModel.Priority;
+        need.Status = viewModel.Status;
+        need.CrisisId = viewModel.CrisisId;
+        need.Latitude = viewModel.Latitude;
+        need.Longitude = viewModel.Longitude;
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(
+            "Index", "OffentligAktor", new { area = "" });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var need = await _context.Needs
+            .SingleOrDefaultAsync(n => n.Id == id);
+
+        if (need == null)
+            return NotFound();
+
+        _context.Needs.Remove(need);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(
+            "Index",
+            "OffentligAktor",
+            new { area = "" });
+    }
 }

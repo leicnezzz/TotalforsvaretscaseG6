@@ -265,3 +265,10 @@
         display: none;
     }
 }
+
+/* På smalere skjermer er videoen nesten like høy som hero-området. Vi zoomer den litt inn, så YouTubes tittellinje og kanter havner utenfor bildet. */
+@media (max-width: 1000px) {
+    .public-hero-video iframe {
+        transform: translate(-50%, -50%) scale(1.4);
+    }
+}

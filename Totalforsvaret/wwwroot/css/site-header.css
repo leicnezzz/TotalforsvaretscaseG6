@@ -464,3 +464,39 @@ body.offentlig-page .offentlig-site-header .nav-links a:focus-visible,
     color: #fff;
     border-bottom-color: #fff;
 }
+
+/* Paratus-logoen. Brukes i headeren på forsiden og på Min side. */
+.paratus-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.paratus-brand-mark {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    background: var(--public-green, #2e6840);
+    color: #fff;
+    font-family: Georgia, serif;
+    font-size: 28px;
+}
+
+.paratus-brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.paratus-brand-text strong {
+    color: var(--public-green, #2e6840);
+    font-size: 20px;
+    letter-spacing: 0.14em;
+}
+
+.paratus-brand-text small {
+    color: var(--public-muted, #728087);
+    font-size: 12px;
+}

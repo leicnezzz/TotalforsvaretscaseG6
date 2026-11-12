@@ -16,9 +16,8 @@
     text-transform: uppercase;
 }
 
-/* Overskrift og ingress gjenbruker .public-registration-intro, men venstrejustert. */
-.paratus-intro,
-.paratus-intro p {
+/* Overskriften gjenbruker .public-registration-intro, men venstrejustert. */
+.paratus-intro {
     text-align: left;
     margin-inline: 0;
 }
@@ -244,44 +243,6 @@
 /* Logoen ligger til venstre i headeren. .nav-brand sentrerer den som standard, så det overstyres bare på forsiden. */
 .public-home .nav-brand {
     justify-self: start;
-}
-
-/* Logo bygd i HTML og CSS: grønn firkant med P, navn og slagord. */
-.paratus-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.paratus-brand-mark {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 6px;
-    background: var(--public-green);
-    color: #fff;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 28px;
-    font-weight: 700;
-}
-
-.paratus-brand-text {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.paratus-brand-text strong {
-    font-size: 20px;
-    letter-spacing: .14em;
-    line-height: 1;
-}
-
-.paratus-brand-text small {
-    color: var(--public-muted);
-    font-size: 12px;
-    letter-spacing: .04em;
 }
 
 /* Grønn stripe under headeren: tekst til venstre og slagord til høyre. */

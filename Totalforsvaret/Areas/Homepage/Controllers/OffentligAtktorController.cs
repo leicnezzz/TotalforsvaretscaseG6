@@ -227,8 +227,8 @@ public class OffentligAktorController : Controller
 
         if (!TryHentBrukerId(out var brukerId)) return Challenge();
 
-        var kategoriFinnes = _resourceHandler.GetCategories()
-            .Any(c => c.CategoryId == categoryId);
+        var kategoriFinnes = await _context.Categories
+            .AnyAsync(c => c.CategoryId == categoryId);
 
         if (!kategoriFinnes)
         {

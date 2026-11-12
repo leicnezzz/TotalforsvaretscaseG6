@@ -78,46 +78,8 @@
 .nav-button-outline { background: #fff; color: var(--public-green); }
 .public-section-bar { height: 38px; background: var(--public-green); }
 .public-content, .public-footer-content { width: min(61.5%, 1168px); margin-inline: auto; }
-.public-purpose-area {
-    position: relative;
-    z-index: 1;
-    width: calc(100% - 32px);
-    margin: calc(-1 * var(--public-purpose-overlap, 0px)) auto 0;
-}
-
-.public-purpose {
-    width: min(100%, 680px);
-    margin-inline: auto;
-    padding: clamp(22px, 4vw, 42px);
-    border-radius: 8px;
-    background: #fff;
-    color: var(--public-green);
-    text-align: center;
-    box-shadow: 0 3px 12px rgb(0 0 0 / 16%);
-}
-
-.public-purpose h1 {
-    font-size: clamp(25px, 3vw, 40px);
-    line-height: 1.12;
-}
-
-.public-purpose p {
-    margin-top: 16px;
-    color: #42545b;
-    font-size: clamp(15px, 1.45vw, 19px);
-    line-height: 1.5;
-}
-
 .public-content {
     padding-block: 10px 110px;
-}
-
-.public-purpose-area .public-register-card {
-    width: min(100%, 300px);
-    min-height: 50px;
-    margin: 16px auto 0;
-    font-size: 15px;
-    box-shadow: 0 3px 7px rgb(0 0 0 / 7%);
 }
 
 .public-home-incident .incident-alert {

@@ -1,0 +1,37 @@
+@model Totalforsvaret.Models.PublicHomeViewModel
+
+@{
+    ViewData["Title"] = "Registrer ressurs";
+    ViewData["FullWidth"] = true;
+    ViewData["RegistrationFooter"] = true;
+    ViewData["PublicResourceRegistration"] = true;
+}
+
+<link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/resource-registration.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/resource-wizard.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/need-registration.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
+
+<div class="need-page public-resource-registration">
+    <div class="private-page-actions">
+        <a class="private-page-action" asp-area="" asp-controller="OffentligAktor" asp-action="Index">← Tilbake</a>
+    </div>
+
+    <div class="registration-content need-registration">
+        <section class="registration-intro" aria-labelledby="registration-title">
+            <h1 id="registration-title">Registrer en ressurs</h1>
+        </section>
+        <div id="registrer-ressurs">
+            <partial name="/Areas/Homepage/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" />
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/help-dismiss.js" asp-append-version="true" defer></script>
+    <script src="~/js/resource-fields.js" asp-append-version="true"></script>
+    <script src="~/js/resource-address.js" asp-append-version="true"></script>
+    <script src="~/js/resource-wizard.js" asp-append-version="true"></script>
+    <partial name="/Areas/Homepage/Views/Shared/_ResourceApi.cshtml" />
+}

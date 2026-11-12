@@ -11,22 +11,24 @@ body {
 }
 
 .beredskap-container {
-    width: min(100% - 40px, 1200px);
+    width: min(760px, calc(100% - 32px));
     margin: 0 auto;
     padding: 28px 0 64px;
 }
 
 .page-header {
-    width: min(100%, 650px);
+    width: 100%;
     margin: 0 auto 28px;
 }
 
-.page-header h1 {
-    margin: 0 0 8px;
-    color: #111;
-    font-size: clamp(1.7rem, 3vw, 2rem);
-    line-height: 1.2;
-}
+    .page-header h1 {
+        margin: 0 0 8px;
+        color: #2e6840;
+        font-family: "Roboto", Arial, sans-serif;
+        font-size: clamp(27px, 3vw, 36px);
+        font-weight: 700;
+        line-height: 1.2;
+    }
 
 .page-header p {
     margin: 0;
@@ -37,15 +39,12 @@ body {
 
 .contents-card {
     display: flex;
-    width: min(100%, 525px);
-    min-height: 205px;
+    width: 100%;
     flex-direction: column;
     margin: 0 auto 38px;
-    padding: 22px 32px;
+    padding: clamp(20px, 5vw, 40px);
     border-radius: 8px;
-    background: #2e6840;
-    color: #fff;
-    box-shadow: 0 3px 8px rgb(0 0 0 / 20%);
+    background: #fff;
 }
 
 .contents-card h2 {
@@ -61,12 +60,12 @@ body {
 .contents-card a {
     width: fit-content;
     margin: 0 0 12px;
-    color: #fff;
-    font-size: 0.9rem;
+    color: #2e6840;
+    font-size: 0.95rem;
     text-decoration: none;
 }
 
-.contents-card a:hover {
+.contents-card a:is(:hover, :focus-visible) {
     text-decoration: underline;
 }
 
@@ -95,7 +94,7 @@ body {
 .checklist-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 48px 64px;
+    gap: 16px;
     width: min(100%, 900px);
     margin: 0 auto;
 }
@@ -105,7 +104,7 @@ body {
     border: 1px solid #e0e5e1;
     border-radius: 10px;
     background: #fff;
-    box-shadow: 0 3px 9px rgb(0 0 0 / 16%);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
 }
 
 .preparedness-card h3 {
@@ -117,7 +116,7 @@ body {
 
 .preparedness-card ul {
     display: grid;
-    gap: 14px;
+    gap: 4px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -130,51 +129,132 @@ body {
 
 .checklist-item {
     display: grid;
-    grid-template-columns: 14px minmax(0, 1fr);
-    align-items: start;
+    grid-template-columns: 18px minmax(0, 1fr);
+    align-items: center;
     gap: 12px;
     color: #222;
     cursor: pointer;
-    font-size: 0.78rem;
+    min-height: 44px;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.9rem;
     line-height: 1.45;
 }
 
+.checklist-item:hover,
+.checklist-item:focus-within {
+    background: #eef2ee;
+}
+
+.checklist-item:has(input:checked) {
+    background: #e8f2eb;
+}
+
 .checklist-item input[type="checkbox"] {
-    position: relative;
-    width: 13px;
-    height: 13px;
-    margin: 2px 0 0;
-    appearance: none;
-    border: 1px solid #2e6840;
-    border-radius: 2px;
-    background: #fff;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: #2e6840;
     cursor: pointer;
 }
 
-.checklist-item input[type="checkbox"]:checked {
-    background: #5eaf79;
+.checklist-progress strong {
+    color: #2e6840;
 }
 
-.checklist-item input[type="checkbox"]:checked::after {
-    position: absolute;
-    top: 0;
-    left: 3px;
-    width: 4px;
-    height: 7px;
-    transform: rotate(45deg);
-    border: solid #fff;
-    border-width: 0 1.5px 1.5px 0;
-    content: "";
+.shelter-section {
+    margin-bottom: 32px;
+    padding: clamp(16px, 4vw, 32px);
+    border-radius: 8px;
+    background: #fff;
 }
 
-.checklist-item input[type="checkbox"]:focus-visible {
-    outline: 3px solid rgb(0 200 179 / 35%);
-    outline-offset: 2px;
+.shelter-section .section-heading,
+.checklist-section .section-heading {
+    width: auto;
+    margin: 0 0 16px;
 }
 
-.checklist-item input[type="checkbox"]:checked + span {
-    color: #64736a;
-    text-decoration: line-through;
+.shelter-section,
+.checklist-section,
+.courses-section {
+    scroll-margin-top: 96px;
+}
+
+.shelter-search {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 16px;
+}
+
+.shelter-instructions {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding-left: 20px;
+    line-height: 1.5;
+}
+
+.shelter-search label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.shelter-search-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.shelter-search-controls input,
+.shelter-search-controls button {
+    min-height: 44px;
+    border: 1px solid #2e6840;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font: inherit;
+}
+
+.shelter-search-controls input {
+    flex: 1;
+    min-width: 0;
+}
+
+.shelter-search-controls button {
+    background: #2e6840;
+    color: #fff;
+    font-weight: 700;
+}
+
+.shelter-search-controls button:disabled {
+    border-color: #526a5a;
+    background: #526a5a;
+}
+
+#tilfluktsrom-status {
+    margin: 8px 0 0;
+    color: #59635b;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+#tilfluktsrom-adressetreff:empty,
+#tilfluktsrom-resultater:empty {
+    display: none;
+}
+
+#tilfluktsrom-kart {
+    height: clamp(260px, 85vw, 500px);
+    border: 1px solid #dce5e3;
+    border-radius: 3px;
+}
+
+@media (max-width: 600px) {
+    .shelter-search {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
 }
 
 .courses-section {
@@ -209,7 +289,7 @@ body {
     border-radius: 9px;
     background: #fff;
     color: #111;
-    box-shadow: 0 3px 9px rgb(0 0 0 / 16%);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
     text-decoration: none;
     transition: transform 150ms ease, box-shadow 150ms ease;
 }
@@ -303,5 +383,431 @@ body {
 @media (prefers-reduced-motion: reduce) {
     .course-card {
         transition: none;
+    }
+}
+.courses-section {
+    margin-top: 0;
+    padding: clamp(32px, 5vw, 64px) 16px;
+    border-radius: 0;
+    background: rgb(46 104 64 / 85%);
+}
+
+    .courses-section .section-heading,
+    .courses-grid {
+        width: min(100%, 1120px);
+        margin-inline: auto;
+    }
+
+    .courses-section .section-heading {
+        margin-bottom: 24px;
+    }
+
+        .courses-section .section-heading h2,
+        .courses-section .section-heading p {
+            color: #fff;
+        }
+
+        .courses-section .section-heading h2 {
+            font-size: clamp(26px, 3vw, 36px);
+        }
+
+.courses-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.course-card {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(16px, 2.5vw, 28px);
+    overflow-wrap: anywhere;
+}
+
+.course-link-text {
+    margin-top: auto;
+    padding-top: 16px;
+}
+
+@media (max-width: 760px) {
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.course-card h3 {
+    font-size: 1.4rem;
+    hyphens: auto;
+    overflow-wrap: anywhere;
+}
+.course-link-text {
+    font-size: 1.125rem;
+}
+.shelter-map-icon {
+    display: grid;
+    place-items: center;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #2e6840;
+    color: #fff;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 30%);
+    font-size: 16px;
+}
+
+    .shelter-map-icon span {
+        display: grid;
+        place-items: center;
+        width: 100%;
+        height: 100%;
+        font-size: 22px;
+        line-height: 1;
+        color: #ffe08a;
+        -webkit-text-stroke: 0.6px currentColor;
+    }
+
+#tilfluktsrom-adressetreff,
+#tilfluktsrom-resultater {
+    padding: 0;
+    list-style: none;
+}
+
+    #tilfluktsrom-adressetreff:not(:empty),
+    #tilfluktsrom-resultater:not(:empty) {
+        display: grid;
+        gap: 8px;
+        margin-block: 16px;
+    }
+
+    #tilfluktsrom-adressetreff button,
+    .shelter-result-card {
+        display: grid;
+        gap: 4px;
+        width: 100%;
+        min-height: 44px;
+        padding: 12px 16px;
+        border: 1px solid #cadbce;
+        border-radius: 6px;
+        background: #f5f9f5;
+        color: #173e4d;
+        text-align: left;
+        font: inherit;
+        cursor: pointer;
+    }
+
+        #tilfluktsrom-adressetreff button:hover,
+        .shelter-result-card:hover {
+            background: #e8f2eb;
+        }
+
+.shelter-result-distance {
+    color: #2e6840;
+    font-weight: 700;
+}
+
+.shelter-result-card small {
+    color: #59635b;
+}
+.shelter-table-wrap {
+    margin-top: 20px;
+    overflow-x: auto;
+    border: 1px solid #d5e3d8;
+    border-radius: 10px;
+    background: #fff;
+}
+
+    .shelter-table-wrap:has(#tilfluktsrom-resultater:empty) {
+        display: none;
+    }
+
+.shelter-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #173e4d;
+    font-size: 0.9375rem;
+}
+
+    .shelter-table #tilfluktsrom-resultater:not(:empty) {
+        display: table-row-group;
+    }
+
+    .shelter-table th,
+    .shelter-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #e1e9e3;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .shelter-table th {
+        background: #e8f2eb;
+        color: #214e30;
+        font-weight: 700;
+    }
+
+    .shelter-table tbody tr:nth-child(even) {
+        background: #f7faf8;
+    }
+
+    .shelter-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .shelter-table tbody tr:focus-within,
+    .shelter-table tbody tr:hover {
+        background: #edf5ef;
+    }
+
+    .shelter-table td:nth-child(2) {
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .shelter-table td:last-child {
+        color: #52645a;
+        font-size: 0.875rem;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+.shelter-table-link {
+    min-height: 44px;
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    color: #245b37;
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+
+    .shelter-table-link:focus-visible {
+        outline: 2px solid #245b37;
+        outline-offset: 3px;
+    }
+.shelter-table caption {
+    padding: 16px 12px 20px;
+    color: #2e6840;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.shelter-table th:nth-child(2),
+.shelter-table td:nth-child(2) {
+    text-align: center;
+}
+.checklist-section,
+.courses-section {
+    margin-top: 0;
+    padding: clamp(28px, 5vw, 56px) 16px;
+    border-radius: 0;
+    background: rgb(46 104 64 / 14%);
+}
+
+    .courses-section::before {
+        content: none;
+    }
+
+    .checklist-section .checklist-heading,
+    .checklist-section .checklist-grid {
+        width: min(100%, 1120px);
+        margin-inline: auto;
+    }
+
+    .checklist-section .checklist-heading {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px 24px;
+        margin-bottom: 24px;
+        padding-bottom: 0;
+        border-bottom: 0;
+    }
+
+    .checklist-heading h2,
+    .courses-section .section-heading h2 {
+        color: #214e30;
+        font-size: clamp(26px, 3vw, 36px);
+    }
+
+.checklist-heading .checklist-progress {
+    justify-self: start;
+    margin: 0;
+    padding: 10px 14px;
+    border: 1px solid #b8cdbd;
+    border-radius: 8px;
+    background: #fff;
+    color: #214e30;
+    font-size: 1rem;
+}
+
+.checklist-progress strong {
+    font-size: 1.125rem;
+}
+
+.checklist-heading .checklist-instructions {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: #324b3b;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+}
+
+.courses-section .section-heading p {
+    color: #324b3b;
+}
+
+@media (max-width: 700px) {
+    .checklist-section .checklist-heading,
+    .checklist-section .checklist-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.thank-you {
+    --green: #2e6840;
+    --page: #eef2ee;
+}
+
+    .thank-you .footer-content {
+        width: min(760px, calc(100% - 32px));
+        margin-inline: auto;
+    }
+
+        .thank-you .footer-content h2 {
+            font-size: clamp(28px, 4vw, 34px);
+        }
+
+        .thank-you .footer-content p {
+            font-size: 1.0625rem;
+            line-height: 1.6;
+        }
+@media (min-width: 701px) {
+    .checklist-section .checklist-heading {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .checklist-heading .checklist-progress {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .checklist-heading #checklist-title {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
+@media (min-width: 601px) {
+    .checklist-section .checklist-heading {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .checklist-heading #checklist-title {
+        grid-column: 1;
+        grid-row: 1;
+        text-align: left;
+    }
+
+    .checklist-heading .checklist-progress {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+    }
+}
+.site-header .section-bar {
+    color: #fff;
+}
+.private-page-actions .private-page-action {
+    color: var(--header-green, #2e6840);
+}
+.shelter-print-button {
+    display: block;
+    min-height: 36px;
+    margin: 12px 0 0 auto;
+    padding: 6px 12px;
+    border: 1px solid #b8cdbd;
+    border-radius: 8px;
+    background: #fff;
+    color: #214e30;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .shelter-print-button[hidden] {
+        display: none;
+    }
+
+    .shelter-print-button:hover {
+        background: #f0f6f1;
+    }
+
+    .shelter-print-button:focus-visible {
+        outline: 2px solid #214e30;
+        outline-offset: 3px;
+    }
+
+.shelter-print-address {
+    display: none;
+}
+
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 12mm;
+    }
+
+    body > :not(main),
+    main > :not(.beredskap-container),
+    .beredskap-container > :not(#tilfluktsrom),
+    #tilfluktsrom .shelter-search,
+    #tilfluktsrom-adressetreff,
+    #tilfluktsrom-skriv-ut,
+    #tilfluktsrom-kart .leaflet-control-zoom,
+    #tilfluktsrom-kart .leaflet-popup {
+        display: none !important;
+    }
+
+    body,
+    .beredskap-container,
+    #tilfluktsrom {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        box-shadow: none;
+    }
+
+    .shelter-print-address {
+        display: block;
+        margin: 0 0 12px;
+    }
+
+    #tilfluktsrom-kart {
+        height: 95mm;
+        break-inside: avoid;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .shelter-table-wrap {
+        overflow: visible;
+    }
+
+    .shelter-table tr {
+        break-inside: avoid;
+    }
+
+    .shelter-table th,
+    .shelter-table td {
+        padding: 6px 8px;
+    }
+
+    .shelter-table-link {
+        min-height: 0;
+        padding: 0;
+        color: #173e4d;
+        text-decoration: none;
     }
 }

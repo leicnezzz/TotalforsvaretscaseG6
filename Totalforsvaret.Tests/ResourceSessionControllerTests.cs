@@ -7,7 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Privat.Models;
-using Totalforsvaret.Controllers;
+using Totalforsvaret.Home.Controllers;
 using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Tests;

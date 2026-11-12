@@ -1,27 +1,42 @@
 @using System
 @using System.Linq
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using Totalforsvaret.DataAccess
 @using Totalforsvaret.Models
 @inject UserManager<Bruker> UserManager
+@inject AppDbContext Db
 
-@*Gjenbruker koden fra Privatnavigation*@
-@*Felles OffentligNavigation, hvis du skal ha en ny page, legg den inn her for å vises på navigation bar*@
 @{
-    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
-    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var controller =
+        ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action =
+        ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
+    var isMatch = ViewContext.RouteData.Values["match"] is true;
+    var isResourcePage =
+        action.Equals("ResourceRegistration",
+            StringComparison.OrdinalIgnoreCase);
     var isOverview =
-        controller.Equals("OffentligAktor", StringComparison.OrdinalIgnoreCase);
-
+        !isMatch &&
+        controller.Equals("OffentligAktor",
+            StringComparison.OrdinalIgnoreCase);
     var isNeedPage =
         controller.Equals("Need", StringComparison.OrdinalIgnoreCase);
-
     var isCrisisPage =
         controller.Equals("Crisis", StringComparison.OrdinalIgnoreCase);
-    
+    var isProfile =
+        controller.Equals("Profile", StringComparison.OrdinalIgnoreCase);
+    var isInbox =
+        controller.Equals("Inbox", StringComparison.OrdinalIgnoreCase);
 
     var account = await UserManager.GetUserAsync(User);
-    var displayName = account?.Navn ?? User.Identity?.Name ?? "Offentlig aktør";
+    var displayName = account?.Navn
+        ?? User.Identity?.Name
+        ?? "Offentlig aktør";
+    var hasPhoto = account != null &&
+        await Db.ProfilePhotos.AnyAsync(
+            photo => photo.BrukerId == account.Id);
 
     var initials = string.Concat(
         displayName
@@ -51,26 +66,98 @@
 
             <a class="@(isCrisisPage ? "active" : "")"
                aria-current="@(isCrisisPage ? "page" : null)"
-               asp-area="Offentlig"
-               asp-controller="Crisis"
-               asp-action="Create">
-                Administrer kriser
+               asp-route="crisis-overview">
+                Hendelser
+            </a>
+
+            <a asp-route="offentlig-match"
+               class="@(isMatch ? "active" : "")"
+               aria-current="@(isMatch ? "page" : null)">
+                Match
+            </a>
+
+            <a asp-route="ressursregistrering"
+               class="@(isResourcePage ? "active" : "")"
+               aria-current="@(isResourcePage ? "page" : null)">
+                Registrer ressurs
             </a>
         </div>
 
-        @if (isOverview && action.Equals("Index", StringComparison.OrdinalIgnoreCase))
+        @if (isOverview && action.Equals(
+            "Index", StringComparison.OrdinalIgnoreCase))
         {
             <div id="kartSokToolbar"></div>
         }
 
-        <div class="account-summary"
-             aria-label="Innlogget som @displayName, offentlig aktør">
-            <span class="avatar avatar-small" aria-hidden="true">@initials</span>
-            <span class="account-copy">
-                <strong>@displayName</strong>
-                <small>Offentlig aktør</small>
-            </span>
+        <div class="account-actions">
+            <a class="inbox-icon-link"
+               asp-area="Offentlig"
+               asp-controller="Inbox"
+               asp-action="Index"
+               aria-label="Åpne innboksen"
+               aria-current="@(isInbox ? "page" : null)">
+                <svg class="bell"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     aria-hidden="true">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
+                    <path d="M10 21h4" />
+                </svg>
+            </a>
+
+            <details class="account-menu">
+                <summary class="account-link @(isProfile ? "active" : "")"
+                         aria-label="Brukermeny for @displayName">
+                    @if (hasPhoto)
+                    {
+                        <img class="avatar avatar-small"
+                             src="@Url.Action(
+                                      "Photo",
+                                      "Profile",
+                                      new { area = "Offentlig" })"
+                             alt="" />
+                    }
+                    else
+                    {
+                        <span class="avatar avatar-small" aria-hidden="true">
+                            @initials
+                        </span>
+                    }
+
+                    <span class="account-copy">
+                        <strong>@displayName</strong>
+                        <small>Offentlig aktør</small>
+                    </span>
+                    <span class="chevron" aria-hidden="true">⌄</span>
+                </summary>
+
+                <ul class="account-menu-list">
+                    <li>
+                        <a asp-area="Offentlig"
+                           asp-controller="Profile"
+                           asp-action="Index">
+                            Min profil
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="Offentlig"
+                           asp-controller="Inbox"
+                           asp-action="Index">
+                            Innboks
+                        </a>
+                    </li>
+                    <li>
+                        <form asp-area=""
+                              asp-controller="Account"
+                              asp-action="Logout"
+                              method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit">Logg ut</button>
+                        </form>
+                    </li>
+                </ul>
+            </details>
         </div>
     </nav>
-    
 </header>

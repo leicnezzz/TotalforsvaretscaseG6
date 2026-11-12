@@ -5,14 +5,24 @@ using Totalforsvaret.Models;
 using Totalforsvaret.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
-// identity framework ting
+// identity framework
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+
+});
+
+builder.Services.Configure<RazorViewEngineOptions>(options =>
+{
+    options.ViewLocationFormats.Insert(
+        0, "/Areas/Homepage/Views/{1}/{0}.cshtml");
+    options.ViewLocationFormats.Insert(
+        1, "/Areas/Homepage/Views/Shared/{0}.cshtml");
 });
 
 builder.Services.AddIdentityCore<Bruker>(options =>
@@ -116,6 +126,14 @@ app.MapControllerRoute(
     pattern: "Home/Skjema",
     defaults: new { area = "Privat", controller = "Resource", action = "Skjema" });
 
+app.MapGet("/OffentligAktor/Behov", () => Results.LocalRedirect("~/Behov"));
+
+app.MapControllerRoute(
+    name: "behov",
+    pattern: "Behov",
+    defaults: new { area = "Offentlig", controller = "Need", action = "Create" });
+
+
 app.MapControllerRoute(
     name: "legacy-need",
     pattern: "Need/{action=Create}/{id?}",
@@ -130,6 +148,17 @@ app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+
+app.MapControllerRoute(
+    name: "offentlig-match",
+    pattern: "OffentligAktor/match",
+    defaults: new { controller = "OffentligAktor", action = "Index", match = true });
+
+app.MapControllerRoute(
+    name: "ressursregistrering",
+    pattern: "Ressurs",
+    defaults: new { controller = "Home", action = "ResourceRegistration" });
 
 
 app.Run();

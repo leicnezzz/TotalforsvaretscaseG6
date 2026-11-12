@@ -1,0 +1,100 @@
+.offentlig-inbox {
+    background: #eef0f2;
+    color: #172c34;
+}
+
+.offentlig-inbox .inbox-back,
+.offentlig-inbox .inbox-card > h1,
+.offentlig-inbox .inbox-detail-heading h2,
+.offentlig-inbox .inbox-section h3,
+.offentlig-inbox .inbox-empty h2 {
+    color: #163c4c;
+}
+
+.offentlig-inbox .inbox-card {
+    box-shadow: 0 2px 12px rgb(22 60 76 / 7%);
+}
+
+.offentlig-inbox .inbox-flash {
+    background: #e9f5f6;
+    color: #163c4c;
+}
+
+.offentlig-inbox .inbox-list {
+    border-color: #b8cbd2;
+}
+
+.offentlig-inbox .inbox-list-item:hover,
+.offentlig-inbox .inbox-list-item.is-selected {
+    background: #e7f0f3;
+}
+
+.offentlig-inbox .inbox-list-icon {
+    background: #eef0f2;
+}
+
+.offentlig-inbox .inbox-list-copy span,
+.offentlig-inbox .inbox-eyebrow,
+.offentlig-inbox .inbox-facts dt,
+.offentlig-inbox .inbox-empty p {
+    color: #526671;
+}
+
+.offentlig-inbox .inbox-list-copy small {
+    color: #163c4c;
+}
+
+.offentlig-inbox .inbox-detail-heading {
+    border-color: #c6d4da;
+}
+
+.offentlig-inbox .inbox-status {
+    border-color: #72d9df;
+    color: #163c4c;
+}
+
+.offentlig-inbox .inbox-section {
+    border-color: #dce5e9;
+    background: #fbfcfd;
+}
+
+.offentlig-inbox .inbox-description {
+    color: #344c58;
+}
+
+.offentlig-inbox .inbox-button {
+    border-color: #163c4c;
+}
+
+.offentlig-inbox .inbox-button-primary {
+    background: #163c4c;
+    color: #fff;
+}
+
+.offentlig-inbox .inbox-button-primary:hover {
+    background: #225466;
+}
+
+.offentlig-inbox .inbox-button-secondary {
+    background: #fff;
+    color: #163c4c;
+}
+
+.offentlig-inbox .inbox-button-secondary:hover {
+    background: #e7f0f3;
+}
+
+.offentlig-inbox .inbox-button:focus-visible,
+.offentlig-inbox .inbox-list-item:focus-visible,
+.offentlig-inbox .inbox-back:focus-visible {
+    outline: 3px solid #72d9df;
+    outline-offset: 3px;
+}
+
+.offentlig-inbox .inbox-footer {
+    color: #163c4c;
+}
+
+.offentlig-inbox .inbox-footer a {
+    color: #163c4c;
+}

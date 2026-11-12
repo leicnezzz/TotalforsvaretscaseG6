@@ -25,6 +25,19 @@ public class CrisisController : Controller
         _userManager = userManager;
     }
 
+    [HttpGet("/crisis/overview", Name = "crisis-overview")]
+    public async Task<IActionResult> Overview()
+    {
+        var crises = await _context.Crises
+            .AsNoTracking()
+            .OrderByDescending(crisis => crisis.StartTime)
+            .ThenByDescending(crisis => crisis.Id)
+            .ToListAsync();
+
+        return View(crises);
+    }
+
+
     // Åpner kriseskjemaet.
     [HttpGet]
     public IActionResult Create()
@@ -47,9 +60,11 @@ public class CrisisController : Controller
         // Henter den innloggede brukeren.
         var bruker = await _userManager.GetUserAsync(User);
 
-        // Kontrollerer at brukeren er en offentlig aktør.
-        //if (bruker is not Offentligaktør offentligAktor)
-        //    return Forbid();
+        if (await _userManager.GetUserAsync(User)
+            is not Offentligaktør offentligAktor)
+        {
+            return Forbid();
+        }
 
         // Fjerner mellomrom før og etter teksten.
         crisis.Name = crisis.Name?.Trim() ?? "";
@@ -131,7 +146,7 @@ public class CrisisController : Controller
             return View(crisis);
 
         // Kobler krisen til aktøren som er logget inn.
-        // crisis.OffentligAktorId = offentligAktor.Id;
+        crisis.OffentligAktorId = offentligAktor.Id;
 
         _context.Crises.Add(crisis);
         await _context.SaveChangesAsync();

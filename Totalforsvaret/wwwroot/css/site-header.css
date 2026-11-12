@@ -500,3 +500,28 @@ body.offentlig-page .offentlig-site-header .nav-links a:focus-visible,
     color: var(--public-muted, #728087);
     font-size: 12px;
 }
+
+/* Samme offentlige topplinje på alle skjermstørrelser. */
+body.offentlig-page .offentlig-site-header { background: #163c4c; }
+body.offentlig-page .offentlig-site-header .nav-links a,
+body.offentlig-page .offentlig-site-header .account-summary,
+body.offentlig-page .offentlig-site-header .account-copy small { color: #fff; }
+body.offentlig-page .offentlig-site-header .nav-links a.active { border-bottom-color: #fff; }
+
+/* Public navigation colors */
+body.offentlig-page .offentlig-site-header {
+    --header-green: #163c4c;
+    background: #163c4c;
+}
+
+body.offentlig-page .offentlig-site-header .nav-links a,
+body.offentlig-page .offentlig-site-header .account-link,
+body.offentlig-page .offentlig-site-header .account-copy strong,
+body.offentlig-page .offentlig-site-header .chevron,
+body.offentlig-page .offentlig-site-header .inbox-icon-link {
+    color: #fff;
+}
+
+body.offentlig-page .offentlig-site-header .account-copy small {
+    color: #d3e0e5;
+}

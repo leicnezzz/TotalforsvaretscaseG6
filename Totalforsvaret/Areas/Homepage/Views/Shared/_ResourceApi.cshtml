@@ -1,9 +1,10 @@
-﻿<div id="resource-api"
+@{ var createAction = ViewData["PublicResourceRegistration"] is true ? "CreateForPublicActor" : "Create"; }
+<div id="resource-api"
      hidden
      data-token-url="@Url.Action("Token", "ResourceSession", new { area = "" })"
      data-login-url="@Url.Action("Login", "ResourceSession", new { area = "" })"
      data-register-url="@Url.Action("Register", "ResourceSession", new { area = "" })"
-     data-create-url="@Url.Action("Create", "Resource", new { area = "Privat" })"
+     data-create-url="@Url.Action(createAction, "Resource", new { area = "Privat" })"
      data-update-url="@Url.Action("Update", "Resource", new { area = "Privat" })"
      data-delete-url="@Url.Action("Delete", "Resource", new { area = "Privat" })">
 </div>

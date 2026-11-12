@@ -84,7 +84,7 @@
 
         <div class="public-content">
             <div class="public-home-incident">
-                <partial name="/Views/Shared/_IncidentAlert.cshtml" />
+                <partial name="/Areas/Homepage/Views/Shared/_IncidentAlert.cshtml" />
             </div>
 
             <section id="registrer-ressurs" class="public-registration" aria-labelledby="registration-title">
@@ -92,7 +92,7 @@
                     <h2 id="registration-title">Registrer en ressurs til disposisjon</h2>
                     <p>Har du utstyr, kjøretøy eller andre ressurser du kan stille til rådighet?</p>
                 </div>
-                <partial name="/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" />
+                <partial name="/Areas/Homepage/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" />
             </section>
         </div>
     </main>
@@ -118,6 +118,6 @@
     <script src="~/js/resource-fields.js" asp-append-version="true"></script>
     <script src="~/js/resource-address.js" asp-append-version="true"></script>
     <script src="~/js/resource-wizard.js" asp-append-version="true"></script>
-    <partial name="/Views/Shared/_ResourceApi.cshtml" />
+    <partial name="/Areas/Homepage/Views/Shared/_ResourceApi.cshtml" />
 </body>
 </html>

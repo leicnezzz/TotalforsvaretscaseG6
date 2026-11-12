@@ -31,8 +31,8 @@
 
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
     <div class="resource-incident-row">
-        <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
-        <partial name="/Views/Shared/_IncidentAlert.cshtml" />
+        <partial name="/Areas/Homepage/Views/Shared/_PrivatePageAction.cshtml" />
+        <partial name="/Areas/Homepage/Views/Shared/_IncidentAlert.cshtml" />
     </div>
     <main class="registration-main">
         <div class="registration-content">
@@ -40,7 +40,7 @@
                 <h1 id="registration-title">Registrere en ressurs til disposisjon</h1>
                 <p>Registrer kjøretøy, utstyr eller andre ressurser som kan bidra i en beredskapssituasjon.</p>
             </section>
-            <div id="registrer-ressurs"><partial name="/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" /></div>
+            <div id="registrer-ressurs"><partial name="/Areas/Homepage/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" /></div>
         </div>
     </main>
     <footer class="registration-footer">
@@ -56,6 +56,6 @@
     <script src="~/js/resource-fields.js" asp-append-version="true"></script>
     <script src="~/js/resource-address.js" asp-append-version="true"></script>
     <script src="~/js/resource-wizard.js" asp-append-version="true"></script>
-    <partial name="/Views/Shared/_ResourceApi.cshtml" />
+    <partial name="/Areas/Homepage/Views/Shared/_ResourceApi.cshtml" />
 </body>
 </html>

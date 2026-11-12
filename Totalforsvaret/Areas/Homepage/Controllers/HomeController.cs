@@ -4,7 +4,6 @@ using Totalforsvaret.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Totalforsvaret.Handlers;
-
 namespace Totalforsvaret.Controllers;
 
 public class HomeController : Controller

@@ -16,7 +16,7 @@ Dato: 05.11.2026
 ## **Systemarkitektur, oppstart og testing** ##
 Paratus er en ASP.NET Core MVC-applikasjon. Applikasjonen er delt inn i Controllere som håndterer forespørsler, Razor-visninger som viser grensesnittet, og Entity Framework Core til å lagre data i MariaDB. ASP.NET Core Identity håndterer alt av konto og innlogging. Det er brukertypen som styrer tilgangen til applikasjonen, så private aktører kan administrere egne ressurser, og offentlige aktører har skjemaet for kriser og behov. Systemet bruker Leaflet som kartfunksjon.
 
-## **Kjøring med docker** ##
+## **Kjøring av systemet** ##
 
 1. Hent prosjektet fra `main`: Hvis dette er første gang du åpner prosjektet, kloner du repoet og åpner `Totalforsvaret.slnx` fra rotmappen. Hvis du allerede har klonet repoet, åpner du prosjektet i Visual Studio, velger grenen `main` og velger **Git → Pull** for å hente den siste versjonen fra GitHub.
 2. Klargjør Docker, HTTPS-sertifikat og User Secrets: Installer .NET 10 SDK og start Docker Desktop med Linux-containere. Vent til Docker kjører. Bruk et lokalt HTTPS-utviklingssertifikat på `~/.aspnet/https/totalforsvaret.pfx`. Dette utviklingssertifikatet tillater webappen å ta imot HTTPS-trafikk lokalt. Angi `Parameters:mariadb-password` og `Parameters:https-password` i User Secrets for `Totalforsvaret.AppHost`. For mer informasjon, se på [oppstartsveiledningen](Oppstart.md).

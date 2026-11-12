@@ -155,40 +155,6 @@
     font-size: clamp(16px, 1.6vw, 22px);
 }
 
-/* Knappene i hero-delen. .public-button har bredde 100 % som standard, så den settes tilbake til auto. */
-.paratus-hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 8px;
-}
-
-.paratus-hero-actions .public-button {
-    width: auto;
-    min-width: 160px;
-    justify-content: center;
-}
-
-/* Bakgrunnen er mørk, så den grønne knappen får den lyse aksentfargen. !important trengs fordi .public-button-primary bruker det på tekstfargen. */
-.paratus-hero-actions .public-button-primary {
-    border-color: var(--paratus-accent);
-    background: var(--paratus-accent);
-    color: var(--public-green) !important;
-}
-
-/* .public-home a arver tekstfargen fra hero-delen (hvit), så den hvite knappen må få grønn tekst eksplisitt. */
-.paratus-hero-actions .public-button-outline {
-    color: var(--public-green);
-}
-
-.paratus-hero-offentlig {
-    font-size: 14px;
-}
-
-.paratus-hero-offentlig a {
-    text-decoration: underline;
-}
-
 /* Myk scrolling når menyen lenker til et sted lenger ned på siden. Hopper over animasjonen for dem som har bedt om mindre bevegelse. */
 @media (prefers-reduced-motion: no-preference) {
     html {
@@ -272,3 +238,55 @@
         transform: translate(-50%, -50%) scale(1.4);
     }
 }
+
+/* Logoen ligger til venstre i headeren. .nav-brand sentrerer den som standard, så det overstyres bare på forsiden. */
+.public-home .nav-brand {
+    justify-self: start;
+}
+
+/* Logo bygd i HTML og CSS: grønn firkant med P, navn og slagord. */
+.paratus-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.paratus-brand-mark {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    background: var(--public-green);
+    color: #fff;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.paratus-brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.paratus-brand-text strong {
+    font-size: 20px;
+    letter-spacing: .14em;
+    line-height: 1;
+}
+
+.paratus-brand-text small {
+    color: var(--public-muted);
+    font-size: 12px;
+    letter-spacing: .04em;
+}
+
+/* Grønn stripe under headeren: tekst til venstre og slagord til høyre. */
+.public-home .public-section-bar {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    font-weight: 400;
+}
+

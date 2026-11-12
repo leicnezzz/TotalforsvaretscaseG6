@@ -54,10 +54,10 @@
             </header>
             <div class="shelter-search">
                 <ol class="shelter-instructions">
-    <li>Skriv inn gatenavn, husnummer og poststed.</li>
+    <li>Skriv inn gatenavn og husnummer. Velg riktig adresse blant forslagene.</li>
     <li>Trykk <strong>Søk</strong>. Hvis du får flere treff, velg riktig adresse.</li>
     <li>Se de nærmeste tilfluktsrommene under kartet.
-        Trykk på et rom i lista for å se det på kartet.</li>
+       Trykk på en adresse i tabellen for å se tilfluktsrommet på kartet.</li>
 </ol>
 
               <form id="tilfluktsrom-sok">
@@ -85,8 +85,19 @@
                  role="region"
                  aria-label="Kart for tilfluktsrom"></div>
 
-            <ol id="tilfluktsrom-resultater"
-                aria-label="Nærmeste tilfluktsrom"></ol>
+<div class="shelter-table-wrap">
+<table class="shelter-table">
+<caption>Nærmeste offentlige tilfluktsrom</caption>
+<thead>
+<tr>
+<th scope="col">Adresse</th>
+<th scope="col">Avstand i luftlinje</th>
+<th scope="col">Koordinater</th>
+</tr>
+</thead>
+<tbody id="tilfluktsrom-resultater"></tbody>
+</table>
+</div>
         </section>
 
         <section id="checklist"
@@ -449,5 +460,6 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(tilfluktsromKart);
 </script>
+<script src="~/js/tilfluktsrom-kart.js" asp-append-version="true"></script>
 </body>
 </html>

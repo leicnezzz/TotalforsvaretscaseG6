@@ -148,9 +148,11 @@ public class NeedController : Controller
     {
         return await _context.Crises
             .AsNoTracking()
-            .Where(c => c.Status == "Aktiv"
-                && c.Latitude >= -90 && c.Latitude <= 90
-                && c.Longitude >= -180 && c.Longitude <= 180)
+            .Where(c =>
+                c.Latitude.HasValue &&
+                c.Longitude.HasValue &&
+                c.Latitude >= -90 && c.Latitude <= 90 &&
+                c.Longitude >= -180 && c.Longitude <= 180)
             .OrderBy(c => c.Name)
             .Select(c => new CrisisMapPoint(
                 c.Id, c.Name, c.Latitude!.Value, c.Longitude!.Value))

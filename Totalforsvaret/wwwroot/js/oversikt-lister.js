@@ -390,7 +390,7 @@
 
             if (kartknapp.disabled) {
                 kartknapp.title =
-                    'Krisen mangler gyldige kartkoordinater.';
+                    'Hendelsen mangler gyldige kartkoordinater.';;
             }
 
             kartknapp.addEventListener('click', () => {
@@ -417,7 +417,7 @@
             // Åpne eksisterende redigeringsskjema.
             const endre = element(
                 'a',
-                'Endre krise',
+                'Endre henelse',
                 'btn btn-sm btn-outline-primary'
             );
 
@@ -429,35 +429,6 @@
             url.searchParams.set('id', String(krise.id));
             endre.href = url.href;
             handlinger.append(endre);
-
-            // Avslutt krisen etter bekreftelse.
-            const avslutt = element(
-                'button',
-                'Avslutt krise',
-                'btn btn-sm btn-outline-danger'
-            );
-
-            avslutt.type = 'button';
-
-            avslutt.addEventListener('click', () => {
-                const bekreftet = window.confirm(
-                    'Vil du avslutte «' + krise.navn +
-                    '»? Tilknyttede behov beholder sin status.'
-                );
-
-                if (!bekreftet) return;
-
-                const skjema = document.getElementById(
-                    'avsluttKriseSkjema'
-                );
-
-                skjema.querySelector('[name="id"]').value =
-                    krise.id;
-
-                skjema.requestSubmit();
-            });
-
-            handlinger.append(avslutt);
             celle.append(handlinger);
             rad.append(celle);
             kropp.append(rad);

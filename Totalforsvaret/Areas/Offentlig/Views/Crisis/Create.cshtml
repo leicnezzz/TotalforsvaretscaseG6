@@ -101,15 +101,34 @@
                     </div>
                     <div class="col-12 wizard-fields">
                         <label asp-for="Description" class="form-label">Beskriv krisen</label>
-                        <textarea asp-for="Description" class="form-control"
+                    <textarea asp-for="Description" class="form-control"
                                   rows="5" maxlength="1500" required></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
                 </div>
-            </section>
 
-            <input asp-for="Latitude" type="hidden" />
-            <input asp-for="Longitude" type="hidden" />
+                <div class="mt-4">
+                    <h2 class="h5">Hvor er hendelsen?</h2>
+                    <p>Klikk på kartet for å velge hendelsens plassering.</p>
+
+                    <div id="hendelseKart"
+                         aria-label="Velg hendelsens plassering"
+                         style="height: 360px; width: 100%; border-radius: 10px; overflow: hidden;">
+                    </div>
+
+                    <p id="hendelseKartStatus" class="mt-2" role="status">
+                        Ingen plassering valgt.
+                    </p>
+
+                    <input asp-for="Latitude" type="hidden" />
+                    <input asp-for="Longitude" type="hidden" />
+                    <input name="__Invariant" type="hidden" value="Latitude" />
+                    <input name="__Invariant" type="hidden" value="Longitude" />
+
+                    <span asp-validation-for="Latitude" class="text-danger"></span>
+                    <span asp-validation-for="Longitude" class="text-danger"></span>
+                </div>
+            </section>
 
             <section data-need-step hidden>
                 <h2 class="need-step-title" tabindex="-1">Se over informasjonen</h2>
@@ -149,5 +168,6 @@
 </div>
 
 @section Scripts {
+    <script src="~/js/hendelse-kart.js" asp-append-version="true"></script>
     <script src="~/js/need-registration.js" asp-append-version="true"></script>
 }

@@ -385,3 +385,51 @@ body {
         transition: none;
     }
 }
+.courses-section {
+    margin-top: 0;
+    padding: clamp(32px, 5vw, 64px) 16px;
+    border-radius: 0;
+    background: rgb(46 104 64 / 85%);
+}
+
+    .courses-section .section-heading,
+    .courses-grid {
+        width: min(100%, 1120px);
+        margin-inline: auto;
+    }
+
+    .courses-section .section-heading {
+        margin-bottom: 24px;
+    }
+
+        .courses-section .section-heading h2,
+        .courses-section .section-heading p {
+            color: #fff;
+        }
+
+        .courses-section .section-heading h2 {
+            font-size: clamp(26px, 3vw, 36px);
+        }
+
+.courses-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.course-card {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(20px, 3vw, 32px);
+    overflow-wrap: anywhere;
+}
+
+.course-link-text {
+    margin-top: auto;
+    padding-top: 16px;
+}
+
+@media (max-width: 760px) {
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+}

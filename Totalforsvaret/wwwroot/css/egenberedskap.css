@@ -721,16 +721,27 @@ body {
     color: var(--header-green, #2e6840);
 }
 .shelter-print-button {
-    margin: 0 0 12px;
-    padding: 10px 16px;
-    border: 0;
-    border-radius: 6px;
-    background: #2e6840;
-    color: #fff;
+    display: block;
+    min-height: 36px;
+    margin: 12px 0 0 auto;
+    padding: 6px 12px;
+    border: 1px solid #b8cdbd;
+    border-radius: 8px;
+    background: #fff;
+    color: #214e30;
     font: inherit;
+    font-size: 0.875rem;
     font-weight: 700;
     cursor: pointer;
 }
+
+    .shelter-print-button[hidden] {
+        display: none;
+    }
+
+    .shelter-print-button:hover {
+        background: #f0f6f1;
+    }
 
     .shelter-print-button:focus-visible {
         outline: 2px solid #214e30;

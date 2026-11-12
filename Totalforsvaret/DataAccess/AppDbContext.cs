@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Privat.Models;
@@ -13,6 +13,8 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
         : base(options)
     {
     }
+
+    public DbSet<CrisisMapAnnotation> CrisisMapAnnotations => Set<CrisisMapAnnotation>();
 
     public DbSet<Crisis> Crises => Set<Crisis>();
     public DbSet<Need> Needs => Set<Need>();
@@ -35,6 +37,9 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
 	protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.Entity<CrisisMapAnnotation>()
+            .HasOne(a => a.Crisis).WithMany().HasForeignKey(a => a.CrisisId)
+            .OnDelete(DeleteBehavior.Cascade);
         builder.Entity<ResourceAssignment>(entity =>
         {
             entity.HasKey(a => a.Id);
@@ -72,7 +77,8 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
         builder.Entity<Need>()
             .HasOne(n => n.Crisis)
             .WithMany(c => c.Needs)
-            .HasForeignKey(n => n.CrisisId);
+            .HasForeignKey(n => n.CrisisId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<Need>()
             .Ignore(n => n.OffentligAktor);

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.Models;
 
-namespace Totalforsvaret.Controllers;
+namespace Totalforsvaret.Home.Controllers;
 
 [AllowAnonymous]
 [ResponseCache(

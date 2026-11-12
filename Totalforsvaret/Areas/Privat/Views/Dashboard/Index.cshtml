@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/incident-alert.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Profile.css" asp-append-version="true" />
     <script src="~/js/help-dismiss.js" asp-append-version="true" defer></script>
 </head>
 
@@ -41,15 +41,18 @@
 
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
 
+<div class="dashboard-intro">
     <div class="private-page-actions">
-    <a class="private-page-action"
-       asp-area=""
-       asp-controller="Home"
-       asp-action="Index">← Tilbake</a>
+        <a class="private-page-action"
+           asp-area=""
+           asp-controller="Home"
+           asp-action="Index">← Tilbake</a>
+    </div>
+
+    <partial name="/Areas/Homepage/Views/Shared/_IncidentAlert.cshtml" />
 </div>
 
     <main class="home-content">
-        <partial name="/Views/Shared/_IncidentAlert.cshtml" />
 
         <section class="greeting" aria-labelledby="greeting-title">
             <h1 id="greeting-title">Hei, @Model.Navn</h1>
@@ -178,6 +181,7 @@ else
     </footer>
 
     <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/js/map-zoom.js" asp-append-version="true"></script>
     <script src="~/js/private-home.js"
             asp-append-version="true"></script>
 </body>

@@ -1,0 +1,287 @@
+body:has(.need-page) {
+    background: #eef0f2;
+}
+
+body:has(.need-page) > .container-fluid {
+    padding-inline: 0;
+}
+
+.need-page {
+    --header-green: #163c4c;
+    --muted: #607078;
+    font-family: "Roboto", Arial, sans-serif;
+    color: var(--header-green);
+}
+
+.need-page .private-page-action:hover {
+    text-decoration: underline;
+}
+
+.need-registration {
+    width: min(calc(100% - 32px), 760px);
+    padding-bottom: 64px;
+}
+
+.need-registration .registration-intro {
+    margin-block: 0 18px;
+}
+
+.need-registration .registration-intro h1,
+.need-step-title {
+    font-weight: 700;
+}
+
+.need-card {
+    margin-top: 0;
+    padding: clamp(16px, 3vw, 28px);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.need-step-title {
+    margin: 0;
+    font-size: clamp(24px, 2.3vw, 35px);
+    line-height: 1.1;
+}
+
+.need-step-intro {
+    margin: 8px 0 16px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.need-card .wizard-fields > :is(input, select, textarea) {
+    margin-bottom: 0;
+    border-color: var(--header-green);
+}
+
+.need-card .wizard-address-results button,
+.need-registration .public-button {
+    border-color: var(--header-green);
+    color: var(--header-green);
+}
+
+.need-card .wizard-address-results button:hover,
+.need-card .wizard-address-results button:focus-visible,
+.need-registration .public-button-outline:hover {
+    background: #eef0f2;
+}
+
+.need-registration .public-button-primary {
+    background: var(--header-green);
+    color: #fff;
+}
+
+.need-registration .public-button-primary:hover {
+    background: #225466;
+}
+
+.need-registration .need-delete {
+    border-color: #8b2d22;
+    color: #8b2d22;
+}
+
+.need-map {
+    height: clamp(215px, 36vh, 340px);
+}
+
+.need-review-map {
+    height: clamp(200px, 36vh, 340px);
+}
+
+.need-review {
+    display: grid;
+    grid-template-columns: minmax(8rem, 1fr) minmax(0, 2fr);
+    gap: 12px 20px;
+}
+
+.need-review dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.need-actions {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.need-registration .public-button {
+    width: auto;
+    transition: background-color 150ms ease;
+}
+
+@media (max-width: 575px) {
+    .need-review {
+        display: block;
+    }
+
+    .need-review dd + dt {
+        margin-top: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .need-registration .public-button {
+        transition: none;
+    }
+}
+
+.need-card .wizard-fields > select {
+    appearance: auto;
+}
+
+body:has(.need-page) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100svh;
+    margin-bottom: 0;
+}
+
+body:has(.need-page) > .container-fluid {
+    flex: 1;
+}
+
+body:has(.need-page) > .registration-footer {
+    color: #163c4c;
+    font-family: "Roboto", Arial, sans-serif;
+}
+
+body:has(.need-page) > .registration-footer a {
+    color: inherit;
+}
+
+.need-actions [data-need-next] {
+    min-width: 11rem;
+}
+
+@media (max-width: 420px) {
+    .need-actions [data-need-next] {
+        flex: 1;
+        min-width: 8rem;
+    }
+}
+
+.public-resource-registration .resource-wizard {
+    margin-top: 0;
+    padding: clamp(16px, 3vw, 28px);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.public-resource-registration .wizard-step {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--header-green);
+}
+
+.public-resource-registration .wizard-step::after {
+    content: none;
+}
+
+.public-resource-registration .wizard-description h3 {
+    max-width: none;
+    font-size: 1.25rem;
+}
+
+.public-resource-registration .wizard-description p {
+    margin: 8px 0 0;
+    color: var(--muted);
+}
+
+.public-resource-registration .wizard-fields :is(input, select, textarea),
+.public-resource-registration .public-button,
+.public-resource-registration .public-help :is(summary, p),
+.public-resource-registration .wizard-account-mode,
+.public-resource-registration .wizard-address-results button {
+    border-color: var(--header-green);
+}
+
+.public-resource-registration :is(.public-button-primary, .wizard-step-confirm .public-button, .wizard-account-mode[aria-pressed="true"]) {
+    background: var(--header-green);
+    color: #fff;
+}
+
+.public-resource-registration :is(.public-button-outline, .wizard-text-button, .wizard-account-mode:not([aria-pressed="true"]), .wizard-address-results button) {
+    color: var(--header-green);
+}
+
+.public-resource-registration .wizard-location-next {
+    grid-column: 1;
+}
+
+.public-resource-registration [data-continue="details"] {
+    display: none;
+}
+
+/* Earlier steps stay enabled so their values are included on submission. */
+.public-resource-registration [data-phase="contact"] .wizard-step:not([data-step="availability"]),
+.public-resource-registration [data-phase="map"] .wizard-step:not([data-step="location"]),
+.public-resource-registration [data-phase="review"] .wizard-step:not([data-step="account"], [data-step="confirmation"]),
+.public-resource-registration :is(.wizard-toolbar, .public-help, .wizard-description p, #vehicle-address-help, #wizard-account-note),
+.public-resource-registration .resource-wizard > .wizard-hint,
+.public-resource-registration [data-step="availability"] .wizard-fields > .wizard-hint {
+    display: none;
+}
+
+.public-resource-registration [data-compact-back] {
+    margin-top: 8px;
+}
+
+.public-resource-registration .resource-wizard :is(#wizard-additional-next, #wizard-contact-next, .wizard-location-next, #vehicle-submit, [data-compact-back]) {
+    width: min(100%, 12rem);
+}
+
+.public-resource-registration .resource-wizard [data-compact-back] {
+    justify-content: center;
+}
+
+.need-page .private-page-actions {
+    min-height: 48px;
+    padding-block: 0;
+}
+
+.need-registration .registration-intro p {
+    margin-top: 8px;
+}
+
+.need-card textarea.form-control,
+.public-resource-registration .wizard-fields > textarea {
+    min-height: 76px;
+    height: 5.5rem;
+}
+
+.public-resource-registration .wizard-fields :is(input:not([type="radio"], [type="checkbox"]), select) {
+    margin-bottom: 10px;
+}
+
+.public-resource-registration .wizard-fields > label {
+    margin-bottom: 4px;
+}
+
+.public-resource-registration .wizard-map {
+    height: clamp(215px, 36vh, 340px);
+}
+
+@media (min-width: 700px) {
+    .public-resource-registration [data-phase="details"] .wizard-step {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+        column-gap: 24px;
+    }
+}
+
+.public-resource-registration .resource-wizard {
+    scroll-margin-top: 16px;
+    overflow-anchor: none;
+}
+
+.public-resource-registration .wizard-step:not([hidden]) {
+    animation: none;
+}

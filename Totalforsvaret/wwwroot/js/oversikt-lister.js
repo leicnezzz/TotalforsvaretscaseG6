@@ -300,7 +300,7 @@
         if (!treff.length) {
             liste.append(element(
                 'p',
-                'Ingen aktive kriser passer til valget.',
+                'Ingen hendelser passer til valget.',
                 'oversikt-tom'
             ));
             return;
@@ -314,7 +314,7 @@
 
         tabell.append(element(
             'caption',
-            'Aktive kriser',
+            'Hendelser',
             'visually-hidden'
         ));
 
@@ -469,7 +469,7 @@
 
     function apneKriser() {
         visning = 'kriser';
-        tittel.textContent = 'Aktive kriser';
+        tittel.textContent = 'Hendelser';
 
         const typer = [
             ...new Set((data.kriser ?? []).map(
@@ -506,7 +506,7 @@
             ? 'Tilgjengelige ressurser'
             : type === 'loste'
                 ? 'Løste behov'
-                : (type === 'kriser' ? 'Aktive kriser' : 'Aktive behov');
+                : (type === 'kriser' ? 'Hendelser' : 'Aktive behov');
 
         valg(typevalg, erRessurser
             ? [
@@ -539,13 +539,6 @@
         .forEach(kort => {
             kort.addEventListener('click', () => {
                 apne(kort.dataset.oversiktListe);
-            });
-
-            kort.addEventListener('keydown', event => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    apne(kort.dataset.oversiktListe);
-                }
             });
         });
 

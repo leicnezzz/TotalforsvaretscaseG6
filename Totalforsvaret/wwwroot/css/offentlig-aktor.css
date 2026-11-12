@@ -2,6 +2,9 @@
 
 /* Farger og skrift */
 .offentlig-dashboard {
+    --sone-lav: #15977c;
+    --sone-moderat: #d2a100;
+    --sone-hoy: #8a174c;
     --morkegronn: #3B6E43;
     --tilgjengelig: #50C832;
     --planlagt: #F5BD62;
@@ -12,7 +15,7 @@
     --kant: #DCE5E5;
     --bakgrunn: #F4F7F6;
 
-    padding: 24px 24px 80px;
+    padding: 8px 24px 80px;
     background: var(--bakgrunn);
     color: var(--tekst);
     font-family: "Roboto", Arial, sans-serif;
@@ -34,7 +37,7 @@
     flex-wrap: wrap;
     gap: 12px;
 
-    margin: -24px -24px 24px;
+    margin: 0 -24px 24px;
     padding: 14px 24px;
     background: #FFFFFF;
     border-bottom: 1px solid var(--kant);
@@ -66,27 +69,29 @@
     font-size: 12px;
 }
 
-/* Overskrift */
-.offentlig-dashboard .oversikt-topp {
+.kart-oversiktsrad,
+.kart-oversiktsgruppe,
+.offentlig-dashboard .statistikk-rad {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
     flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 22px;
+    align-items: center;
+    gap: 6px;
 }
 
-.offentlig-dashboard .oversikt-topp h1 {
-    margin: 0 0 6px;
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: -0.7px;
+.kart-oversiktsrad {
+    --oversiktskontroll-hoyde: 50px;
+    justify-content: space-between;
+    margin-bottom: 8px;
 }
 
-.offentlig-dashboard .oversikt-topp p {
+.kart-oversiktsgruppe {
+    column-gap: 14px;
+}
+
+.kart-oversiktsgruppe h1 {
     margin: 0;
-    color: var(--dempet);
-    font-size: 15px;
+    font-size: 18px;
+    font-weight: 700;
 }
 
 /* Handlingsknapper */
@@ -149,39 +154,58 @@
 
 /* Statistikkort */
 .offentlig-dashboard .stat-kort {
-    min-height: 125px;
-    margin-bottom: 12px;
-    padding: 20px 22px;
-
-    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: var(--oversiktskontroll-hoyde);
+    padding: 5px 10px;
+    background: #fff;
     border: 1px solid var(--kant);
-    border-left: 4px solid #163C4C;
-    border-radius: 10px;
-    box-shadow: 0 3px 12px rgb(32 52 61 / 4%);
+    border-left: 3px solid #163c4c;
+    border-radius: 6px;
 }
 
 .offentlig-dashboard a.stat-kort {
-    display: block;
     color: inherit;
     text-decoration: none;
 }
 
 .offentlig-dashboard .stat-kort h2 {
-    margin: 0 0 7px;
+    margin: 0;
     color: var(--dempet);
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .offentlig-dashboard .stat-tall {
-    margin: 0 0 4px;
-    font-size: 32px;
+    margin: 0;
+    font-size: 15px;
     font-weight: 700;
-    line-height: 1.1;
+    line-height: 1;
 }
 
-.offentlig-dashboard .stat-kort span {
-    color: var(--dempet);
+.offentlig-dashboard .kart-oversiktsrad .oversikt-handlinger-kolonne {
+    margin-inline-start: auto;
+    justify-content: flex-end;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.kart-oversiktsrad .oversikt-handlinger {
+    gap: 6px;
+}
+
+.offentlig-dashboard .kart-oversiktsrad .registrer-behov-knapp,
+.offentlig-dashboard .kart-oversiktsrad .opprett-krise-knapp {
+    min-height: var(--oversiktskontroll-hoyde);
+}
+
+.offentlig-dashboard .kart-oversiktsrad .registrer-behov-knapp,
+.offentlig-dashboard .kart-oversiktsrad .opprett-krise-knapp,
+.offentlig-dashboard .kart-oversiktsrad .egen-ressurs-lenke {
+    padding: 5px 8px;
     font-size: 12px;
 }
 
@@ -193,20 +217,55 @@
     border-left-color: var(--tilgjengelig);
 }
 
-/* Kart og oppfølging */
-.offentlig-arbeidsflate {
-    --kart-hoyde: clamp(520px, calc(100dvh - 310px), 850px);
+/* Operativt kart */
+#kartSokToolbar {
+    --offentlig: #72d9df;
+    --kant: #dce5e5;
+    --tekst: #20343d;
+    --morkegronn: #163c4c;
+    position: relative;
+    z-index: 2;
+    flex: 0 1 380px;
+    min-width: 0;
+    color: var(--tekst);
+    font-size: 14px;
+}
+
+#kartSokToolbar .kart-sokstatus,
+#kartSokToolbar .kart-stedsforslag {
+    position: absolute;
+    top: calc(100% + 4px);
+    inset-inline: 0;
+    margin: 0;
+    z-index: 1;
+    box-shadow: 0 3px 12px #0003;
+}
+
+#kartSokToolbar .kart-stedsforslag {
+    top: calc(100% + 36px);
+    background: white;
+    border-radius: 8px;
+}
+
+@media (max-width: 760px) {
+    #kartSokToolbar {
+        order: 1;
+        flex: 0 0 auto;
+    }
 }
 
 .offentlig-dashboard .situasjonskart {
-    padding: 0;
+    margin-bottom: 24px;
 }
 
 .offentlig-dashboard #offentligKart {
+    position: relative;
     width: 100%;
-    height: var(--kart-hoyde);
+    height: calc(100dvh - var(--kart-topp, 130px) - 8px);
+    min-height: 440px;
     border: 1px solid var(--kant);
     border-radius: 10px;
+    background: #dce5e5;
 }
 
 .offentlig-dashboard #kartmelding {
@@ -214,11 +273,13 @@
     line-height: 1.5;
 }
 
+#kartmelding:empty {
+    display: none;
+}
+
 /* Oppfølgingspanel */
 .offentlig-dashboard .oppfolging-panel {
-    height: var(--kart-hoyde);
     padding: 20px;
-    overflow-y: auto;
 
     background: #FFFFFF;
     border: 1px solid var(--kant);
@@ -294,38 +355,15 @@
     line-height: 1.7;
 }
 
-/* Stor skjerm */
-@media (min-width: 992px) {
-    .offentlig-arbeidsflate .kart-kolonne {
-        flex: 1 1 0;
-        width: auto;
-        min-width: 0;
-    }
-
-    .offentlig-arbeidsflate .oppfolging-kolonne {
-        flex: 0 0 320px;
-        width: 320px;
-    }
-}
-
 /* Mobil og nettbrett */
 @media (max-width: 991.98px) {
     .offentlig-dashboard {
-        padding: 16px 8px;
+        padding: 8px 8px 48px;
     }
 
     .offentlig-dashboard .aktorlinje {
-        margin: -16px -8px 20px;
+        margin: 0 -8px 20px;
         padding: 14px 16px;
-    }
-
-    .offentlig-dashboard .oversikt-topp h1 {
-        font-size: 25px;
-    }
-
-    .offentlig-dashboard #offentligKart {
-        height: 60dvh;
-        min-height: 380px;
     }
 
     .offentlig-dashboard .oppfolging-panel {
@@ -339,23 +377,579 @@
 }
 
 /* Søk og filtrering på operativt kart */
-.offentlig-kartfilter {
-    width: 300px;
-    max-width: calc(100vw - 110px);
-    max-height: 50vh;
+#offentligKart {
+    --kart-marg: 12px;
+    --kart-sideforskyvning: 0px;
+    --kart-kontrollhoyde: 42px;
+    --kart-panelhoyde: min(560px, max(290px, calc(60dvh - 80px)));
+}
+
+.kart-bekreftelse {
+    position: absolute;
+    z-index: 820;
+    top: var(--kart-marg);
+    left: 50%;
+    width: max-content;
+    max-width: calc(100% - 2 * var(--kart-marg));
+    margin: 0;
+    transform: translateX(-50%);
+    box-shadow: 0 3px 12px #0003;
+}
+
+#offentligKart:is(:fullscreen, .kart-fullskjerm) .kart-bekreftelse {
+    top: calc(var(--kart-marg) + var(--kart-kontrollhoyde) + 8px);
+}
+
+@media (max-width: 1120px) {
+    .kart-bekreftelse {
+        top: calc(var(--kart-marg) + var(--kart-sideforskyvning) + var(--kart-kontrollhoyde) + 8px);
+    }
+
+    #offentligKart:is(:fullscreen, .kart-fullskjerm) .kart-bekreftelse {
+        top: calc(var(--kart-marg) + var(--kart-sideforskyvning) + 2 * var(--kart-kontrollhoyde) + 16px);
+    }
+}
+
+.kart-handlinger,
+#offentligKart .kart-stedsok,
+.kart-filterhandlinger,
+.kart-sidepanel {
+    position: absolute;
+    top: var(--kart-marg);
+    z-index: 800;
+    font-size: 13px;
+}
+
+.kart-handlinger {
+    left: var(--kart-marg);
+    width: min(480px, calc(100% - 2 * var(--kart-marg)));
+    pointer-events: none;
+}
+
+.kart-handlingsrad {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.kart-handlingsrad > *,
+.kart-handlingspanel {
+    pointer-events: auto;
+}
+
+.kart-handlingsrad > *,
+.kart-filterknapp {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--kart-kontrollhoyde);
+    justify-content: center;
+    padding: 0 20px;
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+    background: white;
+    color: #163c4c;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 8px #0002;
+    cursor: pointer;
+}
+
+@supports (width: calc-size(max-content, size * 1.2)) {
+    .kart-handlingsrad > button,
+    .kart-filterknapp {
+        width: calc-size(max-content, size * 1.2);
+        padding-inline: 13px;
+    }
+
+    .kart-handlingspanel button:not(.w-100) {
+        width: calc-size(max-content, size * 1.2);
+        max-width: 100%;
+    }
+}
+
+.kart-handlingsrad > :hover,
+.kart-filterknapp:hover {
+    background: #eaf2f5;
+}
+
+.kart-handlingsrad > button,
+.kart-filterknapp {
+    position: relative;
+}
+
+.kart-handlingsrad > [aria-expanded="true"],
+.kart-handlingsrad > [data-venter-plassering],
+.kart-filterknapp[aria-expanded="true"] {
+    border-color: #aabfc6;
+    background: white;
+    color: #163c4c;
+}
+
+.kart-handlingsrad > [aria-expanded="true"]::after,
+.kart-filterknapp[aria-expanded="true"]::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    left: calc(50% - 6px);
+    bottom: -16px;
+    width: 12px;
+    height: 12px;
+    transform: rotate(45deg);
+    border-top: 1px solid var(--kant);
+    border-left: 1px solid var(--kant);
+    background: white;
+}
+
+.kart-filterhandlinger {
+    z-index: 801;
+    display: flex;
+    gap: 5px;
+    top: calc(var(--kart-marg) + var(--kart-sideforskyvning));
+    right: var(--kart-marg);
+}
+
+.kart-sidepanel {
+    right: var(--kart-marg);
+}
+
+.kart-sidepanel,
+.kart-handlingspanel {
+    padding: 14px;
     overflow-y: auto;
-    padding: 12px;
+    max-height: var(--kart-panelhoyde);
     background: white;
     color: var(--tekst);
     border: 1px solid var(--kant);
-    border-radius: 10px;
-    box-shadow: 0 3px 14px #0002;
-    font: 13px/1.4 system-ui, sans-serif;
+    border-radius: 8px;
+    box-shadow: 0 3px 14px #0003;
 }
 
-.offentlig-kartfilter *,
-.offentlig-kartfilter *::before {
-    box-sizing: border-box;
+.kart-sidepanel {
+    top: calc(var(--kart-marg) + var(--kart-sideforskyvning) + var(--kart-kontrollhoyde) + 9px);
+    width: min(260px, calc(100% - 2 * var(--kart-marg)));
+}
+
+#kartSoneliste {
+    width: min(305px, calc(100% - 2 * var(--kart-marg)));
+}
+
+#kartSoneliste h2 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.kart-soneliste-tom {
+    margin: 0;
+    color: var(--dempet);
+}
+
+.kart-sonerader {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.kart-sonerad {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+}
+
+.kart-sonerad + .kart-sonerad {
+    border-top: 1px solid var(--kant);
+}
+
+.kart-sonerad strong,
+.kart-sonerad small {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.kart-handlingspanel {
+    width: min(410px, 100%);
+    margin-top: 9px;
+    scrollbar-width: thin;
+}
+
+.kart-plasseringshint {
+    width: fit-content;
+    margin: 9px 0 0;
+    padding: 7px 10px;
+    border-radius: 6px;
+    background: #edf2ef;
+    color: #29443b;
+    box-shadow: 0 2px 8px #0002;
+}
+
+.kart-plasseringshint:empty {
+    display: none;
+}
+
+.kart-handlingspanel h2 {
+    margin: 0 0 4px;
+    color: #163c4c;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.kart-panelintro {
+    margin: 0 0 10px;
+    color: var(--dempet);
+    font-size: 12px;
+}
+
+.kart-handlingspanel form[data-kartmarkering] label,
+.kart-feltetikett,
+.kart-valgfelt legend {
+    display: block;
+    margin: 7px 0 3px;
+    color: #20343d;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.kart-valgfelt legend {
+    float: none;
+    width: auto;
+}
+
+.kart-handlingspanel .form-control,
+.kart-handlingspanel .form-select {
+    min-height: 32px;
+    padding: 5px 8px;
+    border-color: var(--kant);
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.kart-handlingspanel .form-select {
+    padding-right: 30px;
+}
+
+.kart-piller {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.kart-handlingspanel .kart-piller > label {
+    position: relative;
+    margin: 0;
+    font-weight: 400;
+}
+
+.kart-piller input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.kart-piller span,
+.kart-piller button {
+    display: inline-flex;
+    padding: 3px 10px;
+    border: 1px solid var(--kant);
+    border-radius: 99px;
+    background: white;
+    color: var(--tekst);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.kart-piller input:checked + span,
+.kart-piller button[aria-pressed="true"] {
+    border-color: #7d9d8a;
+    background: #eaf2eb;
+    color: #214a33;
+}
+
+.kart-piller input:focus-visible + span {
+    outline: 2px solid var(--offentlig);
+    outline-offset: 2px;
+}
+
+.kart-panelknapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.kart-handlingspanel .btn {
+    padding: 4px 9px;
+    font-size: 12px;
+}
+
+.kart-panelknapper .btn-primary,
+.kart-panelknapper .btn-success {
+    --bs-btn-bg: #163c4c;
+    --bs-btn-border-color: #163c4c;
+    --bs-btn-hover-bg: #225466;
+    --bs-btn-hover-border-color: #225466;
+    --bs-btn-disabled-bg: #163c4c;
+    --bs-btn-disabled-border-color: #163c4c;
+}
+
+.kart-handlingspanel .kart-matchtreff {
+    margin: 0 0 6px;
+    padding: 8px 10px;
+    border: 1px solid var(--kant);
+    border-radius: 5px;
+    background: #f7f9f8;
+}
+
+.kart-handlingspanel .kart-matchtreff p {
+    margin: 2px 0;
+    color: var(--dempet);
+    font-size: 12px;
+}
+
+.kart-handlingspanel .kart-matchtreff strong {
+    margin: 0;
+    font-size: 13px;
+}
+
+.kart-handlingspanel .kart-matchtreff > .mt-3 {
+    margin-top: 6px !important;
+}
+
+.kart-behovplassering h2 {
+    margin: 8px 0 3px;
+    font-size: 12px;
+}
+
+.kart-behovskjema .row {
+    --bs-gutter-x: 10px;
+}
+
+.kart-behovskjema #behov-liste .mb-3 {
+    margin-bottom: 7px !important;
+}
+
+.kart-behovskjema #behov-liste fieldset {
+    min-width: 0;
+    margin: 0 0 8px !important;
+    padding: 0;
+    border: 0;
+}
+
+.kart-behovskjema #behov-liste fieldset > legend {
+    float: none;
+    margin: 0;
+    color: #163c4c;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.kart-behovskjema #behov-liste:has(> fieldset:only-child) > fieldset > legend {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+
+@media (min-width: 420px) {
+    .kart-behovskjema .col-md-6 {
+        width: 50%;
+    }
+}
+
+.kart-behovstatus:empty {
+    display: none;
+}
+
+.kart-samlemarkor {
+    display: grid;
+    place-items: center;
+    border: 2px solid white;
+    border-radius: 50%;
+    background: #163c4c;
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 1px 5px #0007;
+}
+
+.kart-samleinnhold details {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--kant);
+}
+
+.kart-samleinnhold summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.kart-sonevalg {
+    margin-top: 12px;
+}
+
+.kart-sonevalg legend {
+    float: none;
+    font-size: inherit;
+    font-weight: 600;
+    margin: 0;
+}
+
+.kart-handlingspanel form .kart-sonevalg label {
+    display: grid;
+    grid-template-columns: auto 18px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.kart-handlingspanel form .kart-sonevalg label:has(:checked) {
+    border-color: var(--sonefarge);
+    background: color-mix(in srgb, var(--sonefarge) 10%, white);
+}
+
+.kart-sonevalg-lav { --sonefarge: var(--sone-lav); }
+.kart-sonevalg-moderat { --sonefarge: var(--sone-moderat); }
+.kart-sonevalg-hoy { --sonefarge: var(--sone-hoy); }
+
+.kart-soneproeve {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 2px solid var(--sonefarge);
+    background: color-mix(in srgb, var(--sonefarge) 35%, white);
+}
+
+.kart-sonevalg-moderat .kart-soneproeve {
+    border-style: dotted;
+}
+
+.kart-sonevalg-hoy .kart-soneproeve {
+    border-style: dashed;
+}
+
+.kart-symbol-soner {
+    background: linear-gradient(to right, var(--sone-lav) 33%, var(--sone-moderat) 33% 66%, var(--sone-hoy) 66%);
+}
+
+.leaflet-tooltip.kart-soneetikett {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    width: max-content;
+    white-space: normal;
+    writing-mode: horizontal-tb;
+    pointer-events: none;
+}
+
+.kart-soneetikett > div {
+    padding: 4px 7px;
+    border: 1px solid var(--sonefarge);
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--sonefarge) 15%, white);
+    color: #172a34;
+    font: 700 12px/1.25 system-ui, sans-serif;
+    text-align: center;
+    overflow-wrap: break-word;
+}
+
+.kart-handlingspanel .kart-posisjon {
+    margin: 8px 0;
+    padding: 7px 9px;
+    border-radius: 5px;
+    background: #edf2ef;
+    color: #29443b;
+    font-size: 12px;
+}
+
+#offentligKart .kart-stedsok {
+    left: 50%;
+    width: min(30%, 340px);
+    transform: translateX(-50%);
+    z-index: 810;
+}
+
+.kart-sokstatus:not(:empty) {
+    padding: 6px 9px;
+    background: white;
+    border-radius: 6px;
+}
+
+#offentligKart.kart-plassering-aktiv {
+    cursor: crosshair;
+}
+
+@media (max-width: 1120px) {
+    #offentligKart:is(:fullscreen, .kart-fullskjerm) .kart-stedsok {
+        top: calc(var(--kart-marg) + var(--kart-kontrollhoyde) + 8px);
+        left: var(--kart-marg);
+        width: min(340px, calc(100% - 2 * var(--kart-marg)));
+        transform: none;
+    }
+
+    #offentligKart:is(:fullscreen, .kart-fullskjerm) .kart-handlingspanel {
+        margin-top: calc(var(--kart-kontrollhoyde) + 20px);
+    }
+
+    #offentligKart:is(:fullscreen, .kart-fullskjerm) .kart-sidepanel {
+        top: calc(var(--kart-marg) + 2 * var(--kart-kontrollhoyde) + 20px);
+    }
+}
+
+@media (max-width: 400px) {
+    #offentligKart {
+        --kart-marg: 6px;
+    }
+
+    .kart-handlingsrad > *,
+    .kart-filterknapp {
+        padding-inline: 8px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 720px) {
+    #offentligKart {
+        --kart-sideforskyvning: calc(var(--kart-kontrollhoyde) + 6px);
+    }
+
+    .kart-handlingspanel,
+    .kart-plasseringshint {
+        margin-top: calc(var(--kart-sideforskyvning) + 9px);
+    }
+
+    .kart-handlingsrad > [aria-expanded="true"]::after {
+        display: none;
+    }
+
+    #offentligKart:is(:fullscreen, .kart-fullskjerm) .kart-stedsok {
+        top: calc(var(--kart-marg) + var(--kart-sideforskyvning) + var(--kart-kontrollhoyde) + 8px);
+    }
+
+    #offentligKart:is(:fullscreen, .kart-fullskjerm) .kart-handlingspanel {
+        margin-top: calc(var(--kart-sideforskyvning) + var(--kart-kontrollhoyde) + 20px);
+    }
+
+    #offentligKart:is(:fullscreen, .kart-fullskjerm) .kart-sidepanel {
+        top: calc(var(--kart-marg) + var(--kart-sideforskyvning) + 2 * var(--kart-kontrollhoyde) + 20px);
+    }
+}
+
+@media (max-width: 420px) {
+    #offentligKart {
+        --kart-sideforskyvning: calc(2 * var(--kart-kontrollhoyde) + 11px);
+    }
+
+    .kart-handlingspanel,
+    .kart-plasseringshint {
+        margin-top: calc(var(--kart-kontrollhoyde) + 15px);
+    }
 }
 
 .kart-sokrad {
@@ -525,6 +1119,22 @@
     border-bottom: 11px solid var(--symbolfarge);
 }
 
+.kart-symbol-veihindringer,
+.kart-markor-veihindringer {
+    background: url("../images/kart-veihindring.svg") center / contain no-repeat;
+}
+
+.kart-symbol-veihindringer {
+    width: 15px;
+    height: 15px;
+}
+
+.kart-markor-veihindringer {
+    width: 24px;
+    height: 24px;
+    filter: drop-shadow(0 1px 2px #0007);
+}
+
 /* Markører på selve kartet */
 .kart-markor {
     display: block;
@@ -558,11 +1168,6 @@
     clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 
-.kart-treff {
-    font-size: 11px;
-    margin: 8px 0 0;
-}
-
 .kart-kilde {
     margin-top: 8px;
     font-size: 10px;
@@ -570,9 +1175,15 @@
 }
 
 /* Fullskjermknappen ligger over Leaflet-teksten */
+#offentligKart .leaflet-control-zoom a {
+    width: 41px;
+    height: 34px;
+    line-height: 34px;
+}
+
 .kart-fullskjermknapp {
-    width: 36px;
-    height: 36px;
+    width: 48px;
+    height: 40px;
     border: 2px solid #0003;
     border-radius: 5px;
     background: white;
@@ -620,38 +1231,30 @@ body.kart-fullskjerm-apen {
     border: 0;
 }
 
-@media (max-width: 575px) {
-    .offentlig-kartfilter {
-        width: 250px;
-        padding: 9px;
-        max-height: 230px;
-    }
+/* Søkefelt */
+.kart-sokrad {
+    gap: 0;
+    overflow: hidden;
+    min-height: var(--kart-kontrollhoyde, 40px);
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+    background: white;
+    box-shadow: 0 2px 8px #0002;
 }
 
-/* Sammenleggbart søkepanel */
-#kartDetaljer[hidden] {
-    display: none !important;
+.kart-sokrad:focus-within {
+    outline: 2px solid var(--offentlig);
+    outline-offset: 1px;
 }
 
-.kart-sokrad .kart-filterknapp {
-    flex-shrink: 0;
-    align-self: stretch;
-    width: 32px;
-    padding: 6px;
-    background: var(--bakgrunn);
-    color: var(--morkegronn);
+.kart-sokrad input {
     border: 0;
-    border-left: 1px solid var(--kant);
     border-radius: 0;
-    font-size: 18px;
+    background: transparent;
 }
 
 .kart-sokrad input:focus-visible {
     outline: none;
-}
-
-.kart-sokrad button[hidden] {
-    display: none !important;
 }
 
 /* Klikkbare oversiktskort */
@@ -847,38 +1450,6 @@ body.kart-fullskjerm-apen {
     --bs-btn-active-color: #FFFFFF;
     --bs-btn-active-bg: #163C4C;
     --bs-btn-active-border-color: #163C4C;
-}
-
-@media (min-width: 1200px) {
-    .offentlig-dashboard .statistikk-rad > .col-lg-3 {
-        flex: 0 0 20%;
-        max-width: 20%;
-    }
-}
-
-.offentlig-dashboard .kart-forklaring {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding: 12px 16px;
-    color: var(--dempet);
-    font-size: 13px;
-}
-
-.offentlig-dashboard .kart-prikk {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    margin-right: 5px;
-    border-radius: 50%;
-}
-
-.offentlig-dashboard .kart-ressurs {
-    background: var(--tilgjengelig);
-}
-
-.offentlig-dashboard .kart-behov {
-    background: #DC3545;
 }
 
 /* Registrering og endring av behov */
@@ -1286,4 +1857,37 @@ body.offentlig-page {
 .offentlig-dashboard .egen-ressurs-lenke:focus-visible {
     outline: 3px solid var(--offentlig);
     outline-offset: 3px;
+}
+
+
+/* Samlet oversikt og hendelsesvalg. */
+.offentlig-dashboard .kart-oversiktsrad {
+    padding: 14px 16px; margin-bottom: 12px; gap: 16px;
+    border: 1px solid #d5dfe3; border-radius: 12px; background: #f7f9fa;
+}
+.offentlig-dashboard .kart-oversiktsgruppe { gap: 14px; }
+.offentlig-dashboard .statistikk-rad { gap: 8px; }
+.offentlig-dashboard .stat-kort { border: 2px solid #163c4c; border-radius: 10px; padding: 8px 14px; gap: 12px; }
+.offentlig-dashboard .behov-kort { border-color: #a64b3c; }
+.offentlig-dashboard .treff-kort { border-color: #426747; }
+.offentlig-dashboard .egen-ressurs-lenke::after { content: none; }
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 360px) minmax(0, 1fr); gap: 20px;
+}
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) .nav-links { flex-wrap: wrap; }
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) .account-summary { justify-self: end; }
+#kartSokToolbar { width: 100%; justify-self: center; }
+.kart-hendelser { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 12px 0; color: #163c4c; }
+.kart-hendelser details { position: relative; }
+.kart-hendelser summary { cursor: pointer; padding: 10px 14px; background: white; border: 1px solid #163c4c; border-radius: 8px; }
+#kartHendelserForm { position: absolute; top: calc(100% + 6px); left: 0; z-index: 1100; width: min(360px, 85vw); padding: 16px; background: white; border: 1px solid #c9d5dc; border-radius: 10px; box-shadow: 0 6px 20px #163c4c20; }
+#kartHendelserValg { max-height: 260px; overflow: auto; margin-bottom: 12px; }
+#kartHendelserValg legend { font-size: 14px; }
+#kartHendelserValg label { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+#kartArbeidshendelse { width: min(320px, 100%); }
+#kartArbeidsstatus { font-size: 13px; }
+.kart-handlingsrad button:disabled { opacity: .5; cursor: not-allowed; }
+@media(max-width: 1100px) {
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) { grid-template-columns: 1fr auto; }
+    #kartSokToolbar { grid-column: 1 / -1; grid-row: 2; max-width: 420px; margin-inline: auto; }
 }

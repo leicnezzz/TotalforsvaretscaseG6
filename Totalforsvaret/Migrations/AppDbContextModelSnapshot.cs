@@ -94,7 +94,7 @@ namespace Totalforsvaret.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CrisisId")
+                    b.Property<int?>("CrisisId")
                         .HasColumnType("int")
                         .HasColumnName("HendelseId");
 
@@ -362,6 +362,53 @@ namespace Totalforsvaret.Migrations
                     b.ToTable("Kriser");
                 });
 
+            modelBuilder.Entity("Totalforsvaret.Models.CrisisMapAnnotation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CoordinatesJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("CrisisId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1500)
+                        .HasColumnType("varchar(1500)");
+
+                    b.Property<string>("Impact")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Risk")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CrisisId");
+
+                    b.ToTable("CrisisMapAnnotations");
+                });
+
             modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.Category", b =>
                 {
                     b.Property<int>("CategoryId")
@@ -548,8 +595,7 @@ namespace Totalforsvaret.Migrations
                     b.HasOne("Totalforsvaret.Models.Crisis", "Crisis")
                         .WithMany("Needs")
                         .HasForeignKey("CrisisId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Crisis");
                 });
@@ -598,6 +644,17 @@ namespace Totalforsvaret.Migrations
                         .HasForeignKey("OffentligAktorId");
 
                     b.Navigation("OffentligAktor");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Models.CrisisMapAnnotation", b =>
+                {
+                    b.HasOne("Totalforsvaret.Models.Crisis", "Crisis")
+                        .WithMany()
+                        .HasForeignKey("CrisisId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Crisis");
                 });
 
             modelBuilder.Entity("Totalforsvaret.Models.resourcemodels.EquipmentDetails", b =>

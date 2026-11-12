@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="~/css/private-home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Private-home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/incident-alert.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
@@ -29,31 +29,41 @@
 }
 
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
-    <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
+    <div class="resource-incident-row">
+        <partial name="/Areas/Homepage/Views/Shared/_PrivatePageAction.cshtml" />
+        <partial name="/Areas/Homepage/Views/Shared/_IncidentAlert.cshtml" />
+    </div>
     <main class="overview-content">
-        <partial name="/Views/Shared/_IncidentAlert.cshtml" />
         <h1>Liste over dine ressurser</h1>
-        <section class="overview-intro" aria-labelledby="resources-title">
-            <div>
-                <h2 id="resources-title">Dine ressurser</h2>
-                <p>Under er alle dine registrerte ressurser listet.<br />For å redigere trykk på ressursen.</p>
-            </div>
-            <div>
-                <h3>Registrer ny ressurs</h3>
-                <a class="overview-button" asp-area="Privat" asp-controller="Resource" asp-action="Skjema">Registreringen <span aria-hidden="true">→</span></a>
-            </div>
-        </section>
-        <section class="overview-filters" aria-label="Filtrer ressurser">
-            <label for="resource-search">Søk i dine ressurser<input id="resource-search" type="search" placeholder="Søk etter navn eller modell" /></label>
-            <label for="resource-filter">Ressurstype<select id="resource-filter"><option value="">Alle ressurser</option><option value="vehicle">Kjøretøy</option><option value="equipment">Utstyr</option></select></label>
-        </section>
-        <p id="resource-count" class="overview-demo-note" role="status"></p>
-        <div id="resource-list" class="overview-list" aria-label="Dine ressurser">
+        <div class="overview-resources">
+            <section class="overview-intro" aria-labelledby="resources-title">
+                <div>
+                    <h2 id="resources-title">Dine ressurser</h2>
+                    <p>Under er alle dine registrerte ressurser listet.<br />For å redigere trykk på ressursen.</p>
+                </div>
+                <div>
+                    <h3>Registrer ny ressurs</h3>
+                    <a class="overview-button" asp-area="Privat" asp-controller="Resource" asp-action="Skjema">Registreringen <span aria-hidden="true">→</span></a>
+                </div>
+            </section>
+            <section class="overview-filters" aria-label="Filtrer ressurser">
+                <label for="resource-search">Søk i dine ressurser<input id="resource-search" type="search" placeholder="Søk etter navn eller modell" /></label>
+                <label for="resource-filter">Ressurstype<select id="resource-filter"><option value="">Alle ressurser</option><option value="vehicle">Kjøretøy</option><option value="equipment">Utstyr</option></select></label>
+            </section>
+            <p id="resource-count" class="overview-demo-note" role="status"></p>
+            <div id="resource-list" class="overview-list" aria-label="Dine ressurser">
 
-            <partial name="/Areas/Privat/Views/Resource/_ResourceList.cshtml" model="Model" />
+                <partial name="/Areas/Privat/Views/Resource/_ResourceList.cshtml" model="Model" />
+            </div>
+            <p id="resource-empty" class="overview-empty" hidden>Du har ingen ressurser å vise. Velg «Registreringen» for å legge til en ressurs.</p>
+            <p id="overview-status" class="overview-status" role="status" aria-live="polite"></p>
         </div>
-        <p id="resource-empty" class="overview-empty" hidden>Du har ingen ressurser å vise. Velg «Registreringen» for å legge til en ressurs.</p>
-        <p id="overview-status" class="overview-status" role="status" aria-live="polite"></p>
+
+        <section class="overview-map-panel" aria-labelledby="overview-map-title">
+            <h2 id="overview-map-title">Ressurskart</h2>
+            <div id="resource-overview-map" role="region" aria-label="Kart over dine ressurser"></div>
+            <p id="resource-overview-map-status" role="status"></p>
+        </section>
     </main>
     <footer class="thank-you">
         <div class="footer-content">
@@ -103,9 +113,10 @@
         </div>
     </dialog>
     <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/js/map-zoom.js" asp-append-version="true"></script>
     <script src="~/js/resource-fields.js" asp-append-version="true"></script>
     <script src="~/js/resource-address.js" asp-append-version="true"></script>
     <script src="~/js/resource-overview.js" asp-append-version="true"></script>
-    <partial name="/Views/Shared/_ResourceApi.cshtml" />
+    <partial name="/Areas/Homepage/Views/Shared/_ResourceApi.cshtml" />
 </body>
 </html>

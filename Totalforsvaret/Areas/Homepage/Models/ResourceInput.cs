@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Totalforsvaret.Models;
 
@@ -66,6 +66,19 @@ public class ResourceInput : IValidatableObject
                 [nameof(Equipment)]);
         }
     }
+}
+
+public class PublicResourceInput : ResourceInput
+{
+    [Required, MaxLength(99)]
+    public string ContactFirstName { get; set; } = "";
+
+    [Required, MaxLength(100)]
+    public string ContactLastName { get; set; } = "";
+
+    // Telefon (25) og skilletegn (3) lagres i samme felt på 200 tegn.
+    [Required, EmailAddress, MaxLength(172)]
+    public string ContactEmail { get; set; } = "";
 }
 
 public class VehicleInput

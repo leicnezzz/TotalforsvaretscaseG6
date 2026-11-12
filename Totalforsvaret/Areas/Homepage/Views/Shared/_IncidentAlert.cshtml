@@ -1,5 +1,9 @@
 @* Felles designeksempel. Erstatt demoinnholdet med registrerte, aktive kriser når kriseflyten er implementert. *@
-<aside class="incident-alert" aria-label="Eksempel på hendelsesvarsel">
+<aside class="incident-alert" aria-label="Eksempel på hendelsesvarsel"
+       data-incident-key="kristiansand-demo-2026-10-28">
+    <button class="incident-alert-close" type="button" data-incident-dismiss aria-label="Lukk hendelsesvarselet">
+        <span aria-hidden="true">×</span>
+    </button>
     <div class="incident-alert-heading">
         <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M20 4 37 34H3Z" stroke-linejoin="round" />
@@ -20,3 +24,4 @@
         <time datetime="2026-10-28T08:10:00+01:00">28.10.2026 kl. 08:10</time>
     </p>
 </aside>
+<script src="~/js/incident-alert.js" asp-append-version="true" defer></script>

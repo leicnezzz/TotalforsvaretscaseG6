@@ -23,7 +23,7 @@ public class NeedCreateViewModel
     public string Status { get; set; } = "";
 
     [Required(ErrorMessage = "Velg en krise.")]
-    public int CrisisId { get; set; }
+    public int? CrisisId { get; set; }
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
     public double? Latitude { get; set; }

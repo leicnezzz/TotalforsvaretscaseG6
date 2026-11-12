@@ -46,7 +46,7 @@ public class Need
 
     // Kobling til offentlig aktør
     [Column("OffentligAktørId")]
-    public int OffentligAktorId { get; set; }
+    public int? OffentligAktorId { get; set; }
 
     public Offentligaktør? OffentligAktor { get; set; }
 }

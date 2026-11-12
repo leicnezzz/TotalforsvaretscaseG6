@@ -1,0 +1,72 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Slett konto – Paratus</title>
+
+    <link rel="stylesheet"
+          href="~/css/site-header.css"
+          asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/css/Profile.css"
+          asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/css/Profile-offentlig.css"
+          asp-append-version="true" />
+</head>
+
+<body class="profile-page offentlig-page">
+    <partial name="/Areas/Offentlig/Views/Shared/_OffentligNavigation.cshtml" />
+
+    <main class="profile-main">
+        <section class="profile-card delete-account-card"
+                 aria-labelledby="delete-title">
+            <h1 id="delete-title">Slett konto</h1>
+
+            <p>
+                Kontoen, profilbildet, ressursene dine og tilhørende
+                ressursforespørsler slettes. Kriser og behov beholdes,
+                men kobles fra kontoen din. Dette kan ikke angres.
+            </p>
+
+            <form asp-area="Offentlig"
+                  asp-controller="Profile"
+                  asp-action="DeleteAccount"
+                  method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="validation-summary"
+                     role="alert"></div>
+
+                <div class="field">
+                    <label for="delete-password">Bekreft med passordet ditt</label>
+                    <input id="delete-password"
+                           name="password"
+                           type="password"
+                           autocomplete="current-password"
+                           required />
+                </div>
+
+                <div class="form-actions">
+                    <a class="button button-primary"
+                       asp-area="Offentlig"
+                       asp-controller="Profile"
+                       asp-action="Index">
+                        Avbryt
+                    </a>
+
+                    <button class="button button-danger" type="submit">
+                        Slett kontoen permanent
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

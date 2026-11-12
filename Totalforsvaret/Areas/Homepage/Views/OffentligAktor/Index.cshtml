@@ -4,8 +4,10 @@
 @model List<Resource>
 
 @{
-    ViewData["Title"] = "Operativ oversikt";
+    var isMatch = ViewContext.RouteData.Values["match"] is true;
+    ViewData["Title"] = isMatch ? "Match" : "Operativ oversikt";
     ViewData["FullWidth"] = true;
+    ViewData["RegistrationFooter"] = true;
 
     // Sender bare opplysningene kartet trenger.
     var kartRessurser = Model.Select(ressurs => new
@@ -25,6 +27,7 @@
                      ?? Enumerable.Empty<Need>()).Select(behov => new
     {
         id = behov.Id,
+        kriseId = behov.CrisisId,
         navn = behov.Name,
         type = behov.Type,
         prioritet = behov.Priority,
@@ -38,6 +41,13 @@
     {
         ressurser = kartRessurser,
         behov = kartBehov,
+        markeringer = (ViewBag.Kartmarkeringer as IEnumerable<Totalforsvaret.Models.CrisisMapAnnotation>
+            ?? Enumerable.Empty<Totalforsvaret.Models.CrisisMapAnnotation>()).Select(a => new
+            {
+                id = a.Id, crisisId = a.CrisisId, kind = a.Kind, name = a.Name,
+                description = a.Description, impact = a.Impact, risk = a.Risk,
+                coordinates = JsonSerializer.Deserialize<double[][]>(a.CoordinatesJson)
+            }),
         kriser = (object?)ViewBag.KriserPaKart ?? Array.Empty<object>()
     });
     
@@ -50,6 +60,8 @@
             id = r.ResourceId,
             navn = r.Object,
             kategoriId = r.CategoryId,
+            kategori = r.Category?.Name,
+            adresse = r.Address,
             tilbyder = r.Navn,
             kontaktpunkt = r.Kontaktpunkt,
             latitude = r.Latitude,
@@ -61,7 +73,16 @@
 <link rel="stylesheet"
       href="~/css/offentlig-aktor.css"
       asp-append-version="true" />
+<link rel="stylesheet" href="~/css/resource-registration.css" asp-append-version="true" />
 
+<link rel="stylesheet" href="~/css/offentlig-match.css" asp-append-version="true" />
+@if (isMatch)
+{
+    <link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
+}
+
+@if (!isMatch)
+{
 <div class="container-fluid offentlig-dashboard">
 
     <div class="kart-oversiktsrad">
@@ -75,8 +96,8 @@
                          aria-haspopup="dialog"
                          aria-controls="oversiktDialog"
                          data-oversikt-liste="kriser">
-                        <h2>Aktive kriser</h2>
-                        <p class="stat-tall">@ViewBag.AktiveKriser</p>
+                        <h2>Hendelser</h2>
+                        <p class="stat-tall">@((ViewBag.KriserTilLister as System.Collections.ICollection)?.Count ?? 0)</p>
 
                     </div>
                 </div>
@@ -94,18 +115,7 @@
                     </div>
                 </div>
 
-                <div>
-                    <div class="stat-kort ressurs-kort"
-                         role="button"
-                         tabindex="0"
-                         aria-haspopup="dialog"
-                         aria-controls="oversiktDialog"
-                         data-oversikt-liste="ressurser">
-                        <h2>Tilgjengelige ressurser</h2>
-                        <p class="stat-tall">@Model.Count</p>
 
-                    </div>
-                </div>
 
                 <div>
                     <a class="stat-kort treff-kort" href="#foreslatteTreff">
@@ -115,18 +125,7 @@
                     </a>
                 </div>
 
-                <div>
-                    <div class="stat-kort lost-kort"
-                         role="button"
-                         tabindex="0"
-                         aria-haspopup="dialog"
-                         aria-controls="oversiktDialog"
-                         data-oversikt-liste="loste">
-                        <h2>Løste behov</h2>
-                        <p class="stat-tall">@ViewBag.LosteBehov</p>
 
-                    </div>
-                </div>
             </div>
         </div>
         <div class="oversikt-handlinger-kolonne">
@@ -152,6 +151,20 @@
             </div>
         </div>
     </div>
+
+    <section class="kart-hendelser" aria-label="Hendelser i kartet">
+        <details>
+            <summary>Åpne hendelser</summary>
+            <form id="kartHendelserForm" method="get" asp-area="" asp-controller="OffentligAktor" asp-action="Index">
+                <fieldset id="kartHendelserValg"><legend>Velg hendelsene du vil åpne</legend></fieldset>
+                <button type="submit" class="btn btn-primary">Åpne valgte hendelser</button>
+            </form>
+        </details>
+        <label for="kartArbeidshendelse">Arbeid med hendelse</label>
+        <select id="kartArbeidshendelse" class="form-select"></select>
+        <span id="kartArbeidsstatus" role="status"></span>
+        <div id="kartAntiforgery" hidden>@Html.AntiForgeryToken()</div>
+    </section>
 
     <!-- Kart og oppfølging -->
     <div class="row gx-3 offentlig-arbeidsflate">
@@ -222,6 +235,7 @@
                                     var ressursOpptatt = kartAktiveTildelinger.Any(a =>
                                         a.ResourceId == treff.ResourceId);
                                     <div class="behov-element kart-matchtreff"
+                                         data-crisis-id="@((ViewBag.BehovTilLister as IEnumerable<dynamic>)?.FirstOrDefault(n => n.id == treff.NeedId)?.kriseId)"
                                          data-match-type="@matchKategorier.GetValueOrDefault(treff.ResourceId)"
                                          data-match-sok="@treff.ResourceName @treff.NeedName">
                                         <strong>@treff.ResourceName</strong>
@@ -356,7 +370,7 @@
 
                         <section id="kartVeihindring" class="kart-handlingspanel" aria-labelledby="kartVeihindringTittel" hidden>
                             <h2 id="kartVeihindringTittel">Registrer veihindring</h2>
-                            <p class="kart-panelintro">Marker en plassering i kartet. Markeringen vises til siden lastes på nytt.</p>
+                            <p class="kart-panelintro">Marker en plassering i kartet. Markeringen lagres på valgt hendelse.</p>
                             <form data-kartmarkering="veihindringer">
                                 <p class="kart-posisjon" role="status">Klikk i kartet for å velge plassering.</p>
                                 <label for="kartHindringNavn">Type veihindring</label>
@@ -832,7 +846,17 @@
     </section>
 
 </div>
+}
+else
+{
+    <partial name="_Match" />
+}
+
 @section Scripts {
+    @if (isMatch)
+    {
+        <script src="~/js/offentlig-match.js" asp-append-version="true" defer></script>
+    }
     <script id="offentligKartData" type="application/json">
         @Html.Raw(kartJson)
     </script>
@@ -841,6 +865,8 @@
         @Html.Raw(oversiktJson)
     </script>
 
+    @if (!isMatch)
+    {
     <script src="~/js/behov-liste.js" asp-append-version="true"></script>
 
     <script src="~/js/offentlig-kart.js"
@@ -854,4 +880,5 @@
 
 <script src="~/js/offentlig-utskrift.js"
         asp-append-version="true"></script>
+    }
 }

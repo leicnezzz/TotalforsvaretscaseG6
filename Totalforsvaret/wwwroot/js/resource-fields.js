@@ -14,6 +14,11 @@
         const category = Number(text('CategoryId'));
         const kind = form.dataset.resourceKind || form.querySelector('[name="CategoryId"]')?.selectedOptions?.[0]?.dataset.resourceKind;
         return {
+            ...(form.dataset.compact === 'true' ? {
+                ContactFirstName: text('ContactFirstName'),
+                ContactLastName: text('ContactLastName'),
+                ContactEmail: text('ContactEmail')
+            } : {}),
             Object: text('Object'),
             CategoryId: category,
             Available: text('Available') === 'true',

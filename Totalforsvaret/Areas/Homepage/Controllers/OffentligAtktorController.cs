@@ -21,7 +21,7 @@ public class OffentligAktorController : Controller
         _context = context;
     }
 
-    public IActionResult Index()
+    public IActionResult Index([FromQuery] int[]? hendelser = null)
     {
         // Henter tilgjengelige ressurser
         var ressurser = _resourceHandler.GetResources();
@@ -54,12 +54,10 @@ public class OffentligAktorController : Controller
             .Take(5)
             .ToList();
         
-        // Henter aktive kriser med kartkoordinater.
-        ViewBag.KriserPaKart = _context?.Crises
-            .AsNoTracking()
-            .Where(c => c.Status == "Aktiv" &&
-                        c.Latitude != null &&
-                        c.Longitude != null)
+        // Alle hendelser kan åpnes, også inaktive og hendelser uten eget kartpunkt.
+        ViewBag.Kartmarkeringer = _context?.CrisisMapAnnotations.AsNoTracking().ToList()
+            ?? new List<Totalforsvaret.Models.CrisisMapAnnotation>();
+        ViewBag.KriserPaKart = _context?.Crises.AsNoTracking()
             .Select(c => new
             {
                 id = c.Id,
@@ -86,6 +84,7 @@ public class OffentligAktorController : Controller
                 type = n.Type,
                 prioritet = n.Priority,
                 status = n.Status,
+                kriseId = n.CrisisId,
                 krise = n.Crisis != null ? n.Crisis.Name : "",
                 latitude = n.Latitude,
                 longitude = n.Longitude
@@ -163,7 +162,6 @@ public class OffentligAktorController : Controller
         
         ViewBag.KriserTilLister = _context?.Crises
             .AsNoTracking()
-            .Where(c => c.Status == "Aktiv")
             .Select(c => new
             {
                 id = c.Id,

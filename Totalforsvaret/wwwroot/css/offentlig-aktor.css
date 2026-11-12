@@ -262,6 +262,7 @@
     position: relative;
     width: 100%;
     height: calc(100dvh - var(--kart-topp, 130px) - 8px);
+    min-height: 440px;
     border: 1px solid var(--kant);
     border-radius: 10px;
     background: #dce5e5;
@@ -1856,4 +1857,37 @@ body.offentlig-page {
 .offentlig-dashboard .egen-ressurs-lenke:focus-visible {
     outline: 3px solid var(--offentlig);
     outline-offset: 3px;
+}
+
+
+/* Samlet oversikt og hendelsesvalg. */
+.offentlig-dashboard .kart-oversiktsrad {
+    padding: 14px 16px; margin-bottom: 12px; gap: 16px;
+    border: 1px solid #d5dfe3; border-radius: 12px; background: #f7f9fa;
+}
+.offentlig-dashboard .kart-oversiktsgruppe { gap: 14px; }
+.offentlig-dashboard .statistikk-rad { gap: 8px; }
+.offentlig-dashboard .stat-kort { border: 2px solid #163c4c; border-radius: 10px; padding: 8px 14px; gap: 12px; }
+.offentlig-dashboard .behov-kort { border-color: #a64b3c; }
+.offentlig-dashboard .treff-kort { border-color: #426747; }
+.offentlig-dashboard .egen-ressurs-lenke::after { content: none; }
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 360px) minmax(0, 1fr); gap: 20px;
+}
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) .nav-links { flex-wrap: wrap; }
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) .account-summary { justify-self: end; }
+#kartSokToolbar { width: 100%; justify-self: center; }
+.kart-hendelser { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 12px 0; color: #163c4c; }
+.kart-hendelser details { position: relative; }
+.kart-hendelser summary { cursor: pointer; padding: 10px 14px; background: white; border: 1px solid #163c4c; border-radius: 8px; }
+#kartHendelserForm { position: absolute; top: calc(100% + 6px); left: 0; z-index: 1100; width: min(360px, 85vw); padding: 16px; background: white; border: 1px solid #c9d5dc; border-radius: 10px; box-shadow: 0 6px 20px #163c4c20; }
+#kartHendelserValg { max-height: 260px; overflow: auto; margin-bottom: 12px; }
+#kartHendelserValg legend { font-size: 14px; }
+#kartHendelserValg label { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+#kartArbeidshendelse { width: min(320px, 100%); }
+#kartArbeidsstatus { font-size: 13px; }
+.kart-handlingsrad button:disabled { opacity: .5; cursor: not-allowed; }
+@media(max-width: 1100px) {
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) { grid-template-columns: 1fr auto; }
+    #kartSokToolbar { grid-column: 1 / -1; grid-row: 2; max-width: 420px; margin-inline: auto; }
 }

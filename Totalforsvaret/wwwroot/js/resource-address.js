@@ -53,8 +53,8 @@
             });
     } // henter adresseforslag, og returnerer liste med forslag: label, latitude og longitude.
 
-    function attach(container, onChange = () => {}) {
-        const address = container.querySelector('[name="Address"]');
+    function attach(container, onChange = () => {}, { allowMapSelection = false, markerColor = '#2e6840' } = {}) {
+        const address = container.querySelector('[data-address-input], [name="Address"]');
         const latitude = container.querySelector('[name="Latitude"]');
         const longitude = container.querySelector('[name="Longitude"]');
         const results = container.querySelector('[data-address-results]');
@@ -64,15 +64,16 @@
         let request;
         let map;
         let marker;
+        let selectedAddress = address.value;
 
         function valid() {
-            return Boolean(address.value.trim() && latitude.value && longitude.value &&
-                Number.isFinite(Number(latitude.value)) && Math.abs(Number(latitude.value)) <= 90 &&
-                Number.isFinite(Number(longitude.value)) && Math.abs(Number(longitude.value)) <= 180);
+            return Boolean((allowMapSelection || address.value.trim()) && latitude.value && longitude.value &&
+                Number.isFinite(Number(latitude.value.replace(',', '.'))) && Math.abs(Number(latitude.value.replace(',', '.'))) <= 90 &&
+                Number.isFinite(Number(longitude.value.replace(',', '.'))) && Math.abs(Number(longitude.value.replace(',', '.'))) <= 180);
         } // Sjekker om adressefelt og koordinater er gyldige. 
 
-        function refresh() {
-            if (!mapElement?.getClientRects().length) return;
+        function refresh(recenter = true) {
+            if (!mapElement.getClientRects().length) return;
             if (!window.L) {
                 status.textContent = 'Kartet kunne ikke lastes. Adresseforslag kan fortsatt brukes.';
                 return;
@@ -82,27 +83,37 @@
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
                 }).addTo(map);
-                map.on('click', event => selectMapPoint(map.wrapLatLng(event.latlng)));
+                if (allowMapSelection) {
+                    map.on('click', ({ latlng }) => {
+                        const point = latlng.wrap();
+                        latitude.value = point.lat.toFixed(6);
+                        longitude.value = point.lng.toFixed(6);
+                        selectedAddress = '';
+                        address.value = '';
+                        reset(false);
+                        onChange('');
+                    });
+                }
             }
             map.invalidateSize();
             if (valid()) {
-                const point = [Number(latitude.value), Number(longitude.value)];
+                const point = [Number(latitude.value.replace(',', '.')), Number(longitude.value.replace(',', '.'))];
                 const moved = !marker || !marker.getLatLng().equals(point);
                 if (!marker) marker = L.circleMarker(point, {
-                    radius: 8, color: '#fff', weight: 2, fillColor: '#2e6840', fillOpacity: 1
+                    radius: 8, color: '#fff', weight: 2, fillColor: markerColor, fillOpacity: 1
                 }).addTo(map);
                 else marker.setLatLng(point);
                 const label = document.createElement('span');
-                label.textContent = address.value;
+                label.textContent = (allowMapSelection ? selectedAddress : address.value) || 'Valgt plassering';
                 marker.bindPopup(label);
-                if (moved) map.setView(point, 16);
+                if (moved && recenter) map.setView(point, 16);
             } else if (marker) {
                 marker.remove();
                 marker = null;
             }
         } // Oppdaterer kartet med valgt adresse og koordinater.
 
-        function clearSearch() {
+        function reset(recenter = true) {
             clearTimeout(timer);
             request?.abort();
             request = null;
@@ -110,61 +121,7 @@
             results.hidden = true;
             address.setAttribute('aria-expanded', 'false');
             status.textContent = '';
-        }
-
-        function reset() {
-            clearSearch();
-            refresh();
-        }
-
-        function selectPosition(label, lat, lon, message) {
-            address.value = label;
-            latitude.value = lat.toFixed(6);
-            longitude.value = lon.toFixed(6);
-            address.setCustomValidity('');
-            clearSearch();
-            refresh();
-            status.textContent = message;
-            onChange();
-        }
-
-        async function selectMapPoint(point) {
-            clearSearch();
-            latitude.value = '';
-            longitude.value = '';
-            address.setCustomValidity('Vent mens plasseringen velges.');
-            refresh();
-            status.textContent = 'Ser etter adresse nær kartpunktet …';
-
-            const current = new AbortController();
-            request = current;
-            const url = new URL('https://api.kartverket.no/adresser/v1/punktsok');
-            url.search = new URLSearchParams({
-                lat: point.lat.toFixed(6),
-                lon: point.lng.toFixed(6),
-                radius: '50',
-                treffPerSide: '1'
-            });
-
-            let nearest;
-            try {
-                const result = await requestJson(url, current.signal, 3000);
-                nearest = result.adresser?.[0];
-            } catch {
-                // Kartpunktet kan brukes selv om adresseoppslaget ikke svarer.
-            }
-
-            if (request !== current) return;
-
-            const coordinates = `${point.lat.toFixed(6)}, ${point.lng.toFixed(6)}`;
-            const label = nearest?.adressetekst
-                ? [nearest.adressetekst, [nearest.postnummer, nearest.poststed].filter(Boolean).join(' ')]
-                    .filter(Boolean).join(', ')
-                : 'Kartplassering: ' + coordinates;
-            const message = nearest?.adressetekst
-                ? 'Kartpunkt valgt. Nærmeste adresse: ' + label
-                : 'Kartpunkt valgt: ' + coordinates;
-            selectPosition(label, point.lat, point.lng, message);
+            refresh(recenter);
         }
 
         async function search() {
@@ -188,7 +145,15 @@
                     button.type = 'button';
                     button.textContent = match.label;
                     button.addEventListener('click', () => {
-                        selectPosition(match.label, match.latitude, match.longitude, `Valgt adresse: ${match.label}`);
+                        address.value = match.label;
+                        selectedAddress = match.label;
+                        latitude.value = match.latitude.toFixed(6);
+                        longitude.value = match.longitude.toFixed(6);
+                        reset();
+                        status.textContent = `Valgt adresse: ${match.label}`;
+                        address.setCustomValidity('');
+                        onChange(match.label);
+                        refresh();
                         address.focus({ preventScroll: true });
                     });
                     item.append(button);
@@ -208,14 +173,17 @@
         // Om bruker velger et forslag, fylles adressefelt og koordinater i skjemaet. 
 
         address.addEventListener('input', () => {
-            clearSearch();
-            latitude.value = '';
-            longitude.value = '';
-            address.setCustomValidity('Velg en adresse fra forslagene eller klikk i kartet.');
-            refresh();
+            reset();
+            if (!allowMapSelection) {
+                latitude.value = '';
+                longitude.value = '';
+                selectedAddress = '';
+                address.setCustomValidity('Velg en adresse fra forslagene.');
+                refresh();
+            }
             status.textContent = address.value.trim().length < 3 ? 'Skriv minst tre tegn.' : 'Henter adresseforslag …';
             if (address.value.trim().length >= 3) timer = setTimeout(search, 600);
-            onChange();
+            if (!allowMapSelection) onChange();
         });
         address.addEventListener('keydown', event => {
             if (event.key === 'Enter') {

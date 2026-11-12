@@ -13,13 +13,13 @@ using Totalforsvaret.Models.resourcemodels;
 namespace Totalforsvaret.Areas.Privat.Controllers;
 
 [Area("Privat")]
-[Authorize(Policy = "KunPrivat")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public class ResourceController(
     AppDbContext db,
     ResourceHandler resourceHandler,
     UserManager<Bruker> users) : Controller
 {
+    [Authorize(Policy = "KunPrivat")]
     [HttpGet]
     public IActionResult Skjema()
     {
@@ -36,6 +36,7 @@ public class ResourceController(
         return View(model);
     }
 
+    [Authorize(Policy = "KunPrivat")]
     [HttpGet]
     public async Task<IActionResult> Oversikt()
     {
@@ -56,10 +57,24 @@ public class ResourceController(
         return View(resources);
     }
 
+    [Authorize(Policy = "KunPrivat")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(
+    public Task<IActionResult> Create(
         [FromBody] ResourceInput input)
+    {
+        return CreateResource(input);
+    }
+
+    [Authorize(Policy = "KunOffentlig")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public Task<IActionResult> CreateForPublicActor([FromBody] PublicResourceInput input)
+    {
+        return CreateResource(input, input);
+    }
+
+    private async Task<IActionResult> CreateResource(ResourceInput input, PublicResourceInput? contact = null)
     {
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
@@ -82,6 +97,12 @@ public class ResourceController(
         };
 
         ApplyInput(resource, input);
+        if (contact is not null)
+        {
+            resource.Navn = $"{contact.ContactFirstName.Trim()} {contact.ContactLastName.Trim()}";
+            resource.Kontaktpunkt = $"{resource.Kontaktpunkt} · {contact.ContactEmail.Trim()}";
+        }
+
 
         db.Resources.Add(resource);
         await db.SaveChangesAsync();
@@ -89,6 +110,7 @@ public class ResourceController(
         return Ok(new { resourceId = resource.ResourceId });
     }
 
+    [Authorize(Policy = "KunPrivat")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(
@@ -129,6 +151,7 @@ public class ResourceController(
         return Ok(new { resourceId = resource.ResourceId });
     }
 
+    [Authorize(Policy = "KunPrivat")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)

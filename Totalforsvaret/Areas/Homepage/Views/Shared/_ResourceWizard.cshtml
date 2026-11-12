@@ -1,11 +1,13 @@
 @model IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>
 @{
     var isPrivate = User.Identity?.IsAuthenticated == true && User.HasClaim("Brukertype", "Privat");
+    var compact = ViewData["PublicResourceRegistration"] is true;
+    var hasSession = User.Identity?.IsAuthenticated == true;
 }
 <form id="resource-wizard" class="resource-wizard"
       action="#registrer-ressurs" method="post" novalidate
-      data-authenticated="@(User.Identity?.IsAuthenticated == true ? "true" : "false")"
-      data-private="@(isPrivate ? "true" : "false")" data-resource-registration>
+      data-authenticated="@(hasSession ? "true" : "false")"
+      data-private="@(isPrivate ? "true" : "false")" data-compact="@(compact ? "true" : "false")" data-resource-registration>
     <div class="wizard-toolbar"><p id="wizard-progress" role="status">Velg en ressurstype for å begynne.</p><button type="button" class="wizard-text-button" id="wizard-clear">Tøm utkast</button></div><noscript><p class="wizard-message">Aktiver JavaScript for å bruke den trinnvise registreringen.</p></noscript>
     <p id="wizard-message" class="wizard-message" role="status" tabindex="-1" hidden></p>
     <p class="wizard-hint">Opplysningene lagres når du bekrefter registreringen.</p>
@@ -119,7 +121,7 @@
             <textarea id="vehicle-additional" name="AdditionalInformation" maxlength="200" rows="5" placeholder="Skriv her"></textarea>
             <p class="wizard-counter"><span id="vehicle-additional-count">0</span>/200</p>
             <button id="wizard-additional-next" class="public-button public-button-primary" type="button">
-                <span>Fortsett til kontaktinformasjon</span><span aria-hidden="true">↓</span>
+                <span>@(compact ? "Neste" : "Fortsett til kontaktinformasjon")</span><span aria-hidden="true">@(compact ? "→" : "↓")</span>
             </button>
         </div>
     </fieldset>
@@ -131,6 +133,15 @@
             <p>Oppgi telefonnummeret du kan kontaktes på, og når ressursen kan stilles til rådighet. E-postadressen knyttes til kontoen din.</p>
         </div>
         <div class="wizard-fields">
+            @if (compact)
+            {
+                <label for="resource-contact-firstname">Fornavn *</label>
+                <input id="resource-contact-firstname" name="ContactFirstName" maxlength="99" autocomplete="given-name" required />
+                <label for="resource-contact-lastname">Etternavn *</label>
+                <input id="resource-contact-lastname" name="ContactLastName" maxlength="100" autocomplete="family-name" required />
+                <label for="resource-contact-email">E-post *</label>
+                <input id="resource-contact-email" name="ContactEmail" type="email" maxlength="172" autocomplete="email" required />
+            }
             <label for="vehicle-contact">Telefon *</label>
             <input id="vehicle-contact" name="Kontaktpunkt" type="tel" inputmode="tel" maxlength="25" autocomplete="tel" placeholder="Eks. +47 900 12 345" aria-describedby="vehicle-contact-error" required />
             <p id="vehicle-contact-error" class="wizard-field-error" role="status" hidden></p>
@@ -144,7 +155,7 @@
             <input id="vehicle-available-from" name="TilgjengeligFra" type="datetime-local" />
             <p class="wizard-hint">Datoen er valgfri. Når du velger «Ja» uten dato, gjelder tilgjengeligheten fra registreringen. Velger du «Ikke akkurat nå», kan du oppgi en forventet dato.</p>
             <button id="wizard-contact-next" class="public-button public-button-primary" type="button">
-                <span>Fortsett til adresse</span><span aria-hidden="true">↓</span>
+                <span>@(compact ? "Neste" : "Fortsett til adresse")</span><span aria-hidden="true">@(compact ? "→" : "↓")</span>
             </button>
         </div>
     </fieldset>
@@ -166,8 +177,8 @@
             <input id="vehicle-latitude" name="Latitude" type="hidden" />
             <input id="vehicle-longitude" name="Longitude" type="hidden" />
         </div>
-        <div id="vehicle-location-map" data-address-map class="wizard-map" role="region" aria-label="Kart for valg av ressursens plassering"></div>
-        <button type="button" class="public-button public-button-primary wizard-location-next" data-continue="location">Kontroller opplysningene ↓</button>
+        <div id="vehicle-location-map" data-address-map class="wizard-map" role="region" aria-label="Kart over valgt adresse"></div>
+        <button type="button" class="public-button public-button-primary wizard-location-next" data-continue="location">@(compact ? "Neste →" : "Kontroller opplysningene ↓")</button>
     </fieldset>
 
     <fieldset class="wizard-step wizard-step-blue" data-step="account" hidden disabled>
@@ -223,14 +234,26 @@
             <label class="wizard-confirm-label"><input type="checkbox" name="Confirmed" value="true" required /> Jeg bekrefter at opplysningene er korrekte, og at ressursen kan gjøres tilgjengelig for relevante beredskapsaktører.</label>
             <p id="wizard-account-note" class="wizard-hint">Ressursen knyttes til kontoen din.</p>
             <p id="wizard-prerequisite-note" class="wizard-prerequisite" role="status" hidden></p>
-            <button id="vehicle-submit" type="submit" class="public-button" disabled><span>Registrer ressurs</span><span aria-hidden="true">→</span></button>
+            <button id="vehicle-submit" type="submit" class="public-button" disabled><span>Registrer ressurs</span>@if (!compact) { <span aria-hidden="true">→</span> }</button>
         </div>
     </fieldset>
+
+    @if (compact)
+    {
+        <button type="button" class="public-button public-button-outline" data-compact-back hidden>← Tilbake</button>
+    }
 
     <section id="wizard-success" class="wizard-success" tabindex="-1" hidden>
         <h3>Ressursen er registrert</h3>
         <p id="wizard-success-message"></p>
-        <a class="public-button public-button-primary" asp-area="Privat" asp-controller="Dashboard" asp-action="Index">Gå til min side</a>
+        @if (compact)
+        {
+            <a class="public-button public-button-primary" asp-area="" asp-controller="OffentligAktor" asp-action="Index">Gå til oversikten</a>
+        }
+        else
+        {
+            <a class="public-button public-button-primary" asp-area="Privat" asp-controller="Dashboard" asp-action="Index">Gå til min side</a>
+        }
         <button id="wizard-new" type="button" class="public-button public-button-outline">Registrer en ny ressurs</button>
     </section>
 </form>

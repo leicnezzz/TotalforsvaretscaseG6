@@ -25,12 +25,11 @@
             <div class="public-nav-pages">
                 <a class="active" aria-current="page" asp-area="" asp-controller="Home" asp-action="Index">Hovedside</a>
                 <a href="#registrer-ressurs">Registrer ressurs</a>
-                <a asp-area=""
-                   asp-controller="Account"
-                   asp-action="LoginOffentlig">
-                    Offentlig aktør
-                </a>
-                
+               <a asp-area=""
+   asp-controller="Account"
+   asp-action="LoginOffentlig">
+    Offentlig aktør
+</a>
             </div>
             <a class="nav-brand" asp-area="" asp-controller="Home" asp-action="Index">
                 <img src="~/images/login/image-1-2.png" alt="Paratus" />
@@ -84,7 +83,7 @@
 
         <div class="public-content">
             <div class="public-home-incident">
-                <partial name="/Areas/Homepage/Views/Shared/_IncidentAlert.cshtml" />
+                <partial name="/Views/Shared/_IncidentAlert.cshtml" />
             </div>
 
             <section id="registrer-ressurs" class="public-registration" aria-labelledby="registration-title">
@@ -92,7 +91,7 @@
                     <h2 id="registration-title">Registrer en ressurs til disposisjon</h2>
                     <p>Har du utstyr, kjøretøy eller andre ressurser du kan stille til rådighet?</p>
                 </div>
-                <partial name="/Areas/Homepage/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" />
+                <partial name="/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" />
             </section>
         </div>
     </main>
@@ -118,6 +117,6 @@
     <script src="~/js/resource-fields.js" asp-append-version="true"></script>
     <script src="~/js/resource-address.js" asp-append-version="true"></script>
     <script src="~/js/resource-wizard.js" asp-append-version="true"></script>
-    <partial name="/Areas/Homepage/Views/Shared/_ResourceApi.cshtml" />
+    <partial name="/Views/Shared/_ResourceApi.cshtml" />
 </body>
 </html>

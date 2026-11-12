@@ -1,0 +1,98 @@
+@{
+    ViewData["Title"] = "Legg til egen ressurs";
+}
+
+<div class="container pt-4 pb-5 mb-5">
+    <h1>Legg til egen ressurs</h1>
+    <p class="mb-4">Registrer en ressurs som din organisasjon kan stille til rådighet.</p>
+
+    <form asp-action="NyRessurs" method="post">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label" for="Object">Type ressurs</label>
+                        <input class="form-control" id="Object" name="Object" maxlength="100" required/>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="CategoryId">Kategori</label>
+                        <select class="form-select" id="CategoryId" name="CategoryId" required>
+                            <option value="">Velg kategori</option>
+                            @foreach (var kategori in ViewBag.Kategorier)
+                            {
+                                string kategoriNavn = kategori.Name;
+                                var visningsnavn = kategoriNavn switch
+                                {
+                                    "Vehicles" => "Kjøretøy",
+                                    "Equipment" => "Utstyr",
+                                    _ => kategoriNavn
+                                };
+                                <option value="@kategori.CategoryId">@visningsnavn</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="Navn">Registreres som</label>
+                        <input class="form-control" id="Navn" name="Navn" list="aktorer" maxlength="100"
+                               placeholder="Velg eller skriv inn"/>
+                        <datalist id="aktorer">
+                            <option value="Kristiansand kommune"></option>
+                            <option value="Politiet"></option>
+                            <option value="Brannvesenet"></option>
+                            <option value="Sivilforsvaret"></option>
+                            <option value="Forsvaret"></option>
+                            <option value="Røde Kors"></option>
+                        </datalist>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="Kontaktpunkt">Kontaktpunkt</label>
+                        <input class="form-control" id="Kontaktpunkt" name="Kontaktpunkt"
+                               placeholder="Telefon eller e-post" required/>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="Condition">Tilstand</label>
+                        <select class="form-select" id="Condition" name="Condition">
+                            <option value="">Velg tilstand</option>
+                            <option value="Ny">Ny</option>
+                            <option value="God">God</option>
+                            <option value="Brukt">Brukt</option>
+                            <option value="Trenger vedlikehold">Trenger vedlikehold</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label" for="AdditionalInformation">Tilleggsinformasjon</label>
+                        <textarea class="form-control" id="AdditionalInformation" name="AdditionalInformation"
+                                  rows="4"></textarea>
+                    </div>
+                    <div class="col-12 d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">Lagre ressurs</button>
+                        <a class="btn btn-outline-secondary" asp-action="Index">Avbryt</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <label class="form-label" for="velgPosisjonKart">Posisjon</label>
+                <p class="form-text mb-2">Klikk på kartet for å velge hvor ressursen står.</p>
+                <div id="velgPosisjonKart" class="border rounded" style="height: 440px;"></div>
+                <p class="text-danger small mt-1 mb-0" id="posisjonFeil" hidden>
+                    Velg en posisjon på kartet.
+                </p>
+                <input type="hidden" id="Latitude" name="Latitude"/>
+                <input type="hidden" id="Longitude" name="Longitude"/>
+
+                <label class="form-label mt-3" for="Address">Adresse</label>
+                <input class="form-control" id="Address" name="Address" required/>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="~/js/offentlig-velg-posisjon.js" asp-append-version="true"></script>
+}

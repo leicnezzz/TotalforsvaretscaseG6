@@ -1,0 +1,76 @@
+@using System
+@using System.Linq
+@using Microsoft.AspNetCore.Identity
+@using Totalforsvaret.Models
+@inject UserManager<Bruker> UserManager
+
+@*Gjenbruker koden fra Privatnavigation*@
+@*Felles OffentligNavigation, hvis du skal ha en ny page, legg den inn her for å vises på navigation bar*@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    var isOverview =
+        controller.Equals("OffentligAktor", StringComparison.OrdinalIgnoreCase);
+
+    var isNeedPage =
+        controller.Equals("Need", StringComparison.OrdinalIgnoreCase);
+
+    var isCrisisPage =
+        controller.Equals("Crisis", StringComparison.OrdinalIgnoreCase);
+    
+
+    var account = await UserManager.GetUserAsync(User);
+    var displayName = account?.Navn ?? User.Identity?.Name ?? "Offentlig aktør";
+
+    var initials = string.Concat(
+        displayName
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Take(2)
+            .Select(part => char.ToUpperInvariant(part[0])));
+}
+
+<header class="site-header offentlig-site-header">
+    <nav class="primary-nav" aria-label="Hovedmeny">
+        <div class="nav-links">
+            <a class="@(isOverview ? "active" : "")"
+               aria-current="@(isOverview ? "page" : null)"
+               asp-area=""
+               asp-controller="OffentligAktor"
+               asp-action="Index">
+                Oversikt
+            </a>
+
+            <a class="@(isNeedPage ? "active" : "")"
+               aria-current="@(isNeedPage ? "page" : null)"
+               asp-area="Offentlig"
+               asp-controller="Need"
+               asp-action="CreateMultiple">
+                Registrer behov
+            </a>
+
+            <a class="@(isCrisisPage ? "active" : "")"
+               aria-current="@(isCrisisPage ? "page" : null)"
+               asp-area="Offentlig"
+               asp-controller="Crisis"
+               asp-action="Create">
+                Administrer kriser
+            </a>
+        </div>
+
+        @if (isOverview && action.Equals("Index", StringComparison.OrdinalIgnoreCase))
+        {
+            <div id="kartSokToolbar"></div>
+        }
+
+        <div class="account-summary"
+             aria-label="Innlogget som @displayName, offentlig aktør">
+            <span class="avatar avatar-small" aria-hidden="true">@initials</span>
+            <span class="account-copy">
+                <strong>@displayName</strong>
+                <small>Offentlig aktør</small>
+            </span>
+        </div>
+    </nav>
+    
+</header>

@@ -61,7 +61,7 @@
         const error = document.getElementById('vehicle-contact-error');
         error.hidden = !phone.value || phone.validity.valid;
         error.textContent = phone.validationMessage;
-        field('Address').setCustomValidity(address.valid() ? '' : 'Velg en adresse fra forslagene.');
+        field('Address').setCustomValidity(address.valid() ? '' : 'Velg en adresse fra forslagene eller klikk i kartet.');
         const password = field('PreviewRegisterPassword');
         password.setCustomValidity(password.value && (!/\p{L}/u.test(password.value) || !/\d/.test(password.value))
             ? 'Passordet må ha bokstaver og tall.' : '');

@@ -97,10 +97,10 @@
                 </label>
                 <input name="Latitude" type="hidden" value="@resource.Latitude.ToString(CultureInfo.InvariantCulture)" />
                 <input name="Longitude" type="hidden" value="@resource.Longitude.ToString(CultureInfo.InvariantCulture)" />
-                <p class="wizard-hint">Skriv en ny adresse og velg et forslag for å flytte ressursen. Søket sendes til Kartverket eller Photon/OpenStreetMap.</p>
+                <p class="wizard-hint">Velg en adresse fra forslagene eller velg plassering på ressurskartet. Ved kartklikk finner Kartverket nærmeste adresse.</p>
                 <p data-address-status class="wizard-hint" role="status"></p>
                 <ul id="@(prefix)-results" data-address-results class="wizard-address-results" aria-label="Adresseforslag" hidden></ul>
-                <div data-address-map class="wizard-map" role="region" aria-label="Kart over ressursens plassering"></div>
+                <button type="button" class="overview-button" data-pick-resource-position aria-controls="resource-overview-map" aria-pressed="false" hidden>Velg plassering på kartet</button>
             </section>
             <p class="resource-edit-status" role="status" aria-live="polite"></p>
             <div class="resource-edit-actions">

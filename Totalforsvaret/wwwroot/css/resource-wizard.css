@@ -96,6 +96,7 @@
 .wizard-counter { text-align: right; font-size: 12px; color: #607078; }
 .wizard-hint { margin-top: 14px !important; font-size: 13px; line-height: 1.5; }
 .wizard-map { grid-column: 1 / -1; height: 300px; border-radius: 6px; z-index: 0; }
+#vehicle-location-map { height: clamp(340px, 52dvh, 540px); }
 .wizard-address-results { position: relative; z-index: 3; list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
 .wizard-address-results button { display: block; width: 100%; min-height: 44px; padding: 12px; border: 1px solid #2e6840; border-radius: 5px; background: #fff; color: #2e6840; font: inherit; text-align: left; cursor: pointer; }
 .wizard-address-results button:hover { background: #eaf1eb; }

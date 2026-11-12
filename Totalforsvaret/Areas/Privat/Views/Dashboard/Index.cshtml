@@ -25,7 +25,7 @@
 
     <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
     <link rel="stylesheet"
-          href="~/css/private-home.css"
+          href="~/css/Private-home.css"
           asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/incident-alert.css" asp-append-version="true" />
@@ -41,16 +41,25 @@
 
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
 
-    <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
+    <div class="dashboard-intro">
+        <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
+        <partial name="/Views/Shared/_IncidentAlert.cshtml" />
+    </div>
 
     <main class="home-content">
-        <partial name="/Views/Shared/_IncidentAlert.cshtml" />
 
         <section class="greeting" aria-labelledby="greeting-title">
             <h1 id="greeting-title">Hei, @Model.Navn</h1>
-            <span class="avatar avatar-large" aria-hidden="true">
-                @Model.Initialer
-            </span>
+            @if (Model.HasPhoto)
+{
+    <img class="avatar avatar-large"
+         src="@Url.Action("Photo", "Profile", new { area = "Privat" })"
+         alt="Profilbilde" />
+}
+else
+{
+    <span class="avatar avatar-large" aria-hidden="true">@Model.Initialer</span>
+}
         </section>
 
         <section class="action-cards" aria-label="Dine valg">
@@ -166,6 +175,7 @@
     </footer>
 
     <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/js/map-zoom.js" asp-append-version="true"></script>
     <script src="~/js/private-home.js"
             asp-append-version="true"></script>
 </body>

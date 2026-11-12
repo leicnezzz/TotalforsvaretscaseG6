@@ -5,7 +5,13 @@
     var isPrivateUser =
         User.Identity?.IsAuthenticated == true &&
         User.HasClaim("Brukertype", "Privat");
+
+    var isPublicUser =
+        User.Identity?.IsAuthenticated == true &&
+        User.HasClaim("Brukertype", "Offentlig");
 }
+
+@*Personvern siden for Offentlig aktører og Privat aktører, navigasjon og server er beskyttet via egen navigation*@
 
 <!DOCTYPE html>
 <html lang="nb">
@@ -22,7 +28,7 @@
           rel="stylesheet" />
 
     <link rel="stylesheet"
-          href="~/css/private-home.css"
+          href="~/css/Private-home.css"
           asp-append-version="true" />
     <link rel="stylesheet"
           href="~/css/site-header.css"
@@ -31,14 +37,19 @@
           href="~/css/wave-background.css"
           asp-append-version="true" />
     <link rel="stylesheet"
-          href="~/css/privacy.css"
+          href="~/css/Privacy.css"
           asp-append-version="true" />
 </head>
 
-<body class="privacy-page @(isPrivateUser ? "private-home" : "")">
+<body class="privacy-page @(isPrivateUser ? "privacy-private private-home" : isPublicUser ? "privacy-public" : "privacy-guest")">
+
     @if (isPrivateUser)
     {
         <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
+    }
+    else if (isPublicUser)
+    {
+        <partial name="/Areas/Offentlig/Views/Shared/_OffentligNavigation.cshtml" />
     }
     else
     {
@@ -53,24 +64,12 @@
                 </div>
 
                 <div class="public-nav-account">
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
-                        <a class="nav-button nav-button-primary"
-                           asp-area="Privat"
-                           asp-controller="Dashboard"
-                           asp-action="Index">
-                            Min side
-                        </a>
-                    }
-                    else
-                    {
-                        <a class="nav-button nav-button-primary"
-                           asp-area=""
-                           asp-controller="Account"
-                           asp-action="Login">
-                            Logg inn
-                        </a>
-                    }
+                    <a class="nav-button nav-button-primary"
+                       asp-area=""
+                       asp-controller="Account"
+                       asp-action="Login">
+                        Logg inn
+                    </a>
                 </div>
             </nav>
 
@@ -85,7 +84,7 @@
     <main class="privacy-main">
         <a class="privacy-back"
            asp-area="@(isPrivateUser ? "Privat" : "")"
-           asp-controller="@(isPrivateUser ? "Dashboard" : "Home")"
+           asp-controller="@(isPrivateUser ? "Dashboard" : isPublicUser ? "OffentligAktor" : "Home")"
            asp-action="Index">
             <span aria-hidden="true">←</span> Tilbake
         </a>
@@ -99,7 +98,8 @@
                     hvorfor vi behandler dem, og hvilke rettigheter du har.
                 </p>
                 <p class="privacy-updated">
-                    Sist oppdatert: <time datetime="2026-11-09">9. november 2026</time>
+                    Sist oppdatert:
+                    <time datetime="2026-11-09">9. november 2026</time>
                 </p>
             </header>
 
@@ -120,10 +120,9 @@
                 </p>
                 <p>
                     Kontakt oss om personvern på
-                    <a href="mailto:emmaml@uia.no"></a>
-                    eller <strong>Postaddresse kommer</strong>.
+                    <a href="mailto:gruppe10@uia.no">gruppe10@uia.no</a>
+                    eller <strong>Postadresse kommer</strong>.
                 </p>
-                
             </section>
 
             <section class="privacy-section" id="opplysninger">
@@ -174,8 +173,8 @@
                 </p>
                 <p>
                     Tjenesten driftes ved hjelp av
-                    <strong>MariaDB og docker</strong>.
-                    Opplysningene blir ikke sendt utenfor EØS
+                    <strong>MariaDB og Docker</strong>.
+                    [Beskriv hvor opplysningene faktisk lagres, og hvem som kan få tilgang.]
                 </p>
             </section>
 
@@ -206,11 +205,7 @@
                     samlet inn for. Kontoopplysninger, ressursregistreringer,
                     forespørsler og tekniske logger kan ha ulike lagringstider.
                 </p>
-                <p>
-                    <strong>
-                        Sletterutiner kommer -
-                    </strong>
-                </p>
+                <p><strong>[Beskriv sletterutinene deres.]</strong></p>
             </section>
 
             <section class="privacy-section" id="rettigheter">
@@ -221,9 +216,11 @@
                     eller protestere mot behandling når vilkårene for dette er oppfylt.
                 </p>
                 <p>
-                    Kontakt <a href="mailto:emmaml@uia.no"></a>
+                    Kontakt
+                    <a href="mailto:gruppe10@uia.no">gruppe10@uia.no</a>
                     for å bruke rettighetene dine. Du kan klage til
-                    <a href="https://www.datatilsynet.no/" rel="noopener noreferrer">
+                    <a href="https://www.datatilsynet.no/"
+                       rel="noopener noreferrer">
                         Datatilsynet
                     </a>.
                 </p>
@@ -235,7 +232,6 @@
                     Noen opplysninger er nødvendige for å opprette konto eller bruke
                     bestemte funksjoner. Hvis du ikke oppgir dem, kan det hende at
                     funksjonen ikke kan brukes. Andre opplysninger er valgfrie.
-                    
                 </p>
             </section>
         </article>

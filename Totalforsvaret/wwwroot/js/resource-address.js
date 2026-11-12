@@ -79,7 +79,7 @@
                 return;
             }
             if (!map) {
-                map = L.map(mapElement, { scrollWheelZoom: false }).setView([58.1467, 7.9956], 12);
+                map = L.map(mapElement).setView([58.1467, 7.9956], 12);
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
                 }).addTo(map);
@@ -207,7 +207,7 @@
                 buttons[(index + (event.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length].focus();
             }
         });
-        return { valid, refresh, reset };
+        return { valid, refresh, reset, selectMapPoint };
     }
 
     window.ParatusResourceAddress = { attach };

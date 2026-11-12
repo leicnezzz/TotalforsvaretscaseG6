@@ -11,30 +11,37 @@
     --privacy-text: #263b32;
     --privacy-muted: #607078;
 
-    min-height: 100vh;
+    position: relative;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
     margin: 0;
     background: var(--privacy-page);
     color: var(--privacy-text);
     font-family: Roboto, Arial, sans-serif;
 }
 
+/* Offentlig aktør får blågrønn aksentfarge */
+.privacy-page.privacy-public {
+    --privacy-green: #163c4c;
+    --wave-light: #dfeaf0;
+    --wave-dark: #4b8499;
+}
+
+/* Hold innholdet over bølgene */
 .privacy-page .site-header,
 .privacy-page .public-header,
 .privacy-main,
-.privacy-footer {
+.privacy-footer,
+.privacy-actor-section-bar {
     position: relative;
     z-index: 1;
 }
 
-.privacy-page .section-bar {
-    min-height: clamp(32px, 3.2vw, 62px);
-    padding: 8px clamp(20px, 3.2vw, 60px);
-    font-size: clamp(13px, 1.2vw, 24px);
-}
-
-.privacy-page .public-section-bar {
+/* Seksjonslinjen fra privatnavigasjonen */
+.privacy-page .section-bar,
+.privacy-page .public-section-bar,
+.privacy-actor-section-bar {
     display: flex;
     min-height: clamp(32px, 3.2vw, 62px);
     align-items: center;
@@ -45,19 +52,27 @@
     font-weight: 700;
 }
 
-.wave-background {
+/* Seksjonslinje når offentlig aktør bruker sin navigasjonspartial */
+.privacy-actor-section-bar {
+    color: #fff;
+}
+
+/* Bølgene fyller bunnen av hele siden */
+.privacy-page > .wave-background {
     position: absolute;
+    top: auto;
     right: 0;
     bottom: 0;
     left: 0;
     z-index: 0;
     height: min(48vh, 580px);
+    overflow: hidden;
     pointer-events: none;
 }
 
 .privacy-main {
-    width: min(1100px, calc(100% - 40px));
     flex: 1;
+    width: min(1100px, calc(100% - 40px));
     margin: 0 auto;
     padding: 24px 0 64px;
 }
@@ -211,11 +226,42 @@
     text-decoration: underline;
 }
 
+/* Navigasjon og profilfarger for offentlig aktør */
+.privacy-public .offentlig-site-header {
+    background: #163c4c;
+}
+
+.privacy-public .offentlig-site-header .nav-links a {
+    color: #fff;
+    transition: color 150ms ease, border-color 150ms ease;
+}
+
+.privacy-public .offentlig-site-header .nav-links a.active {
+    color: #fff;
+    border-bottom-color: #00c8b3;
+}
+
+.privacy-public .offentlig-site-header .account-summary,
+.privacy-public .offentlig-site-header .account-copy strong {
+    color: #fff;
+}
+
+.privacy-public .offentlig-site-header .account-copy small {
+    color: #d3e0e5;
+}
+
+/* Privat aktør: grønn profiltekst i navigasjonen */
+.privacy-private .site-header .account-link {
+    color: var(--privacy-green);
+}
+
+/* Tastaturnavigasjon */
 .privacy-page a:focus-visible {
     outline: 3px solid #163c4c;
     outline-offset: 3px;
 }
 
+/* Mobil */
 @media (max-width: 700px) {
     .privacy-main {
         width: min(100% - 24px, 600px);

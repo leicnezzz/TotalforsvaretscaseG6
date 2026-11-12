@@ -105,12 +105,14 @@
 .avatar-small {
     width: clamp(24px, 2vw, 40px);
     aspect-ratio: 1;
+    object-fit: cover;
     font-size: clamp(9px, .75vw, 14px);
 }
 
 .avatar-large {
     width: clamp(52px, 5.2vw, 100px);
     aspect-ratio: 1;
+    object-fit: cover;
     font-size: clamp(18px, 1.8vw, 35px);
 }
 
@@ -144,6 +146,22 @@
 .footer-content {
     width: min(61.5%, 1168px);
     margin-inline: auto;
+}
+
+.dashboard-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) min(61.5%, 1168px) minmax(0, 1fr);
+    align-items: start;
+    padding-top: 16px;
+}
+
+.private-home .dashboard-intro .private-page-actions {
+    min-height: 0;
+    padding-block: 0;
+}
+
+.private-home .dashboard-intro .incident-alert {
+    margin-top: 0;
 }
 
 .incident {
@@ -194,7 +212,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 20px;
-    margin: 22px 4px 26px 0;
+    margin: 14px 4px 20px 0;
 }
 
     .greeting h1 {
@@ -368,6 +386,18 @@
 }
 
 @media (max-width: 760px) {
+    .dashboard-intro {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 6px;
+        margin-inline: 16px;
+        padding-top: 4px;
+    }
+
+    .private-home .dashboard-intro .private-page-actions {
+        padding-inline: 0;
+    }
+
+
     .home-content,
     .footer-content {
         width: calc(100% - 32px);

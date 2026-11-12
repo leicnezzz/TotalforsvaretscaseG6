@@ -3,10 +3,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Totalforsvaret.Areas.Offentlig.ViewModels;
 
+public record CrisisMapPoint(int Id, string Name, double Latitude, double Longitude);
+
 public class MultipleNeedsViewModel
 {
-    [Range(1, int.MaxValue, ErrorMessage = "Velg en krise.")]
-    public int CrisisId { get; set; }
+    [Required(ErrorMessage = "Velg en krise.")]
+    public int? CrisisId { get; set; }
+
+    public IEnumerable<SelectListItem> Crises { get; set; } = Array.Empty<SelectListItem>();
+
+    public IReadOnlyList<CrisisMapPoint> ActiveCrisesOnMap { get; set; } = Array.Empty<CrisisMapPoint>();
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
     [Range(-90d, 90d, ErrorMessage = "Ugyldig breddegrad.")]
@@ -20,7 +26,4 @@ public class MultipleNeedsViewModel
     [MinLength(1, ErrorMessage = "Legg til minst ett behov.")]
     public List<NeedItemViewModel> Needs { get; set; }
         = new() { new NeedItemViewModel() };
-
-    public IEnumerable<SelectListItem> Crises { get; set; }
-        = new List<SelectListItem>();
 }

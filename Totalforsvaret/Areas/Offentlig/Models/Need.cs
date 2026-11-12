@@ -40,7 +40,7 @@ public class Need
 
     // Kobling til krise
     [Column("HendelseId")]
-    public int CrisisId { get; set; }
+    public int? CrisisId { get; set; }
 
     public Totalforsvaret.Models.Crisis? Crisis { get; set; }
 

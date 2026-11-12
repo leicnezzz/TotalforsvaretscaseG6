@@ -1,5 +1,6 @@
 /* Samme hendelsesvarsel på offentlig forside og privat dashboard. */
 .incident-alert {
+    position: relative;
     margin: 0 10px;
     padding: 20px;
     border: 2px solid #b83d35;
@@ -8,7 +9,39 @@
     color: #877272;
 }
 
+.incident-alert[hidden] {
+    display: none;
+}
+
+.incident-alert .incident-alert-close {
+    position: absolute;
+    inset-block-start: 8px;
+    inset-inline-end: 8px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #a8322b;
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.incident-alert-close:hover,
+.incident-alert-close:focus-visible {
+    background: rgb(184 61 53 / 12%);
+}
+
+.incident-alert-close:focus-visible {
+    outline: 2px solid currentColor;
+}
+
 .incident-alert-heading {
+    padding-inline-end: 32px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -50,5 +83,39 @@
     .incident-alert {
         margin-inline: 0;
         padding: 16px;
+    }
+}
+
+.resource-incident-row {
+    --resource-gutter: clamp(16px, 3vw, 60px);
+    width: min(1500px, calc(100% - 2 * var(--resource-gutter)));
+    margin-inline: var(--resource-gutter) auto;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(16px, 3vw, 48px);
+    padding-top: 16px;
+}
+
+.private-home .resource-incident-row .private-page-actions {
+    min-height: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.resource-incident-row .incident-alert {
+    margin: 0;
+    padding: 16px;
+}
+
+.resource-incident-row :is(.incident-alert-description, .incident-alert-updated) {
+    margin-top: 12px !important;
+}
+
+@media (max-width: 600px) {
+    .resource-incident-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 6px;
+        padding-top: 4px;
     }
 }

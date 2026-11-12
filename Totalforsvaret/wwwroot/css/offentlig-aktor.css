@@ -1917,3 +1917,30 @@ body.offentlig-page {
 .kart-radiusrad select:disabled {
     opacity: .6;
 }
+/* Symbolforklaring under kartet */
+.kart-forklaring {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+    margin-top: 16px;
+    color: var(--dempet);
+    font-size: 14px;
+}
+
+.kart-forklaring > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kart-forklaring-veihindring {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.kart-tegn-sone {
+    border-radius: 50%;
+    background: #6e42a1;
+}

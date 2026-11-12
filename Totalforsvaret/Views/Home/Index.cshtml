@@ -57,31 +57,23 @@
     </header>
 
     <main>
-        <div class="public-first-screen">
-            <div class="public-video-hero" aria-hidden="true">
-                <img class="public-hero-poster" src="https://i.ytimg.com/vi/pd6goYLB3Gs/maxresdefault.jpg" alt="" />
-                <div class="public-hero-video" aria-hidden="true" inert>
-                    <iframe id="public-background-video"
-                            data-video-src="https://www.youtube-nocookie.com/embed/pd6goYLB3Gs?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=pd6goYLB3Gs&amp;controls=0&amp;playsinline=1&amp;disablekb=1&amp;fs=0"
-                            title="Lydløs bakgrunnsvideo"
-                            allow="autoplay; encrypted-media"
-                            referrerpolicy="strict-origin-when-cross-origin"
-                            tabindex="-1"></iframe>
-                </div>
+        <div class="public-video-hero">
+            <img class="public-hero-poster" src="https://i.ytimg.com/vi/pd6goYLB3Gs/maxresdefault.jpg" alt=""/>
+            <div class="public-hero-video" aria-hidden="true" inert>
+                <iframe id="public-background-video"
+                        data-video-src="https://www.youtube-nocookie.com/embed/pd6goYLB3Gs?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=pd6goYLB3Gs&amp;controls=0&amp;playsinline=1&amp;disablekb=1&amp;fs=0"
+                        title="Lydløs bakgrunnsvideo"
+                        allow="autoplay; encrypted-media"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        tabindex="-1"></iframe>
             </div>
-
-            <section class="public-purpose-area" aria-labelledby="public-purpose-title">
-                <div class="public-purpose">
-                    <h1 id="public-purpose-title">Paratus styrker beredskapen der du bor</h1>
-                    <p>Med Paratus kan du styrke egenberedskapen din og registrere utstyr eller kjøretøy som beredskapsaktører kan be om å få bruke ved en krise. Det gir dem oversikt over lokale ressurser, slik at de raskere kan hjelpe dem som trenger det.</p>
-                </div>
-
-                <a class="public-register-card public-button public-button-outline" href="#registrer-ressurs">
-                    <span>Registrer ressurs</span><span aria-hidden="true">↓</span>
-                </a>
-            </section>
+            @* Hero-tekst som ligger over videoen. Det mørke laget kommer fra .public-video-hero::after. *@
+            <div class="paratus-hero-text">
+                <p class="paratus-hero-eyebrow">Forberedt. Tilgjengelig. Sammen.</p>
+                <h1>Når noe skjer, står vi <span>sammen.</span></h1>
+                <p class="paratus-hero-lead">Det viktigste vi har, er hverandre.</p>
+            </div>
         </div>
-
         <div class="public-content">
             <div class="public-home-incident">
                 <partial name="/Views/Shared/_IncidentAlert.cshtml" />

@@ -49,6 +49,7 @@ public class EgenberedskapController(
             .Select(status => status.ItemId)
             .ToHashSetAsync();
 
+        ViewData["ChecklistItemCount"] = ValidItemIds.Count;
         return View();
     }
 
@@ -81,6 +82,6 @@ public class EgenberedskapController(
         status.IsComplete = isComplete;
         await db.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Index), controllerName: null, routeValues: null, fragment: "checklist");
     }
 }

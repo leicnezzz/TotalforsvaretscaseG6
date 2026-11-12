@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Egenberedskap";
     Layout = null;
+    ViewData["PrivateSection"] = "Egenberedskap";
 
     var completedItems =
         ViewData["CompletedChecklistItems"] as HashSet<string>
@@ -28,7 +29,7 @@
     <link rel="stylesheet"
           href="~/css/egenberedskap.css"
           asp-append-version="true" />
-<link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
 </head>
 <body>
     <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
@@ -42,41 +43,45 @@
         <nav class="contents-card" aria-label="Innhold på siden">
             <h2>Innhold</h2>
             <p>Her er en oversikt over informasjon du finner på denne siden.</p>
+            <a href="#tilfluktsrom">— &nbsp; Kart over offentlige tilfluktsrom</a>
             <a href="#checklist">— &nbsp; Sjekkliste for beredskap</a>
             <a href="#courses">— &nbsp; Oversikt over diverse kurs</a>
         </nav>
-        <section id="tilfluktsrom" aria-labelledby="tilfluktsrom-tittel">
-    <header class="section-heading">
-        <h2 id="tilfluktsrom-tittel">Finn nærmeste offentlige tilfluktsrom</h2>
-        <p>Søk etter en adresse for å se de nærmeste offentlige tilfluktsrommene på kartet. Avstandene vises i luftlinje.</p>
-    </header>
+        <section id="tilfluktsrom" class="shelter-section" aria-labelledby="tilfluktsrom-tittel">
+            <header class="section-heading">
+                <h2 id="tilfluktsrom-tittel">Finn nærmeste offentlige tilfluktsrom</h2>
+            </header>
 
-    <form id="tilfluktsrom-sok">
-        <label for="tilfluktsrom-adresse">Adresse</label>
-        <input id="tilfluktsrom-adresse"
-               name="adresse"
-               type="search"
-               placeholder="Gatenavn, husnummer og poststed"
-               required />
-        <button type="submit">Søk</button>
-    </form>
+            <div class="shelter-search">
+                <ol class="shelter-instructions">
+                    <li>Skriv inn gatenavn, husnummer og poststed, og klikk på <strong>Søk</strong>.</li>
+                    <li>Velg riktig adresse hvis du får flere treff.</li>
+                    <li>Velg et tilfluktsrom på kartet for å se koordinater og avstand i luftlinje fra adressen din.</li>
+                </ol>
 
-    <p id="tilfluktsrom-status" role="status"></p>
-    <ul id="tilfluktsrom-adressetreff" aria-label="Adresser som matcher søket"></ul>
+                <form id="tilfluktsrom-sok" aria-describedby="tilfluktsrom-status">
+                    <label for="tilfluktsrom-adresse">Adresse</label>
+                    <div class="shelter-search-controls">
+                        <input id="tilfluktsrom-adresse" name="adresse" type="search"
+                               placeholder="Gatenavn, husnummer og poststed" required disabled />
+                        <button type="submit" disabled>Søk</button>
+                    </div>
+                    <p id="tilfluktsrom-status" role="status"></p>
+                </form>
+            </div>
 
-    <div id="tilfluktsrom-kart"
-         role="region"
-         aria-label="Kart over offentlige tilfluktsrom"
-         style="height: 400px;"></div>
+            <ul id="tilfluktsrom-adressetreff" aria-label="Adresser som matcher søket"></ul>
+            <div id="tilfluktsrom-kart" role="region" aria-label="Kart for tilfluktsrom"></div>
+            <ol id="tilfluktsrom-resultater" aria-label="Nærmeste tilfluktsrom"></ol>
+        </section>
 
-    <h3>Nærmeste tilfluktsrom</h3>
-    <ol id="tilfluktsrom-resultater"></ol>
         <section id="checklist"
                  class="checklist-section"
                  aria-labelledby="checklist-title">
             <header class="section-heading">
                 <h2 id="checklist-title">Sjekkliste for beredskap</h2>
-                <p>Her er en sjekkliste for hva som er viktig å tenke på før en krise oppstår.</p>
+                <p>Kryss av det du har på plass. Valgene dine lagres automatisk.</p>
+                <p class="checklist-progress"><strong>@completedItems.Count av @(ViewData["ChecklistItemCount"])</strong> punkter fullført</p>
             </header>
 
             <div class="checklist-grid">
@@ -357,7 +362,6 @@
                 </article>
             </div>
         </section>
-</section>
 
         <section id="courses"
                  class="courses-section"

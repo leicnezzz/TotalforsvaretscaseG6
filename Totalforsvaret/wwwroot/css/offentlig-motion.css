@@ -1,0 +1,24 @@
+@media (prefers-reduced-motion: no-preference) {
+    :is(.crisis-overview, .match-page, .match-page-actions, .need-page, .offentlig-dashboard)
+        :is(a, button, input, textarea, select, .crisis-card) {
+        transition: background-color 160ms ease, border-color 160ms ease,
+            color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    }
+
+    :is(.crisis-overview, .match-page, .offentlig-dashboard) :is(.registration-intro, .match-intro, .oversikt-topp),
+    .crisis-details:not([hidden]),
+    .public-resource-registration .wizard-step:not([hidden]),
+    .public-resource-registration .wizard-success:not([hidden]) {
+        animation: offentlig-fade-in 180ms ease-out both;
+    }
+
+    .match-result button[aria-pressed="true"],
+    .crisis-card.is-marked {
+        box-shadow: 0 2px 8px rgb(36 56 70 / 10%);
+    }
+
+    @keyframes offentlig-fade-in {
+        from { opacity: .68; }
+        to { opacity: 1; }
+    }
+}

@@ -66,6 +66,7 @@
 <link rel="stylesheet" href="~/css/resource-registration.css" asp-append-version="true" />
 
 <link rel="stylesheet" href="~/css/offentlig-match.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
 
 <div class="container-fluid offentlig-dashboard" hidden="@isMatch">
 
@@ -77,6 +78,7 @@
         </div>
 
         <div class="oversikt-handlinger">
+            <a class="opprett-krise-knapp" asp-route="crisis-overview">Hendelser</a>
             <a class="registrer-behov-knapp" asp-route="behov">
                 + Registrer behov
             </a>

@@ -25,6 +25,19 @@ public class CrisisController : Controller
         _userManager = userManager;
     }
 
+    [HttpGet("/crisis/overview", Name = "crisis-overview")]
+    public async Task<IActionResult> Overview()
+    {
+        var crises = await _context.Crises
+            .AsNoTracking()
+            .OrderByDescending(crisis => crisis.StartTime)
+            .ThenByDescending(crisis => crisis.Id)
+            .ToListAsync();
+
+        return View(crises);
+    }
+
+
     // Åpner kriseskjemaet.
     [HttpGet]
     public IActionResult Create()

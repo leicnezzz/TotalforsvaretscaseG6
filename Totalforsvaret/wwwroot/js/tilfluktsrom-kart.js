@@ -14,7 +14,7 @@
 
     const shelterIcon = L.divIcon({
     className: 'shelter-map-icon',
-    html: '<span aria-hidden="true">🛡</span>',
+    html: '<span aria-hidden="true">🛡&#xFE0E;</span>',
     iconSize: [32, 32],
     iconAnchor: [16, 16]
 });

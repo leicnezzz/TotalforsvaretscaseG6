@@ -90,7 +90,8 @@ public class NeedController : Controller
     {
         return View(new MultipleNeedsViewModel
         {
-            Crises = await GetCrisesAsync()
+            Crises = await GetCrisesAsync(),
+            ActiveCrisesOnMap = await GetActiveCrisesOnMapAsync()
         });
     }
 
@@ -108,6 +109,7 @@ public class NeedController : Controller
         if (!ModelState.IsValid)
         {
             viewModel.Crises = await GetCrisesAsync();
+            viewModel.ActiveCrisesOnMap = await GetActiveCrisesOnMapAsync();
             return View(viewModel);
         }
 
@@ -140,6 +142,19 @@ public class NeedController : Controller
 
         return RedirectToAction(
             "Index", "OffentligAktor", new { area = "" });
+    }
+
+    private async Task<IReadOnlyList<CrisisMapPoint>> GetActiveCrisesOnMapAsync()
+    {
+        return await _context.Crises
+            .AsNoTracking()
+            .Where(c => c.Status == "Aktiv"
+                && c.Latitude >= -90 && c.Latitude <= 90
+                && c.Longitude >= -180 && c.Longitude <= 180)
+            .OrderBy(c => c.Name)
+            .Select(c => new CrisisMapPoint(
+                c.Id, c.Name, c.Latitude!.Value, c.Longitude!.Value))
+            .ToListAsync();
     }
 
     // Henter krisene som kan velges i skjemaet.

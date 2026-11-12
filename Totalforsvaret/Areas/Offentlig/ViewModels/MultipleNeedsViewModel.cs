@@ -3,12 +3,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Totalforsvaret.Areas.Offentlig.ViewModels;
 
+public record CrisisMapPoint(int Id, string Name, double Latitude, double Longitude);
+
 public class MultipleNeedsViewModel
 {
     [Required(ErrorMessage = "Velg en krise.")]
     public int? CrisisId { get; set; }
 
     public IEnumerable<SelectListItem> Crises { get; set; } = Array.Empty<SelectListItem>();
+
+    public IReadOnlyList<CrisisMapPoint> ActiveCrisesOnMap { get; set; } = Array.Empty<CrisisMapPoint>();
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
     [Range(-90d, 90d, ErrorMessage = "Ugyldig breddegrad.")]

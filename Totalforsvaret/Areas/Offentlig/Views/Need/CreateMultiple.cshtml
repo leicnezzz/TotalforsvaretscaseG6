@@ -126,7 +126,7 @@
         <div class="mt-4 pt-4 border-top" data-behovplassering>
             <h2 class="h5">Hvor trengs ressursene?</h2>
             <p class="text-muted">
-                Velg en felles plassering for behovene på kartet.
+                Velg en aktiv krise i listen eller på kartet for å bruke krisens plassering. Du kan også klikke et annet sted på kartet.
             </p>
 
             <div id="behovKart" style="height: 350px; width: 100%;"></div>
@@ -173,6 +173,8 @@
         const kartmelding = document.getElementById('behovKartmelding');
         const latitudeInput = document.getElementById('Latitude');
         const longitudeInput = document.getElementById('Longitude');
+        const krisevalg = document.getElementById('CrisisId');
+        const aktiveKriser = @Json.Serialize(Model.ActiveCrisesOnMap);
 
         if (typeof L !== 'undefined') {
             const kart = L.map('behovKart')
@@ -194,11 +196,51 @@
                 if (markor) {
                     markor.setLatLng(plassering);
                 } else {
-                    markor = L.marker(plassering).addTo(kart);
+                    markor = L.circleMarker(plassering, {
+                        radius: 8,
+                        color: '#fff',
+                        weight: 2,
+                        fillColor: '#176b45',
+                        fillOpacity: 1,
+                        interactive: false
+                    }).addTo(kart);
                 }
 
                 kartmelding.textContent =
                     `Valgt plassering: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+            }
+
+            function velgPlassering(latitude, longitude) {
+                latitudeInput.value = latitude;
+                longitudeInput.value = longitude;
+                visPlassering(latitude, longitude);
+            }
+
+            krisevalg.addEventListener('change', () => {
+                const krise = aktiveKriser.find(krise => String(krise.id) === krisevalg.value);
+                if (!krise) return;
+
+                velgPlassering(krise.latitude, krise.longitude);
+                kart.panTo([krise.latitude, krise.longitude]);
+                kartmelding.textContent = `Valgt plassering: ${krise.name}`;
+            });
+
+            const krisemarkorer = L.featureGroup().addTo(kart);
+
+            for (const krise of aktiveKriser) {
+                const navn = document.createElement('span');
+                navn.textContent = krise.name;
+
+                L.marker([krise.latitude, krise.longitude], {
+                    title: krise.name,
+                    alt: `Velg krisen ${krise.name}`
+                })
+                    .bindTooltip(navn)
+                    .on('click', () => {
+                        krisevalg.value = String(krise.id);
+                        krisevalg.dispatchEvent(new Event('change', { bubbles: true }));
+                    })
+                    .addTo(krisemarkorer);
             }
 
             // Beholder valgt plassering hvis skjemaet får valideringsfeil.
@@ -215,14 +257,15 @@
                 }
             }
 
+            if (!markor && aktiveKriser.length > 0) {
+                kart.fitBounds(krisemarkorer.getBounds(), {
+                    padding: [24, 24],
+                    maxZoom: 12
+                });
+            }
+
             kart.on('click', e => {
-                const latitude = e.latlng.lat;
-                const longitude = e.latlng.lng;
-
-                latitudeInput.value = latitude;
-                longitudeInput.value = longitude;
-
-                visPlassering(latitude, longitude);
+                velgPlassering(e.latlng.lat, e.latlng.lng);
             });
         } else {
             kartmelding.textContent = 'Kartet kunne ikke lastes.';

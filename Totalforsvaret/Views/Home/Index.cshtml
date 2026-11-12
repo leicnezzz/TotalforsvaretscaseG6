@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
     <link rel="stylesheet" href="~/css/resource-wizard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/paratus-forside.css" asp-append-version="true" />
     <script src="~/js/help-dismiss.js" asp-append-version="true" defer></script>
 </head>
 <body class="public-home">
@@ -85,6 +86,46 @@
             <div class="public-home-incident">
                 <partial name="/Views/Shared/_IncidentAlert.cshtml" />
             </div>
+            @* Informasjonsseksjon med tre kort. Menyen lenker hit via id-ene. *@
+            <section id="om-paratus" class="paratus-info" aria-labelledby="paratus-info-title">
+                <p class="paratus-eyebrow">Sammen om beredskapen</p>
+                <div class="public-registration-intro paratus-intro">
+                    <h2 id="paratus-info-title">Et fellesskap som er forberedt.</h2>
+                    <p>Bli kjent med Paratus, hvordan du kan bidra og hvor du finner riktig kontaktpunkt.</p>
+                </div>
+
+                <div class="paratus-cards">
+                    <article class="paratus-card">
+                        <p class="paratus-card-label">01 / Om Paratus</p>
+                        <h3>Mennesket som ressurs.</h3>
+                        <p class="paratus-card-text">Når noe skjer, finnes det mennesker, kompetanse og utstyr som kan gjøre en forskjell. Paratus gjør det enklere å koble lokale ressurser med samfunnets behov.</p>
+                        <p class="paratus-card-text">Her møtes innbyggere, frivillige, næringsliv og offentlige aktører for bedre oversikt og samhandling i beredskap.</p>
+                        <p class="paratus-card-note">Utviklet som en studieprototype for Totalforsvaret-casen.</p>
+                    </article>
+                    
+                    <article id="slik-fungerer-det" class="paratus-card">
+                        <p class="paratus-card-label">02 / Slik fungerer det</p>
+                        <h3>Fra behov til bidrag.</h3>
+                        <ol class="paratus-steps">
+                            <li>
+                                <strong>Velg din rolle</strong>
+                                <p class="paratus-card-text">Utforsk løsningen som offentlig aktør eller sivil bidragsyter.</p>
+                            </li>
+                            <li>
+                                <strong>Registrer behov eller ressurser</strong>
+                                <p class="paratus-card-text">Offentlige aktører beskriver behov. Sivile aktører tilbyr utstyr, kompetanse eller kapasitet.</p>
+                            </li>
+                            <li>
+                                <strong>Avklar og koordiner</strong>
+                                <p class="paratus-card-text">Finn aktuelle ressurser, svar på forespørsler og følg opp innsatsen.</p>
+                            </li>
+                        </ol>
+                        <a class="public-button public-button-outline paratus-card-action" asp-area="" asp-controller="Account" asp-action="Register">
+                            <span>Kom i gang</span><span aria-hidden="true">→</span>
+                        </a>
+                    </article>
+                </div>
+            </section>
 
             <section id="registrer-ressurs" class="public-registration" aria-labelledby="registration-title">
                 <div class="public-registration-intro">

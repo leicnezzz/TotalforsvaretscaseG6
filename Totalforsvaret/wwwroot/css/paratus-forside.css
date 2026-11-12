@@ -1,2 +1,105 @@
 /* Stiler for de nye delene på forsiden: Om Paratus, Slik fungerer det og Kontaktinformasjon.
    Fargene kommer fra variablene i public-home.css, så de er ikke definert på nytt her. */
+
+/* Seksjonen under hero: overskrift og kort ved siden av hverandre. */
+.paratus-info {
+    margin-top: 48px;
+    scroll-margin-top: 24px;
+}
+
+.paratus-eyebrow {
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+/* Overskrift og ingress gjenbruker .public-registration-intro, men venstrejustert. */
+.paratus-intro,
+.paratus-intro p {
+    text-align: left;
+    margin-inline: 0;
+}
+
+/* auto-fill gir tre kolonner på bred skjerm og færre på smal skjerm. */
+.paratus-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 32px;
+}
+
+.paratus-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 28px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgb(0 0 0 / 8%);
+}
+
+.paratus-card-label {
+    color: var(--public-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+
+.paratus-card h3 {
+    font-size: 24px;
+    line-height: 1.15;
+}
+
+.paratus-card-text {
+    color: #42545b;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* margin-top: auto skyver notatsteksten ned til bunnen av kortet. */
+.paratus-card-note {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #dde5de;
+    color: var(--public-muted);
+    font-size: 12px;
+}
+/* Nummerert liste i kort 02. Tallene lages med en CSS-teller. */
+.paratus-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: steg;
+}
+
+.paratus-steps li {
+    position: relative;
+    padding-left: 36px;
+    counter-increment: steg;
+}
+
+.paratus-steps li::before {
+    content: counter(steg);
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid #dde5de;
+    border-radius: 50%;
+    color: var(--public-muted);
+    font-size: 12px;
+}
+
+/* Knappen i bunnen av kortet. */
+.paratus-card-action {
+    margin-top: auto;
+}

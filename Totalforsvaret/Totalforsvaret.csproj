@@ -36,7 +36,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Homepage\" />
-    <Folder Include="Areas\Offentlig\Views\Inbox\" />
   </ItemGroup>
 
   <ItemGroup>

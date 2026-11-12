@@ -1,0 +1,38 @@
+:root {
+    --profile-green: #163c4c;
+    --profile-green-dark: #225466;
+    --profile-mint: #eef0f2;
+    --profile-teal: #72d9df;
+    --profile-ink: #163c4c;
+    --profile-muted: #526671;
+    --profile-link: #163c4c;
+}
+
+body.profile-page.offentlig-page {
+    background: #eef0f2;
+    color: #163c4c;
+}
+
+.offentlig-page .site-footer {
+    background:
+            radial-gradient(120% 90% at 15% 130%,
+            #dce5e9 0 48%, transparent 49%),
+            radial-gradient(100% 100% at 85% 150%,
+            #b8d0d8 0 45%, transparent 46%),
+            #eaf0f2;
+    color: #163c4c;
+}
+
+.offentlig-page .site-footer nav a {
+    color: #163c4c;
+}
+
+.offentlig-page .success-message {
+    border-color: #a8ced4;
+    background: #e9f5f6;
+    color: #163c4c;
+}
+
+.offentlig-page .profile-logout {
+    color: #163c4c;
+}

@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = "Egenberedskap";
     Layout = null;
+    ViewData["PrivateSection"] = "Egenberedskap";
+    ViewData["PrivateBack"] = true;
 
     var completedItems =
         ViewData["CompletedChecklistItems"] as HashSet<string>
@@ -22,17 +24,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
           rel="stylesheet" />
 
-    <link rel="stylesheet"
-          href="~/css/site-header.css"
-          asp-append-version="true" />
-    <link rel="stylesheet"
-          href="~/css/egenberedskap.css"
-          asp-append-version="true" />
+   <link rel="stylesheet"
+      href="~/css/Private-home.css"
+      asp-append-version="true" />
+<link rel="stylesheet"
+      href="~/css/site-header.css"
+      asp-append-version="true" />
+<link rel="stylesheet"
+      href="~/css/egenberedskap.css"
+      asp-append-version="true" />
+<link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
 </head>
 <body>
-    <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
+   <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
+   <partial name="/Areas/Homepage/Views/Shared/_PrivatePageAction.cshtml" />
 
-    <main class="beredskap-container">
+    <main>
+    <div class="beredskap-container">
         <header class="page-header">
             <h1>Oversikt over egen beredskap</h1>
             <p>For deg som ønsker å bli en bedre ressurs for samfunnet.</p>
@@ -41,18 +49,88 @@
         <nav class="contents-card" aria-label="Innhold på siden">
             <h2>Innhold</h2>
             <p>Her er en oversikt over informasjon du finner på denne siden.</p>
+            <a href="#tilfluktsrom">— &nbsp; Kart over offentlige tilfluktsrom</a>
             <a href="#checklist">— &nbsp; Sjekkliste for beredskap</a>
             <a href="#courses">— &nbsp; Oversikt over diverse kurs</a>
         </nav>
+        <section id="tilfluktsrom" class="shelter-section" aria-labelledby="tilfluktsrom-tittel">
+            <header class="section-heading">
+                <h2 id="tilfluktsrom-tittel">Finn nærmeste offentlige tilfluktsrom</h2>
+            </header>
+            <div class="shelter-search">
+                <ol class="shelter-instructions">
+    <li>Skriv inn gatenavn og husnummer. Velg riktig adresse blant forslagene.</li>
+    <li>Trykk <strong>Søk</strong>. Hvis du får flere treff, velg riktig adresse.</li>
+    <li>Se de nærmeste tilfluktsrommene under kartet.
+       Trykk på en adresse i tabellen for å se tilfluktsrommet på kartet.</li>
+</ol>
+
+              <form id="tilfluktsrom-sok">
+    <label for="tilfluktsrom-adresse">Adresse</label>
+   <p id="tilfluktsrom-adresse-hjelp">Eksempel: Markens gate 12, 4611</p>
+
+    <div class="shelter-search-controls">
+        <input id="tilfluktsrom-adresse"
+               name="adresse"
+               type="search"
+               placeholder="Gatenavn, husnummer og ev. postnummer"
+               aria-describedby="tilfluktsrom-adresse-hjelp"
+               required disabled />
+        <button type="submit" disabled>Søk</button>
+    </div>
+
+    <p id="tilfluktsrom-status" role="status"></p>
+</form>
+            </div>
+
+<p id="tilfluktsrom-utskrift-adresse" class="shelter-print-address"></p>
+
+            <ul id="tilfluktsrom-adressetreff"
+                aria-label="Adresser som matcher søket"></ul>
+
+            <div id="tilfluktsrom-kart"
+                 role="region"
+                 aria-label="Kart for tilfluktsrom"></div>
+
+<div class="shelter-table-wrap">
+<table class="shelter-table">
+<caption>Nærmeste offentlige tilfluktsrom</caption>
+<thead>
+<tr>
+<th scope="col">Adresse</th>
+<th scope="col">Avstand i luftlinje</th>
+<th scope="col">Koordinater</th>
+</tr>
+</thead>
+<tbody id="tilfluktsrom-resultater"></tbody>
+    </table>
+</div>
+
+<button id="tilfluktsrom-skriv-ut"
+        class="shelter-print-button"
+        type="button"
+        hidden>
+    Skriv ut
+</button>
+        </section>
+          </div>
 
         <section id="checklist"
                  class="checklist-section"
                  aria-labelledby="checklist-title">
-            <header class="section-heading">
+           <header class="section-heading checklist-heading">
                 <h2 id="checklist-title">Sjekkliste for beredskap</h2>
-                <p>Her er en sjekkliste for hva som er viktig å tenke på før en krise oppstår.</p>
-            </header>
 
+                <p class="checklist-progress">
+                    <strong>@completedItems.Count av @(ViewData["ChecklistItemCount"])</strong>
+                    punkter fullført
+                </p>
+
+                <p class="checklist-instructions">
+                    Kryss av når du har et punkt på plass. Valget lagres automatisk.
+                    Trykk på samme punkt igjen hvis du vil fjerne avkryssingen.
+                </p>
+            </header>
             <div class="checklist-grid">
                 <article class="preparedness-card">
                     <h3>Mat og vann</h3>
@@ -331,15 +409,13 @@
                 </article>
             </div>
         </section>
-
         <section id="courses"
-                 class="courses-section"
-                 aria-labelledby="courses-title">
-            <header class="section-heading">
-                <h2 id="courses-title">Oversikt over diverse kurs</h2>
-                <p>Her er en oversikt over kurs som kan forbedre dine ferdigheter.</p>
-            </header>
-
+         class="courses-section"
+         aria-labelledby="courses-title">
+    <header class="section-heading">
+        <h2 id="courses-title">Oversikt over diverse kurs</h2>
+        <p>Her er en oversikt over kurs som kan forbedre dine ferdigheter.</p>
+    </header>
             <div class="courses-grid">
                 <a class="course-card"
                    href="https://example.com/norsk-luftambulanse-kurs"
@@ -388,5 +464,54 @@
             </div>
         </section>
     </main>
+     <footer class="thank-you">
+        <div class="footer-content">
+            <h2>Tusen takk for din hjelp</h2>
+
+            <p>
+                Vi ønsker å rette en stor takk til alle som bidrar
+                til å styrke vår felles beredskap. Enten du stiller
+                ressurser til disposisjon, deler viktig informasjon
+                eller på andre måter engasjerer deg, er ditt bidrag
+                verdifullt.
+            </p>
+
+            <p>
+                God beredskap handler om samarbeid, tillit og viljen
+                til å stille opp for hverandre. Ved å samle mennesker,
+                organisasjoner og tilgjengelige ressurser på ett sted,
+                legger vi til rette for bedre samhandling og raskere
+                respons når det virkelig gjelder.<br />
+                Sammen kan vi skape et tryggere, sterkere og mer
+                forberedt samfunn.
+            </p>
+        </div>
+
+        <div class="footer-bottom">
+            <span>Paratus</span>
+
+            <div class="footer-links">
+                <a asp-area=""
+                   asp-controller="Home"
+                   asp-action="Privacy">
+                    Personvern
+                </a>
+                <span aria-hidden="true">·</span>
+                <span>Tilgjengelighet</span>
+                <span aria-hidden="true">·</span>
+                <span>Kontakt</span>
+            </div>
+        </div>
+    </footer>
+<script src="~/lib/leaflet/leaflet.js"></script>
+<script>
+    const tilfluktsromKart = L.map('tilfluktsrom-kart')
+        .setView([65, 15], 5);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(tilfluktsromKart);
+</script>
+<script src="~/js/tilfluktsrom-kart.js" asp-append-version="true"></script>
 </body>
 </html>

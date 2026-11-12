@@ -27,6 +27,7 @@
                      ?? Enumerable.Empty<Need>()).Select(behov => new
     {
         id = behov.Id,
+        kriseId = behov.CrisisId,
         navn = behov.Name,
         type = behov.Type,
         prioritet = behov.Priority,
@@ -40,6 +41,13 @@
     {
         ressurser = kartRessurser,
         behov = kartBehov,
+        markeringer = (ViewBag.Kartmarkeringer as IEnumerable<Totalforsvaret.Models.CrisisMapAnnotation>
+            ?? Enumerable.Empty<Totalforsvaret.Models.CrisisMapAnnotation>()).Select(a => new
+            {
+                id = a.Id, crisisId = a.CrisisId, kind = a.Kind, name = a.Name,
+                description = a.Description, impact = a.Impact, risk = a.Risk,
+                coordinates = JsonSerializer.Deserialize<double[][]>(a.CoordinatesJson)
+            }),
         kriser = (object?)ViewBag.KriserPaKart ?? Array.Empty<object>()
     });
     
@@ -73,69 +81,89 @@
     <link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
 }
 
-<div class="container-fluid offentlig-dashboard" hidden="@isMatch">
+@if (!isMatch)
+{
+<div class="container-fluid offentlig-dashboard">
 
-    <!-- Overskrift og handlinger -->
-    <div class="oversikt-topp">
-        <div>
+    <div class="kart-oversiktsrad">
+        <div class="kart-oversiktsgruppe">
             <h1>Operativ oversikt</h1>
-            <p>Se aktive behov og tilgjengelige ressurser, eller registrer en krise eller et behov.</p>
-        </div>
+            <div class="statistikk-rad">
+                <div>
+                    <div class="stat-kort krise-kort"
+                         role="button"
+                         tabindex="0"
+                         aria-haspopup="dialog"
+                         aria-controls="oversiktDialog"
+                         data-oversikt-liste="kriser">
+                        <h2>Hendelser</h2>
+                        <p class="stat-tall">@((ViewBag.KriserTilLister as System.Collections.ICollection)?.Count ?? 0)</p>
 
-        <div class="oversikt-handlinger">
-            <a class="opprett-krise-knapp" asp-route="crisis-overview">Hendelser</a>
-            <a class="registrer-behov-knapp" asp-route="behov">
-                + Registrer behov
+                    </div>
+                </div>
+
+                <div>
+                    <div class="stat-kort behov-kort"
+                         role="button"
+                         tabindex="0"
+                         aria-haspopup="dialog"
+                         aria-controls="oversiktDialog"
+                         data-oversikt-liste="aktive">
+                        <h2>Aktive behov</h2>
+                        <p class="stat-tall">@ViewBag.AktiveBehov</p>
+
+                    </div>
+                </div>
+
+
+
+                <div>
+                    <a class="stat-kort treff-kort" href="#foreslatteTreff">
+                        <h2>Foreslåtte treff</h2>
+                        <p class="stat-tall">@ViewBag.ForeslatteTreff</p>
+
+                    </a>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="oversikt-handlinger-kolonne">
+            <a class="egen-ressurs-lenke"
+               asp-area=""
+               asp-controller="OffentligAktor"
+               asp-action="NyRessurs">
+                Legg til egen ressurs
             </a>
-            <a class="opprett-krise-knapp"
-               asp-area="Offentlig"
-               asp-controller="Crisis"
-               asp-action="Create">
-                + Opprett krise
-            </a>
+            <div class="oversikt-handlinger">
+                <a class="registrer-behov-knapp"
+                   asp-area="Offentlig"
+                   asp-controller="Need"
+                   asp-action="CreateMultiple">
+                    + Registrer behov
+                </a>
+                <a class="opprett-krise-knapp"
+                   asp-area="Offentlig"
+                   asp-controller="Crisis"
+                   asp-action="Create">
+                    + Opprett krise
+                </a>
+            </div>
         </div>
     </div>
 
-    <!-- Statistikkort -->
-    <section class="statistikk-rad" aria-label="Nøkkeltall og lister">
-        <div class="stat-kort krise-kort">
-                <h2>Aktive kriser</h2>
-                <p class="stat-tall">@ViewBag.AktiveKriser</p>
-                <span>Kriser med status Aktiv</span>
-        </div>
-        
-        <button type="button" class="stat-kort behov-kort"
-                 aria-haspopup="dialog"
-                 aria-controls="oversiktDialog"
-                 data-oversikt-liste="aktive">
-            <span class="stat-navn">Aktive behov</span>
-            <span class="stat-tall">@ViewBag.AktiveBehov</span>
-            <span class="stat-handling">Vis liste →</span>
-        </button>
-
-        <button type="button" class="stat-kort ressurs-kort"
-                 aria-haspopup="dialog"
-                 aria-controls="oversiktDialog"
-                 data-oversikt-liste="ressurser">
-            <span class="stat-navn">Tilgjengelige ressurser</span>
-            <span class="stat-tall">@Model.Count</span>
-            <span class="stat-handling">Vis liste →</span>
-        </button>
-
-        <div class="stat-kort treff-kort">
-                <h2>Foreslåtte treff</h2>
-                <p class="stat-tall">@ViewBag.ForeslatteTreff</p>
-                <span>Koblinger mellom behov og ressurs</span>
-        </div>
-
-        <button type="button" class="stat-kort lost-kort"
-                 aria-haspopup="dialog"
-                 aria-controls="oversiktDialog"
-                 data-oversikt-liste="loste">
-            <span class="stat-navn">Løste behov</span>
-            <span class="stat-tall">@ViewBag.LosteBehov</span>
-            <span class="stat-handling">Vis liste →</span>
-        </button>
+    <section class="kart-hendelser" aria-label="Hendelser i kartet">
+        <details>
+            <summary>Åpne hendelser</summary>
+            <form id="kartHendelserForm" method="get" asp-area="" asp-controller="OffentligAktor" asp-action="Index">
+                <fieldset id="kartHendelserValg"><legend>Velg hendelsene du vil åpne</legend></fieldset>
+                <button type="submit" class="btn btn-primary">Åpne valgte hendelser</button>
+            </form>
+        </details>
+        <label for="kartArbeidshendelse">Arbeid med hendelse</label>
+        <select id="kartArbeidshendelse" class="form-select"></select>
+        <span id="kartArbeidsstatus" role="status"></span>
+        <div id="kartAntiforgery" hidden>@Html.AntiForgeryToken()</div>
     </section>
 
     <!-- Kart og oppfølging -->
@@ -207,6 +235,7 @@
                                     var ressursOpptatt = kartAktiveTildelinger.Any(a =>
                                         a.ResourceId == treff.ResourceId);
                                     <div class="behov-element kart-matchtreff"
+                                         data-crisis-id="@((ViewBag.BehovTilLister as IEnumerable<dynamic>)?.FirstOrDefault(n => n.id == treff.NeedId)?.kriseId)"
                                          data-match-type="@matchKategorier.GetValueOrDefault(treff.ResourceId)"
                                          data-match-sok="@treff.ResourceName @treff.NeedName">
                                         <strong>@treff.ResourceName</strong>
@@ -341,7 +370,7 @@
 
                         <section id="kartVeihindring" class="kart-handlingspanel" aria-labelledby="kartVeihindringTittel" hidden>
                             <h2 id="kartVeihindringTittel">Registrer veihindring</h2>
-                            <p class="kart-panelintro">Marker en plassering i kartet. Markeringen vises til siden lastes på nytt.</p>
+                            <p class="kart-panelintro">Marker en plassering i kartet. Markeringen lagres på valgt hendelse.</p>
                             <form data-kartmarkering="veihindringer">
                                 <p class="kart-posisjon" role="status">Klikk i kartet for å velge plassering.</p>
                                 <label for="kartHindringNavn">Type veihindring</label>
@@ -399,10 +428,15 @@
                     </div>
                 </div>
 
-        <div class="col-lg-9 kart-kolonne">
-            <section class="situasjonskart"
-                     aria-labelledby="situasjonskart-tittel">
-                <h2 id="situasjonskart-tittel">Situasjonskart</h2>
+                <p id="kartmelding" class="small text-muted mt-2 mb-0" role="status"></p>
+            </section>
+        </div>
+
+        <div class="col-12">
+            <!-- Eksempeltekst inntil organisasjon er koblet til innlogging -->
+            <div class="aktorlinje">
+                <div class="aktor-identitet">
+                    <span class="aktor-merke">Offentlig aktør</span>
 
                     <span class="aktor-organisasjon">
                         Kristiansand kommune · Beredskap
@@ -459,7 +493,7 @@
             <section class="oppfolging-panel"
                      aria-labelledby="oppfolging-tittel">
 
-                <h2 id="oppfolging-tittel">Oppfølging</h2>
+                <h2 id="oppfolging-tittel">Krever oppfølging</h2>
 
                 <div class="oppfolging-innhold">
                     <h3>Aktive behov</h3>
@@ -704,10 +738,116 @@
 
         <div id="oversiktListe" class="oversikt-tabellomrade"></div>
     </dialog>
-    
+    <!-- Ressursliste som bare vises ved utskrift -->
+    <section class="print-bare print-ressurser" aria-label="Ressursliste for utskrift">
+        <h1>Ressursliste – Kristiansand kommune</h1>
+        <p>Utskrift: @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p>
+
+        <table class="print-tabell">
+            <thead>
+            <tr>
+                <th>Ressurs</th>
+                <th>Kategori</th>
+                <th>Tilbyder</th>
+                <th>Kontakt</th>
+                <th>Tilgjengelig fra</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.Object</td>
+                    <td>@(r.Category?.Name ?? "Uten kategori")</td>
+                    <td>@r.Navn</td>
+                    <td>@r.Kontaktpunkt</td>
+                    <td>@(r.TilgjengeligFra?.ToString("dd.MM.yyyy HH:mm") ?? "Ikke oppgitt")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </section>
+    <!-- Aktive behov som bare vises ved utskrift -->
+    <section class="print-bare print-behov" aria-label="Aktive behov for utskrift">
+        <h1>Aktive behov – Kristiansand kommune</h1>
+        <p>Utskrift: @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p>
+
+        <table class="print-tabell">
+            <thead>
+            <tr>
+                <th>Behov</th>
+                <th>Type</th>
+                <th>Prioritet</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var b in (ViewBag.BehovPaKart as IEnumerable<Need>) ?? Enumerable.Empty<Need>())
+            {
+                <tr>
+                    <td>@b.Name</td>
+                    <td>@b.Type</td>
+                    <td>@b.Priority</td>
+                    <td>@b.Status</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </section>
+    <form id="avsluttKriseSkjema"
+          asp-area="Offentlig"
+          asp-controller="Crisis"
+          asp-action="Avslutt"
+          method="post"
+          hidden>
+        <input type="hidden" name="id" />
+    </form>
+    <!-- Koordinering -->
+    <section class="koordinering-panel"
+             aria-labelledby="koordinering-tittel">
+
+        <h2 id="koordinering-tittel">Koordinering</h2>
+
+        @if (ViewBag.SisteTildelinger != null &&
+             ViewBag.SisteTildelinger.Count > 0)
+        {
+            <ul class="koordinering-liste">
+                @foreach (var tildeling in ViewBag.SisteTildelinger)
+                {
+                    string statusKode = tildeling.status.ToString();
+                    string statusTekst = statusKode switch
+                    {
+                        "Requested" => "Til vurdering",
+                        "Assigned" => "Tildelt",
+                        "Released" => "Frigitt",
+                        "Rejected" => "Avslått",
+                        _ => statusKode
+                    };
+
+                    <li>
+                        <strong>@tildeling.ressurs</strong>
+                        til behovet
+                        <strong>@tildeling.behov</strong>
+                        <span>
+                            @statusTekst ·
+                            @(((DateTime)tildeling.tidspunkt).ToLocalTime().ToString("dd.MM.yyyy HH:mm"))
+                        </span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>
+                Ingen tildelinger ennå.
+                Her vises de siste avklaringene mellom behov og ressurser.
+            </p>
+        }
+    </section>
 
 </div>
-@if (isMatch)
+}
+else
 {
     <partial name="_Match" />
 }
@@ -725,6 +865,8 @@
         @Html.Raw(oversiktJson)
     </script>
 
+    @if (!isMatch)
+    {
     <script src="~/js/behov-liste.js" asp-append-version="true"></script>
 
     <script src="~/js/offentlig-kart.js"
@@ -738,4 +880,5 @@
 
 <script src="~/js/offentlig-utskrift.js"
         asp-append-version="true"></script>
+    }
 }

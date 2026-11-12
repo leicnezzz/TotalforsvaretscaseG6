@@ -262,6 +262,7 @@
     position: relative;
     width: 100%;
     height: calc(100dvh - var(--kart-topp, 130px) - 8px);
+    min-height: 440px;
     border: 1px solid var(--kant);
     border-radius: 10px;
     background: #dce5e5;
@@ -1603,118 +1604,290 @@ body.kart-fullskjerm-apen {
     width: 100%;
 }
 
-/* Operativ oversikt */
-body:has(.offentlig-dashboard) {
-    display: flex;
-    flex-direction: column;
-    min-height: 100svh;
-    margin-bottom: 0;
-    background: #eef0f2;
+/*Navigation bar og bakgrunnsfarge for Offentlig Aktør*/
+body.offentlig-page {
+    min-height: 100vh;
+    background-color: #EEF0F2;
 }
 
-body:has(.offentlig-dashboard) > .container-fluid {
-    flex: 1;
-    padding-inline: 0;
+.offentlig-page .offentlig-site-header {
+    background-color: #163C4C;
 }
 
-body:has(.offentlig-dashboard) > .registration-footer,
-body:has(.offentlig-dashboard) > .registration-footer a {
-    color: #163c4c;
+.offentlig-page .offentlig-site-header .nav-links a {
+    color: #fff;
 }
 
-.offentlig-dashboard {
-    max-width: 1440px;
-    padding: clamp(16px, 3vw, 40px);
-    background: transparent;
+.offentlig-page .offentlig-site-header .nav-links a:hover,
+.offentlig-page .offentlig-site-header .nav-links a:focus-visible,
+.offentlig-page .offentlig-site-header .nav-links a.active {
+    color: #fff;
 }
 
-.offentlig-dashboard .oversikt-topp {
-    margin-bottom: 24px;
+.offentlig-page .offentlig-site-header .nav-links a.active {
+    border-bottom-color: #fff;
 }
 
-.offentlig-dashboard .statistikk-rad {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
-    gap: 12px;
+.offentlig-page .offentlig-site-header .account-summary,
+.offentlig-page .offentlig-site-header .account-copy small {
+    color: #fff;
 }
-
-.offentlig-dashboard .statistikk-rad .stat-kort {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    margin: 0;
-    min-height: 7.75rem;
-    padding: 14px 16px;
-    border: 1px solid var(--kant);
-    color: #163c4c;
-    text-align: left;
-}
-
-.offentlig-dashboard .stat-kort :is(h2, .stat-navn) {
-    margin: 0;
-    color: #163c4c;
-    font-size: .875rem;
+/* Statusmerkelapper (ikke klikkbare) */
+.offentlig-dashboard .status-merkelapp {
+    align-self: flex-start;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 12px;
     font-weight: 600;
+    color: var(--tekst);
+    cursor: default;
 }
 
-.offentlig-dashboard .stat-kort .stat-tall {
-    color: inherit;
-    font-size: 1.75rem;
-    font-weight: 700;
+.offentlig-dashboard .status-vurderes {
+    background: var(--planlagt);
 }
 
-.offentlig-dashboard .stat-kort .stat-handling {
-    margin-top: auto;
-    color: #163c4c;
-    text-decoration: underline;
-    text-underline-offset: .15em;
+.offentlig-dashboard .status-tildelt {
+    background: #BFE6B5;
 }
 
-.offentlig-dashboard .stat-kort[data-oversikt-liste]:hover {
-    border-color: #163c4c;
-    background: #f7fafb;
+/* «Se og endre behov» i Foreslåtte treff */
+.offentlig-dashboard .se-behov-lenke {
+    align-self: flex-start;
+    padding: 4px 0;
+    color: #163C4C;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
 }
 
-.offentlig-dashboard .offentlig-arbeidsflate {
-    --kart-hoyde: clamp(360px, 58dvh, 620px);
-    align-items: start;
+.offentlig-dashboard .se-behov-lenke::after {
+    content: " →";
 }
 
-.offentlig-dashboard .situasjonskart,
-.offentlig-dashboard .oppfolging-panel {
-    height: auto;
-    padding: 16px;
-    overflow: visible;
-    border: 1px solid var(--kant);
-    border-radius: 8px;
-    background: #fff;
+.offentlig-dashboard .se-behov-lenke:hover {
+    color: #225466;
+    border-bottom-color: #225466;
 }
 
-.offentlig-dashboard .situasjonskart h2,
-.offentlig-dashboard .oppfolging-panel h2 {
-    margin: 0 0 16px;
-    color: #163c4c;
-    font-size: 1.25rem;
-    font-weight: 700;
+.offentlig-dashboard .se-behov-lenke:focus-visible {
+    outline: 3px solid var(--offentlig);
+    outline-offset: 2px;
 }
 
-.offentlig-dashboard #offentligKart:not(:fullscreen):not(.kart-fullskjerm) {
-    height: var(--kart-hoyde);
-    min-height: 0;
+/* Tildel og Avslå ved siden av hverandre */
+.offentlig-dashboard .knapperad {
+    display: flex;
+    gap: 10px;
 }
 
-@media (max-width: 575px) {
-    .offentlig-dashboard .oversikt-handlinger {
+.offentlig-dashboard .knapperad form {
+    flex: 1;
+}
+
+.offentlig-dashboard .knapperad .btn {
+    width: 100%;
+}
+
+/* Utskrift av ressursliste */
+.print-bare {
+    display: none;
+}
+
+@media print {
+    nav,
+    header,
+    footer {
+        display: none !important;
+    }
+
+    .offentlig-dashboard > *:not(.print-bare) {
+        display: none !important;
+    }
+
+    .offentlig-dashboard {
+        padding: 0;
+        background: #fff;
+    }
+
+    .print-tabell {
         width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
     }
 
-    .offentlig-dashboard .oversikt-handlinger a {
-        flex: 1 1 9rem;
-        padding-inline: 10px;
+    .print-tabell th,
+    .print-tabell td {
+        border: 1px solid #000;
+        padding: 4px 8px;
+        text-align: left;
+    }
+}
+
+.oversikt-tabell--kriser {
+    min-width: 1600px;
+}
+
+.oversikt-tabell--kriser td:nth-child(7) {
+    min-width: 240px;
+    max-width: 360px;
+    white-space: pre-wrap;
+}
+
+.oversikt-tabell--kriser td:last-child {
+    min-width: 280px;
+}
+
+.kart-forklaring > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kart-tegn {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    border: 2px solid black;
+    box-sizing: border-box;
+}
+
+.kart-tegn-ressurs,
+.kart-tegn-egen {
+    border-radius: 50%;
+}
+
+.kart-tegn-ressurs {
+    background: var(--tilgjengelig);
+}
+
+.kart-tegn-egen {
+    background: var(--offentlig);
+}
+
+.kart-tegn-behov {
+    background: var(--planlagt);
+}
+
+.kart-tegn-krise {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    border: 0;
+    background: black;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.kart-tegn-krise::after {
+    content: "";
+    position: absolute;
+    inset: 4px 4px 2px;
+    background: var(--akutt);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+@media print {
+    .print-bare {
+        display: none !important;
     }
 
-    .offentlig-dashboard .offentlig-arbeidsflate {
-        --kart-hoyde: clamp(300px, 55dvh, 420px);
+    body[data-utskrift="ressurser"] .print-ressurser,
+    body[data-utskrift="behov"] .print-behov {
+        display: block !important;
     }
+}
+
+/* Skriv ut-knapp i aktørlinjen */
+.offentlig-dashboard .aktor-hoyre {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.offentlig-dashboard .skriv-ut-knapp {
+    padding: 6px 12px;
+    background: #FFFFFF;
+    border: 1px solid var(--kant);
+    border-radius: 6px;
+    color: #163C4C;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.offentlig-dashboard .skriv-ut-knapp:hover {
+    background: #EDF3F6;
+    border-color: #163C4C;
+}
+
+.offentlig-dashboard .skriv-ut-knapp:focus-visible {
+    outline: 3px solid var(--offentlig);
+    outline-offset: 2px;
+}
+
+/* Legg til egen ressurs: rolig lenke under hovedknappene */
+.offentlig-dashboard .oversikt-handlinger-kolonne {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.offentlig-dashboard .egen-ressurs-lenke {
+    color: #225466;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.offentlig-dashboard .egen-ressurs-lenke::before {
+    content: "+ ";
+}
+
+.offentlig-dashboard .egen-ressurs-lenke::after {
+    content: " →";
+}
+
+.offentlig-dashboard .egen-ressurs-lenke:hover {
+    text-decoration: underline;
+}
+
+.offentlig-dashboard .egen-ressurs-lenke:focus-visible {
+    outline: 3px solid var(--offentlig);
+    outline-offset: 3px;
+}
+
+
+/* Samlet oversikt og hendelsesvalg. */
+.offentlig-dashboard .kart-oversiktsrad {
+    padding: 14px 16px; margin-bottom: 12px; gap: 16px;
+    border: 1px solid #d5dfe3; border-radius: 12px; background: #f7f9fa;
+}
+.offentlig-dashboard .kart-oversiktsgruppe { gap: 14px; }
+.offentlig-dashboard .statistikk-rad { gap: 8px; }
+.offentlig-dashboard .stat-kort { border: 2px solid #163c4c; border-radius: 10px; padding: 8px 14px; gap: 12px; }
+.offentlig-dashboard .behov-kort { border-color: #a64b3c; }
+.offentlig-dashboard .treff-kort { border-color: #426747; }
+.offentlig-dashboard .egen-ressurs-lenke::after { content: none; }
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 360px) minmax(0, 1fr); gap: 20px;
+}
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) .nav-links { flex-wrap: wrap; }
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) .account-summary { justify-self: end; }
+#kartSokToolbar { width: 100%; justify-self: center; }
+.kart-hendelser { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 12px 0; color: #163c4c; }
+.kart-hendelser details { position: relative; }
+.kart-hendelser summary { cursor: pointer; padding: 10px 14px; background: white; border: 1px solid #163c4c; border-radius: 8px; }
+#kartHendelserForm { position: absolute; top: calc(100% + 6px); left: 0; z-index: 1100; width: min(360px, 85vw); padding: 16px; background: white; border: 1px solid #c9d5dc; border-radius: 10px; box-shadow: 0 6px 20px #163c4c20; }
+#kartHendelserValg { max-height: 260px; overflow: auto; margin-bottom: 12px; }
+#kartHendelserValg legend { font-size: 14px; }
+#kartHendelserValg label { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+#kartArbeidshendelse { width: min(320px, 100%); }
+#kartArbeidsstatus { font-size: 13px; }
+.kart-handlingsrad button:disabled { opacity: .5; cursor: not-allowed; }
+@media(max-width: 1100px) {
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) { grid-template-columns: 1fr auto; }
+    #kartSokToolbar { grid-column: 1 / -1; grid-row: 2; max-width: 420px; margin-inline: auto; }
 }

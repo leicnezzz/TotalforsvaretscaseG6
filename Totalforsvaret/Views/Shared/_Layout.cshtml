@@ -7,7 +7,9 @@
 
     var isOffentligPage =
         area.Equals("Offentlig", StringComparison.OrdinalIgnoreCase) ||
-        controller.Equals("OffentligAktor", StringComparison.OrdinalIgnoreCase);
+        controller.Equals("OffentligAktor", StringComparison.OrdinalIgnoreCase) ||
+        (controller.Equals("Home", StringComparison.OrdinalIgnoreCase) &&
+         ViewContext.RouteData.Values["action"]?.ToString() == "ResourceRegistration");
 }
 
 <!DOCTYPE html>
@@ -54,6 +56,9 @@
                         Totalforsvaret
                     </a>
 
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                    var currentUser = await UserManager.GetUserAsync(User);
                     <span class="navbar-text me-3">
                         Hei, @(currentUser?.Navn ?? User.Identity?.Name)
                     </span>
@@ -70,10 +75,10 @@
                     <a class="btn btn-outline-secondary" asp-area="" asp-controller="Account" asp-action="Login">Logg inn</a>
                 }
 
-            </div>
         </div>
     </nav>
 </header>
+    }
 <div class="@(ViewData["FullWidth"] is true ? "container-fluid" : "container")">
     <main role="main" class="pb-3">
         @RenderBody()

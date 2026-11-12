@@ -1,17 +1,24 @@
 (() => {
     'use strict';
 
+    const overview = document.querySelector('[data-crisis-map-url]');
+    if (!overview) return;
+
+    function openMap(cards) {
+        const url = new URL(overview.dataset.crisisMapUrl, window.location.href);
+        const ids = new Set(new URLSearchParams(window.location.search).getAll('hendelser'));
+        for (const card of cards) ids.add(card.dataset.crisisId);
+        for (const id of ids) url.searchParams.append('hendelser', id);
+        url.hash = 'offentligKart';
+        window.location.assign(url);
+    }
+
     for (const group of document.querySelectorAll('[data-crisis-group]')) {
         const multiple = group.querySelector('[data-crisis-multiple]');
 
         const cards = [...group.querySelectorAll('[data-crisis-card]')];
         const open = group.querySelector('[data-crisis-open]');
         const marked = new Set();
-
-        function showDetails(card, visible) {
-            card.querySelector('.crisis-details').hidden = !visible;
-            card.querySelector('[data-crisis-select]').setAttribute('aria-expanded', String(visible));
-        }
 
         if (multiple) multiple.parentElement.hidden = false;
         if (open) open.parentElement.hidden = false;
@@ -30,7 +37,7 @@
             const button = card.querySelector('[data-crisis-select]');
             button.addEventListener('click', () => {
                 if (!multiple?.checked) {
-                    showDetails(card, card.querySelector('.crisis-details').hidden);
+                    openMap([card]);
                     return;
                 }
 
@@ -43,9 +50,7 @@
         }
 
         open?.addEventListener('click', () => {
-            for (const card of cards) {
-                if (marked.has(card)) showDetails(card, true);
-            }
+            if (marked.size) openMap(marked);
         });
     }
 })();

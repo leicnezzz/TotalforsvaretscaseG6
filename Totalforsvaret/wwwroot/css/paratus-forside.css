@@ -71,15 +71,6 @@
     background: var(--public-page);
 }
 
-/* margin-top: auto skyver notatsteksten ned til bunnen av kortet. */
-.paratus-card-note {
-    margin-top: auto;
-    padding-top: 16px;
-    border-top: 1px solid #dde5de;
-    color: var(--public-muted);
-    font-size: 12px;
-}
-
 /* Nummerert liste i kort 02. Tallene lages med en CSS-teller. */
 .paratus-steps {
     display: flex;

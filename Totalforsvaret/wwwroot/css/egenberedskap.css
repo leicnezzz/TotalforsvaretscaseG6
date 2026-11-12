@@ -720,3 +720,83 @@ body {
 .private-page-actions .private-page-action {
     color: var(--header-green, #2e6840);
 }
+.shelter-print-button {
+    margin: 0 0 12px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 6px;
+    background: #2e6840;
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .shelter-print-button:focus-visible {
+        outline: 2px solid #214e30;
+        outline-offset: 3px;
+    }
+
+.shelter-print-address {
+    display: none;
+}
+
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 12mm;
+    }
+
+    body > :not(main),
+    main > :not(.beredskap-container),
+    .beredskap-container > :not(#tilfluktsrom),
+    #tilfluktsrom .shelter-search,
+    #tilfluktsrom-adressetreff,
+    #tilfluktsrom-skriv-ut,
+    #tilfluktsrom-kart .leaflet-control-zoom,
+    #tilfluktsrom-kart .leaflet-popup {
+        display: none !important;
+    }
+
+    body,
+    .beredskap-container,
+    #tilfluktsrom {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        box-shadow: none;
+    }
+
+    .shelter-print-address {
+        display: block;
+        margin: 0 0 12px;
+    }
+
+    #tilfluktsrom-kart {
+        height: 95mm;
+        break-inside: avoid;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .shelter-table-wrap {
+        overflow: visible;
+    }
+
+    .shelter-table tr {
+        break-inside: avoid;
+    }
+
+    .shelter-table th,
+    .shelter-table td {
+        padding: 6px 8px;
+    }
+
+    .shelter-table-link {
+        min-height: 0;
+        padding: 0;
+        color: #173e4d;
+        text-decoration: none;
+    }
+}

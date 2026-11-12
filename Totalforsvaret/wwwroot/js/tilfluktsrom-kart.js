@@ -5,6 +5,10 @@
     const status = document.getElementById('tilfluktsrom-status');
     const addressResults = document.getElementById('tilfluktsrom-adressetreff');
     const shelterResults = document.getElementById('tilfluktsrom-resultater');
+    const printButton = document.getElementById('tilfluktsrom-skriv-ut');
+const printAddress = document.getElementById('tilfluktsrom-utskrift-adresse');
+
+printButton.addEventListener('click', () => window.print());
     const markers = L.featureGroup().addTo(tilfluktsromKart);
     const numberFormat = new Intl.NumberFormat('nb-NO', {
         maximumFractionDigits: 1
@@ -138,6 +142,8 @@ shelterResults.replaceChildren();
                 maxZoom: 16
             });
            status.textContent = `Viser de ${nearest.length} nærmeste offentlige tilfluktsrommene ved ${label}.`;
+           printAddress.textContent = `Valgt adresse: ${label}`;
+printButton.hidden = false;
         } catch {
             status.textContent = 'Kunne ikke hente tilfluktsrom. Prøv å søke på nytt.';
         } finally {

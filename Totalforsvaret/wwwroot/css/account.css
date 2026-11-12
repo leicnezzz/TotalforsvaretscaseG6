@@ -255,6 +255,32 @@
     .account-links a {
         text-underline-offset: 3px;
     }
+    
+/* Valget mellom privat og offentlig innlogging. Ligger atskilt fra hovedknappen, så det ikke trykkes på ved en feil. */
+.account-alternative {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #dde5de;
+    color: var(--account-muted);
+    font-size: 14px;
+}
+
+.account-alternative-link {
+    padding: 8px 16px;
+    border: 2px solid var(--account-green);
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+    .account-alternative-link:hover {
+        background: var(--account-background);
+    }
 
 .account-help {
     margin-top: 8px !important;

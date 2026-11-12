@@ -120,6 +120,15 @@
             </a>
         </div>
     </form>
+    <div class="account-alternative">
+        <p>@(offentligLogin ? "Privatperson?" : "Offentlig aktør?")</p>
+        <a class="account-alternative-link"
+           asp-area=""
+           asp-controller="Account"
+           asp-action="@(offentligLogin ? "Login" : "LoginOffentlig")">
+            @(offentligLogin ? "Logg inn som privatperson" : "Logg inn som offentlig aktør")
+        </a>
+    </div>
 </section>
 
 <p class="account-quote">

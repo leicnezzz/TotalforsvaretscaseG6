@@ -41,7 +41,12 @@
 
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
 
-    <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
+    <div class="private-page-actions">
+    <a class="private-page-action"
+       asp-area=""
+       asp-controller="Home"
+       asp-action="Index">← Tilbake</a>
+</div>
 
     <main class="home-content">
         <partial name="/Views/Shared/_IncidentAlert.cshtml" />

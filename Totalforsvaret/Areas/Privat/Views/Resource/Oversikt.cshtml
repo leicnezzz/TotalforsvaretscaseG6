@@ -2,7 +2,7 @@
 @{
     Layout = null;
     ViewData["PrivateSection"] = "Mine ressurser";
-    ViewData["PrivateBack"] = false;
+    ViewData["PrivateBack"] = true;
     var navn = User.Identity?.Name ?? "Min konto";
     var initialer = string.Concat(navn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(del => char.ToUpperInvariant(del[0])));
 }

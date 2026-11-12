@@ -597,3 +597,126 @@ body {
 .shelter-table td:nth-child(2) {
     text-align: center;
 }
+.checklist-section,
+.courses-section {
+    margin-top: 0;
+    padding: clamp(28px, 5vw, 56px) 16px;
+    border-radius: 0;
+    background: rgb(46 104 64 / 14%);
+}
+
+    .courses-section::before {
+        content: none;
+    }
+
+    .checklist-section .checklist-heading,
+    .checklist-section .checklist-grid {
+        width: min(100%, 1120px);
+        margin-inline: auto;
+    }
+
+    .checklist-section .checklist-heading {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px 24px;
+        margin-bottom: 24px;
+        padding-bottom: 0;
+        border-bottom: 0;
+    }
+
+    .checklist-heading h2,
+    .courses-section .section-heading h2 {
+        color: #214e30;
+        font-size: clamp(26px, 3vw, 36px);
+    }
+
+.checklist-heading .checklist-progress {
+    justify-self: start;
+    margin: 0;
+    padding: 10px 14px;
+    border: 1px solid #b8cdbd;
+    border-radius: 8px;
+    background: #fff;
+    color: #214e30;
+    font-size: 1rem;
+}
+
+.checklist-progress strong {
+    font-size: 1.125rem;
+}
+
+.checklist-heading .checklist-instructions {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: #324b3b;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+}
+
+.courses-section .section-heading p {
+    color: #324b3b;
+}
+
+@media (max-width: 700px) {
+    .checklist-section .checklist-heading,
+    .checklist-section .checklist-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.thank-you {
+    --green: #2e6840;
+    --page: #eef2ee;
+}
+
+    .thank-you .footer-content {
+        width: min(760px, calc(100% - 32px));
+        margin-inline: auto;
+    }
+
+        .thank-you .footer-content h2 {
+            font-size: clamp(28px, 4vw, 34px);
+        }
+
+        .thank-you .footer-content p {
+            font-size: 1.0625rem;
+            line-height: 1.6;
+        }
+@media (min-width: 701px) {
+    .checklist-section .checklist-heading {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .checklist-heading .checklist-progress {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .checklist-heading #checklist-title {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
+@media (min-width: 601px) {
+    .checklist-section .checklist-heading {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .checklist-heading #checklist-title {
+        grid-column: 1;
+        grid-row: 1;
+        text-align: left;
+    }
+
+    .checklist-heading .checklist-progress {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+    }
+}
+.site-header .section-bar {
+    color: #fff;
+}
+.private-page-actions .private-page-action {
+    color: var(--header-green, #2e6840);
+}

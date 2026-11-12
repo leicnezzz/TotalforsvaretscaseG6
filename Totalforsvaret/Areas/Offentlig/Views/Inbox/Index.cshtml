@@ -120,8 +120,7 @@
                                             <div>
                                                 <dt>Frist</dt>
                                                 <dd>
-                                                    @item.NeedDeadline.Value
-                                                        .ToString("dd.MM.yyyy HH:mm")
+                                                    @(item.NeedDeadline.Value.ToString("dd.MM.yyyy HH:mm"))
                                                 </dd>
                                             </div>
                                         }
@@ -188,9 +187,7 @@
                                         <div>
                                             <dt>Forespurt</dt>
                                             <dd>
-                                                @item.RequestedAtUtc
-                                                    .ToLocalTime()
-                                                    .ToString("dd.MM.yyyy HH:mm")
+                                                @(item.RequestedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))
                                             </dd>
                                         </div>
 

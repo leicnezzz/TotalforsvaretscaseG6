@@ -464,3 +464,10 @@ body.offentlig-page .offentlig-site-header .nav-links a:focus-visible,
     color: #fff;
     border-bottom-color: #fff;
 }
+
+/* Samme offentlige topplinje på alle skjermstørrelser. */
+body.offentlig-page .offentlig-site-header { background: #163c4c; }
+body.offentlig-page .offentlig-site-header .nav-links a,
+body.offentlig-page .offentlig-site-header .account-summary,
+body.offentlig-page .offentlig-site-header .account-copy small { color: #fff; }
+body.offentlig-page .offentlig-site-header .nav-links a.active { border-bottom-color: #fff; }

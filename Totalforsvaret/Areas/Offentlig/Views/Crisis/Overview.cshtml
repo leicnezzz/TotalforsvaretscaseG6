@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="~/css/crisis-overview.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
 
-<div class="crisis-overview">
+<div class="crisis-overview" data-crisis-map-url="@Url.Action("Index", "OffentligAktor", new { area = "" })">
     <section class="registration-intro" aria-labelledby="crisis-title">
         <h1 id="crisis-title">Hendelser</h1>
         <p>En enkel måte å bidra for alles sikkerhet</p>
@@ -36,7 +36,7 @@
             }
             else
             {
-                @if (group.Key == "active")
+                @if (group.Items.Count > 0)
                 {
                     <label class="crisis-multiple" data-crisis-controls hidden>
                         <input type="checkbox" data-crisis-multiple /> Marker flere hendelser
@@ -45,9 +45,9 @@
 
                 @foreach (var crisis in group.Items)
                 {
-                    <article class="crisis-card" data-crisis-card data-active="@(group.Key == "active" ? "true" : "false")">
+                    <article class="crisis-card" data-crisis-card data-crisis-id="@crisis.Id" data-active="@(group.Key == "active" ? "true" : "false")">
                         <div class="crisis-card-header">
-                            <button type="button" class="crisis-card-toggle" data-crisis-select aria-expanded="false" aria-controls="crisis-details-@crisis.Id">
+                            <button type="button" class="crisis-card-toggle" data-crisis-select aria-label="Vis @crisis.Name på kartet">
                             <span class="crisis-icon" aria-hidden="true">
                                 <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M20 4 37 34H3Z" stroke-linejoin="round" />
@@ -66,17 +66,10 @@
                                 <a class="crisis-button" asp-area="Offentlig" asp-controller="Crisis" asp-action="Edit" asp-route-id="@crisis.Id" aria-label="Rediger @crisis.Name">Rediger <span aria-hidden="true">↓</span></a>
                             </div>
                         </div>
-                        <div class="crisis-details" id="crisis-details-@crisis.Id" hidden>
-                            <dl>
-                                <dt>Type</dt><dd>@crisis.Type</dd>
-                                <dt>Starttidspunkt</dt><dd>@crisis.StartTime.ToString("dd.MM.yyyy HH:mm")</dd>
-                                <dt>Beskrivelse</dt><dd>@crisis.Description</dd>
-                            </dl>
-                        </div>
                     </article>
                 }
 
-                @if (group.Key == "active")
+                @if (group.Items.Count > 0)
                 {
                     <div class="crisis-batch" data-crisis-controls hidden>
                         <button class="crisis-button crisis-button-outline" type="button" data-crisis-open disabled>Åpne markerte hendelser</button>

@@ -234,7 +234,7 @@
             <label class="wizard-confirm-label"><input type="checkbox" name="Confirmed" value="true" required /> Jeg bekrefter at opplysningene er korrekte, og at ressursen kan gjøres tilgjengelig for relevante beredskapsaktører.</label>
             <p id="wizard-account-note" class="wizard-hint">Ressursen knyttes til kontoen din.</p>
             <p id="wizard-prerequisite-note" class="wizard-prerequisite" role="status" hidden></p>
-            <button id="vehicle-submit" type="submit" class="public-button" disabled><span>Registrer ressurs</span><span aria-hidden="true">→</span></button>
+            <button id="vehicle-submit" type="submit" class="public-button" disabled><span>Registrer ressurs</span>@if (!compact) { <span aria-hidden="true">→</span> }</button>
         </div>
     </fieldset>
 

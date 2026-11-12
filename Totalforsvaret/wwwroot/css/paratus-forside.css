@@ -38,6 +38,7 @@
     border-radius: 8px;
     background: #fff;
     box-shadow: 0 3px 12px rgb(0 0 0 / 8%);
+    scroll-margin-top: 24px;
 }
 
 .paratus-card-label {
@@ -184,4 +185,11 @@
 
 .paratus-hero-offentlig a {
     text-decoration: underline;
+}
+
+/* Myk scrolling når menyen lenker til et sted lenger ned på siden. Hopper over animasjonen for dem som har bedt om mindre bevegelse. */
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
 }

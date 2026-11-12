@@ -24,13 +24,10 @@
     <header class="public-header">
         <nav class="public-nav nav-with-brand" aria-label="Hovedmeny">
             <div class="public-nav-pages">
-                <a class="active" aria-current="page" asp-area="" asp-controller="Home" asp-action="Index">Hovedside</a>
+                <a href="#om-paratus">Om Paratus</a>
+                <a href="#slik-fungerer-det">Slik fungerer det</a>
+                <a href="#kontakt">Kontaktinformasjon</a>
                 <a href="#registrer-ressurs">Registrer ressurs</a>
-               <a asp-area=""
-   asp-controller="Account"
-   asp-action="LoginOffentlig">
-    Offentlig aktør
-</a>
             </div>
             <a class="nav-brand" asp-area="" asp-controller="Home" asp-action="Index">
                 <img src="~/images/login/image-1-2.png" alt="Paratus" />
@@ -72,7 +69,6 @@
                 <p class="paratus-hero-eyebrow">Forberedt. Tilgjengelig. Sammen.</p>
                 <h1>Når noe skjer,<br />står vi <span>sammen.</span></h1>
                 <p class="paratus-hero-lead">Det viktigste vi har, er hverandre.</p>
-               
                 @* Knappene vises bare når brukeren ikke er innlogget. Headeren viser Min side og Logg ut. *@
                 @if (User.Identity?.IsAuthenticated != true)
                 {
@@ -127,6 +123,17 @@
                         <a class="public-button public-button-outline paratus-card-action" asp-area="" asp-controller="Account" asp-action="Register">
                             <span>Kom i gang</span><span aria-hidden="true">→</span>
                         </a>
+                    </article>
+                    
+                    <article id="kontakt" class="paratus-card">
+                        <p class="paratus-card-label">03 / Kontaktinformasjon</p>
+                        <h3>Finn riktig kontaktpunkt.</h3>
+                        <p class="paratus-card-text">Har du spørsmål om et konkret behov eller en ressurs? Åpne registreringen i løsningen for å oppgi kontaktpunkt og avklare videre.</p>
+                        <div class="paratus-contact-box">
+                            <strong>Kontakt med prosjektgruppen</strong>
+                            <p class="paratus-card-text">Kontaktopplysninger for Paratus-prosjektet legges til her når de er klare.</p>
+                        </div>
+                        <p class="paratus-card-note">Dette er en demonstrasjon. Ingen meldinger sendes fra denne siden.</p>
                     </article>
                 </div>
             </section>

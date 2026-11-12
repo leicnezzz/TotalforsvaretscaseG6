@@ -19,7 +19,6 @@ public class FormDataModelTests
         Assert.That(feil.SelectMany(f => f.MemberNames),
             Does.Contain(nameof(FormDataModel.Navn))); // Kontrollerer at valideringsfeilen gjelder navnet. 
     }
-
     
     [Test]
     public void Validering_KartplasseringMangler_GirFeilForKoordinater() 

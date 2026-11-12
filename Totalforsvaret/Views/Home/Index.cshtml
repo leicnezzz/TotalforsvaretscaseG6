@@ -21,11 +21,14 @@
 </head>
 <body class="public-home">
     <header class="public-header">
-        <nav class="public-nav" aria-label="Hovedmeny">
+        <nav class="public-nav nav-with-brand" aria-label="Hovedmeny">
             <div class="public-nav-pages">
                 <a class="active" aria-current="page" asp-area="" asp-controller="Home" asp-action="Index">Hovedside</a>
                 <a href="#registrer-ressurs">Registrer ressurs</a>
             </div>
+            <a class="nav-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <img src="~/images/login/image-1-2.png" alt="Paratus" />
+            </a>
             <div class="public-nav-account">
                 @if (User.Identity?.IsAuthenticated == true)
                 {
@@ -47,61 +50,45 @@
         <div class="public-section-bar" aria-hidden="true"></div>
     </header>
 
-    <div class="public-video-hero" aria-hidden="true">
-        <img class="public-hero-poster" src="https://i.ytimg.com/vi/pd6goYLB3Gs/maxresdefault.jpg" alt="" />
-        <div class="public-hero-video" aria-hidden="true" inert>
-            <iframe id="public-background-video"
-                    data-video-src="https://www.youtube-nocookie.com/embed/pd6goYLB3Gs?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=pd6goYLB3Gs&amp;controls=0&amp;playsinline=1&amp;disablekb=1&amp;fs=0"
-                    title="Lydløs bakgrunnsvideo"
-                    allow="autoplay; encrypted-media"
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    tabindex="-1"></iframe>
-        </div>
-    </div>
-
-    <main class="public-content">
-        <section class="public-action-cards" aria-label="Kom i gang">
-            <article class="public-card">
-                <details class="public-help">
-                    <summary aria-label="Hjelp om innlogging">?</summary>
-                    <p>Opprett en privat konto, eller logg inn med en konto du allerede har.</p>
-                </details>
-                <h2>Logg inn eller opprett en bruker</h2>
-                <p class="public-card-description">Her kan du logge inn eller opprette brukeren din.</p>
-                <div class="public-card-action">
-                    <h3>Logg inn</h3>
-                    <a class="public-button public-button-primary" asp-area="" asp-controller="Account" asp-action="Login">
-                        <span>Innlogging</span><span aria-hidden="true">→</span>
-                    </a>
+    <main>
+        <div class="public-first-screen">
+            <div class="public-video-hero" aria-hidden="true">
+                <img class="public-hero-poster" src="https://i.ytimg.com/vi/pd6goYLB3Gs/maxresdefault.jpg" alt="" />
+                <div class="public-hero-video" aria-hidden="true" inert>
+                    <iframe id="public-background-video"
+                            data-video-src="https://www.youtube-nocookie.com/embed/pd6goYLB3Gs?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=pd6goYLB3Gs&amp;controls=0&amp;playsinline=1&amp;disablekb=1&amp;fs=0"
+                            title="Lydløs bakgrunnsvideo"
+                            allow="autoplay; encrypted-media"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            tabindex="-1"></iframe>
                 </div>
-            </article>
-            <article class="public-card">
-                <details class="public-help">
-                    <summary aria-label="Hjelp om ressursregistrering">?</summary>
-                    <p>Fyll ut kjøretøyets opplysninger først. Logg inn eller opprett en privat konto før du bekrefter registreringen.</p>
-                </details>
-                <h2>Registrer en ressurs</h2>
-                <p class="public-card-description">Her kan du starte en ressursregistrering uten å logge inn først.</p>
-                <div class="public-card-action">
-                    <h3>Registrering</h3>
-                    <a class="public-button public-button-outline" href="#registrer-ressurs">
-                        <span>Start registrering</span><span aria-hidden="true">↓</span>
-                    </a>
-                </div>
-            </article>
-        </section>
-
-        <div class="public-home-incident">
-            <partial name="/Views/Shared/_IncidentAlert.cshtml" />
-        </div>
-
-        <section id="registrer-ressurs" class="public-registration" aria-labelledby="registration-title">
-            <div class="public-registration-intro">
-                <h2 id="registration-title">Registrer en ressurs til disposisjon</h2>
-                <p>Har du utstyr, kjøretøy eller andre ressurser du kan stille til rådighet?</p>
             </div>
-            <partial name="/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" />
-        </section>
+
+            <section class="public-purpose-area" aria-labelledby="public-purpose-title">
+                <div class="public-purpose">
+                    <h1 id="public-purpose-title">Paratus styrker beredskapen der du bor</h1>
+                    <p>Med Paratus kan du styrke egenberedskapen din og registrere utstyr eller kjøretøy som beredskapsaktører kan be om å få bruke ved en krise. Det gir dem oversikt over lokale ressurser, slik at de raskere kan hjelpe dem som trenger det.</p>
+                </div>
+
+                <a class="public-register-card public-button public-button-outline" href="#registrer-ressurs">
+                    <span>Registrer ressurs</span><span aria-hidden="true">↓</span>
+                </a>
+            </section>
+        </div>
+
+        <div class="public-content">
+            <div class="public-home-incident">
+                <partial name="/Views/Shared/_IncidentAlert.cshtml" />
+            </div>
+
+            <section id="registrer-ressurs" class="public-registration" aria-labelledby="registration-title">
+                <div class="public-registration-intro">
+                    <h2 id="registration-title">Registrer en ressurs til disposisjon</h2>
+                    <p>Har du utstyr, kjøretøy eller andre ressurser du kan stille til rådighet?</p>
+                </div>
+                <partial name="/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" />
+            </section>
+        </div>
     </main>
 
     <footer class="public-footer">
@@ -120,6 +107,7 @@
         </div>
     </footer>
     <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/js/map-zoom.js" asp-append-version="true"></script>
     <script src="~/js/public-home.js" asp-append-version="true"></script>
     <script src="~/js/resource-fields.js" asp-append-version="true"></script>
     <script src="~/js/resource-address.js" asp-append-version="true"></script>

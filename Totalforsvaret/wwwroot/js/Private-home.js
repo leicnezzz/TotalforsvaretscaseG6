@@ -9,9 +9,7 @@
         return;
     }
     // laster inn kartet og viser registrerte ressurser for brukeren.
-    const map = L.map(element, {
-        scrollWheelZoom: false
-    }).setView([58.1467, 7.9956], 12);
+    const map = L.map(element).setView([58.1467, 7.9956], 12);
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,

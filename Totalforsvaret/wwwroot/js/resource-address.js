@@ -72,16 +72,17 @@
         } // Sjekker om adressefelt og koordinater er gyldige. 
 
         function refresh() {
-            if (!mapElement.getClientRects().length) return;
+            if (!mapElement?.getClientRects().length) return;
             if (!window.L) {
                 status.textContent = 'Kartet kunne ikke lastes. Adresseforslag kan fortsatt brukes.';
                 return;
             }
             if (!map) {
-                map = L.map(mapElement, { scrollWheelZoom: false }).setView([58.1467, 7.9956], 12);
+                map = L.map(mapElement).setView([58.1467, 7.9956], 12);
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
                 }).addTo(map);
+                map.on('click', event => selectMapPoint(map.wrapLatLng(event.latlng)));
             }
             map.invalidateSize();
             if (valid()) {
@@ -112,6 +113,55 @@
             refresh();
         }
 
+        function selectPosition(label, lat, lon, message) {
+            address.value = label;
+            latitude.value = lat.toFixed(6);
+            longitude.value = lon.toFixed(6);
+            address.setCustomValidity('');
+            reset();
+            status.textContent = message;
+            onChange();
+        }
+
+        async function selectMapPoint(point) {
+            reset();
+            latitude.value = '';
+            longitude.value = '';
+            address.setCustomValidity('Vent mens plasseringen velges.');
+            refresh();
+            status.textContent = 'Ser etter adresse nær kartpunktet …';
+
+            const current = new AbortController();
+            request = current;
+            const url = new URL('https://api.kartverket.no/adresser/v1/punktsok');
+            url.search = new URLSearchParams({
+                lat: point.lat.toFixed(6),
+                lon: point.lng.toFixed(6),
+                radius: '50',
+                treffPerSide: '1'
+            });
+
+            let nearest;
+            try {
+                const result = await requestJson(url, current.signal, 3000);
+                nearest = result.adresser?.[0];
+            } catch {
+                // Kartpunktet kan brukes selv om adresseoppslaget ikke svarer.
+            }
+
+            if (request !== current) return;
+
+            const coordinates = `${point.lat.toFixed(6)}, ${point.lng.toFixed(6)}`;
+            const label = nearest?.adressetekst
+                ? [nearest.adressetekst, [nearest.postnummer, nearest.poststed].filter(Boolean).join(' ')]
+                    .filter(Boolean).join(', ')
+                : 'Kartplassering: ' + coordinates;
+            const message = nearest?.adressetekst
+                ? 'Kartpunkt valgt. Nærmeste adresse: ' + label
+                : 'Kartpunkt valgt: ' + coordinates;
+            selectPosition(label, point.lat, point.lng, message);
+        }
+
         async function search() {
             const query = address.value.trim();
             if (query.length < 3) return;
@@ -133,14 +183,7 @@
                     button.type = 'button';
                     button.textContent = match.label;
                     button.addEventListener('click', () => {
-                        address.value = match.label;
-                        latitude.value = match.latitude.toFixed(6);
-                        longitude.value = match.longitude.toFixed(6);
-                        reset();
-                        status.textContent = `Valgt adresse: ${match.label}`;
-                        address.setCustomValidity('');
-                        onChange();
-                        refresh();
+                        selectPosition(match.label, match.latitude, match.longitude, `Valgt adresse: ${match.label}`);
                         address.focus({ preventScroll: true });
                     });
                     item.append(button);
@@ -163,7 +206,7 @@
             reset();
             latitude.value = '';
             longitude.value = '';
-            address.setCustomValidity('Velg en adresse fra forslagene.');
+            address.setCustomValidity('Velg en adresse fra forslagene eller klikk i kartet.');
             refresh();
             status.textContent = address.value.trim().length < 3 ? 'Skriv minst tre tegn.' : 'Henter adresseforslag …';
             if (address.value.trim().length >= 3) timer = setTimeout(search, 600);
@@ -191,7 +234,7 @@
                 buttons[(index + (event.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length].focus();
             }
         });
-        return { valid, refresh, reset };
+        return { valid, refresh, reset, selectMapPoint };
     }
 
     window.ParatusResourceAddress = { attach };

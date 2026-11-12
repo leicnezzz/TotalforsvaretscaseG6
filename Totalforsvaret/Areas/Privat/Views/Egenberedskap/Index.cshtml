@@ -331,6 +331,33 @@
                 </article>
             </div>
         </section>
+<section id="tilfluktsrom" aria-labelledby="tilfluktsrom-tittel">
+    <header class="section-heading">
+        <h2 id="tilfluktsrom-tittel">Finn nærmeste offentlige tilfluktsrom</h2>
+        <p>Søk etter en adresse for å se de nærmeste offentlige tilfluktsrommene på kartet. Avstandene vises i luftlinje.</p>
+    </header>
+
+    <form id="tilfluktsrom-sok">
+        <label for="tilfluktsrom-adresse">Adresse</label>
+        <input id="tilfluktsrom-adresse"
+               name="adresse"
+               type="search"
+               placeholder="Gatenavn, husnummer og poststed"
+               required />
+        <button type="submit">Søk</button>
+    </form>
+
+    <p id="tilfluktsrom-status" role="status"></p>
+    <ul id="tilfluktsrom-adressetreff" aria-label="Adresser som matcher søket"></ul>
+
+    <div id="tilfluktsrom-kart"
+         role="region"
+         aria-label="Kart over offentlige tilfluktsrom"
+         style="height: 400px;"></div>
+
+    <h3>Nærmeste tilfluktsrom</h3>
+    <ol id="tilfluktsrom-resultater"></ol>
+</section>
 
         <section id="courses"
                  class="courses-section"

@@ -540,13 +540,6 @@
             kort.addEventListener('click', () => {
                 apne(kort.dataset.oversiktListe);
             });
-
-            kort.addEventListener('keydown', event => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    apne(kort.dataset.oversiktListe);
-                }
-            });
         });
 
     typevalg.addEventListener('change', tegnListe);

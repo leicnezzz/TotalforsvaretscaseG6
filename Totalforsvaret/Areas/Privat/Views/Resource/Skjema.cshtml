@@ -43,14 +43,7 @@
             <div id="registrer-ressurs"><partial name="/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" /></div>
         </div>
     </main>
-    <footer class="registration-footer">
-        <span>Paratus</span>
-        <div>
-            <a asp-area="" asp-controller="Home" asp-action="Privacy">Personvern</a>
-            <span aria-hidden="true">·</span><span>Tilgjengelighet</span>
-            <span aria-hidden="true">·</span><span>Kontakt</span>
-        </div>
-    </footer>
+    <partial name="/Views/Shared/_RegistrationFooter.cshtml" />
     <script src="~/lib/leaflet/leaflet.js"></script>
     <script src="~/js/map-zoom.js" asp-append-version="true"></script>
     <script src="~/js/resource-fields.js" asp-append-version="true"></script>

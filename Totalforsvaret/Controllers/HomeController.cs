@@ -13,15 +13,25 @@ public class HomeController : Controller
     [HttpGet]
     public IActionResult Index([FromServices] ResourceHandler resourceHandler)
     {
-        var model = new PublicHomeViewModel
+        return View(BuildResourceModel(resourceHandler));
+    }
+
+    [Authorize(Policy = "KunOffentlig")]
+    [HttpGet]
+    public IActionResult ResourceRegistration([FromServices] ResourceHandler resourceHandler)
+    {
+        return View(BuildResourceModel(resourceHandler));
+    }
+
+    private static PublicHomeViewModel BuildResourceModel(ResourceHandler resourceHandler)
+    {
+        return new PublicHomeViewModel
         {
             Categories = resourceHandler.GetCategories()
                 .Select(category => new SelectListItem(category.Name,
                     category.CategoryId.ToString(System.Globalization.CultureInfo.InvariantCulture)))
                 .ToList()
         };
-
-        return View(model);
     }
 
     public IActionResult Privacy()

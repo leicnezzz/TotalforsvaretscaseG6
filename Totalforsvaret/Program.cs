@@ -116,6 +116,14 @@ app.MapControllerRoute(
     pattern: "Home/Skjema",
     defaults: new { area = "Privat", controller = "Resource", action = "Skjema" });
 
+app.MapGet("/OffentligAktor/Behov", () => Results.LocalRedirect("~/Behov"));
+
+app.MapControllerRoute(
+    name: "behov",
+    pattern: "Behov",
+    defaults: new { area = "Offentlig", controller = "Need", action = "Create" });
+
+
 app.MapControllerRoute(
     name: "legacy-need",
     pattern: "Need/{action=Create}/{id?}",
@@ -130,6 +138,17 @@ app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+
+app.MapControllerRoute(
+    name: "offentlig-match",
+    pattern: "OffentligAktor/match",
+    defaults: new { controller = "OffentligAktor", action = "Index", match = true });
+
+app.MapControllerRoute(
+    name: "ressursregistrering",
+    pattern: "Ressurs",
+    defaults: new { controller = "Home", action = "ResourceRegistration" });
 
 
 app.Run();

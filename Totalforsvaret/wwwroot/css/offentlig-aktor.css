@@ -259,6 +259,7 @@
 }
 
 .offentlig-dashboard #offentligKart {
+    --kart-topp: 130px;
     position: relative;
     width: 100%;
     height: calc(100dvh - var(--kart-topp, 130px) - 8px);
@@ -454,17 +455,16 @@
     cursor: pointer;
 }
 
-@supports (width: calc-size(max-content, size * 1.2)) {
-    .kart-handlingsrad > button,
-    .kart-filterknapp {
-        width: calc-size(max-content, size * 1.2);
-        padding-inline: 13px;
-    }
+.kart-handlingsrad > button,
+.kart-filterknapp {
+    width: max-content;
+    max-width: 100%;
+    padding-inline: 20px;
+}
 
-    .kart-handlingspanel button:not(.w-100) {
-        width: calc-size(max-content, size * 1.2);
-        max-width: 100%;
-    }
+.kart-handlingspanel button:not(.w-100) {
+    width: max-content;
+    max-width: 100%;
 }
 
 .kart-handlingsrad > :hover,
@@ -1724,19 +1724,25 @@ body.offentlig-page {
         text-align: left;
     }
 }
-
 .oversikt-tabell--kriser {
-    min-width: 1600px;
+    width: auto;
+    min-width: 1200px;
 }
 
+/* Beskrivelse */
+.oversikt-tabell--kriser th:nth-child(7),
 .oversikt-tabell--kriser td:nth-child(7) {
-    min-width: 240px;
-    max-width: 360px;
+    width: 200px;
+    min-width: 160px;
+    max-width: 240px;
     white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
+/* Handlinger */
+.oversikt-tabell--kriser th:last-child,
 .oversikt-tabell--kriser td:last-child {
-    min-width: 280px;
+    min-width: 240px;
 }
 
 .kart-forklaring > span {
@@ -1890,4 +1896,24 @@ body.offentlig-page {
 @media(max-width: 1100px) {
     .offentlig-site-header .primary-nav:has(#kartSokToolbar) { grid-template-columns: 1fr auto; }
     #kartSokToolbar { grid-column: 1 / -1; grid-row: 2; max-width: 420px; margin-inline: auto; }
+}
+/* Eget stedssøk for radius inne i kartfilteret */
+.kart-radius-sok {
+    margin: 18px 0;
+}
+
+.kart-radius-sok > label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--tekst);
+    font-weight: 600;
+}
+
+.kart-radius-sok .kart-stedsforslag {
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+.kart-radiusrad select:disabled {
+    opacity: .6;
 }

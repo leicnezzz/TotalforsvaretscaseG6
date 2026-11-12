@@ -13,6 +13,8 @@
     var kartRessurser = Model.Select(ressurs => new
     {
         id = ressurs.ResourceId,
+        kategoriId = ressurs.CategoryId,
+        adresse = ressurs.Address,
         navn = ressurs.Object,
         kategori = ressurs.Category?.Name ?? "Uten kategori",
         tilbyder = ressurs.Navn,

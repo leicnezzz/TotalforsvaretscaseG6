@@ -196,13 +196,9 @@
                 if (markor) {
                     markor.setLatLng(plassering);
                 } else {
-                    markor = L.circleMarker(plassering, {
-                        radius: 8,
-                        color: '#fff',
-                        weight: 2,
-                        fillColor: '#176b45',
-                        fillOpacity: 1,
-                        interactive: false
+                    markor = L.marker(plassering, {
+                        title: 'Behovets valgte plassering',
+                        alt: 'Behovets valgte plassering'
                     }).addTo(kart);
                 }
 
@@ -216,33 +212,76 @@
                 visPlassering(latitude, longitude);
             }
 
-            krisevalg.addEventListener('change', () => {
-                const krise = aktiveKriser.find(krise => String(krise.id) === krisevalg.value);
-                if (!krise) return;
-
-                velgPlassering(krise.latitude, krise.longitude);
-                kart.panTo([krise.latitude, krise.longitude]);
-                kartmelding.textContent = `Valgt plassering: ${krise.name}`;
-            });
-
             const krisemarkorer = L.featureGroup().addTo(kart);
 
-            for (const krise of aktiveKriser) {
-                const navn = document.createElement('span');
-                navn.textContent = krise.name;
+            const hendelsesikon = L.divIcon({
+                className: 'hendelse-kartikon',
+                html:
+                    '<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">' +
+                    '<polygon points="14,3 25,25 3,25" ' +
+                    'fill="#DA2727" stroke="black" stroke-width="3" ' +
+                    'stroke-linejoin="round"></polygon></svg>',
+                iconSize: [28, 28],
+                iconAnchor: [14, 25]
+            });
 
-                L.marker([krise.latitude, krise.longitude], {
-                    title: krise.name,
-                    alt: `Velg krisen ${krise.name}`
+            function visValgtHendelse() {
+                krisemarkorer.clearLayers();
+
+                const hendelse = aktiveKriser.find(
+                    item => String(item.id) === krisevalg.value
+                );
+
+                if (!hendelse) return null;
+
+                const navn = document.createElement('span');
+                navn.textContent = hendelse.name;
+
+                L.marker([hendelse.latitude, hendelse.longitude], {
+                    icon: hendelsesikon,
+                    title: hendelse.name,
+                    alt: 'Valgt hendelse: ' + hendelse.name,
+                    bubblingMouseEvents: false
                 })
                     .bindTooltip(navn)
                     .on('click', () => {
-                        krisevalg.value = String(krise.id);
-                        krisevalg.dispatchEvent(new Event('change', { bubbles: true }));
+                        velgPlassering(hendelse.latitude, hendelse.longitude);
                     })
                     .addTo(krisemarkorer);
+
+                return hendelse;
             }
 
+            krisevalg.addEventListener('change', () => {
+                const hendelse = visValgtHendelse();
+
+                if (!hendelse) {
+                    latitudeInput.value = '';
+                    longitudeInput.value = '';
+
+                    if (markor) {
+                        markor.remove();
+                        markor = null;
+                    }
+
+                    kartmelding.textContent = krisevalg.value
+                        ? 'Hendelsen mangler kartplassering en gyldig kartplassering. ' +
+                        'Klikk på kartet for å velge behovets plassering.'
+                        : 'Velg en hendelse og deretter behovets plassering.';
+
+                    return;
+                }
+
+                velgPlassering(hendelse.latitude, hendelse.longitude);
+                kart.setView([hendelse.latitude, hendelse.longitude], 13);
+
+                kartmelding.textContent =
+                    'Behovets plassering er satt til hendelsen: ' + hendelse.name;
+            });
+
+// Vis trekanten også når hendelsen allerede er valgt ved sidelasting.
+            visValgtHendelse();
+            
             // Beholder valgt plassering hvis skjemaet får valideringsfeil.
             if (latitudeInput.value.trim() && longitudeInput.value.trim()) {
                 const latitude = Number(latitudeInput.value.replace(',', '.'));
@@ -257,11 +296,8 @@
                 }
             }
 
-            if (!markor && aktiveKriser.length > 0) {
-                kart.fitBounds(krisemarkorer.getBounds(), {
-                    padding: [24, 24],
-                    maxZoom: 12
-                });
+            if (!markor && krisevalg.value) {
+                krisevalg.dispatchEvent(new Event('change'));
             }
 
             kart.on('click', e => {

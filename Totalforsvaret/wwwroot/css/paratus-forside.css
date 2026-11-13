@@ -46,22 +46,6 @@
     line-height: 1.15;
 }
 
-.paratus-card-text {
-    color: #42545b;
-    font-size: 15px;
-    line-height: 1.6;
-}
-
-/* Lys boks med kontaktinformasjon i kort 03. */
-.paratus-contact-box {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 16px;
-    border-radius: 6px;
-    background: var(--public-page);
-}
-
 /* Nummerert liste i kort 02. Tallene lages med en CSS-teller. */
 .paratus-steps {
     display: flex;

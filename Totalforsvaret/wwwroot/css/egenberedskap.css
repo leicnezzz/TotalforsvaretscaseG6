@@ -811,3 +811,8 @@ body {
         text-decoration: none;
     }
 }
+.thank-you .footer-links a,
+.thank-you .footer-links a:visited {
+    color: #fff;
+    text-decoration: none;
+}

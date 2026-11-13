@@ -125,7 +125,7 @@ namespace Totalforsvaret.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("Tittel");
 
-                    b.Property<int>("OffentligAktorId")
+                    b.Property<int?>("OffentligAktorId")
                         .HasColumnType("int")
                         .HasColumnName("OffentligAktørId");
 
@@ -630,7 +630,7 @@ namespace Totalforsvaret.Migrations
 
             modelBuilder.Entity("Totalforsvaret.Areas.Privat.Models.ProfilePhoto", b =>
                 {
-                    b.HasOne("Totalforsvaret.Areas.Privat.Models.Privataktor", null)
+                    b.HasOne("Totalforsvaret.Models.Bruker", null)
                         .WithOne()
                         .HasForeignKey("Totalforsvaret.Areas.Privat.Models.ProfilePhoto", "BrukerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -641,7 +641,8 @@ namespace Totalforsvaret.Migrations
                 {
                     b.HasOne("Totalforsvaret.Areas.Offentlig.Models.Offentligaktør", "OffentligAktor")
                         .WithMany()
-                        .HasForeignKey("OffentligAktorId");
+                        .HasForeignKey("OffentligAktorId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("OffentligAktor");
                 });

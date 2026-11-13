@@ -13,6 +13,8 @@
     var kartRessurser = Model.Select(ressurs => new
     {
         id = ressurs.ResourceId,
+        kategoriId = ressurs.CategoryId,
+        adresse = ressurs.Address,
         navn = ressurs.Object,
         kategori = ressurs.Category?.Name ?? "Uten kategori",
         tilbyder = ressurs.Navn,
@@ -124,7 +126,7 @@
             <div class="oversikt-handlinger">
                 <a class="egen-ressurs-lenke" asp-area="" asp-controller="Home" asp-action="ResourceRegistration">Ny Ressurs</a>
                 <a class="registrer-behov-knapp" asp-area="Offentlig" asp-controller="Need" asp-action="Create">+ Registrer behov</a>
-                <a class="opprett-krise-knapp" asp-area="Offentlig" asp-controller="Crisis" asp-action="Create">+ Opprett krise</a>
+                <a class="opprett-krise-knapp" asp-area="Offentlig" asp-controller="Crisis" asp-action="Create">+ Opprett hendelse</a>
             </div>
         </div>
     </details>
@@ -392,6 +394,34 @@
                     </div>
                 </div>
 
+                <div class="kart-forklaring" aria-label="Forklaring av kartsymboler">
+                    <span>
+                        <span class="kart-tegn kart-tegn-ressurs" aria-hidden="true"></span>
+                        Tilgjengelige ressurser
+                    </span>
+
+                    <span>
+                        <span class="kart-tegn kart-tegn-behov" aria-hidden="true"></span>
+                        Aktive behov
+                    </span>
+
+                    <span>
+                        <span class="kart-tegn kart-tegn-krise" aria-hidden="true"></span>
+                        Aktive hendelser
+                    </span>
+
+                    <span>
+                        <img class="kart-forklaring-veihindring"
+                             src="@Url.Content("~/images/kart-veihindring.svg")"
+                             alt="" aria-hidden="true" />
+                        Veihindringer
+                    </span>
+
+                    <span>
+                        <span class="kart-tegn kart-tegn-sone" aria-hidden="true"></span>
+                        Soner
+                    </span>
+                </div>
                 <p id="kartmelding" class="small text-muted mt-2 mb-0" role="status"></p>
             </section>
         </div>

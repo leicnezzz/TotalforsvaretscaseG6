@@ -50,10 +50,10 @@ public class NeedController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(NeedCreateViewModel viewModel)
     {
-        // var bruker = await _userManager.GetUserAsync(User);
+        var user = await _userManager.GetUserAsync(User);
 
-        // if (bruker is not Offentligaktør offentligAktor)
-        //    return Forbid();
+        if (user is not Offentligaktør offentligAktor)
+            return Forbid();
 
         var apneHendelser = HentApneHendelser();
         if (viewModel.CrisisId is int crisisId &&
@@ -82,7 +82,7 @@ public class NeedController : Controller
             Latitude = viewModel.Latitude!.Value,
             Longitude = viewModel.Longitude!.Value,
             CrisisId = viewModel.CrisisId,
-            // OffentligAktorId = offentligAktor.Id
+            OffentligAktorId = offentligAktor.Id
         };
 
         _context.Needs.Add(need);
@@ -146,9 +146,11 @@ public class NeedController : Controller
     {
         return await _context.Crises
             .AsNoTracking()
-            .Where(c => c.Status == "Aktiv"
-                && c.Latitude >= -90 && c.Latitude <= 90
-                && c.Longitude >= -180 && c.Longitude <= 180)
+            .Where(c =>
+                c.Latitude.HasValue &&
+                c.Longitude.HasValue &&
+                c.Latitude >= -90 && c.Latitude <= 90 &&
+                c.Longitude >= -180 && c.Longitude <= 180)
             .OrderBy(c => c.Name)
             .Select(c => new CrisisMapPoint(
                 c.Id, c.Name, c.Latitude!.Value, c.Longitude!.Value))

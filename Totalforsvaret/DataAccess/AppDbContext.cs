@@ -58,16 +58,16 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
             entity.HasIndex(a => new { a.NeedId, a.Status });
         });
 
-		builder.Entity<ProfilePhoto>(entity =>
-		{
-			entity.HasKey(photo => photo.BrukerId);
-			entity.Property(photo => photo.ContentType).HasMaxLength(16);
+        builder.Entity<ProfilePhoto>(entity =>
+        {
+            entity.HasKey(photo => photo.BrukerId);
+            entity.Property(photo => photo.ContentType).HasMaxLength(16);
 
-			entity.HasOne<Privataktor>()
-				.WithOne()
-				.HasForeignKey<ProfilePhoto>(photo => photo.BrukerId)
-				.OnDelete(DeleteBehavior.Cascade);
-		});
+            entity.HasOne<Bruker>()
+                .WithOne()
+                .HasForeignKey<ProfilePhoto>(photo => photo.BrukerId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
 
 		builder.Entity<Bruker>()
             .HasDiscriminator<string>("BrukerType")
@@ -86,7 +86,8 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
         builder.Entity<Crisis>()
             .HasOne(c => c.OffentligAktor)
             .WithMany()
-            .HasForeignKey(c => c.OffentligAktorId);
+            .HasForeignKey(c => c.OffentligAktorId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.Entity<Resource>(entity =>
         {

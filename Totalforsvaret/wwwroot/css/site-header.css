@@ -481,3 +481,21 @@ body.offentlig-page .offentlig-site-header .nav-links a.active { border-bottom-c
     min-width: 0;
     overflow-wrap: anywhere;
 }
+
+/* Public navigation colors */
+body.offentlig-page .offentlig-site-header {
+    --header-green: #163c4c;
+    background: #163c4c;
+}
+
+body.offentlig-page .offentlig-site-header .nav-links a,
+body.offentlig-page .offentlig-site-header .account-link,
+body.offentlig-page .offentlig-site-header .account-copy strong,
+body.offentlig-page .offentlig-site-header .chevron,
+body.offentlig-page .offentlig-site-header .inbox-icon-link {
+    color: #fff;
+}
+
+body.offentlig-page .offentlig-site-header .account-copy small {
+    color: #d3e0e5;
+}

@@ -5,14 +5,24 @@ using Totalforsvaret.Models;
 using Totalforsvaret.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
-// identity framework ting
+// identity framework
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+
+});
+
+builder.Services.Configure<RazorViewEngineOptions>(options =>
+{
+    options.ViewLocationFormats.Insert(
+        0, "/Areas/Homepage/Views/{1}/{0}.cshtml");
+    options.ViewLocationFormats.Insert(
+        1, "/Areas/Homepage/Views/Shared/{0}.cshtml");
 });
 
 builder.Services.AddIdentityCore<Bruker>(options =>

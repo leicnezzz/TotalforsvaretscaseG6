@@ -2,7 +2,7 @@
 @{
     Layout = null;
     ViewData["PrivateSection"] = "Mine ressurser";
-    ViewData["PrivateBack"] = false;
+    ViewData["PrivateBack"] = true;
     var navn = User.Identity?.Name ?? "Min konto";
     var initialer = string.Concat(navn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(del => char.ToUpperInvariant(del[0])));
 }
@@ -30,8 +30,8 @@
 
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
     <div class="resource-incident-row">
-        <partial name="/Views/Shared/_PrivatePageAction.cshtml" />
-        <partial name="/Views/Shared/_IncidentAlert.cshtml" />
+        <partial name="/Areas/Homepage/Views/Shared/_PrivatePageAction.cshtml" />
+        <partial name="/Areas/Homepage/Views/Shared/_IncidentAlert.cshtml" />
     </div>
     <main class="overview-content">
         <h1>Liste over dine ressurser</h1>
@@ -117,6 +117,6 @@
     <script src="~/js/resource-fields.js" asp-append-version="true"></script>
     <script src="~/js/resource-address.js" asp-append-version="true"></script>
     <script src="~/js/resource-overview.js" asp-append-version="true"></script>
-    <partial name="/Views/Shared/_ResourceApi.cshtml" />
+    <partial name="/Areas/Homepage/Views/Shared/_ResourceApi.cshtml" />
 </body>
 </html>

@@ -268,7 +268,7 @@
         '<form class="kart-stedsok" role="search" aria-label="Søk etter sted på kartet">',
         '<label for="kartSted" class="kart-skjult">Sted eller adresse</label>',
         '<div class="kart-sokrad">',
-        '<input id="kartSted" type="search" placeholder="Søk etter sted" autocomplete="off" minlength="2" required />',
+        '<input id="kartSted" type="search" placeholder="Søk etter ressurs eller sted" autocomplete="off" minlength="2" required />',
         '<button type="submit">Søk</button>',
         '</div>',
         '<p class="kart-sokstatus" role="status"></p>',
@@ -289,6 +289,15 @@
         '<label><input type="radio" name="karttype" value="terreng"> Terreng (høyde og dybde)</label>',
         '<label><input type="radio" name="karttype" value="satellitt"> Satellitt</label>',
         '</fieldset>',
+        '<form class="kart-radius-sok" role="search" aria-label="Velg sentrum for radius">',
+        '<label for="kartRadiusSted">Søk etter sted for radius</label>',
+        '<div class="kart-sokrad">',
+        '<input id="kartRadiusSted" type="search" placeholder="Sted eller adresse" autocomplete="off" minlength="2" required />',
+        '<button type="submit">Søk</button>',
+        '</div>',
+        '<p class="kart-sokstatus" role="status"></p>',
+        '<ul class="kart-stedsforslag" aria-label="Steder for radius" hidden></ul>',
+        '</form>',
         '<div class="kart-radiusrad">',
         '<label for="kartRadius">Radius</label>',
         '<select id="kartRadius">',
@@ -299,7 +308,7 @@
         '</select>',
         '<button class="kart-nullstill" type="button">Nullstill søk</button>',
         '</div>',
-        '<p class="kart-sentrum">Alle steder vises. Velg et sted for å bruke radius.</p>',
+        '<p class="kart-sentrum">Velg et sted i filteret for å bruke radius.</p>',
         '<fieldset class="kart-typer"><legend>Vis på kartet</legend></fieldset>',
         '<div class="kart-kilde">Stedssøk: <a href="https://photon.komoot.io/" target="_blank" rel="noopener noreferrer">Photon</a> · OpenStreetMap</div>',
         '</div>'
@@ -313,9 +322,7 @@
     const form = panel.querySelector('form');
     const sokToolbar = document.getElementById('kartSokToolbar');
     sokToolbar?.append(form);
-    const sok = form.querySelector('input[type="search"]');
-    const sokstatus = form.querySelector('.kart-sokstatus');
-    const resultater = form.querySelector('.kart-stedsforslag');
+    const radiusForm = panel.querySelector('.kart-radius-sok');
     const radius = panel.querySelector('select');
     const sentrumtekst = panel.querySelector('.kart-sentrum');
     const detaljer = panel.querySelector('#kartDetaljer');
@@ -468,8 +475,6 @@
     let sentrum = null;
     let sirkel = null;
     let sentrumsmarkor = null;
-    let foresporsel = null;
-    let versjon = 0;
 
     function fjernSokesentrum() {
         sentrum = null;
@@ -681,8 +686,14 @@
 
             if (type.boks.checked) {
                 for (const markor of type.markorer) {
-                    if (hendelsesvisning && type.key !== 'ressurser' &&
-                        !synligeHendelser.has(markor.hendelseId)) continue;
+                    if (hendelsesvisning) {
+                        if (
+                            type.key !== 'ressurser' &&
+                            !synligeHendelser.has(markor.hendelseId)
+                        ) {
+                            continue;
+                        }
+                    }
 
                     const punkt = markor.getLatLng?.();
                     const posisjon = punkt ?? markor.getBounds().getCenter();
@@ -711,7 +722,13 @@
             melding.textContent = informasjon.join(' ');
 
             if (tilpass) {
-                const bounds = L.latLngBounds(punktmarkorer.map(({ markor }) => markor.getLatLng()));
+                const hendelsespunkter = punktmarkorer.filter(
+                    ({ type }) => type.key !== 'ressurser'
+                );
+
+                const bounds = L.latLngBounds(
+                    hendelsespunkter.map(({ markor }) => markor.getLatLng())
+                );
                 for (const zone of typer.find(t => t.key === 'soner').lag.getLayers()) bounds.extend(zone.getBounds());
                 if (bounds.isValid()) kart.fitBounds(bounds, { maxZoom: 16, padding: [32, 32], animate: false });
             }
@@ -790,6 +807,7 @@
         nullstill.textContent = 'Vis hele kartet';
         hendelsesfilter.append(nullstill);
         felt.before(hendelsesfilter);
+        felt.hidden = false;
     }
 
     for (const type of typer) {
@@ -819,79 +837,23 @@
         felt.append(label);
     }
 
+    radius.disabled = true;
     radius.addEventListener('change', () => filtrer(true));
 
-    function avbryt() {
-        versjon++;
-        foresporsel?.abort();
+    // Hver tjeneste får maksimalt tre sekunder per forespørsel.
+    async function hentSokeJson(url, signal) {
+        const controller = new AbortController();
+        const avbryt = () => controller.abort();
 
-        resultater.replaceChildren();
-        resultater.hidden = true;
-        sokstatus.textContent = '';
+        signal.addEventListener('abort', avbryt, { once: true });
 
-        form.querySelector('button').disabled = false;
-    }
-
-    sok.addEventListener('input', avbryt);
-
-    sok.addEventListener('keydown', event => {
-        if (event.key === 'Escape') avbryt();
-    });
-
-    panel.querySelector('.kart-nullstill')
-        .addEventListener('click', () => {
-            avbryt();
-
-            sok.value = '';
-            radius.value = '0';
-            fjernSokesentrum();
-
-            sentrumtekst.textContent =
-                'Alle steder vises. Velg et sted for å bruke radius.';
-
-            filtrer();
-            kart.setView(standardvisning.sentrum, standardvisning.zoom);
-            sok.focus();
-        });
-
-    // Søker etter norske steder og adresser.
-    form.addEventListener('submit', async event => {
-        event.preventDefault();
-        avbryt();
-
-        const query = sok.value.trim();
-
-        if (query.length < 2) {
-            sokstatus.textContent = 'Skriv minst to tegn.';
-            return;
+        if (signal.aborted) {
+            controller.abort();
         }
 
-        const minVersjon = versjon;
-        const controller = new AbortController();
-
-        foresporsel = controller;
-
-        const timeout = setTimeout(
-            () => controller.abort(),
-            10000
-        );
-
-        form.querySelector('button').disabled = true;
-        sokstatus.textContent = 'Søker etter sted …';
+        const timer = setTimeout(avbryt, 3000);
 
         try {
-            const url = new URL(
-                'https://photon.komoot.io/api/'
-            );
-
-            url.search = new URLSearchParams({
-                q: query,
-                limit: '6',
-                countrycode: 'NO',
-                lat: '58.1467',
-                lon: '7.9956'
-            });
-
             const response = await fetch(url, {
                 signal: controller.signal,
                 credentials: 'omit',
@@ -899,26 +861,95 @@
             });
 
             if (!response.ok) {
-                throw new Error('Stedssøk utilgjengelig');
+                throw new Error('Adressetjenesten er utilgjengelig.');
             }
 
-            const json = await response.json();
+            return await response.json();
+        } finally {
+            clearTimeout(timer);
+            signal.removeEventListener('abort', avbryt);
+        }
+    }
 
-            if (minVersjon !== versjon) return;
+// Forsøker Kartverket først.
+    async function hentStedsforslag(tekst, signal) {
+        try {
+            const url = new URL(
+                'https://api.kartverket.no/adresser/v1/sok'
+            );
 
-            const treff = (json.features ?? []).filter(feature => {
+            url.search = new URLSearchParams({
+                sok: tekst,
+                treffPerSide: '6',
+                utkoordsys: '4258',
+                fuzzy: 'true'
+            });
+
+            const json = await hentSokeJson(url, signal);
+
+            const adresser = (json.adresser ?? []).filter(adresse => {
+                const punkt = adresse.representasjonspunkt;
+
+                return punkt?.lat != null &&
+                    punkt?.lon != null &&
+                    gyldig(Number(punkt.lat), Number(punkt.lon));
+            });
+
+            if (adresser.length) {
+                return adresser.map(adresse => ({
+                    navn: [
+                        adresse.adressetekst,
+                        [
+                            adresse.postnummer,
+                            adresse.poststed
+                        ].filter(Boolean).join(' ')
+                    ].filter(Boolean).join(', '),
+
+                    punkt: L.latLng(
+                        Number(adresse.representasjonspunkt.lat),
+                        Number(adresse.representasjonspunkt.lon)
+                    ),
+
+                    zoom: 17
+                }));
+            }
+        } catch (error) {
+            // Hvis brukeren avbryter søket, stoppes det helt.
+            if (signal.aborted) {
+                throw error;
+            }
+        }
+
+        // Bruk Photon ved feil eller manglende treff hos Kartverket.
+        return hentPhotonForslag(tekst, signal);
+    }
+
+    async function hentPhotonForslag(tekst, signal) {
+        const url = new URL('https://photon.komoot.io/api/');
+
+        url.search = new URLSearchParams({
+            q: tekst,
+            limit: '6',
+            countrycode: 'NO',
+            lat: '58.1467',
+            lon: '7.9956'
+        });
+
+        const json = await hentSokeJson(url, signal);
+
+        return (json.features ?? [])
+            .filter(feature => {
                 const punkt = feature.geometry?.coordinates;
 
                 return feature.properties?.countrycode
                         ?.toUpperCase() === 'NO' &&
                     punkt &&
                     gyldig(punkt[1], punkt[0]);
-            });
-
-            for (const feature of treff) {
+            })
+            .map(feature => {
                 const egenskaper = feature.properties;
 
-                const etikett = [...new Set([
+                const navn = [...new Set([
                     egenskaper.name,
                     [
                         egenskaper.street,
@@ -929,59 +960,228 @@
                     egenskaper.village ||
                     egenskaper.locality,
                     egenskaper.county
-                ].filter(Boolean))].join(', ') || query;
+                ].filter(Boolean))].join(', ') || tekst;
 
-                const li = document.createElement('li');
-                const knapp = document.createElement('button');
+                return {
+                    navn,
 
-                knapp.type = 'button';
-                knapp.textContent = etikett;
+                    punkt: L.latLng(
+                        feature.geometry.coordinates[1],
+                        feature.geometry.coordinates[0]
+                    ),
 
-                knapp.addEventListener('click', () => {
-                    const [lon, lat] =
-                        feature.geometry.coordinates;
+                    zoom: egenskaper.housenumber ? 17 : 15
+                };
+            });
+    }
 
-                    sentrum = L.latLng(lat, lon);
-                    sok.value = etikett;
-                    sentrumtekst.textContent =
-                        'Valgt sted: ' + etikett + '. Radius er valgfritt.';
+// Hvert søkefelt har egne forespørsler og søkeresultater.
+    function kobleSok(skjema, vedValg, inkluderRessurser) {
+        const input = skjema.querySelector('input[type="search"]');
+        const status = skjema.querySelector('.kart-sokstatus');
+        const liste = skjema.querySelector('.kart-stedsforslag');
+        const knapp = skjema.querySelector('button[type="submit"]');
 
-                    avbryt();
-                    const harRadius = Number(radius.value) > 0;
-                    filtrer(harRadius);
-                    if (!harRadius) kart.setView(sentrum, feature.properties.housenumber ? 17 : 15);
-                    if (markeringSkjema?.dataset.kartmarkering === 'behov' && !markeringSkjema.inert) {
-                        velgBehovplassering(sentrum, etikett);
-                    }
-                    sok.focus();
-                });
+        let foresporsel = null;
+        let versjon = 0;
 
-                li.append(knapp);
-                resultater.append(li);
-            }
+        function nullstill() {
+            versjon++;
+            foresporsel?.abort();
 
-            resultater.hidden = !treff.length;
-
-            sokstatus.textContent = treff.length
-                ? 'Velg et sted i listen.'
-                : 'Ingen steder funnet. Prøv et annet ' +
-                'stedsnavn eller en adresse.';
-        } catch (error) {
-            if (minVersjon === versjon) {
-                sokstatus.textContent =
-                    'Stedssøket kunne ikke fullføres. Prøv igjen. ' +
-                    'Kart og filtre kan fortsatt brukes.';
-            }
-        } finally {
-            clearTimeout(timeout);
-
-            if (minVersjon === versjon) {
-                form.querySelector('button').disabled = false;
-                foresporsel = null;
-            }
+            liste.replaceChildren();
+            liste.hidden = true;
+            status.textContent = '';
+            knapp.disabled = false;
         }
-    });
 
+        function leggTil(treff, prefix) {
+            const li = document.createElement('li');
+            const valg = document.createElement('button');
+
+            valg.type = 'button';
+            valg.textContent = prefix + treff.navn;
+
+            valg.addEventListener('click', () => {
+                nullstill();
+                input.value = treff.navn;
+                vedValg(treff);
+                input.focus();
+            });
+
+            li.append(valg);
+            liste.append(li);
+            liste.hidden = false;
+        }
+
+        input.addEventListener('input', nullstill);
+
+        input.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                nullstill();
+            }
+        });
+
+        skjema.addEventListener('submit', async event => {
+            event.preventDefault();
+            nullstill();
+
+            const tekst = input.value.trim();
+
+            if (tekst.length < 2) {
+                status.textContent = 'Skriv minst to tegn.';
+                return;
+            }
+
+            let ressursAntall = 0;
+
+            if (inkluderRessurser) {
+                const ord = tekst
+                    .toLocaleLowerCase('nb-NO')
+                    .split(/\s+/);
+
+                for (const ressurs of data.ressurser ?? []) {
+                    const kategori = ressurs.kategoriId === 1
+                        ? 'kjøretøy transport'
+                        : ressurs.kategoriId === 2
+                            ? 'utstyr'
+                            : '';
+
+                    const soketekst = [
+                        ressurs.navn,
+                        ressurs.kategori,
+                        kategori,
+                        ressurs.adresse,
+                        ressurs.tilbyder,
+                        ressurs.kontaktpunkt
+                    ]
+                        .filter(Boolean)
+                        .join(' ')
+                        .toLocaleLowerCase('nb-NO');
+
+                    if (
+                        !gyldig(ressurs.latitude, ressurs.longitude) ||
+                        !ord.every(del => soketekst.includes(del))
+                    ) {
+                        continue;
+                    }
+
+                    leggTil({
+                        navn: ressurs.navn,
+                        punkt: L.latLng(
+                            ressurs.latitude,
+                            ressurs.longitude
+                        ),
+                        zoom: 16,
+                        ressurs
+                    }, 'Ressurs · ');
+
+                    ressursAntall++;
+                }
+            }
+
+            const minVersjon = versjon;
+            const controller = new AbortController();
+
+            foresporsel = controller;
+
+            const timeout = setTimeout(
+                () => controller.abort(),
+                10000
+            );
+
+            knapp.disabled = true;
+
+            status.textContent = ressursAntall
+                ? ressursAntall +
+                ' ressurser funnet. Søker også etter steder …'
+                : 'Søker etter sted …';
+
+            try {
+                const steder = await hentStedsforslag(
+                    tekst,
+                    controller.signal
+                );
+
+                if (minVersjon !== versjon) return;
+
+                for (const sted of steder) {
+                    leggTil(sted, 'Sted · ');
+                }
+
+                status.textContent = steder.length || ressursAntall
+                    ? 'Velg et treff i listen.'
+                    : 'Ingen treff. Prøv et annet søk.';
+            } catch {
+                if (minVersjon !== versjon) return;
+
+                status.textContent = ressursAntall
+                    ? 'Velg en ressurs. Stedssøket er utilgjengelig akkurat nå.'
+                    : 'Stedssøket kunne ikke fullføres. Prøv igjen.';
+            } finally {
+                clearTimeout(timeout);
+
+                if (minVersjon === versjon) {
+                    knapp.disabled = false;
+                    foresporsel = null;
+                }
+            }
+        });
+
+        return nullstill;
+    }
+
+    // Toppsøket navigerer uten å endre radius eller radiussentrum.
+    kobleSok(form, treff => {
+        kart.setView(treff.punkt, treff.zoom, {
+            animate: false
+        });
+
+        if (treff.ressurs) {
+            const type = typer.find(
+                type => type.key === 'ressurser'
+            );
+
+            L.popup()
+                .setLatLng(treff.punkt)
+                .setContent(popup(treff.ressurs, type.felter))
+                .openOn(kart);
+        } else if (
+            markeringSkjema?.dataset.kartmarkering === 'behov' &&
+            !markeringSkjema.inert
+        ) {
+            velgBehovplassering(treff.punkt, treff.navn);
+        }
+    }, true);
+
+    // Bare søkefeltet i filteret bestemmer sentrum for radiusen.
+    const nullstillRadiusSok = kobleSok(radiusForm, treff => {
+        sentrum = treff.punkt;
+        radius.disabled = false;
+
+        if (radius.value === '0') {
+            radius.value = '5000';
+        }
+
+        sentrumtekst.textContent = 'Radius fra: ' + treff.navn;
+        filtrer(true);
+    }, false);
+
+    panel.querySelector('.kart-nullstill')
+        .addEventListener('click', () => {
+            nullstillRadiusSok();
+
+            radiusForm.querySelector('input[type="search"]').value = '';
+            radius.value = '0';
+            radius.disabled = true;
+
+            fjernSokesentrum();
+
+            sentrumtekst.textContent =
+                'Velg et sted i filteret for å bruke radius.';
+
+            filtrer();
+        });
     const handlinger = kartElement.querySelector('.kart-handlinger');
     const handlingsknapper = [...handlinger.querySelectorAll('.kart-handlingsrad button')];
     const arbeidsstatus = document.getElementById('kartArbeidsstatus');
@@ -1573,7 +1773,13 @@
         );
 
         if (!markor) return;
-        if (hendelsesvisning && (!synligeHendelser.has(markor.hendelseId) || !['kriser', 'behov'].includes(type.key))) return;
+        if (
+            hendelsesvisning &&
+            type.key !== 'ressurser' &&
+            !synligeHendelser.has(markor.hendelseId)
+        ) {
+            return;
+        }
 
         // Slår på typen dersom den er skjult i kartfilteret.
         type.boks.checked = true;
@@ -1599,6 +1805,6 @@
 
         apneMarkor(markor);
     });
-    
+
     filtrer(hendelsesvisning);
 })();

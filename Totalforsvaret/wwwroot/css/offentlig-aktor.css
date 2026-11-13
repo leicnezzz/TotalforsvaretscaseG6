@@ -259,6 +259,7 @@
 }
 
 .offentlig-dashboard #offentligKart {
+    --kart-topp: 130px;
     position: relative;
     width: 100%;
     height: calc(100dvh - var(--kart-topp, 130px) - 8px);
@@ -454,17 +455,16 @@
     cursor: pointer;
 }
 
-@supports (width: calc-size(max-content, size * 1.2)) {
-    .kart-handlingsrad > button,
-    .kart-filterknapp {
-        width: calc-size(max-content, size * 1.2);
-        padding-inline: 13px;
-    }
+.kart-handlingsrad > button,
+.kart-filterknapp {
+    width: max-content;
+    max-width: 100%;
+    padding-inline: 20px;
+}
 
-    .kart-handlingspanel button:not(.w-100) {
-        width: calc-size(max-content, size * 1.2);
-        max-width: 100%;
-    }
+.kart-handlingspanel button:not(.w-100) {
+    width: max-content;
+    max-width: 100%;
 }
 
 .kart-handlingsrad > :hover,
@@ -1867,7 +1867,7 @@ body.offentlig-page {
     white-space: nowrap;
 }
 
-.offentlig-site-header .primary-nav:has(#kartSokToolbar) .account-menu {
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) .account-actions {
     justify-self: end;
     min-width: 0;
     max-width: 100%;
@@ -1906,7 +1906,7 @@ body.offentlig-page {
         grid-template-columns: minmax(0, 1fr);
     }
 
-    .offentlig-site-header .primary-nav:has(#kartSokToolbar) .account-menu {
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) .account-actions {
         justify-self: start;
     }
 }
@@ -2129,4 +2129,51 @@ body.offentlig-page {
         color: var(--dempet);
         font-weight: 600;
     }
+}
+/* Eget stedssøk for radius inne i kartfilteret */
+.kart-radius-sok {
+    margin: 18px 0;
+}
+
+.kart-radius-sok > label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--tekst);
+    font-weight: 600;
+}
+
+.kart-radius-sok .kart-stedsforslag {
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+.kart-radiusrad select:disabled {
+    opacity: .6;
+}
+/* Symbolforklaring under kartet */
+.kart-forklaring {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+    margin-top: 16px;
+    color: var(--dempet);
+    font-size: 14px;
+}
+
+.kart-forklaring > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kart-forklaring-veihindring {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.kart-tegn-sone {
+    border-radius: 50%;
+    background: #6e42a1;
 }

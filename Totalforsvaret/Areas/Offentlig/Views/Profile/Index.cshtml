@@ -1,0 +1,194 @@
+@model Totalforsvaret.Areas.Offentlig.ViewModels.OffentligProfileViewModel
+
+@{
+    ViewData["Title"] = "Min profil";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Min profil – Paratus</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap"
+          rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="~/css/site-header.css"
+          asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/css/Profile.css"
+          asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/css/Profile-offentlig.css"
+          asp-append-version="true" />
+</head>
+
+<body class="profile-page offentlig-page">
+    <partial name="/Areas/Offentlig/Views/Shared/_OffentligNavigation.cshtml" />
+
+    <main class="profile-main">
+        <a class="back-link"
+           asp-area=""
+           asp-controller="OffentligAktor"
+           asp-action="Index">
+            <span aria-hidden="true">←</span> Tilbake til oversikten
+        </a>
+
+        <section class="profile-card" aria-labelledby="profile-title">
+            <div class="profile-card__main">
+                <h1 id="profile-title">
+                    Hei, @Model.Fornavn @Model.Etternavn
+                </h1>
+
+                @if (TempData["ProfileSaved"] is string message)
+                {
+                    <div class="success-message" role="status">@message</div>
+                }
+
+                <form id="profile-edit"
+                      asp-area="Offentlig"
+                      asp-controller="Profile"
+                      asp-action="Index"
+                      method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="validation-summary"
+                         role="alert"></div>
+
+                    <div class="section-heading">
+                        <h2>Kontoinformasjon</h2>
+                    </div>
+
+                    <div class="name-fields">
+                        <div class="field">
+                            <label asp-for="Fornavn"></label>
+                            <input asp-for="Fornavn" autocomplete="given-name" />
+                            <span asp-validation-for="Fornavn"
+                                  class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label asp-for="Etternavn"></label>
+                            <input asp-for="Etternavn" autocomplete="family-name" />
+                            <span asp-validation-for="Etternavn"
+                                  class="field-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Email"></label>
+                        <input asp-for="Email" readonly />
+                        <small>E-postadressen kan ikke endres her.</small>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="PhoneNumber"></label>
+                        <input asp-for="PhoneNumber" autocomplete="tel" />
+                        <span asp-validation-for="PhoneNumber"
+                              class="field-error"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Avdeling"></label>
+                        <input asp-for="Avdeling" autocomplete="organization" />
+                    </div>
+                </form>
+            </div>
+
+            <aside class="profile-card__aside">
+                @if (Model.HasPhoto)
+                {
+                    <img class="avatar avatar-large profile-photo"
+                         src="@Url.Action(
+                                  "Photo",
+                                  "Profile",
+                                  new { area = "Offentlig" })"
+                         alt="Profilbilde" />
+                }
+                else
+                {
+                    <span class="avatar avatar-large" aria-hidden="true">
+                        @Model.Initialer
+                    </span>
+                }
+
+                <form class="photo-form"
+                      asp-area="Offentlig"
+                      asp-controller="Profile"
+                      asp-action="UploadPhoto"
+                      method="post"
+                      enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+
+                    <input name="image"
+                           type="file"
+                           accept="image/jpeg,image/png"
+                           hidden
+                           onchange="if (this.files.length) this.form.requestSubmit();" />
+
+                    <button class="button button-photo" type="button"
+                            onclick="this.form.elements['image'].click();">
+                        @(Model.HasPhoto
+                            ? "Endre profilbilde"
+                            : "Legg til profilbilde")
+                    </button>
+
+                    @if (TempData["PhotoError"] is string photoError)
+                    {
+                        <span class="field-error" role="alert">
+                            @photoError
+                        </span>
+                    }
+                </form>
+            </aside>
+
+            <div class="profile-actions">
+                <div class="form-actions">
+                    <a class="button button-danger"
+                       asp-area="Offentlig"
+                       asp-controller="Profile"
+                       asp-action="DeleteAccount">
+                        Slett konto
+                    </a>
+
+                    <button class="button button-primary"
+                            type="submit"
+                            form="profile-edit">
+                        Lagre
+                    </button>
+                </div>
+
+                <form id="offentlig-logout"
+                      asp-area=""
+                      asp-controller="Account"
+                      asp-action="Logout"
+                      method="post">
+                    @Html.AntiForgeryToken()
+                    <button class="profile-logout" type="submit">
+                        Logg ut
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-brand">Paratus</div>
+        <nav aria-label="Bunnmeny">
+            <a asp-area=""
+               asp-controller="Home"
+               asp-action="Privacy">Personvern</a>
+            <span aria-hidden="true">·</span>
+            <span>Tilgjengelighet</span>
+            <span aria-hidden="true">·</span>
+            <span>Kontakt</span>
+        </nav>
+    </footer>
+</body>
+</html>

@@ -1,7 +1,7 @@
 /* Stiler for de nye delene på forsiden: Om Paratus, Slik fungerer det og Kontaktinformasjon.
    Fargene kommer fra variablene i public-home.css, så de er ikke definert på nytt her. */
 
-/* Seksjonen under hero: overskrift og kort ved siden av hverandre. */
+/* Seksjonen under hero: overskrift og boksen «3 gode grunner». */
 .paratus-info {
     margin-top: 96px;
     padding-bottom: 32px;
@@ -34,40 +34,16 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
-    padding: 28px;
+    padding: 28px 44px;
     border-radius: 8px;
     background: #fff;
     box-shadow: 0 3px 12px rgb(0 0 0 / 8%);
     scroll-margin-top: 24px;
 }
 
-.paratus-card-label {
-    color: var(--public-muted);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-}
-
 .paratus-card h3 {
     font-size: 24px;
     line-height: 1.15;
-}
-
-.paratus-card-text {
-    color: #42545b;
-    font-size: 15px;
-    line-height: 1.6;
-}
-
-/* Lys boks med kontaktinformasjon i kort 03. */
-.paratus-contact-box {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 16px;
-    border-radius: 6px;
-    background: var(--public-page);
 }
 
 /* Nummerert liste i kort 02. Tallene lages med en CSS-teller. */
@@ -96,15 +72,18 @@
     place-items: center;
     width: 24px;
     height: 24px;
-    border: 1px solid #dde5de;
+    border: 2px solid var(--public-green);
     border-radius: 50%;
-    color: var(--public-muted);
+    color: var(--public-green);
     font-size: 12px;
+    font-weight: 700;
 }
 
 /* Knappen i bunnen av kortet. */
 .paratus-card-action {
     margin-top: auto;
+    align-self: center;
+    width: fit-content;
 }
 
 /* Mørkt lag over videoen, så hvit tekst er lesbar. Selve regelen finnes i public-home.css, vi legger bare til fargen. */
@@ -163,12 +142,6 @@
     }
 }
 
-/* På brede skjermer er kortseksjonen bredere enn resten av innholdet, slik som i designet. På smalere skjermer gjelder .public-content sin bredde. */
-@media (min-width: 1001px) {
-    .paratus-info {
-        width: min(80%, 1280px);
-    }
-}
 /* Første skjermbilde: headeren og hero-delen fyller akkurat hele skjermen, og den hvite stripen havner nederst. */
 .paratus-first-screen {
     display: flex;
@@ -185,33 +158,17 @@
     height: auto;
 }
 
-/* Stripe nederst i hero-delen: tekst til venstre og merkenavn i midten, som i designet. */
+/* Stripe nederst i hero-delen: merkenavnet ligger i midten. */
 .paratus-hero-strip {
     position: absolute;
     inset: auto 0 0;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 16px;
-    height: 56px;
     padding-inline: clamp(20px, 3vw, 60px);
     background: var(--public-page);
     color: #42545b;
     font-size: 13px;
-}
-
-.paratus-hero-strip p:first-child {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.paratus-hero-strip p:first-child::before {
-    content: "";
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--public-green);
 }
 
 .paratus-hero-strip-brand {
@@ -220,17 +177,6 @@
 
 .paratus-hero-strip-brand span {
     text-transform: uppercase;
-}
-
-/* På smale skjermer er det bare plass til teksten til venstre. */
-@media (max-width: 600px) {
-    .paratus-hero-strip {
-        grid-template-columns: 1fr;
-    }
-
-    .paratus-hero-strip-brand {
-        display: none;
-    }
 }
 
 /* På smalere skjermer er videoen nesten like høy som hero-området. Vi zoomer den litt inn, så YouTubes tittellinje og kanter havner utenfor bildet. */

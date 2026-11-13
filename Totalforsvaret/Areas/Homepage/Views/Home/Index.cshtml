@@ -26,7 +26,6 @@
             <header class="public-header">
                 <nav class="public-nav nav-with-brand" aria-label="Hovedmeny">
                     <a class="nav-brand paratus-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                        <span class="paratus-brand-mark" aria-hidden="true">P</span>
                         <span class="paratus-brand-text">
                             <strong>PARATUS</strong>
                             <small>Mennesket som ressurs</small>
@@ -35,7 +34,6 @@
                     <div class="public-nav-pages">
                         <a href="#om-paratus">Om Paratus</a>
                         <a href="#slik-fungerer-det">Slik fungerer det</a>
-                        <a href="#kontakt">Kontaktinformasjon</a>
                         <a href="#registrer-ressurs">Registrer ressurs</a>
                     </div>
                     <div class="public-nav-account">
@@ -59,7 +57,7 @@
                 </nav>
                 <div class="public-section-bar">
                     <span>Sammen om beredskapen</span>
-                    <span>Lokale ressurser. Felles trygghet.</span>
+                    <span>Felles trygghet.</span>
                 </div>
             </header>
             <div class="public-video-hero">
@@ -74,8 +72,7 @@
                 </div>
                 @* Hvit stripe nederst i hero-delen. Den dekker også kanten av videoen der YouTube viser logoen sin. *@
                 <div class="paratus-hero-strip">
-                    <p>Beredskap begynner med oss.</p>
-                    <p class="paratus-hero-strip-brand"><span>Paratus</span> / Mennesket som ressurs</p>
+                    <p class="paratus-hero-strip-brand"><span>Paratus</span> 
                 </div>
                 @* Hero-tekst som ligger over videoen. Det mørke laget kommer fra .public-video-hero::after. *@
                 <div class="paratus-hero-text">
@@ -85,7 +82,7 @@
                 </div>
             </div>
         </div>
-        @* Informasjonsseksjon med tre kort. Menyen lenker hit via id-ene. *@
+        @* Informasjonsseksjon med boksen «3 gode grunner». Menyen lenker hit via id-ene. *@
         <section id="om-paratus" class="public-content paratus-info" aria-labelledby="paratus-info-title">
             <p class="paratus-eyebrow">Sammen om beredskapen</p>
             <div class="public-registration-intro paratus-intro">
@@ -93,35 +90,16 @@
             </div>
 
             <div class="paratus-cards">
-                <article class="paratus-card">
-                    <p class="paratus-card-label">01 / Om Paratus</p>
-                    <h3>Mennesket som ressurs.</h3>
-                    <p class="paratus-card-text">Paratus kobler lokale ressurser med samfunnets behov, så innbyggere, frivillige, næringsliv og offentlige aktører får bedre oversikt når noe skjer.</p>
-                </article>
-
                 <article id="slik-fungerer-det" class="paratus-card">
-                    <p class="paratus-card-label">02 / Slik fungerer det</p>
-                    <h3>Fra behov til bidrag.</h3>
+                    <h3>3 gode grunner til å registrere ressurs</h3>
                     <ol class="paratus-steps">
-                        <li><strong>Velg din rolle</strong></li>
-                        <li><strong>Registrer behov eller ressurser</strong></li>
-                        <li><strong>Avklar og koordiner</strong></li>
+                        <li><strong>Din ressurs blir synlig.</strong> Innbyggere, frivillige, næringsliv og offentlige aktører ser hva som finnes lokalt.</li>
+                        <li><strong>Riktig hjelp til riktig sted.</strong> Paratus kobler lokale ressurser med samfunnets behov.</li>
+                        <li><strong>Enkelt å komme i gang.</strong> Velg rolle, registrer behov eller ressurser, og avklar og koordiner.</li>
                     </ol>
-                    <a class="public-button public-button-outline paratus-card-action" asp-area=""
-                       asp-controller="Account" asp-action="Register">
+                    <a class="public-button public-button-outline paratus-card-action" href="#registrer-ressurs">
                         <span>Kom i gang</span><span aria-hidden="true">→</span>
                     </a>
-                </article>
-
-                <article id="kontakt" class="paratus-card">
-                    <p class="paratus-card-label">03 / Kontaktinformasjon</p>
-                    <h3>Finn riktig kontaktpunkt.</h3>
-                    <p class="paratus-card-text">Spørsmål om et behov, krise eller en ressurs? Ta kontakt med prosjektgruppen.</p>
-                    <div class="paratus-contact-box">
-                        <strong>Kontakt med prosjektgruppen</strong>
-                        <p class="paratus-card-text">Kontaktopplysninger for Paratus-prosjektet legges til her når de er
-                            klare.</p>
-                    </div>
                 </article>
             </div>
         </section>

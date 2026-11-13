@@ -817,3 +817,27 @@ body {
     color: #fff;
     text-decoration: none;
 }
+.courses-grid .course-card h3 {
+    font-size: 1.25rem;
+}
+
+.courses-grid .course-card p,
+.courses-grid .course-card li {
+    font-size: 1rem;
+    line-height: 1.55;
+}
+.courses-grid .course-card {
+    padding: clamp(20px, 3vw, 32px);
+}
+
+    .courses-grid .course-card p {
+        margin-bottom: 12px;
+    }
+
+    .courses-grid .course-card li + li {
+        margin-top: 6px;
+    }
+
+    .courses-grid .course-card ul {
+        margin-bottom: 16px;
+    }

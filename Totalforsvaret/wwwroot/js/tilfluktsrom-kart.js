@@ -10,6 +10,94 @@ const printAddress = document.getElementById('tilfluktsrom-utskrift-adresse');
 
 printButton.addEventListener('click', () => window.print());
     const markers = L.featureGroup().addTo(tilfluktsromKart);
+    const aedToggle = document.getElementById('vis-hjertestartere');
+    const aedStatus = document.getElementById('hjertestarter-status');
+    const aedLayer = L.layerGroup().addTo(tilfluktsromKart);
+
+    const aedIcon = L.divIcon({
+        className: 'aed-map-icon',
+        html: '<span aria-hidden="true">⚡</span>',
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+    });
+
+    let aedPoints;
+
+    function showVisibleAeds() {
+        aedLayer.clearLayers();
+
+        if (!aedToggle.checked || !aedPoints) return;
+
+        if (tilfluktsromKart.getZoom() < 12) {
+            aedStatus.textContent = 'Zoom inn på et område for å se hjertestarterne.';
+            return;
+        }
+
+        const bounds = tilfluktsromKart.getBounds();
+        let count = 0;
+
+        for (const feature of aedPoints) {
+            const [longitude, latitude] = feature.geometry.coordinates;
+            const point = [latitude, longitude];
+            if (!bounds.contains(point)) continue;
+
+            const popup = document.createElement('div');
+            const title = document.createElement('strong');
+            title.textContent = 'Hjertestarter';
+            popup.append(title);
+
+            const name = feature.properties.name;
+            if (name) {
+                const details = document.createElement('p');
+                details.textContent = name;
+                popup.append(details);
+            }
+
+            L.marker(point, { icon: aedIcon, title: 'Hjertestarter' })
+                .bindPopup(popup)
+                .addTo(aedLayer);
+
+            count++;
+        }
+
+        aedStatus.textContent = count
+            ? `Registrerte hjertestartere i kartutsnittet: ${count}. Kilde: OpenStreetMap.`
+            : 'Ingen registrerte hjertestartere i dette kartutsnittet.';
+    }
+
+    aedToggle.addEventListener('change', async () => {
+        if (!aedToggle.checked) {
+            aedLayer.clearLayers();
+            aedStatus.textContent = '';
+            return;
+        }
+
+        if (!aedPoints) {
+            aedToggle.disabled = true;
+            aedStatus.textContent = 'Laster hjertestartere …';
+
+            try {
+                const response = await fetch('/data/hjertestartere.json');
+                if (!response.ok) throw new Error('Kunne ikke laste kartdata.');
+
+                const data = await response.json();
+                aedPoints = data.features.filter(feature =>
+                    feature.geometry?.type === 'Point' &&
+                    feature.properties?.emergency === 'defibrillator'
+                );
+            } catch {
+                aedToggle.checked = false;
+                aedStatus.textContent = 'Kunne ikke laste hjertestarterne. Prøv igjen.';
+                return;
+            } finally {
+                aedToggle.disabled = false;
+            }
+        }
+
+        showVisibleAeds();
+    });
+
+    tilfluktsromKart.on('moveend', showVisibleAeds);
     const numberFormat = new Intl.NumberFormat('nb-NO', {
         maximumFractionDigits: 1
     });

@@ -402,9 +402,10 @@ body {
         margin-bottom: 24px;
     }
 
-        .courses-section .section-heading h2,
         .courses-section .section-heading p {
-            color: #fff;
+            color: #324b3b;
+            font-size: 1.0625rem;
+            line-height: 1.6;
         }
 
         .courses-section .section-heading h2 {
@@ -810,4 +811,52 @@ body {
         color: #173e4d;
         text-decoration: none;
     }
+}
+.thank-you .footer-links a,
+.thank-you .footer-links a:visited {
+    color: #fff;
+    text-decoration: none;
+}
+.courses-grid .course-card h3 {
+    font-size: 1.25rem;
+}
+
+.courses-grid .course-card p,
+.courses-grid .course-card li {
+    font-size: 1rem;
+    line-height: 1.55;
+}
+.courses-grid .course-card {
+    padding: clamp(20px, 3vw, 32px);
+}
+
+    .courses-grid .course-card p {
+        margin-bottom: 12px;
+    }
+
+    .courses-grid .course-card li + li {
+        margin-top: 6px;
+    }
+
+    .courses-grid .course-card ul {
+        margin-bottom: 16px;
+    }
+.shelter-aed-controls {
+    margin-bottom: 12px;
+}
+
+#hjertestarter-status:empty {
+    display: none;
+}
+
+.aed-map-icon {
+    display: grid;
+    place-items: center;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #a12e36;
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 30%);
 }

@@ -20,7 +20,7 @@
     <title>@ViewData["Title"] – Totalforsvaret</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
           rel="stylesheet" />
 
@@ -87,6 +87,13 @@
 
             <ul id="tilfluktsrom-adressetreff"
                 aria-label="Adresser som matcher søket"></ul>
+                <div class="shelter-aed-controls">
+                    <label>
+                        <input id="vis-hjertestartere" type="checkbox" />
+                        Vis hjertestartere
+                    </label>
+                    <p id="hjertestarter-status" role="status"></p>
+                </div>
 
             <div id="tilfluktsrom-kart"
                  role="region"
@@ -417,50 +424,48 @@
         <p>Her er en oversikt over kurs som kan forbedre dine ferdigheter.</p>
     </header>
             <div class="courses-grid">
-                <a class="course-card"
-                   href="https://example.com/norsk-luftambulanse-kurs"
-                   target="_blank"
-                   rel="noopener noreferrer">
-                    <h3>Norsk Luftambulanse online kurs</h3>
-                    <p>Her får du gratis online kurs som tilbyr:</p>
+                <article class="course-card">
+                    <h3>Kurs hos Norsk Luftambulanse</h3>
+                    <p>Her får du gratis nettkurs i førstehjelp.</p>
                     <ul>
-                        <li>CPR</li>
-                        <li>Hjertestarter</li>
-                        <li>Førstehjelp for barn</li>
-                        <li>Gjenkjenne slag</li>
-                        <li>Hvordan reagere i akutte situasjoner</li>
+                        <li>Hjerte- og lungeredning</li>
+                        <li>Tegn på hjerneslag</li>
+                        <li>Når og hvordan du ringer 113</li>
                     </ul>
-                    <span class="course-link-text">Åpne kursoversikten ↗</span>
-                </a>
+                    <a class="course-link-text"
+                       href="https://norskluftambulanse.no/akutt-abc"
+                       target="_blank"
+                       rel="noopener noreferrer">Åpne kursoversikten</a>
+                </article>
 
-                <a class="course-card"
-                   href="https://example.com/roede-kors-kurs"
-                   target="_blank"
-                   rel="noopener noreferrer">
+                <article class="course-card">
                     <h3>Røde Kors</h3>
-                    <p>Her kan du finne kurs for:</p>
+                    <p>Her kan du finne kurs i:</p>
                     <ul>
-                        <li>Førstehjelp grunnkurs</li>
+                        <li>Grunnleggende førstehjelp</li>
                         <li>Førstehjelp ved ulykker</li>
-                        <li>Psykisk førstehjelp</li>
+                        <li>Psykososial førstehjelp</li>
                         <li>Frivillig akuttberedskap</li>
                     </ul>
-                    <span class="course-link-text">Åpne kursoversikten ↗</span>
-                </a>
+                    <a class="course-link-text"
+                       href="https://www.rodekors.no/forstehjelp/kurs/"
+                       target="_blank"
+                       rel="noopener noreferrer">Åpne kursoversikten</a>
+                </article>
 
-                <a class="course-card"
-                   href="https://example.com/brannvernforeningen-kurs"
-                   target="_blank"
-                   rel="noopener noreferrer">
+                <article class="course-card">
                     <h3>Brannvernforeningen</h3>
-                    <p>Her kan du finne kurs for:</p>
+                    <p>Her kan du finne kurs i:</p>
                     <ul>
                         <li>Brannforebygging</li>
-                        <li>Slukkeutstyr</li>
+                        <li>Slokkeutstyr</li>
                         <li>Evakueringsrutiner</li>
                     </ul>
-                    <span class="course-link-text">Åpne kursoversikten ↗</span>
-                </a>
+                    <a class="course-link-text"
+                       href="https://www.brannvernforeningen.no/kursoversikt/nettkurs-i-brannvern"
+                       target="_blank"
+                       rel="noopener noreferrer">Åpne kursoversikten</a>
+                </article>
             </div>
         </section>
     </main>
@@ -497,9 +502,7 @@
                     Personvern
                 </a>
                 <span aria-hidden="true">·</span>
-                <span>Tilgjengelighet</span>
-                <span aria-hidden="true">·</span>
-                <span>Kontakt</span>
+                <a asp-area="" asp-controller="Home" asp-action="Contact">Kontakt</a>
             </div>
         </div>
     </footer>

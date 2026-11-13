@@ -402,9 +402,10 @@ body {
         margin-bottom: 24px;
     }
 
-        .courses-section .section-heading h2,
         .courses-section .section-heading p {
-            color: #fff;
+            color: #324b3b;
+            font-size: 1.0625rem;
+            line-height: 1.6;
         }
 
         .courses-section .section-heading h2 {

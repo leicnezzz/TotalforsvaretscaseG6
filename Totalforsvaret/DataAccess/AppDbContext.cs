@@ -34,6 +34,10 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
     public DbSet<EgenberedskapChecklistStatus> EgenberedskapChecklistStatuses =>
         Set<EgenberedskapChecklistStatus>();
 	public DbSet<ProfilePhoto> ProfilePhotos => Set<ProfilePhoto>();
+    
+    public DbSet<ResourceMessage> ResourceMessages
+        => Set<ResourceMessage>();
+    
 	protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -56,6 +60,42 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
 
             entity.HasIndex(a => new { a.ResourceId, a.Status });
             entity.HasIndex(a => new { a.NeedId, a.Status });
+        });
+        
+        builder.Entity<ResourceMessage>(entity =>
+        {
+            entity.HasKey(message => message.Id);
+
+            entity.Property(message => message.Body)
+                .IsRequired()
+                .HasMaxLength(2000);
+
+            entity.HasOne(message => message.Assignment)
+                .WithMany(assignment => assignment.Messages)
+                .HasForeignKey(message => message.AssignmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(message => message.Sender)
+                .WithMany()
+                .HasForeignKey(message => message.SenderUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(message => message.Recipient)
+                .WithMany()
+                .HasForeignKey(message => message.RecipientUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(message => new
+            {
+                message.RecipientUserId,
+                message.ReadAtUtc
+            });
+
+            entity.HasIndex(message => new
+            {
+                message.AssignmentId,
+                message.SentAtUtc
+            });
         });
 
         builder.Entity<ProfilePhoto>(entity =>

@@ -1,4 +1,5 @@
 using Totalforsvaret.Models.resourcemodels;
+using System.Collections.Generic; 
 
 namespace Totalforsvaret.Areas.Offentlig.Models;
 
@@ -32,4 +33,7 @@ public class ResourceAssignment
     public DateTime? AssignedAtUtc { get; set; }
 
     public DateTime? ClosedAtUtc { get; set; }
+    
+    public ICollection<ResourceMessage> Messages { get; set; }
+        = new List<ResourceMessage>();
 }

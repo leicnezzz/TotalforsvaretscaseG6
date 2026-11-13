@@ -88,15 +88,18 @@
     place-items: center;
     width: 24px;
     height: 24px;
-    border: 1px solid #dde5de;
+    border: 2px solid var(--public-green);
     border-radius: 50%;
-    color: var(--public-muted);
+    color: var(--public-green);
     font-size: 12px;
+    font-weight: 700;
 }
 
 /* Knappen i bunnen av kortet. */
 .paratus-card-action {
     margin-top: auto;
+    align-self: center;
+    width: fit-content;
 }
 
 /* Mørkt lag over videoen, så hvit tekst er lesbar. Selve regelen finnes i public-home.css, vi legger bare til fargen. */

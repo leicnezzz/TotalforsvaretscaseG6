@@ -98,7 +98,6 @@
                                 Status
                             </label>
                             <select asp-for="Needs[i].Status" class="form-select">
-                                <option value="Åpen">Åpen</option>
                                 <option value="Under behandling">Under behandling</option>
                                 <option value="Løst">Løst</option>
                             </select>
@@ -281,7 +280,7 @@
 
 // Vis trekanten også når hendelsen allerede er valgt ved sidelasting.
             visValgtHendelse();
-            
+
             // Beholder valgt plassering hvis skjemaet får valideringsfeil.
             if (latitudeInput.value.trim() && longitudeInput.value.trim()) {
                 const latitude = Number(latitudeInput.value.replace(',', '.'));

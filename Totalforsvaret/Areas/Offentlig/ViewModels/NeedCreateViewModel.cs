@@ -31,6 +31,8 @@ public class NeedCreateViewModel
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
     public double? Longitude { get; set; }
 
+    public IReadOnlyList<CrisisMapPoint> CrisisLocations { get; set; } = [];
+
     public IEnumerable<SelectListItem> Crises { get; set; }
         = new List<SelectListItem>();
 }

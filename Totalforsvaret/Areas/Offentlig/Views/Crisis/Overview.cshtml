@@ -14,6 +14,9 @@
 <link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
 
 <div class="crisis-overview" data-crisis-map-url="@Url.Action("Index", "OffentligAktor", new { area = "" })">
+    <div class="private-page-actions">
+        <a class="private-page-action" asp-area="" asp-controller="OffentligAktor" asp-action="Index">← Tilbake</a>
+    </div>
     <section class="registration-intro" aria-labelledby="crisis-title">
         <h1 id="crisis-title">Hendelser</h1>
         <p>En enkel måte å bidra for alles sikkerhet</p>

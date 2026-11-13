@@ -117,3 +117,11 @@ body:has(:is(.crisis-overview, .match-page, .need-page)) {
         to { opacity: 1; }
     }
 }
+
+/* Readable public pages, using the same hierarchy as the private forms. */
+:is(.crisis-overview, .match-page, .need-page) { font-size: 1rem; line-height: 1.5; }
+.crisis-overview .crisis-card-name > span,
+.crisis-overview .crisis-card-name > strong,
+.crisis-overview .crisis-status { font-size: 1rem; line-height: 1.5; }
+.crisis-overview .crisis-card-name .crisis-card-title { font-size: 1.25rem; }
+:is(.crisis-overview .crisis-button, .match-page .match-button, .need-page .public-button) { font-size: 1rem; }

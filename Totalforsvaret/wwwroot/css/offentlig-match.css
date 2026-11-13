@@ -14,12 +14,12 @@ body:has(.match-page:not([hidden])) > .container-fluid {
 .match-page {
     width: min(100% - 32px, 920px);
     margin: 0 auto;
-    padding-block: 16px 64px;
+    padding-block: 4px 48px;
     color: #163c4c;
 }
 
 .match-intro {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     text-align: center;
 }
 
@@ -340,7 +340,7 @@ body:has(.match-page:not([hidden])) > .container-fluid {
 .match-page-actions {
     --header-green: #163c4c;
     width: min(100% - 32px, 920px);
-    min-height: 48px;
+    min-height: 44px;
     margin-inline: auto;
     padding: 0;
 }
@@ -350,7 +350,7 @@ body:has(.match-page:not([hidden])) > .container-fluid {
 }
 
 .match-page-actions + .match-page {
-    padding-top: 16px;
+    padding-top: 4px;
 }
 
 .match-map-section {

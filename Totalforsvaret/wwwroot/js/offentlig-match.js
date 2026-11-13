@@ -6,6 +6,7 @@
     const mapElement = page.querySelector('[data-match-map]');
     const mapStatus = page.querySelector('[data-match-map-status]');
     const summary = page.querySelector('[data-match-summary]');
+    const pairFields = page.querySelector('[data-match-pairs]');
     const confirm = page.querySelector('[data-match-confirm]');
     const start = [58.1467, 7.9956];
     const groups = {};
@@ -43,11 +44,36 @@
     }
 
     function updateSummary() {
-        const needs = groups.behov.selected.size;
-        const resources = groups.ressurser.selected.size;
-        confirm.disabled = !needs || !resources;
-        summary.textContent = confirm.disabled ? 'Velg minst ett behov og én ressurs.'
-            : needs + ' behov og ' + resources + ' ressurser valgt.';
+        const needs = [...groups.behov.selected];
+        const resources = [...groups.ressurser.selected];
+        const canMatch = resources.length > 0 && (needs.length === 1 || needs.length === resources.length);
+        confirm.disabled = !canMatch;
+        pairFields.replaceChildren();
+
+        if (!needs.length || !resources.length) {
+            summary.textContent = 'Velg minst ett behov og én ressurs.';
+            return;
+        }
+        if (!canMatch) {
+            summary.textContent = 'Velg ett behov for alle ressursene, eller like mange behov som ressurser.';
+            return;
+        }
+
+        for (const [name, ids] of [['needId', needs], ['resourceId', resources]]) {
+            for (const id of ids) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = id;
+                pairFields.append(input);
+            }
+        }
+        const pairs = resources.map((id, index) => {
+            const resource = groups.ressurser.items.find(item => item.id === id);
+            const need = groups.behov.items.find(item => item.id === (needs.length === 1 ? needs[0] : needs[index]));
+            return resource.navn + ' → ' + need.navn;
+        });
+        summary.textContent = pairs.join(' · ');
     }
 
     function choose(group, item) {
@@ -174,10 +200,9 @@
         fit(points, false);
     }
 
-    confirm.addEventListener('click', () => {
-        focusSelection();
-        summary.textContent = 'Valgt sammenstilling: ' +
-            selectedItems().map(item => item.navn).join(', ') + '.';
+    page.querySelector('[data-match-form]').addEventListener('submit', event => {
+        if (confirm.disabled) event.preventDefault();
+        else confirm.disabled = true;
     });
     initMap();
 })();

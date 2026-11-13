@@ -9,7 +9,8 @@
         const ids = new Set(new URLSearchParams(window.location.search).getAll('hendelser'));
         for (const card of cards) ids.add(card.dataset.crisisId);
         for (const id of ids) url.searchParams.append('hendelser', id);
-        url.hash = 'offentligKart';
+        url.hash = '';
+        try { sessionStorage.removeItem('offentligScroll'); } catch { /* lagring utilgjengelig */ }
         window.location.assign(url);
     }
 

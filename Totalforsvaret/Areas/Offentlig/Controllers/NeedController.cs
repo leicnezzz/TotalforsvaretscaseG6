@@ -1,3 +1,4 @@
+using Totalforsvaret.Controllers;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,11 +31,16 @@ public class NeedController : Controller
 
     // Åpner skjemaet og henter eksisterende kriser.
     [HttpGet]
-    public async Task<IActionResult> Create()
+    public async Task<IActionResult> Create(int? crisisId = null)
     {
+        var apneHendelser = HentApneHendelser();
         var viewModel = new NeedCreateViewModel
         {
-            Crises = await GetCrisesAsync()
+            Crises = await GetCrisesAsync(apneHendelser),
+            CrisisLocations = await GetCrisisLocationsAsync(apneHendelser),
+            CrisisId = apneHendelser.Count == 1 ? apneHendelser[0] :
+                apneHendelser.Count == 0 ? crisisId : null,
+            Status = "Under behandling"
         };
 
         return View(viewModel);
@@ -50,8 +56,10 @@ public class NeedController : Controller
         if (user is not Offentligaktør offentligAktor)
             return Forbid();
 
+        var apneHendelser = HentApneHendelser();
         if (viewModel.CrisisId is int crisisId &&
-            !await _context.Crises.AnyAsync(c => c.Id == crisisId))
+            ((apneHendelser.Count > 0 && !apneHendelser.Contains(crisisId)) ||
+             !await _context.Crises.AnyAsync(c => c.Id == crisisId)))
         {
             ModelState.AddModelError(
                 nameof(viewModel.CrisisId),
@@ -60,7 +68,8 @@ public class NeedController : Controller
 
         if (!ModelState.IsValid)
         {
-            viewModel.Crises = await GetCrisesAsync();
+            viewModel.Crises = await GetCrisesAsync(apneHendelser);
+            viewModel.CrisisLocations = await GetCrisisLocationsAsync(apneHendelser);
             return View(viewModel);
         }
 
@@ -81,19 +90,11 @@ public class NeedController : Controller
         _context.Needs.Add(need);
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(
-            "Index", "OffentligAktor", new { area = "" });
+        return LocalRedirect(this.OversiktUrl(viewModel.CrisisId));
     }
 
     [HttpGet]
-    public async Task<IActionResult> CreateMultiple()
-    {
-        return View(new MultipleNeedsViewModel
-        {
-            Crises = await GetCrisesAsync(),
-            ActiveCrisesOnMap = await GetActiveCrisesOnMapAsync()
-        });
-    }
+    public IActionResult CreateMultiple() => RedirectToRoute("behov");
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -136,12 +137,23 @@ public class NeedController : Controller
         {
             return Json(new
             {
-                redirectUrl = Url.Action("Index", "OffentligAktor", new { area = "" })
+                redirectUrl = this.OversiktUrl(viewModel.CrisisId)
             });
         }
 
-        return RedirectToAction(
-            "Index", "OffentligAktor", new { area = "" });
+        return LocalRedirect(this.OversiktUrl());
+    }
+
+    private async Task<IReadOnlyList<CrisisMapPoint>> GetCrisisLocationsAsync(List<int> openIds)
+    {
+        var crises = _context.Crises.AsNoTracking()
+            .Where(c => c.Latitude >= -90 && c.Latitude <= 90 &&
+                        c.Longitude >= -180 && c.Longitude <= 180);
+        if (openIds.Count > 0)
+            crises = crises.Where(c => openIds.Contains(c.Id));
+
+        return await crises.Select(c => new CrisisMapPoint(
+            c.Id, c.Name, c.Latitude!.Value, c.Longitude!.Value)).ToListAsync();
     }
 
     private async Task<IReadOnlyList<CrisisMapPoint>> GetActiveCrisesOnMapAsync()
@@ -160,9 +172,19 @@ public class NeedController : Controller
     }
 
     // Henter krisene som kan velges i skjemaet.
-    private async Task<IEnumerable<SelectListItem>> GetCrisesAsync()
+    private List<int> HentApneHendelser() => Request.Query["hendelser"]
+        .Select(value => int.TryParse(value, out var id) ? id : 0)
+        .Where(id => id > 0)
+        .Distinct()
+        .ToList();
+
+    private async Task<IEnumerable<SelectListItem>> GetCrisesAsync(List<int>? apneHendelser = null)
     {
-        return await _context.Crises
+        var crises = _context.Crises.AsQueryable();
+        if (apneHendelser is { Count: > 0 })
+            crises = crises.Where(c => apneHendelser.Contains(c.Id));
+
+        return await crises
             .OrderBy(c => c.Name)
             .Select(c => new SelectListItem
             {
@@ -258,8 +280,7 @@ public class NeedController : Controller
 
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(
-            "Index", "OffentligAktor", new { area = "" });
+        return LocalRedirect(this.OversiktUrl());
     }
 
     [HttpPost]
@@ -275,9 +296,6 @@ public class NeedController : Controller
         _context.Needs.Remove(need);
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(
-            "Index",
-            "OffentligAktor",
-            new { area = "" });
+        return LocalRedirect(this.OversiktUrl());
     }
 }

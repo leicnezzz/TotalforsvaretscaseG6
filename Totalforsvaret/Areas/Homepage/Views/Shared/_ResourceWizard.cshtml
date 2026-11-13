@@ -145,15 +145,22 @@
             <label for="vehicle-contact">Telefon *</label>
             <input id="vehicle-contact" name="Kontaktpunkt" type="tel" inputmode="tel" maxlength="25" autocomplete="tel" placeholder="Eks. +47 900 12 345" aria-describedby="vehicle-contact-error" required />
             <p id="vehicle-contact-error" class="wizard-field-error" role="status" hidden></p>
-            <label for="vehicle-available">Er ressursen tilgjengelig? *</label>
-            <select id="vehicle-available" name="Available" required>
-                <option value="">Velg tilgjengelighet</option>
-                <option value="true">Ja</option>
-                <option value="false">Ikke akkurat nå</option>
-            </select>
-            <label for="vehicle-available-from">Kan være tilgjengelig fra (valgfritt)</label>
-            <input id="vehicle-available-from" name="TilgjengeligFra" type="datetime-local" />
-            <p class="wizard-hint">Datoen er valgfri. Når du velger «Ja» uten dato, gjelder tilgjengeligheten fra registreringen. Velger du «Ikke akkurat nå», kan du oppgi en forventet dato.</p>
+            @if (compact)
+            {
+                <input type="hidden" name="Available" value="true" />
+            }
+            else
+            {
+                <label for="vehicle-available">Er ressursen tilgjengelig? *</label>
+                <select id="vehicle-available" name="Available" required>
+                    <option value="">Velg tilgjengelighet</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Ikke akkurat nå</option>
+                </select>
+                <label for="vehicle-available-from">Kan være tilgjengelig fra (valgfritt)</label>
+                <input id="vehicle-available-from" name="TilgjengeligFra" type="datetime-local" />
+                <p class="wizard-hint">Datoen er valgfri. Når du velger «Ja» uten dato, gjelder tilgjengeligheten fra registreringen. Velger du «Ikke akkurat nå», kan du oppgi en forventet dato.</p>
+            }
             <button id="wizard-contact-next" class="public-button public-button-primary" type="button">
                 <span>@(compact ? "Neste" : "Fortsett til adresse")</span><span aria-hidden="true">@(compact ? "→" : "↓")</span>
             </button>

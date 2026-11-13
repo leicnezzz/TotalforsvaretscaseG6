@@ -68,7 +68,7 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
                 .HasForeignKey<ProfilePhoto>(photo => photo.BrukerId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
 		builder.Entity<Bruker>()
             .HasDiscriminator<string>("BrukerType")
             .HasValue<Privataktor>("Privat")

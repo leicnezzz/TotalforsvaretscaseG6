@@ -8,6 +8,7 @@
     ViewData["Title"] = isMatch ? "Match" : "Operativ oversikt";
     ViewData["FullWidth"] = true;
     ViewData["RegistrationFooter"] = true;
+    ViewData["HideFooter"] = !isMatch;
 
     // Sender bare opplysningene kartet trenger.
     var kartRessurser = Model.Select(ressurs => new
@@ -52,12 +53,17 @@
             }),
         kriser = (object?)ViewBag.KriserPaKart ?? Array.Empty<object>()
     });
-    
+
+    var opptatteRessursIder = ViewBag.OpptatteRessursIder as HashSet<int> ?? new HashSet<int>();
+    var listeRessurser = isMatch
+        ? Model.Where(r => !opptatteRessursIder.Contains(r.ResourceId) &&
+                           (r.TilgjengeligFra == null || r.TilgjengeligFra <= DateTime.Now))
+        : Model;
     var oversiktJson = JsonSerializer.Serialize(new
     {
         kriser = (object?)ViewBag.KriserTilLister ?? Array.Empty<object>(),
         behov = (object?)ViewBag.BehovTilLister ?? Array.Empty<object>(),
-        ressurser = Model.Select(r => new
+        ressurser = listeRessurser.Select(r => new
         {
             id = r.ResourceId,
             navn = r.Object,
@@ -86,84 +92,55 @@
 @if (!isMatch)
 {
 <div class="container-fluid offentlig-dashboard">
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success alert-dismissible" data-oversikt-varsel>
+            <span role="status">@successMessage</span>
+            <button type="button" class="btn-close" aria-label="Lukk varselet"></button>
+        </div>
+    }
 
-    <div class="kart-oversiktsrad">
-        <div class="kart-oversiktsgruppe">
-            <h1>Operativ oversikt</h1>
+    <details class="kart-oversiktsvalg" open>
+        <summary aria-label="Vis eller skjul oversikten"><span aria-hidden="true"></span></summary>
+        <div class="kart-oversiktsrad">
+            <div class="kart-oversiktsgruppe">
             <div class="statistikk-rad">
-                <div>
-                    <div class="stat-kort krise-kort"
-                         role="button"
-                         tabindex="0"
-                         aria-haspopup="dialog"
-                         aria-controls="oversiktDialog"
-                         data-oversikt-liste="kriser">
-                        <h2>Hendelser</h2>
-                        <p class="stat-tall">@((ViewBag.KriserTilLister as System.Collections.ICollection)?.Count ?? 0)</p>
-
-                    </div>
+                    <button type="button" class="stat-kort krise-kort"
+                            aria-haspopup="dialog" aria-controls="oversiktDialog" data-oversikt-liste="kriser">
+                        <span>Hendelser</span>
+                        <span class="stat-tall">@((ViewBag.KriserTilLister as System.Collections.ICollection)?.Count ?? 0)</span>
+                    </button>
+                    <button type="button" class="stat-kort behov-kort"
+                            aria-haspopup="dialog" aria-controls="oversiktDialog" data-oversikt-liste="aktive">
+                        <span>Aktive behov</span>
+                        <span class="stat-tall">@ViewBag.AktiveBehov</span>
+                    </button>
+                    <button type="button" class="stat-kort treff-kort"
+                            aria-haspopup="dialog" aria-controls="oversiktDialog" data-oversikt-liste="treff">
+                        <span>Foreslåtte treff</span>
+                        <span class="stat-tall">@ViewBag.ForeslatteTreff</span>
+                    </button>
+                    <button type="button" class="stat-kort"
+                            aria-haspopup="dialog" aria-controls="oversiktDialog" data-oversikt-liste="oppfolging">
+                        <span>Krever oppfølging</span>
+                        <span class="stat-tall">@((ViewBag.AktiveBehovListe as System.Collections.ICollection)?.Count ?? 0)</span>
+                    </button>
                 </div>
-
-                <div>
-                    <div class="stat-kort behov-kort"
-                         role="button"
-                         tabindex="0"
-                         aria-haspopup="dialog"
-                         aria-controls="oversiktDialog"
-                         data-oversikt-liste="aktive">
-                        <h2>Aktive behov</h2>
-                        <p class="stat-tall">@ViewBag.AktiveBehov</p>
-
-                    </div>
-                </div>
-
-
-
-                <div>
-                    <a class="stat-kort treff-kort" href="#foreslatteTreff">
-                        <h2>Foreslåtte treff</h2>
-                        <p class="stat-tall">@ViewBag.ForeslatteTreff</p>
-
-                    </a>
-                </div>
-
-
             </div>
-        </div>
-        <div class="oversikt-handlinger-kolonne">
-            <a class="egen-ressurs-lenke"
-               asp-area=""
-               asp-controller="OffentligAktor"
-               asp-action="NyRessurs">
-                Legg til egen ressurs
-            </a>
             <div class="oversikt-handlinger">
-                <a class="registrer-behov-knapp"
-                   asp-area="Offentlig"
-                   asp-controller="Need"
-                   asp-action="CreateMultiple">
-                    + Registrer behov
-                </a>
-                <a class="opprett-krise-knapp"
-                   asp-area="Offentlig"
-                   asp-controller="Crisis"
-                   asp-action="Create">
-                    + Opprett hendelse
-                </a>
+                <a class="egen-ressurs-lenke" asp-area="" asp-controller="Home" asp-action="ResourceRegistration">Ny Ressurs</a>
+                <a class="registrer-behov-knapp" asp-area="Offentlig" asp-controller="Need" asp-action="Create">+ Registrer behov</a>
+                <a class="opprett-krise-knapp" asp-area="Offentlig" asp-controller="Crisis" asp-action="Create">+ Opprett hendelse</a>
             </div>
         </div>
-    </div>
+    </details>
 
     <section class="kart-hendelser" aria-label="Hendelser i kartet">
-        <details>
-            <summary>Åpne hendelser</summary>
-            <form id="kartHendelserForm" method="get" asp-area="" asp-controller="OffentligAktor" asp-action="Index">
-                <fieldset id="kartHendelserValg"><legend>Velg hendelsene du vil åpne</legend></fieldset>
-                <button type="submit" class="btn btn-primary">Åpne valgte hendelser</button>
-            </form>
-        </details>
-        <label for="kartArbeidshendelse">Arbeid med hendelse</label>
-        <select id="kartArbeidshendelse" class="form-select"></select>
+        <div id="kartStart" class="kart-start" hidden>
+            <h2>Åpne en hendelse for å gjøre endringer</h2>
+            <p>Velg én eller flere hendelser på Hendelser-siden.</p>
+            <a class="btn btn-primary" asp-route="crisis-overview">Gå til Hendelser</a>
+        </div>
         <span id="kartArbeidsstatus" role="status"></span>
         <div id="kartAntiforgery" hidden>@Html.AntiForgeryToken()</div>
     </section>
@@ -182,193 +159,11 @@
 
                     <div class="kart-handlinger">
                         <div class="kart-handlingsrad" role="group" aria-label="Karthandlinger">
-                            <button type="button" aria-expanded="false" aria-controls="kartNyttBehov">Nytt behov</button>
-                            <button type="button" aria-expanded="false" aria-controls="kartMatch">Match</button>
                             <button type="button" aria-expanded="false" aria-controls="kartVeihindring">Veihindring</button>
                             <button type="button" aria-expanded="false" aria-controls="kartSone">Soner</button>
                         </div>
 
                         <p id="kartVelgVeihindring" class="kart-plasseringshint" role="status"></p>
-
-                        <section id="kartNyttBehov" class="kart-handlingspanel"
-                                 aria-labelledby="kartNyttBehovTittel"
-                                 data-skjema-url="@Url.Action("CreateMultiple", "Need", new { area = "Offentlig" })" hidden>
-                            <h2 id="kartNyttBehovTittel">Registrer et behov</h2>
-                            <p class="kart-panelintro">Opprett et behov som kan vises i kartet og matches med tilgjengelige ressurser.</p>
-                            <p class="kart-behovstatus" role="status"></p>
-                            <div class="kart-behovskjema"></div>
-                        </section>
-
-                        <section id="kartMatch" class="kart-handlingspanel" aria-labelledby="kartMatchTittel" hidden>
-                            <h2 id="kartMatchTittel">Finn matchende ressurser</h2>
-
-                            <p class="kart-panelintro">Søk i forslagene og filtrer på ressurstype.</p>
-                            <label class="kart-feltetikett" for="kartMatchSok">Søk</label>
-                            <input id="kartMatchSok" class="form-control" type="search" placeholder="Søk på ressurs eller behov" />
-                            <fieldset class="kart-valgfelt">
-                                <legend>Ressurstype</legend>
-                                <div class="kart-piller">
-                                    <label><input type="radio" name="matchtype" value="" checked /><span>Alle</span></label>
-                                    <label><input type="radio" name="matchtype" value="Vehicles" /><span>Kjøretøy</span></label>
-                                    <label><input type="radio" name="matchtype" value="Equipment" /><span>Utstyr</span></label>
-                                </div>
-                            </fieldset>
-
-                            @{
-                                var kartMatchForslag = ViewBag.MatchForslag as
-                                                       List<Totalforsvaret.Areas.Offentlig.ViewModels.MatchSuggestionViewModel>
-                                                   ?? new();
-                                var kartAktiveTildelinger = ViewBag.AktiveTildelinger as
-                                                            List<Totalforsvaret.Areas.Offentlig.Models.ResourceAssignment>
-                                                        ?? new();
-                                var matchKategorier = Model.ToDictionary(r => r.ResourceId, r => r.Category?.Name);
-                            }
-
-                            @if (kartMatchForslag.Count > 0)
-                            {
-                                <p class="kart-feltetikett mt-2">Foreslåtte treff</p>
-                                <p class="kart-matchstatus" role="status" hidden>Ingen treff med disse filtrene.</p>
-
-                                @foreach (var treff in kartMatchForslag)
-                                {
-                                    var tildeling = kartAktiveTildelinger.FirstOrDefault(a =>
-                                        a.NeedId == treff.NeedId &&
-                                        a.ResourceId == treff.ResourceId);
-                                    var ressursOpptatt = kartAktiveTildelinger.Any(a =>
-                                        a.ResourceId == treff.ResourceId);
-                                    <div class="behov-element kart-matchtreff"
-                                         data-crisis-id="@((ViewBag.BehovTilLister as IEnumerable<dynamic>)?.FirstOrDefault(n => n.id == treff.NeedId)?.kriseId)"
-                                         data-match-type="@matchKategorier.GetValueOrDefault(treff.ResourceId)"
-                                         data-match-sok="@treff.ResourceName @treff.NeedName">
-                                        <strong>@treff.ResourceName</strong>
-                                        <p>Behov: @treff.NeedName</p>
-
-                                        @if (treff.DistanceKm.HasValue)
-                                        {
-                                            <p>
-                                                Luftlinje:
-                                                @(treff.DistanceKm.Value.ToString("0.0")) km
-                                            </p>
-                                        }
-                                        else
-                                        {
-                                            <p>Avstand ikke tilgjengelig.</p>
-                                        }
-
-
-                                        <div class="d-flex flex-column gap-2 mt-3">
-                                            @if (tildeling?.Status == Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Requested)
-                                            {
-                                                <span class="badge bg-warning text-dark">
-                                                    Til vurdering
-                                                </span>
-                                                <form asp-area=""
-                                                      asp-controller="OffentligAktor"
-                                                      asp-action="TildelRessurs"
-                                                      method="post">
-
-                                                    @Html.AntiForgeryToken()
-
-                                                    <input type="hidden"
-                                                           name="assignmentId"
-                                                           value="@tildeling.Id"/>
-
-                                                    <button type="submit"
-                                                            class="btn btn-sm btn-success w-100">
-                                                        Tildel ressurs
-                                                    </button>
-                                                </form>
-
-                                                <form asp-area=""
-                                                      asp-controller="OffentligAktor"
-                                                      asp-action="AvslaRessurs"
-                                                      method="post">
-
-                                                    @Html.AntiForgeryToken()
-
-                                                    <input type="hidden"
-                                                           name="assignmentId"
-                                                           value="@tildeling.Id" />
-
-                                                    <button type="submit"
-                                                            class="btn btn-sm btn-outline-danger w-100">
-                                                        Avslå ressurs
-                                                    </button>
-                                                </form>
-
-                                            }
-
-                                            @if (tildeling?.Status ==
-                                                 Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned)
-                                            {
-                                                <span class="badge bg-success">
-                                                    Tildelt
-                                                </span>
-
-                                                <form asp-area=""
-                                                      asp-controller="OffentligAktor"
-                                                      asp-action="FrigiRessurs"
-                                                      method="post">
-
-                                                    @Html.AntiForgeryToken()
-
-                                                    <input type="hidden"
-                                                           name="assignmentId"
-                                                           value="@tildeling.Id" />
-
-                                                    <button type="submit"
-                                                            class="btn btn-sm btn-outline-secondary w-100">
-                                                        Frigi ressurs
-                                                    </button>
-                                                </form>
-
-                                            }
-
-                                            @if (tildeling == null && !ressursOpptatt)
-                                            {
-                                                <form asp-area=""
-                                                      asp-controller="OffentligAktor"
-                                                      asp-action="VurderRessurs"
-                                                      method="post">
-
-                                                    @Html.AntiForgeryToken()
-
-                                                    <input type="hidden"
-                                                           name="needId"
-                                                           value="@treff.NeedId"/>
-
-                                                    <input type="hidden"
-                                                           name="resourceId"
-                                                           value="@treff.ResourceId"/>
-
-                                                    <button type="submit"
-                                                            class="btn btn-sm btn-primary w-100">
-                                                        Vurder ressurs
-                                                    </button>
-                                                </form>
-                                            }
-
-                                            <a class="btn btn-sm btn-outline-primary"
-                                               asp-area="Offentlig"
-                                               asp-controller="Need"
-                                               asp-action="Edit"
-                                               asp-route-id="@treff.NeedId">
-                                                Se og endre behov
-                                            </a>
-
-                                        </div>
-
-                                    </div>
-                                }
-                            }
-                            else
-                            {
-                                <p>
-                                    Ingen forslag funnet. Forslag krever et aktivt behov
-                                    og en tilgjengelig ressurs i tilsvarende kategori.
-                                </p>
-                            }
-                        </section>
 
                         <section id="kartVeihindring" class="kart-handlingspanel" aria-labelledby="kartVeihindringTittel" hidden>
                             <h2 id="kartVeihindringTittel">Registrer veihindring</h2>
@@ -396,7 +191,7 @@
 
                         <section id="kartSone" class="kart-handlingspanel" aria-labelledby="kartSoneTittel" hidden>
                             <h2 id="kartSoneTittel">Registrer sonemarkering</h2>
-                            <p class="kart-panelintro">Marker et område som krever oppfølging. Sonen vises til siden lastes på nytt.</p>
+                            <p class="kart-panelintro">Klikk på minst tre ulike punkter i kartet for å tegne en sone. Bruk «Angre siste hjørne» for å korrigere et feilklikk.</p>
                             <form data-kartmarkering="soner">
                                 <label for="kartSoneNavn">Navn</label>
                                 <input id="kartSoneNavn" name="navn" class="form-control"
@@ -430,304 +225,80 @@
                     </div>
                 </div>
 
-                <div class="kart-forklaring" aria-label="Forklaring av kartsymboler">
-                    <span>
-                        <span class="kart-tegn kart-tegn-ressurs" aria-hidden="true"></span>
-                        Tilgjengelige ressurser
-                    </span>
+                <div class="kart-bunnrad">
+                    <div class="kart-forklaring" aria-label="Forklaring av kartsymboler">
+                        <span>
+                            <span class="kart-tegn kart-tegn-ressurs" aria-hidden="true"></span>
+                            Tilgjengelige ressurser
+                        </span>
 
-                    <span>
-                        <span class="kart-tegn kart-tegn-behov" aria-hidden="true"></span>
-                        Aktive behov
-                    </span>
+                        <span>
+                            <span class="kart-tegn kart-tegn-behov" aria-hidden="true"></span>
+                            Aktive behov
+                        </span>
 
-                    <span>
-                        <span class="kart-tegn kart-tegn-krise" aria-hidden="true"></span>
-                        Aktive hendelser
-                    </span>
+                        <span>
+                            <span class="kart-tegn kart-tegn-krise" aria-hidden="true"></span>
+                            Aktive hendelser
+                        </span>
 
-                    <span>
-                        <img class="kart-forklaring-veihindring"
-                             src="@Url.Content("~/images/kart-veihindring.svg")"
-                             alt="" aria-hidden="true" />
-                        Veihindringer
-                    </span>
+                        <span>
+                            <img class="kart-forklaring-veihindring"
+                                 src="@Url.Content("~/images/kart-veihindring.svg")"
+                                 alt="" aria-hidden="true" />
+                            Veihindringer
+                        </span>
 
-                    <span>
-                        <span class="kart-tegn kart-tegn-sone" aria-hidden="true"></span>
-                        Soner
-                    </span>
-                </div>
-                <p id="kartmelding" class="small text-muted mt-2 mb-0" role="status"></p>
-            </section>
-        </div>
+                        <span>
+                            <span class="kart-tegn kart-tegn-sone" aria-hidden="true"></span>
+                            Soner
+                        </span>
+                    </div>
+                    <div class="kart-bunnhandlinger">
+                        <a class="btn btn-outline-danger" data-lukk-hendelser hidden
+                           asp-area="" asp-controller="OffentligAktor" asp-action="Index">Forlat krise</a>
+                        <a class="skriv-ut-knapp"
+                           asp-area=""
+                           asp-controller="OffentligAktor"
+                           asp-action="MineRessurser">
+                            Mine ressurser
+                        </a>
+                        <div class="dropdown">
+                            <button type="button"
+                                    class="skriv-ut-knapp dropdown-toggle"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                Skriv ut
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <button type="button"
+                                            class="dropdown-item"
+                                            data-utskrift="ressurser">
+                                        Ressursliste
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button"
+                                            class="dropdown-item"
+                                            data-utskrift="behov">
+                                        Aktive behov
+                                    </button>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <button type="button"
+                                            class="dropdown-item"
+                                            data-eksport="geojson">
+                                        Last ned GeoJSON
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
 
-        <div class="col-12">
-            <!-- Eksempeltekst inntil organisasjon er koblet til innlogging -->
-            <div class="aktorlinje">
-                <div class="aktor-identitet">
-                    <span class="aktor-merke">Offentlig aktør</span>
-
-                    <span class="aktor-organisasjon">
-                        Kristiansand kommune · Beredskap
-                    </span>
-                </div>
-
-                <div class="aktor-hoyre">
-                    <span class="aktor-ansvarsomrade">
-                        Ansvarsområde: Kristiansand kommune
-                    </span>
-                    <a class="skriv-ut-knapp"
-                       asp-area=""
-                       asp-controller="OffentligAktor"
-                       asp-action="MineRessurser">
-                        Mine ressurser
-                    </a>
-                    <div class="dropdown">
-                        <button type="button"
-                                class="skriv-ut-knapp dropdown-toggle"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                            Skriv ut
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <button type="button"
-                                        class="dropdown-item"
-                                        data-utskrift="ressurser">
-                                    Ressursliste
-                                </button>
-                            </li>
-                            <li>
-                                <button type="button"
-                                        class="dropdown-item"
-                                        data-utskrift="behov">
-                                    Aktive behov
-                                </button>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <button type="button"
-                                        class="dropdown-item"
-                                        data-eksport="geojson">
-                                    Last ned GeoJSON
-                                </button>
-                            </li>
-                        </ul>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-12 oppfolging-kolonne">
-            <section class="oppfolging-panel"
-                     aria-labelledby="oppfolging-tittel">
-
-                <h2 id="oppfolging-tittel">Krever oppfølging</h2>
-
-                <div class="oppfolging-innhold">
-                    <h3>Aktive behov</h3>
-
-                    @if (ViewBag.AktiveBehovListe != null &&
-                         ViewBag.AktiveBehovListe.Count > 0)
-                    {
-                        @foreach (var behov in ViewBag.AktiveBehovListe)
-                        {
-                            <div class="behov-element" data-prioritet="@behov.Priority">
-                                <strong>@behov.Name</strong>
-                                <p>Type: @behov.Type</p>
-                                <p>Prioritet: @behov.Priority</p>
-                                <p>Status: @behov.Status</p>
-                                
-                                <div class="d-flex flex-wrap gap-2 mt-2 mb-3">
-                                    <a class="btn btn-sm btn-outline-primary"
-                                       asp-area="Offentlig"
-                                       asp-controller="Need"
-                                       asp-action="Edit"
-                                       asp-route-id="@behov.Id">
-                                        Endre behov
-                                    </a>
-
-                                    @if (behov.CrisisId != null)
-                                    {
-                                        <a class="btn btn-sm btn-outline-secondary"
-                                           asp-area="Offentlig"
-                                           asp-controller="Crisis"
-                                           asp-action="Edit"
-                                           asp-route-id="@behov.CrisisId">
-                                            Endre tilhørende krise
-                                        </a>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p>Ingen aktive behov registrert.</p>
-                    }
-                </div>
-
-                <div class="oppfolging-innhold">
-                    <h3 id="foreslatteTreff">Foreslåtte treff</h3>
-
-                    @{
-                        var matchForslag = ViewBag.MatchForslag as
-                                               List<Totalforsvaret.Areas.Offentlig.ViewModels.MatchSuggestionViewModel>
-                                           ?? new();
-                        var aktiveTildelinger = ViewBag.AktiveTildelinger as
-                                                    List<Totalforsvaret.Areas.Offentlig.Models.ResourceAssignment>
-                                                ?? new();
-                    }
-
-                    @if (matchForslag.Count > 0)
-                    {
-                        <p class="mb-3">
-                            Kategoribaserte forslag som må vurderes før tildeling.
-                        </p>
-
-                        @foreach (var treff in matchForslag)
-                        { 
-                            var tildeling = aktiveTildelinger.FirstOrDefault(a =>
-                                a.NeedId == treff.NeedId &&
-                                a.ResourceId == treff.ResourceId);
-                            var ressursOpptatt = aktiveTildelinger.Any(a =>
-                                a.ResourceId == treff.ResourceId);
-                            <div class="behov-element">
-                                <strong>@treff.NeedName</strong>
-                                <p>Ressurs: @treff.ResourceName</p>
-
-                                @if (treff.DistanceKm.HasValue)
-                                {
-                                    <p>
-                                        Luftlinje:
-                                        @(treff.DistanceKm.Value.ToString("0.0")) km
-                                    </p>
-                                }
-                                else
-                                {
-                                    <p>Avstand ikke tilgjengelig.</p>
-                                }
-
-                               
-                                <div class="d-flex flex-column gap-2 mt-3">
-                                    @if (tildeling?.Status == Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Requested)
-                                    {
-                                        <span class="status-merkelapp status-vurderes">
-                                            Status: Til vurdering
-                                        </span>
-                                        <div class="knapperad">
-                                        <form asp-area=""
-                                              asp-controller="OffentligAktor"
-                                              asp-action="TildelRessurs"
-                                              method="post">
-
-                                            @Html.AntiForgeryToken()
-
-                                            <input type="hidden"
-                                                   name="assignmentId"
-                                                   value="@tildeling.Id"/>
-
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-success">
-                                                Tildel ressurs
-                                            </button>
-                                        </form>
-                                        
-                                        <form asp-area=""
-                                              asp-controller="OffentligAktor"
-                                              asp-action="AvslaRessurs"
-                                              method="post">
-
-                                            @Html.AntiForgeryToken()
-
-                                            <input type="hidden"
-                                                   name="assignmentId"
-                                                   value="@tildeling.Id" />
-
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('Avslå denne ressursen?');">
-                                                Avslå ressurs
-                                            </button>
-                                        </form>
-                                        </div>
-
-                                    }
-                                    
-                                    @if (tildeling?.Status ==
-                                         Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned)
-                                    {
-                                        <span class="status-merkelapp status-tildelt">
-                                            Status: Tildelt
-                                        </span>
-                                        
-                                        <form asp-area=""
-                                              asp-controller="OffentligAktor"
-                                              asp-action="FrigiRessurs"
-                                              method="post">
-
-                                            @Html.AntiForgeryToken()
-
-                                            <input type="hidden"
-                                                   name="assignmentId"
-                                                   value="@tildeling.Id" />
-
-                                            <button type="submit"
-                                                     class="btn btn-sm btn-outline-secondary w-100"
-                                                     onclick="return confirm('Frigi denne ressursen?');">
-                                                Frigi ressurs
-                                            </button>
-                                        </form>
-
-                                    }
-
-                                    @if (tildeling == null && !ressursOpptatt)
-                                    {
-                                        <form asp-area=""
-                                              asp-controller="OffentligAktor"
-                                              asp-action="VurderRessurs"
-                                              method="post">
-
-                                            @Html.AntiForgeryToken()
-
-                                            <input type="hidden"
-                                                   name="needId"
-                                                   value="@treff.NeedId"/>
-
-                                            <input type="hidden"
-                                                   name="resourceId"
-                                                   value="@treff.ResourceId"/>
-
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-primary w-100">
-                                                Vurder ressurs
-                                            </button>
-                                        </form>
-                                    }
-
-                                    <a class="se-behov-lenke"
-                                       asp-area="Offentlig"
-                                       asp-controller="Need"
-                                       asp-action="Edit"
-                                       asp-route-id="@treff.NeedId">
-                                        Se og endre behov
-                                    </a>
-
-                                </div>
-
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p>
-                            Ingen forslag funnet. Forslag krever et aktivt behov
-                            og en tilgjengelig ressurs i tilsvarende kategori.
-                        </p>
-                    }
-                </div>
-
+                <p id="kartmelding" class="visually-hidden" role="status"></p>
             </section>
         </div>
     </div>
@@ -735,7 +306,7 @@
     <dialog id="oversiktDialog"
             class="oversikt-dialog"
             aria-labelledby="oversiktListeTittel"
-            data-endre-krise="@Url.Action("Edit", "Crisis", new { area = "Offentlig" })"
+            data-hendelsesoversikt="@Url.RouteUrl("crisis-overview")"
             data-endre-behov="@Url.Action("Edit", "Need", new { area = "Offentlig" })">
 
         <div class="oversikt-dialogtopp">
@@ -767,6 +338,225 @@
            aria-live="polite"></p>
 
         <div id="oversiktListe" class="oversikt-tabellomrade"></div>
+        <div class="oversikt-tabellomrade pt-3" data-oversikt-panel="oppfolging" hidden>
+
+
+            @if (ViewBag.AktiveBehovListe != null &&
+                 ViewBag.AktiveBehovListe.Count > 0)
+            {
+                @foreach (var behov in ViewBag.AktiveBehovListe)
+                {
+                    <div class="oppfolging-kort" data-prioritet="@behov.Priority">
+                        <strong>@behov.Name</strong>
+                        <p>Type: @behov.Type</p>
+                        <p>Prioritet: @behov.Priority</p>
+                        <p>Status: @behov.Status</p>
+
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            <a class="btn btn-sm btn-outline-primary"
+                               asp-area="Offentlig"
+                               asp-controller="Need"
+                               asp-action="Edit"
+                               asp-route-id="@behov.Id">
+                                Endre behov
+                            </a>
+
+                            @if (behov.CrisisId != null)
+                            {
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-area="Offentlig"
+                                   asp-controller="Crisis"
+                                   asp-action="Edit"
+                                   asp-route-id="@behov.CrisisId">
+                                    Endre tilhørende krise
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Ingen aktive behov registrert.</p>
+            }
+        </div>
+        <div class="oversikt-tabellomrade pt-3" data-oversikt-panel="treff" hidden>
+
+
+            @{
+                var kategorier = Model.ToDictionary(r => r.ResourceId, r => r.Category?.Name);
+                var matchForslag = ViewBag.MatchForslag as
+                                       List<Totalforsvaret.Areas.Offentlig.ViewModels.MatchSuggestionViewModel>
+                                   ?? new();
+                var aktiveTildelinger = ViewBag.AktiveTildelinger as
+                                            List<Totalforsvaret.Areas.Offentlig.Models.ResourceAssignment>
+                                        ?? new();
+            }
+
+            @if (matchForslag.Count > 0)
+            {
+                <p class="mb-3">
+                    Kategoribaserte forslag som må vurderes før tildeling.
+                </p>
+
+                <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
+                    <label>
+                        Søk
+                        <input type="search" class="form-control" data-treff-sok placeholder="Søk på ressurs eller behov" />
+                    </label>
+                    <label>
+                        Ressurstype
+                        <select class="form-select" data-treff-type>
+                            <option value="">Alle</option>
+                            <option value="Vehicles">Kjøretøy</option>
+                            <option value="Equipment">Utstyr</option>
+                        </select>
+                    </label>
+                </div>
+                <p data-treff-tom role="status" hidden>Ingen treff med disse filtrene.</p>
+
+                @foreach (var treff in matchForslag)
+                {
+                    var tildeling = aktiveTildelinger.FirstOrDefault(a =>
+                        a.NeedId == treff.NeedId &&
+                        a.ResourceId == treff.ResourceId);
+                    var ressursOpptatt = aktiveTildelinger.Any(a =>
+                        a.ResourceId == treff.ResourceId);
+                    <div class="oppfolging-kort" data-treff-rad data-treff-type="@kategorier.GetValueOrDefault(treff.ResourceId)"
+                         data-treff-sok="@treff.ResourceName @treff.NeedName">
+                        <strong>@treff.NeedName</strong>
+                        <p>Ressurs: @treff.ResourceName</p>
+
+                        @if (treff.DistanceKm.HasValue)
+                        {
+                            <p>
+                                Luftlinje:
+                                @(treff.DistanceKm.Value.ToString("0.0")) km
+                            </p>
+                        }
+                        else
+                        {
+                            <p>Avstand ikke tilgjengelig.</p>
+                        }
+
+
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                            @if (tildeling?.Status == Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Requested)
+                            {
+                                <span class="status-merkelapp status-vurderes">
+                                    Status: Til vurdering
+                                </span>
+                                <div class="knapperad">
+                                <form asp-area=""
+                                      asp-controller="OffentligAktor"
+                                      asp-action="TildelRessurs"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="assignmentId"
+                                           value="@tildeling.Id"/>
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-primary">
+                                        Tildel ressurs
+                                    </button>
+                                </form>
+
+                                <form asp-area=""
+                                      asp-controller="OffentligAktor"
+                                      asp-action="AvslaRessurs"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="assignmentId"
+                                           value="@tildeling.Id" />
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-primary"
+                                            onclick="return confirm('Avslå denne ressursen?');">
+                                        Avslå ressurs
+                                    </button>
+                                </form>
+                                </div>
+
+                            }
+
+                            @if (tildeling?.Status ==
+                                 Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned)
+                            {
+                                <span class="status-merkelapp status-tildelt">
+                                    Status: Tildelt
+                                </span>
+
+                                <form asp-area=""
+                                      asp-controller="OffentligAktor"
+                                      asp-action="FrigiRessurs"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="assignmentId"
+                                           value="@tildeling.Id" />
+
+                                    <button type="submit"
+                                             class="btn btn-sm btn-outline-primary"
+                                             onclick="return confirm('Frigi denne ressursen?');">
+                                        Frigi ressurs
+                                    </button>
+                                </form>
+
+                            }
+
+                            @if (tildeling == null && !ressursOpptatt)
+                            {
+                                <form asp-area=""
+                                      asp-controller="OffentligAktor"
+                                      asp-action="VurderRessurs"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="needId"
+                                           value="@treff.NeedId"/>
+
+                                    <input type="hidden"
+                                           name="resourceId"
+                                           value="@treff.ResourceId"/>
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-primary">
+                                        Vurder ressurs
+                                    </button>
+                                </form>
+                            }
+
+                            <a class="btn btn-sm btn-outline-primary"
+                               asp-area="Offentlig"
+                               asp-controller="Need"
+                               asp-action="Edit"
+                               asp-route-id="@treff.NeedId">
+                                Se og endre behov
+                            </a>
+
+                        </div>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <p>
+                    Ingen forslag funnet. Forslag krever et aktivt behov
+                    og en tilgjengelig ressurs i tilsvarende kategori.
+                </p>
+            }
+        </div>
     </dialog>
     <!-- Ressursliste som bare vises ved utskrift -->
     <section class="print-bare print-ressurser" aria-label="Ressursliste for utskrift">
@@ -824,56 +614,6 @@
             </tbody>
         </table>
     </section>
-    <form id="avsluttKriseSkjema"
-          asp-area="Offentlig"
-          asp-controller="Crisis"
-          asp-action="Avslutt"
-          method="post"
-          hidden>
-        <input type="hidden" name="id" />
-    </form>
-    <!-- Koordinering -->
-    <section class="koordinering-panel"
-             aria-labelledby="koordinering-tittel">
-
-        <h2 id="koordinering-tittel">Koordinering</h2>
-
-        @if (ViewBag.SisteTildelinger != null &&
-             ViewBag.SisteTildelinger.Count > 0)
-        {
-            <ul class="koordinering-liste">
-                @foreach (var tildeling in ViewBag.SisteTildelinger)
-                {
-                    string statusKode = tildeling.status.ToString();
-                    string statusTekst = statusKode switch
-                    {
-                        "Requested" => "Til vurdering",
-                        "Assigned" => "Tildelt",
-                        "Released" => "Frigitt",
-                        "Rejected" => "Avslått",
-                        _ => statusKode
-                    };
-
-                    <li>
-                        <strong>@tildeling.ressurs</strong>
-                        til behovet
-                        <strong>@tildeling.behov</strong>
-                        <span>
-                            @statusTekst ·
-                            @(((DateTime)tildeling.tidspunkt).ToLocalTime().ToString("dd.MM.yyyy HH:mm"))
-                        </span>
-                    </li>
-                }
-            </ul>
-        }
-        else
-        {
-            <p>
-                Ingen tildelinger ennå.
-                Her vises de siste avklaringene mellom behov og ressurser.
-            </p>
-        }
-    </section>
 
 </div>
 }
@@ -904,7 +644,7 @@ else
 
     <script src="~/js/oversikt-lister.js"
             asp-append-version="true"></script>
-    
+
     <script src="~/js/offentlig-scroll.js"
             asp-append-version="true"></script>
 

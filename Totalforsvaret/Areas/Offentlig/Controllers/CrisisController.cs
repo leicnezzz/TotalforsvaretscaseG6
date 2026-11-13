@@ -1,3 +1,4 @@
+using Totalforsvaret.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,12 @@ public class CrisisController : Controller
     {
         var crises = await _context.Crises
             .AsNoTracking()
-            .OrderByDescending(crisis => crisis.StartTime)
+            .OrderByDescending(crisis =>
+                crisis.Severity == "Kritisk" ? 4 :
+                crisis.Severity == "Høy" ? 3 :
+                crisis.Severity == "Middels" ? 2 :
+                crisis.Severity == "Lav" ? 1 : 0)
+            .ThenByDescending(crisis => crisis.StartTime)
             .ThenByDescending(crisis => crisis.Id)
             .ToListAsync();
 
@@ -115,21 +121,10 @@ public class CrisisController : Controller
             ModelState.AddModelError(
                 nameof(crisis.StartTime),
                 "Velg et starttidspunkt.");
-        // Kontrollerer at kartkoordinatene er gyldige.
-        if (crisis.Latitude.HasValue &&
-            (crisis.Latitude < -90 || crisis.Latitude > 90))
+        if (crisis.Latitude is not double latitude || !double.IsFinite(latitude) || Math.Abs(latitude) > 90 ||
+            crisis.Longitude is not double longitude || !double.IsFinite(longitude) || Math.Abs(longitude) > 180)
         {
-            ModelState.AddModelError(
-                nameof(crisis.Latitude),
-                "Ugyldig breddegrad.");
-        }
-
-        if (crisis.Longitude.HasValue &&
-            (crisis.Longitude < -180 || crisis.Longitude > 180))
-        {
-            ModelState.AddModelError(
-                nameof(crisis.Longitude),
-                "Ugyldig lengdegrad.");
+            ModelState.AddModelError(nameof(crisis.Latitude), "Velg en gyldig plassering på kartet.");
         }
 
         var gyldigeStatuser = new[]
@@ -151,8 +146,7 @@ public class CrisisController : Controller
         _context.Crises.Add(crisis);
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(
-            "Index", "OffentligAktor", new { area = "" });
+        return LocalRedirect(this.OversiktUrl(openCrisisId: crisis.Id));
     }
     [HttpGet]
 public async Task<IActionResult> Edit(int id)
@@ -294,8 +288,7 @@ public async Task<IActionResult> Edit(
 
     await _context.SaveChangesAsync();
 
-    return RedirectToAction(
-        "Index", "OffentligAktor", new { area = "" });
+    return LocalRedirect(this.OversiktUrl());
 }
 [HttpPost]
 [ValidateAntiForgeryToken]
@@ -319,10 +312,7 @@ public async Task<IActionResult> Delete(int id)
     // Én lagring gjør slettingen samlet i en transaksjon.
     await _context.SaveChangesAsync();
 
-    return RedirectToAction(
-        "Index",
-        "OffentligAktor",
-        new { area = "" });
+    return LocalRedirect(this.OversiktUrl());
 }
 [HttpPost]
 [ValidateAntiForgeryToken]
@@ -340,7 +330,6 @@ public async Task<IActionResult> Avslutt(int id)
         .ExecuteUpdateAsync(oppdatering => oppdatering
             .SetProperty(c => c.Status, "Avsluttet"));
 
-    return RedirectToAction(
-        "Index", "OffentligAktor", new { area = "" });
+    return LocalRedirect(this.OversiktUrl());
 }
 }

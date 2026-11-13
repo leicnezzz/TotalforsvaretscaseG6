@@ -8,10 +8,10 @@
 @inject AppDbContext Db
 
 @{
-    var controller =
-        ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
-    var action =
-        ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var eventQuery = Microsoft.AspNetCore.Http.QueryString.Create(
+        Context.Request.Query["hendelser"].Select(id => new KeyValuePair<string, string?>("hendelser", id))).ToString();
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
     var isMatch = ViewContext.RouteData.Values["match"] is true;
     var isResourcePage =
@@ -27,8 +27,6 @@
         controller.Equals("Crisis", StringComparison.OrdinalIgnoreCase);
     var isProfile =
         controller.Equals("Profile", StringComparison.OrdinalIgnoreCase);
-    var isInbox =
-        controller.Equals("Inbox", StringComparison.OrdinalIgnoreCase);
 
     var account = await UserManager.GetUserAsync(User);
     var displayName = account?.Navn
@@ -50,37 +48,14 @@
         <div class="nav-links">
             <a class="@(isOverview ? "active" : "")"
                aria-current="@(isOverview ? "page" : null)"
-               asp-area=""
-               asp-controller="OffentligAktor"
-               asp-action="Index">
+               href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + eventQuery)">
                 Oversikt
             </a>
 
-            <a class="@(isNeedPage ? "active" : "")"
-               aria-current="@(isNeedPage ? "page" : null)"
-               asp-area="Offentlig"
-               asp-controller="Need"
-               asp-action="CreateMultiple">
-                Registrer behov
-            </a>
-
-            <a class="@(isCrisisPage ? "active" : "")"
-               aria-current="@(isCrisisPage ? "page" : null)"
-               asp-route="crisis-overview">
-                Hendelser
-            </a>
-
-            <a asp-route="offentlig-match"
-               class="@(isMatch ? "active" : "")"
-               aria-current="@(isMatch ? "page" : null)">
-                Match
-            </a>
-
-            <a asp-route="ressursregistrering"
-               class="@(isResourcePage ? "active" : "")"
-               aria-current="@(isResourcePage ? "page" : null)">
-                Registrer ressurs
-            </a>
+            <a href="@(Url.RouteUrl("crisis-overview") + eventQuery)" class="@(isCrisisPage ? "active" : "")" aria-current="@(isCrisisPage ? "page" : null)">Hendelser</a>
+            <a asp-route="behov" class="@(isNeedPage ? "active" : "")" aria-current="@(isNeedPage ? "page" : null)">Registrer behov</a>
+            <a asp-route="ressursregistrering" class="@(isResourcePage ? "active" : "")" aria-current="@(isResourcePage ? "page" : null)">Registrer ressurs</a>
+            <a asp-route="offentlig-match" class="@(isMatch ? "active" : "")" aria-current="@(isMatch ? "page" : null)">Match</a>
         </div>
 
         @if (isOverview && action.Equals(
@@ -90,22 +65,6 @@
         }
 
         <div class="account-actions">
-            <a class="inbox-icon-link"
-               asp-area="Offentlig"
-               asp-controller="Inbox"
-               asp-action="Index"
-               aria-label="Åpne innboksen"
-               aria-current="@(isInbox ? "page" : null)">
-                <svg class="bell"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     aria-hidden="true">
-                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
-                    <path d="M10 21h4" />
-                </svg>
-            </a>
-
             <details class="account-menu">
                 <summary class="account-link @(isProfile ? "active" : "")"
                          aria-label="Brukermeny for @displayName">
@@ -133,6 +92,7 @@
                 </summary>
 
                 <ul class="account-menu-list">
+                    <li><a asp-area="" asp-controller="Home" asp-action="Privacy">Personvern</a></li>
                     <li>
                         <a asp-area="Offentlig"
                            asp-controller="Profile"

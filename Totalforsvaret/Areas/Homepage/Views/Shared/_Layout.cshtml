@@ -80,16 +80,16 @@
 </header>
     }
 <div class="@(ViewData["FullWidth"] is true ? "container-fluid" : "container")">
-    <main role="main" class="pb-3">
+    <main role="main" class="@(ViewData["HideFooter"] is true ? null : "pb-3")">
         @RenderBody()
     </main>
 </div>
 
-@if (ViewData["RegistrationFooter"] is true)
+@if (ViewData["HideFooter"] is not true && ViewData["RegistrationFooter"] is true)
 {
     <partial name="/Areas/Homepage/Views/Shared/_RegistrationFooter.cshtml" />
 }
-else
+else if (ViewData["HideFooter"] is not true)
 {
     <footer class="border-top footer text-muted">
         <div class="container">
@@ -101,22 +101,13 @@ else
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Totalforsvaret -
-            <a asp-area=""
-               asp-controller="Home"
-               asp-action="Privacy">
-                Privacy
-            </a>
-        </div>
-    </footer>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="~/js/map-zoom.js" asp-append-version="true"></script>
+
+    @if (isOffentligPage)
+    {
+        <script src="~/js/offentlig-navigasjon.js" asp-append-version="true"></script>
+    }
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

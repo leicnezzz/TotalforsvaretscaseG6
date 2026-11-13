@@ -1,6 +1,16 @@
 (() => {
     'use strict';
 
+    const varsel = document.querySelector('[data-oversikt-varsel]');
+    if (varsel) {
+        const lukk = () => {
+            clearTimeout(timer);
+            varsel.hidden = true;
+        };
+        const timer = setTimeout(lukk, 3000);
+        varsel.querySelector('.btn-close').addEventListener('click', lukk);
+    }
+
     const dialog = document.getElementById('oversiktDialog');
     const dataElement = document.getElementById('oversiktListeData');
 
@@ -13,7 +23,18 @@
     const liste = document.getElementById('oversiktListe');
     const antall = document.getElementById('oversiktAntall');
 
+    const filtre = dialog.querySelector('.oversikt-filtre');
+    const paneler = [...dialog.querySelectorAll('[data-oversikt-panel]')];
+
+    const markerteHendelser = new Set();
     let visning = 'aktive';
+
+    function beholdHendelser(url) {
+        for (const id of new URLSearchParams(window.location.search).getAll('hendelser')) {
+            url.searchParams.append('hendelser', id);
+        }
+        return url.href;
+    }
 
     // Samler eksisterende transportnavn under samme filter.
     function behovstype(type) {
@@ -226,12 +247,6 @@
                             }
                         })
                     );
-
-                    document.getElementById('offentligKart')
-                        .scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
                 });
 
                 handlinger.append(kartknapp);
@@ -250,7 +265,7 @@
                 );
 
                 url.searchParams.set('id', String(item.id));
-                lenke.href = url.href;
+                lenke.href = beholdHendelser(url);
 
                 handlinger.append(lenke);
             }
@@ -306,6 +321,21 @@
             return;
         }
 
+        const apneMarkerte = element('button', 'Åpne markerte hendelser', 'btn btn-primary mb-3');
+        apneMarkerte.type = 'button';
+        apneMarkerte.disabled = markerteHendelser.size === 0;
+        apneMarkerte.addEventListener('click', () => {
+            dialog.close();
+            document.dispatchEvent(new CustomEvent('oversikt:vis-pa-kart', {
+                detail: { type: 'kriser', ids: [...markerteHendelser] }
+            }));
+        });
+        const hendelsesoversikt = element('a', 'Gå til Hendelser', 'btn btn-outline-secondary');
+        hendelsesoversikt.href = beholdHendelser(new URL(dialog.dataset.hendelsesoversikt, window.location.href));
+        const valgHandlinger = element('div', null, 'd-flex flex-wrap gap-2 mb-3');
+        apneMarkerte.classList.remove('mb-3');
+        valgHandlinger.append(apneMarkerte, hendelsesoversikt);
+        liste.append(valgHandlinger);
         const tabell = element(
             'table',
             null,
@@ -364,11 +394,10 @@
                 krise.beskrivelse
             ];
 
-            for (const verdi of verdier) {
-                rad.append(element(
-                    'td',
-                    verdi || 'Ikke oppgitt'
-                ));
+            for (const [index, verdi] of verdier.entries()) {
+                const celle = element('td', verdi || 'Ikke oppgitt');
+                celle.prepend(element('span', kolonner[index], 'oversikt-mobilfelt'));
+                rad.append(celle);
             }
 
             const celle = element('td');
@@ -378,57 +407,25 @@
                 'oversikt-radhandlinger'
             );
 
-            // Vis krisen på kartet.
-            const kartknapp = element(
-                'button',
-                'Vis på kart',
-                'btn btn-sm btn-outline-secondary'
-            );
-
+            const kartknapp = element('button', 'Åpne på kart', 'btn btn-sm btn-outline-secondary');
             kartknapp.type = 'button';
-            kartknapp.disabled = !gyldigPosisjon(krise);
-
-            if (kartknapp.disabled) {
-                kartknapp.title =
-                    'Hendelsen mangler gyldige kartkoordinater.';;
-            }
-
             kartknapp.addEventListener('click', () => {
                 dialog.close();
-
-                document.dispatchEvent(
-                    new CustomEvent('oversikt:vis-pa-kart', {
-                        detail: {
-                            type: 'kriser',
-                            id: krise.id
-                        }
-                    })
-                );
-
-                document.getElementById('offentligKart')
-                    .scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
+                document.dispatchEvent(new CustomEvent('oversikt:vis-pa-kart', {
+                    detail: { type: 'kriser', id: krise.id }
+                }));
             });
+            const merk = element('input');
+            merk.type = 'checkbox';
+            merk.setAttribute('aria-label', 'Marker ' + krise.navn);
+            merk.checked = markerteHendelser.has(krise.id);
+            merk.addEventListener('change', () => {
+                if (merk.checked) markerteHendelser.add(krise.id);
+                else markerteHendelser.delete(krise.id);
+                apneMarkerte.disabled = markerteHendelser.size === 0;
+            });
+            handlinger.append(merk, kartknapp);
 
-            handlinger.append(kartknapp);
-
-            // Åpne eksisterende redigeringsskjema.
-            const endre = element(
-                'a',
-                'Endre henelse',
-                'btn btn-sm btn-outline-primary'
-            );
-
-            const url = new URL(
-                dialog.dataset.endreKrise,
-                window.location.origin
-            );
-
-            url.searchParams.set('id', String(krise.id));
-            endre.href = url.href;
-            handlinger.append(endre);
             celle.append(handlinger);
             rad.append(celle);
             kropp.append(rad);
@@ -439,6 +436,7 @@
     }
 
     function apneKriser() {
+        markerteHendelser.clear();
         visning = 'kriser';
         tittel.textContent = 'Hendelser';
 
@@ -466,6 +464,18 @@
         dialog.showModal();
     }
     function apne(type) {
+        const panel = paneler.find(item => item.dataset.oversiktPanel === type);
+        for (const item of paneler) item.hidden = item !== panel;
+        filtre.hidden = Boolean(panel);
+        liste.hidden = Boolean(panel);
+        antall.hidden = Boolean(panel);
+
+        if (panel) {
+            tittel.textContent = type === 'treff' ? 'Foreslåtte treff' : 'Krever oppfølging';
+            dialog.showModal();
+            return;
+        }
+
         if (type === 'kriser') {
             apneKriser();
             return;
@@ -512,6 +522,38 @@
                 apne(kort.dataset.oversiktListe);
             });
         });
+
+    const treffPanel = paneler.find(item => item.dataset.oversiktPanel === 'treff');
+    const treffSok = treffPanel.querySelector('input[data-treff-sok]');
+    const treffType = treffPanel.querySelector('select[data-treff-type]');
+    const treffRader = [...treffPanel.querySelectorAll('[data-treff-rad]')];
+    const treffTom = treffPanel.querySelector('[data-treff-tom]');
+
+    function filtrerTreff() {
+        const tekst = treffSok.value.trim().toLocaleLowerCase('nb-NO');
+        for (const rad of treffRader) {
+            rad.hidden = (treffType.value !== '' && rad.dataset.treffType !== treffType.value) ||
+                !rad.dataset.treffSok.toLocaleLowerCase('nb-NO').includes(tekst);
+        }
+        treffTom.hidden = treffRader.some(rad => !rad.hidden);
+    }
+
+    treffSok?.addEventListener('input', filtrerTreff);
+    treffType?.addEventListener('change', filtrerTreff);
+
+    const nokkel = 'offentligOversiktTreff';
+    treffPanel.addEventListener('submit', event => {
+        if (event.defaultPrevented) return;
+        try { sessionStorage.setItem(nokkel, String(treffPanel.scrollTop)); } catch { /* lagring utilgjengelig */ }
+    });
+    try {
+        const posisjon = sessionStorage.getItem(nokkel);
+        if (posisjon !== null) {
+            sessionStorage.removeItem(nokkel);
+            apne('treff');
+            treffPanel.scrollTop = Number(posisjon);
+        }
+    } catch { /* lagring utilgjengelig */ }
 
     typevalg.addEventListener('change', tegnListe);
     sortering.addEventListener('change', tegnListe);

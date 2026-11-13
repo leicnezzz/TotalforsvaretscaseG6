@@ -9,6 +9,10 @@
     var completedItems =
         ViewData["CompletedChecklistItems"] as HashSet<string>
         ?? new HashSet<string>();
+    var matOgVann = new[] { "water", "stored-food", "cooking-equipment", "fuel", "pet-supplies", "cash" };
+    var varmeOgLys = new[] { "warm-clothes", "matches", "firewood", "heater", "overnight", "flashlights" };
+    var informasjon = new[] { "radio", "batteries", "phone-list" };
+    var legemidler = new[] { "medicine", "iodine", "hygiene" };
 }
 
 <!DOCTYPE html>
@@ -135,7 +139,7 @@
             </header>
             <div class="checklist-grid">
                 <details class="preparedness-card" name="sjekkliste">
-                    <summary>Mat og vann</summary>
+                    <summary>Mat og vann <span class="checklist-count">@matOgVann.Count(completedItems.Contains) av @matOgVann.Length</span></summary>
                     <ul>
                         <li>
                             <form asp-area="Privat" asp-controller="Egenberedskap"
@@ -225,7 +229,7 @@
                 </details>
                 
                 <details class="preparedness-card" name="sjekkliste">
-                    <summary>Varme og lys</summary>
+                    <summary>Varme og lys <span class="checklist-count">@varmeOgLys.Count(completedItems.Contains) av @varmeOgLys.Length</span></summary>
                     <ul>
                         <li>
                             <form asp-area="Privat" asp-controller="Egenberedskap"
@@ -315,7 +319,7 @@
                 </details>
 
                 <details class="preparedness-card" name="sjekkliste">
-                <summary>Informasjon</summary>
+                    <summary>Informasjon <span class="checklist-count">@informasjon.Count(completedItems.Contains) av @informasjon.Length</span></summary>
                     <ul>
                         <li>
                             <form asp-area="Privat" asp-controller="Egenberedskap"
@@ -363,7 +367,7 @@
                 </details>
 
                 <details class="preparedness-card" name="sjekkliste">
-                    <summary>Legemidler og hygiene</summary>
+                    <summary>Legemidler og hygiene <span class="checklist-count">@legemidler.Count(completedItems.Contains) av @legemidler.Length</span></summary>
                     <ul>
                         <li>
                             <form asp-area="Privat" asp-controller="Egenberedskap"
@@ -512,7 +516,6 @@
 </script>
    <script src="~/js/tilfluktsrom-kart.js" asp-append-version="true"></script>
    <script>
-   
     // Siden lastes på nytt ved hver avkryssing, så vi husker hvilken kategori som var åpen
     document.querySelectorAll('.preparedness-card').forEach((kort, i) => {
         kort.open = sessionStorage.getItem('apenKategori') === String(i);

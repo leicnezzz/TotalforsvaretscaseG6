@@ -16,27 +16,6 @@ body {
     padding: 28px 0 64px;
 }
 
-.page-header {
-    width: 100%;
-    margin: 0 auto 28px;
-}
-
-    .page-header h1 {
-        margin: 0 0 8px;
-        color: #2e6840;
-        font-family: "Roboto", Arial, sans-serif;
-        font-size: clamp(27px, 3vw, 36px);
-        font-weight: 700;
-        line-height: 1.2;
-    }
-
-.page-header p {
-    margin: 0;
-    color: #59635b;
-    font-size: 1rem;
-    line-height: 1.5;
-}
-
 .contents-card {
     display: flex;
     width: 100%;
@@ -352,10 +331,6 @@ body {
     .beredskap-container {
         width: min(100% - 32px, 520px);
         padding: 24px 0 48px;
-    }
-
-    .page-header {
-        margin-bottom: 24px;
     }
 
     .contents-card {

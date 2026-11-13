@@ -17,48 +17,53 @@
     <link rel="stylesheet" href="~/css/site-motion.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
     <link rel="stylesheet" href="~/css/resource-wizard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/paratus-forside.css" asp-append-version="true" />
     <script src="~/js/help-dismiss.js" asp-append-version="true" defer></script>
 </head>
 <body class="public-home">
-    <header class="public-header">
-        <nav class="public-nav nav-with-brand" aria-label="Hovedmeny">
-            <div class="public-nav-pages">
-                <a class="active" aria-current="page" asp-area="" asp-controller="Home" asp-action="Index">Hovedside</a>
-                <a href="#registrer-ressurs">Registrer ressurs</a>
-               <a asp-area=""
-   asp-controller="Account"
-   asp-action="LoginOffentlig">
-    Offentlig aktør
-</a>
-            </div>
-            <a class="nav-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                <img src="~/images/login/image-1-2.png" alt="Paratus" />
-            </a>
-            <div class="public-nav-account">
-                @if (User.Identity?.IsAuthenticated == true)
-                {
-                    @if (User.HasClaim("Brukertype", "Privat"))
-                    {
-                        <a class="nav-button nav-button-primary" asp-area="Privat" asp-controller="Dashboard" asp-action="Index">Min side</a>
-                    }
-                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
-                        <button class="nav-button nav-button-outline" type="submit">Logg ut</button>
-                    </form>
-                }
-                else
-                {
-                    <a class="nav-button nav-button-primary" asp-area="" asp-controller="Account" asp-action="Login">Logg inn</a>
-                    <a class="nav-button nav-button-outline" asp-area="" asp-controller="Account" asp-action="Register">Opprett bruker</a>
-                }
-            </div>
-        </nav>
-        <div class="public-section-bar" aria-hidden="true"></div>
-    </header>
-
     <main>
-        <div class="public-first-screen">
-            <div class="public-video-hero" aria-hidden="true">
-                <img class="public-hero-poster" src="https://i.ytimg.com/vi/pd6goYLB3Gs/maxresdefault.jpg" alt="" />
+        <div class="paratus-first-screen">
+            <header class="public-header">
+                <nav class="public-nav nav-with-brand" aria-label="Hovedmeny">
+                    <a class="nav-brand paratus-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        <span class="paratus-brand-mark" aria-hidden="true">P</span>
+                        <span class="paratus-brand-text">
+                            <strong>PARATUS</strong>
+                            <small>Mennesket som ressurs</small>
+                        </span>
+                    </a>
+                    <div class="public-nav-pages">
+                        <a href="#om-paratus">Om Paratus</a>
+                        <a href="#slik-fungerer-det">Slik fungerer det</a>
+                        <a href="#kontakt">Kontaktinformasjon</a>
+                        <a href="#registrer-ressurs">Registrer ressurs</a>
+                    </div>
+                    <div class="public-nav-account">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            @if (User.HasClaim("Brukertype", "Privat"))
+                            {
+                                <a class="nav-button nav-button-primary" asp-area="Privat" asp-controller="Dashboard" asp-action="Index">Min side</a>
+                            }
+
+                            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                                <button class="nav-button nav-button-outline" type="submit">Logg ut</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="nav-button nav-button-primary" asp-area="" asp-controller="Account" asp-action="Login">Logg inn</a>
+                            <a class="nav-button nav-button-outline" asp-area="" asp-controller="Account" asp-action="Register">Opprett bruker</a>
+                        }
+                    </div>
+                </nav>
+                <div class="public-section-bar">
+                    <span>Sammen om beredskapen</span>
+                    <span>Lokale ressurser. Felles trygghet.</span>
+                </div>
+            </header>
+            <div class="public-video-hero">
+                <img class="public-hero-poster" src="https://i.ytimg.com/vi/pd6goYLB3Gs/maxresdefault.jpg" alt=""/>
                 <div class="public-hero-video" aria-hidden="true" inert>
                     <iframe id="public-background-video"
                             data-video-src="https://www.youtube-nocookie.com/embed/pd6goYLB3Gs?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=pd6goYLB3Gs&amp;controls=0&amp;playsinline=1&amp;disablekb=1&amp;fs=0"
@@ -67,20 +72,59 @@
                             referrerpolicy="strict-origin-when-cross-origin"
                             tabindex="-1"></iframe>
                 </div>
+                @* Hvit stripe nederst i hero-delen. Den dekker også kanten av videoen der YouTube viser logoen sin. *@
+                <div class="paratus-hero-strip">
+                    <p>Beredskap begynner med oss.</p>
+                    <p class="paratus-hero-strip-brand"><span>Paratus</span> / Mennesket som ressurs</p>
+                </div>
+                @* Hero-tekst som ligger over videoen. Det mørke laget kommer fra .public-video-hero::after. *@
+                <div class="paratus-hero-text">
+                    <p class="paratus-hero-eyebrow">Forberedt. Tilgjengelig. Sammen.</p>
+                    <h1>Når noe skjer,<br/>står vi <span>sammen.</span></h1>
+                    <p class="paratus-hero-lead">Det viktigste vi har, er hverandre.</p>
+                </div>
+            </div>
+        </div>
+        @* Informasjonsseksjon med tre kort. Menyen lenker hit via id-ene. *@
+        <section id="om-paratus" class="public-content paratus-info" aria-labelledby="paratus-info-title">
+            <p class="paratus-eyebrow">Sammen om beredskapen</p>
+            <div class="public-registration-intro paratus-intro">
+                <h2 id="paratus-info-title">Et fellesskap som er forberedt.</h2>
             </div>
 
-            <section class="public-purpose-area" aria-labelledby="public-purpose-title">
-                <div class="public-purpose">
-                    <h1 id="public-purpose-title">Paratus styrker beredskapen der du bor</h1>
-                    <p>Med Paratus kan du styrke egenberedskapen din og registrere utstyr eller kjøretøy som beredskapsaktører kan be om å få bruke ved en krise. Det gir dem oversikt over lokale ressurser, slik at de raskere kan hjelpe dem som trenger det.</p>
-                </div>
+            <div class="paratus-cards">
+                <article class="paratus-card">
+                    <p class="paratus-card-label">01 / Om Paratus</p>
+                    <h3>Mennesket som ressurs.</h3>
+                    <p class="paratus-card-text">Paratus kobler lokale ressurser med samfunnets behov, så innbyggere, frivillige, næringsliv og offentlige aktører får bedre oversikt når noe skjer.</p>
+                </article>
 
-                <a class="public-register-card public-button public-button-outline" href="#registrer-ressurs">
-                    <span>Registrer ressurs</span><span aria-hidden="true">↓</span>
-                </a>
-            </section>
-        </div>
+                <article id="slik-fungerer-det" class="paratus-card">
+                    <p class="paratus-card-label">02 / Slik fungerer det</p>
+                    <h3>Fra behov til bidrag.</h3>
+                    <ol class="paratus-steps">
+                        <li><strong>Velg din rolle</strong></li>
+                        <li><strong>Registrer behov eller ressurser</strong></li>
+                        <li><strong>Avklar og koordiner</strong></li>
+                    </ol>
+                    <a class="public-button public-button-outline paratus-card-action" asp-area=""
+                       asp-controller="Account" asp-action="Register">
+                        <span>Kom i gang</span><span aria-hidden="true">→</span>
+                    </a>
+                </article>
 
+                <article id="kontakt" class="paratus-card">
+                    <p class="paratus-card-label">03 / Kontaktinformasjon</p>
+                    <h3>Finn riktig kontaktpunkt.</h3>
+                    <p class="paratus-card-text">Spørsmål om et behov, krise eller en ressurs? Ta kontakt med prosjektgruppen.</p>
+                    <div class="paratus-contact-box">
+                        <strong>Kontakt med prosjektgruppen</strong>
+                        <p class="paratus-card-text">Kontaktopplysninger for Paratus-prosjektet legges til her når de er
+                            klare.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
         <div class="public-content">
             <div class="public-home-incident">
                 <partial name="/Areas/Homepage/Views/Shared/_IncidentAlert.cshtml" />
@@ -100,7 +144,7 @@
         <div class="public-footer-content">
             <h2>Tusen takk for din hjelp</h2>
             <p>Vi ønsker å rette en stor takk til alle som bidrar til å styrke vår felles beredskap. Enten du stiller ressurser til disposisjon, deler viktig informasjon eller på andre måter engasjerer deg, er ditt bidrag verdifullt.</p>
-            <p>God beredskap handler om samarbeid, tillit og viljen til å stille opp for hverandre. Ved å samle mennesker, organisasjoner og tilgjengelige ressurser på ett sted, legger vi til rette for bedre samhandling og raskere respons når det virkelig gjelder.<br />Sammen kan vi skape et tryggere, sterkere og mer forberedt samfunn.</p>
+            <p>God beredskap handler om samarbeid, tillit og viljen til å stille opp for hverandre. Ved å samle mennesker, organisasjoner og tilgjengelige ressurser på ett sted, legger vi til rette for bedre samhandling og raskere respons når det virkelig gjelder.<br/>Sammen kan vi skape et tryggere, sterkere og mer forberedt samfunn.</p>
         </div>
         <div class="public-footer-bottom">
             <span>Paratus</span>

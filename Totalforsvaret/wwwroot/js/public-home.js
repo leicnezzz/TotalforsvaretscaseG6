@@ -1,18 +1,6 @@
 (() => {
     "use strict";
-
-    const firstScreen = document.querySelector(".public-first-screen");
-    const purpose = document.querySelector(".public-purpose");
-
-    if (firstScreen && purpose) {
-        const updateLayout = () => {
-            firstScreen.style.setProperty("--public-purpose-overlap", `${purpose.getBoundingClientRect().height / 2}px`);
-        };
-        const observer = new ResizeObserver(updateLayout);
-        observer.observe(purpose);
-        updateLayout();
-    }
-
+    
     const video = document.getElementById("public-background-video");
     if (!video) return;
 

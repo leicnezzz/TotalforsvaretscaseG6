@@ -607,7 +607,7 @@ body {
     margin-top: 0;
     padding: clamp(28px, 5vw, 56px) 16px;
     border-radius: 0;
-    background: rgb(46 104 64 / 14%);
+    background: none;
 }
 
     .courses-section::before {

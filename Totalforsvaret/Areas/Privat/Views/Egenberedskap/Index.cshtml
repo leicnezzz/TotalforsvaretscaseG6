@@ -46,40 +46,40 @@
     <main>
     <div class="beredskap-container">
         <nav class="contents-card" aria-label="Innhold på siden">
-            <h2>Innhold</h2>
-            <p>Her er en oversikt over informasjon du finner på denne siden.</p>
-            <a href="#tilfluktsrom">— &nbsp; Kart over offentlige tilfluktsrom</a>
-            <a href="#checklist">— &nbsp; Sjekkliste for beredskap</a>
-            <a href="#courses">— &nbsp; Oversikt over diverse kurs</a>
+            <a href="#tilfluktsrom">finn tilfluktsrom</a>
+            <a href="#checklist">sjekkliste</a>
+            <a href="#courses">kurs</a>
         </nav>
         <section id="tilfluktsrom" class="shelter-section" aria-labelledby="tilfluktsrom-tittel">
             <header class="section-heading">
                 <h2 id="tilfluktsrom-tittel">Finn nærmeste offentlige tilfluktsrom</h2>
             </header>
             <div class="shelter-search">
-                <ol class="shelter-instructions">
-    <li>Skriv inn gatenavn og husnummer. Velg riktig adresse blant forslagene.</li>
-    <li>Trykk <strong>Søk</strong>. Hvis du får flere treff, velg riktig adresse.</li>
-    <li>Se de nærmeste tilfluktsrommene under kartet.
-       Trykk på en adresse i tabellen for å se tilfluktsrommet på kartet.</li>
-</ol>
+                <details class="shelter-help">
+                    <summary>Slik bruker du kartet</summary>
+                    <ol class="shelter-instructions">
+                        <li>Skriv inn gatenavn og husnummer. Velg riktig adresse blant forslagene.</li>
+                        <li>Trykk <strong>Søk</strong>. Hvis du får flere treff, velg riktig adresse.</li>
+                        <li>Se de nærmeste tilfluktsrommene under kartet.
+                            Trykk på en adresse i tabellen for å se tilfluktsrommet på kartet.</li>
+                    </ol>
+                </details>
+                <form id="tilfluktsrom-sok">
+                    <label for="tilfluktsrom-adresse">Adresse</label>
+                    <p id="tilfluktsrom-adresse-hjelp">Eksempel: Markens gate 12, 4611</p>
 
-              <form id="tilfluktsrom-sok">
-    <label for="tilfluktsrom-adresse">Adresse</label>
-   <p id="tilfluktsrom-adresse-hjelp">Eksempel: Markens gate 12, 4611</p>
+                    <div class="shelter-search-controls">
+                        <input id="tilfluktsrom-adresse"
+                               name="adresse"
+                               type="search"
+                               placeholder="Gatenavn, husnummer og ev. postnummer"
+                               aria-describedby="tilfluktsrom-adresse-hjelp"
+                               required disabled/>
+                        <button type="submit" disabled>Søk</button>
+                    </div>
 
-    <div class="shelter-search-controls">
-        <input id="tilfluktsrom-adresse"
-               name="adresse"
-               type="search"
-               placeholder="Gatenavn, husnummer og ev. postnummer"
-               aria-describedby="tilfluktsrom-adresse-hjelp"
-               required disabled />
-        <button type="submit" disabled>Søk</button>
-    </div>
-
-    <p id="tilfluktsrom-status" role="status"></p>
-</form>
+                    <p id="tilfluktsrom-status" role="status"></p>
+                </form>
             </div>
 
 <p id="tilfluktsrom-utskrift-adresse" class="shelter-print-address"></p>

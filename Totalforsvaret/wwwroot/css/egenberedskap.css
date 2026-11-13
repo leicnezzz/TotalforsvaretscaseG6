@@ -18,34 +18,23 @@ body {
 
 .contents-card {
     display: flex;
-    width: 100%;
-    flex-direction: column;
-    margin: 0 auto 38px;
-    padding: clamp(20px, 5vw, 40px);
-    border-radius: 8px;
-    background: #fff;
-}
-
-.contents-card h2 {
-    margin: 0 0 2px;
-    font-size: 1.2rem;
-}
-
-.contents-card p {
-    margin: 0 0 16px;
-    font-size: 0.85rem;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 auto 24px;
 }
 
 .contents-card a {
-    width: fit-content;
-    margin: 0 0 12px;
+    padding: 10px 18px;
+    border: 1px solid #2e6840;
+    border-radius: 999px;
+    background: #fff;
     color: #2e6840;
-    font-size: 0.95rem;
+    font-weight: 700;
     text-decoration: none;
 }
 
 .contents-card a:is(:hover, :focus-visible) {
-    text-decoration: underline;
+    background: #e8f2eb;
 }
 
 .section-heading {
@@ -185,6 +174,16 @@ body {
     margin: 0;
     padding-left: 20px;
     line-height: 1.5;
+}
+
+.shelter-help summary {
+    color: #2e6840;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.shelter-help[open] summary {
+    margin-bottom: 8px;
 }
 
 .shelter-search label {
@@ -344,13 +343,7 @@ body {
         width: min(100% - 32px, 520px);
         padding: 24px 0 48px;
     }
-
-    .contents-card {
-        min-height: 0;
-        margin-bottom: 32px;
-        padding: 20px 22px;
-    }
-
+    
     .checklist-grid,
     .courses-grid {
         grid-template-columns: 1fr;

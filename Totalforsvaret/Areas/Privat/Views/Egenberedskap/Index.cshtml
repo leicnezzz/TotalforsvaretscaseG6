@@ -130,6 +130,7 @@
                 <p class="checklist-progress">
                     <strong>@completedItems.Count av @(ViewData["ChecklistItemCount"])</strong>
                     punkter fullført
+                    <span class="progress-bar"><span style="width: @(completedItems.Count * 100 / Convert.ToInt32(ViewData["ChecklistItemCount"]))%"></span></span>
                 </p>
 
                 <p class="checklist-instructions">

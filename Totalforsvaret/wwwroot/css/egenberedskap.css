@@ -76,11 +76,32 @@ body {
 }
 
 .preparedness-card summary {
-    color: #111;
-    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #163c4c;
+    font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.35;
+    list-style: none;
     cursor: pointer;
+}
+
+.preparedness-card summary::-webkit-details-marker {
+    display: none;
+}
+
+.preparedness-card summary::after {
+    width: 10px;
+    height: 10px;
+    border-right: 3px solid #2e6840;
+    border-bottom: 3px solid #2e6840;
+    content: "";
+    transform: rotate(45deg);
+}
+
+.preparedness-card[open] summary::after {
+    transform: rotate(-135deg);
 }
 
 .preparedness-card[open] summary {
@@ -88,10 +109,13 @@ body {
 }
 
 .checklist-count {
-    margin-left: 8px;
-    color: #59635b;
-    font-size: 0.875rem;
-    font-weight: 400;
+    margin-left: auto;
+    padding: 4px 12px;
+    border-radius: 14px;
+    background: #e3eee6;
+    color: #1d4a2d;
+    font-size: 0.9375rem;
+    font-weight: 500;
 }
 
 .preparedness-card ul {
@@ -878,4 +902,19 @@ body {
     font-size: 18px;
     line-height: 1;
     box-shadow: 0 1px 4px rgb(0 0 0 / 30%);
+}
+
+.progress-bar {
+    display: block;
+    height: 8px;
+    margin-top: 10px;
+    border-radius: 4px;
+    background: #dbe5de;
+    overflow: hidden;
+}
+
+.progress-bar span {
+    display: block;
+    height: 100%;
+    background: #2e6840;
 }

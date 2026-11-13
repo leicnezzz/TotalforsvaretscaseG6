@@ -1,7 +1,7 @@
 /* Stiler for de nye delene på forsiden: Om Paratus, Slik fungerer det og Kontaktinformasjon.
    Fargene kommer fra variablene i public-home.css, så de er ikke definert på nytt her. */
 
-/* Seksjonen under hero: overskrift og kort ved siden av hverandre. */
+/* Seksjonen under hero: overskrift og boksen «3 gode grunner». */
 .paratus-info {
     margin-top: 96px;
     padding-bottom: 32px;

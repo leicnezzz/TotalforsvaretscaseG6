@@ -134,7 +134,7 @@
                 </p>
             </header>
             <div class="checklist-grid">
-                <details class="preparedness-card">
+                <details class="preparedness-card" name="sjekkliste">
                     <summary>Mat og vann</summary>
                     <ul>
                         <li>
@@ -224,7 +224,7 @@
                     </ul>
                 </details>
                 
-                <details class="preparedness-card">
+                <details class="preparedness-card" name="sjekkliste">
                     <summary>Varme og lys</summary>
                     <ul>
                         <li>
@@ -314,7 +314,7 @@
                     </ul>
                 </details>
 
-                <details class="preparedness-card">
+                <details class="preparedness-card" name="sjekkliste">
                 <summary>Informasjon</summary>
                     <ul>
                         <li>
@@ -362,7 +362,7 @@
                     </ul>
                 </details>
 
-                <details class="preparedness-card">
+                <details class="preparedness-card" name="sjekkliste">
                     <summary>Legemidler og hygiene</summary>
                     <ul>
                         <li>
@@ -510,6 +510,17 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(tilfluktsromKart);
 </script>
-<script src="~/js/tilfluktsrom-kart.js" asp-append-version="true"></script>
+   <script src="~/js/tilfluktsrom-kart.js" asp-append-version="true"></script>
+   <script>
+   
+    // Siden lastes på nytt ved hver avkryssing, så vi husker hvilken kategori som var åpen
+    document.querySelectorAll('.preparedness-card').forEach((kort, i) => {
+        kort.open = sessionStorage.getItem('apenKategori') === String(i);
+        kort.addEventListener('toggle', () => {
+            if (kort.open) sessionStorage.setItem('apenKategori', String(i));
+            else if (sessionStorage.getItem('apenKategori') === String(i)) sessionStorage.removeItem('apenKategori');
+        });
+    });
+</script>
 </body>
 </html>

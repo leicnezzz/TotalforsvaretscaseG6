@@ -37,7 +37,14 @@ public class HomeController : Controller
     {
         return View();
     }
-    public IActionResult Map()
+
+	[AllowAnonymous]
+	[HttpGet]
+	public IActionResult Contact()
+	{
+		return View();
+	}
+	public IActionResult Map()
     {
         return View();
     }

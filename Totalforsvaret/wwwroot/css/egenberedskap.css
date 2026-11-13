@@ -841,3 +841,22 @@ body {
     .courses-grid .course-card ul {
         margin-bottom: 16px;
     }
+.shelter-aed-controls {
+    margin-bottom: 12px;
+}
+
+#hjertestarter-status:empty {
+    display: none;
+}
+
+.aed-map-icon {
+    display: grid;
+    place-items: center;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #a12e36;
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 30%);
+}

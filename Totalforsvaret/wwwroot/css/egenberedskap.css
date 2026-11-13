@@ -823,6 +823,44 @@ body {
     }
 .shelter-aed-controls {
     margin-bottom: 12px;
+
+    .shelter-aed-controls label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 16px;
+        border: 2px solid #9aa9a0;
+        border-radius: 22px;
+        background: #fff;
+        color: #1f2a2e;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .shelter-aed-controls label::before {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        background: #b4501f;
+        content: "";
+    }
+
+    .shelter-aed-controls label:has(input:checked) {
+        border-color: #2e6840;
+        background: #e3eee6;
+        color: #1d4a2d;
+    }
+
+    .shelter-aed-controls label:has(input:focus-visible) {
+        outline: 3px solid #163c4c;
+        outline-offset: 2px;
+    }
+
+    .shelter-aed-controls input {
+        position: absolute;
+        opacity: 0;
+    }
 }
 
 #hjertestarter-status:empty {

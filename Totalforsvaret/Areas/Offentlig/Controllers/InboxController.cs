@@ -34,6 +34,16 @@ public class InboxController(
             .Include(assignment => assignment.Need)
             .OrderByDescending(assignment => assignment.RequestedAtUtc)
             .ToListAsync();
+        
+        var messages = selectedId.HasValue
+            ? await db.ResourceMessages
+                .AsNoTracking()
+                .Where(message =>
+                    message.AssignmentId == selectedId.Value)
+                .Include(message => message.Sender)
+                .OrderBy(message => message.SentAtUtc)
+                .ToListAsync()
+            : new List<ResourceMessage>();
 
         var items = assignments.Select(assignment =>
             new InboxItemViewModel

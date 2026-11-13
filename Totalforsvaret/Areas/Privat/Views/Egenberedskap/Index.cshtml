@@ -134,8 +134,8 @@
                 </p>
             </header>
             <div class="checklist-grid">
-                <article class="preparedness-card">
-                    <h3>Mat og vann</h3>
+                <details class="preparedness-card">
+                    <summary>Mat og vann</summary>
                     <ul>
                         <li>
                             <form asp-area="Privat" asp-controller="Egenberedskap"
@@ -222,10 +222,10 @@
                             </form>
                         </li>
                     </ul>
-                </article>
-
-                <article class="preparedness-card">
-                    <h3>Varme og lys</h3>
+                </details>
+                
+                <details class="preparedness-card">
+                    <summary>Varme og lys</summary>
                     <ul>
                         <li>
                             <form asp-area="Privat" asp-controller="Egenberedskap"
@@ -312,10 +312,10 @@
                             </form>
                         </li>
                     </ul>
-                </article>
+                </details>
 
-                <article class="preparedness-card">
-                    <h3>Informasjon</h3>
+                <details class="preparedness-card">
+                <summary>Informasjon</summary>
                     <ul>
                         <li>
                             <form asp-area="Privat" asp-controller="Egenberedskap"
@@ -360,10 +360,10 @@
                             </form>
                         </li>
                     </ul>
-                </article>
+                </details>
 
-                <article class="preparedness-card">
-                    <h3>Legemidler og hygiene</h3>
+                <details class="preparedness-card">
+                    <summary>Legemidler og hygiene</summary>
                     <ul>
                         <li>
                             <form asp-area="Privat" asp-controller="Egenberedskap"
@@ -408,7 +408,7 @@
                             </form>
                         </li>
                     </ul>
-                </article>
+                </details>
             </div>
         </section>
         <section id="courses"

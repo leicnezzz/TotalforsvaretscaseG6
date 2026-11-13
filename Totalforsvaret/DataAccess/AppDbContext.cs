@@ -80,23 +80,13 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
                 .HasForeignKey(message => message.SenderUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(message => message.Recipient)
-                .WithMany()
-                .HasForeignKey(message => message.RecipientUserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasIndex(message => new
-            {
-                message.RecipientUserId,
-                message.ReadAtUtc
-            });
-
             entity.HasIndex(message => new
             {
                 message.AssignmentId,
                 message.SentAtUtc
             });
         });
+        
 
         builder.Entity<ProfilePhoto>(entity =>
         {

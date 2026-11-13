@@ -6,6 +6,7 @@ using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.DataAccess;
 using Totalforsvaret.Models;
+using Totalforsvaret.Areas.Offentlig.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
@@ -184,5 +185,52 @@ public class InboxController(
             .SingleOrDefaultAsync(assignment =>
                 assignment.Id == assignmentId &&
                 assignment.Resource.BrukerId == user.Id);
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reply(
+        int assignmentId,
+        string body)
+    {
+        var user = await users.GetUserAsync(User);
+
+        if (user is null)
+            return Challenge();
+
+        body = body?.Trim() ?? "";
+
+        if (body.Length == 0 || body.Length > 2000)
+        {
+            TempData["InboxMessage"] =
+                "Meldingen må inneholde mellom 1 og 2000 tegn.";
+
+            return RedirectToAction(nameof(Index), new
+            {
+                selectedId = assignmentId
+            });
+        }
+
+        var assignmentExists = await db.ResourceAssignments
+            .AnyAsync(item => item.Id == assignmentId);
+
+        if (!assignmentExists)
+            return NotFound();
+
+        db.ResourceMessages.Add(new ResourceMessage
+        {
+            AssignmentId = assignmentId,
+            SenderUserId = user.Id,
+            Body = body,
+            SentAtUtc = DateTime.UtcNow
+        });
+
+        await db.SaveChangesAsync();
+
+        TempData["InboxMessage"] = "Svaret er sendt.";
+
+        return RedirectToAction(nameof(Index), new
+        {
+            selectedId = assignmentId
+        });
     }
 }

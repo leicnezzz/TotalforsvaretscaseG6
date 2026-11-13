@@ -1596,14 +1596,6 @@ body.kart-fullskjerm-apen {
     font-weight: 600;
 }
 
-.offentlig-dashboard .statistikk-rad > div {
-    display: flex;
-}
-
-.offentlig-dashboard .statistikk-rad .stat-kort {
-    width: 100%;
-}
-
 /*Navigation bar og bakgrunnsfarge for Offentlig Aktør*/
 body.offentlig-page {
     min-height: 100vh;
@@ -1723,20 +1715,6 @@ body.offentlig-page {
         padding: 4px 8px;
         text-align: left;
     }
-}
-
-.oversikt-tabell--kriser {
-    min-width: 1600px;
-}
-
-.oversikt-tabell--kriser td:nth-child(7) {
-    min-width: 240px;
-    max-width: 360px;
-    white-space: pre-wrap;
-}
-
-.oversikt-tabell--kriser td:last-child {
-    min-width: 280px;
 }
 
 .kart-forklaring > span {
@@ -1872,22 +1850,283 @@ body.offentlig-page {
 .offentlig-dashboard .treff-kort { border-color: #426747; }
 .offentlig-dashboard .egen-ressurs-lenke::after { content: none; }
 .offentlig-site-header .primary-nav:has(#kartSokToolbar) {
-    display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 360px) minmax(0, 1fr); gap: 20px;
+    display: grid;
+    grid-template-columns: minmax(max-content, 1fr) minmax(220px, 360px) minmax(0, 1fr);
+    gap: 0 clamp(12px, 1.5vw, 24px);
 }
-.offentlig-site-header .primary-nav:has(#kartSokToolbar) .nav-links { flex-wrap: wrap; }
-.offentlig-site-header .primary-nav:has(#kartSokToolbar) .account-summary { justify-self: end; }
+
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) .nav-links {
+    gap: 0 clamp(12px, 1.4vw, 24px);
+    min-width: 0;
+}
+
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) .nav-links a {
+    min-height: 44px;
+    padding-block: 10px;
+    font-size: .9375rem;
+    white-space: nowrap;
+}
+
+.offentlig-site-header .primary-nav:has(#kartSokToolbar) .account-menu {
+    justify-self: end;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
 #kartSokToolbar { width: 100%; justify-self: center; }
+
 .kart-hendelser { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 12px 0; color: #163c4c; }
-.kart-hendelser details { position: relative; }
+.kart-hendelser:has(.kart-start[hidden]):has(#kartArbeidsstatus:empty) { display: none; }
 .kart-hendelser summary { cursor: pointer; padding: 10px 14px; background: white; border: 1px solid #163c4c; border-radius: 8px; }
 #kartHendelserForm { position: absolute; top: calc(100% + 6px); left: 0; z-index: 1100; width: min(360px, 85vw); padding: 16px; background: white; border: 1px solid #c9d5dc; border-radius: 10px; box-shadow: 0 6px 20px #163c4c20; }
-#kartHendelserValg { max-height: 260px; overflow: auto; margin-bottom: 12px; }
-#kartHendelserValg legend { font-size: 14px; }
-#kartHendelserValg label { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
-#kartArbeidshendelse { width: min(320px, 100%); }
 #kartArbeidsstatus { font-size: 13px; }
 .kart-handlingsrad button:disabled { opacity: .5; cursor: not-allowed; }
-@media(max-width: 1100px) {
-    .offentlig-site-header .primary-nav:has(#kartSokToolbar) { grid-template-columns: 1fr auto; }
-    #kartSokToolbar { grid-column: 1 / -1; grid-row: 2; max-width: 420px; margin-inline: auto; }
+@media (max-width: 1280px) {
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) {
+        grid-template-columns: minmax(0, 1fr) minmax(0, max-content);
+        row-gap: 8px;
+        padding-block: 8px 12px;
+    }
+
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) .nav-links {
+        flex-wrap: wrap;
+        overflow: visible;
+    }
+
+    #kartSokToolbar {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        max-width: 420px;
+    }
+}
+
+@media (max-width: 760px) {
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) .account-menu {
+        justify-self: start;
+    }
+}
+
+/* One clear entry to the map, through Hendelser. */
+.kart-start { width: 100%; padding: clamp(24px, 4vw, 40px); background: #fff; border: 1px solid #dce5e9; border-radius: 10px; }
+.kart-start h2 { font-size: clamp(24px, 2.4vw, 32px); color: #163c4c; }
+.kart-start p { font-size: 1rem; line-height: 1.6; color: #526671; }
+.kart-start .btn { background: #163c4c; border-color: #163c4c; padding: 12px 24px; }
+.offentlig-dashboard .stat-kort h2 { font-size: 1rem; line-height: 1.4; }
+.offentlig-dashboard #kartmelding { font-size: .9375rem; line-height: 1.5; }
+.offentlig-dashboard .kart-hendelser [hidden], .offentlig-dashboard #kart[hidden] { display: none !important; }
+
+.offentlig-dashboard .kart-oversiktsrad :is(.egen-ressurs-lenke, .registrer-behov-knapp, .opprett-krise-knapp) {
+    padding: 10px 16px;
+}
+
+.offentlig-dashboard .oversikt-handlinger,
+.kart-handlingsrad,
+.kart-handlingspanel .kart-piller {
+    flex-wrap: wrap;
+}
+
+.offentlig-dashboard .kart-oversiktsrad :is(.oversikt-handlinger-kolonne, .oversikt-handlinger, a),
+.kart-handlingsrad > *,
+.kart-handlingspanel :is(button, a, select) {
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+#oversiktDialog [hidden] {
+    display: none;
+}
+
+.offentlig-dashboard .kart-oversiktsrad > .oversikt-handlinger {
+    margin-inline-start: auto;
+    justify-content: flex-end;
+}
+
+.offentlig-dashboard .kart-oversiktsrad,
+.offentlig-dashboard .kart-oversiktsgruppe,
+.offentlig-dashboard .kart-oversiktsrad :is(.statistikk-rad, .oversikt-handlinger) {
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+}
+
+.offentlig-dashboard .kart-oversiktsrad {
+    column-gap: 24px;
+}
+
+.offentlig-dashboard .kart-oversiktsrad h1,
+.offentlig-dashboard .kart-oversiktsrad :is(.stat-kort, .stat-tall, .oversikt-handlinger a) {
+    font-size: 1rem;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.offentlig-dashboard .kart-oversiktsrad :is(.stat-kort, .oversikt-handlinger a) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    max-width: 100%;
+    padding: 10px 14px;
+    border-width: 2px;
+    border-radius: 10px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.offentlig-dashboard .kart-oversiktsrad .stat-kort > span:first-child {
+    color: var(--dempet);
+}
+
+.offentlig-dashboard .kart-oversiktsrad .egen-ressurs-lenke {
+    border: 2px solid #225466;
+}
+
+#oversiktDialog .oppfolging-kort {
+    margin-bottom: 8px;
+    padding: 10px 14px;
+    border: 2px solid var(--kant);
+    border-radius: 10px;
+    background: #fff;
+    font-size: .875rem;
+    line-height: 1.4;
+}
+
+[data-oversikt-panel="oppfolging"] .oppfolging-kort[data-prioritet="Kritisk"] {
+    border-color: #a64b3c;
+}
+
+[data-oversikt-panel="oppfolging"] .oppfolging-kort[data-prioritet="Høy"] {
+    border-color: #98723d;
+}
+
+#oversiktDialog .oppfolging-kort p {
+    margin: 2px 0 0;
+}
+
+.offentlig-dashboard .kart-oversiktsrad .stat-kort[data-oversikt-liste="oppfolging"] {
+    border-width: 3px;
+}
+
+.offentlig-dashboard .kart-oversiktsvalg {
+    position: relative;
+    min-height: 24px;
+    margin-bottom: 8px;
+}
+
+.offentlig-dashboard .kart-oversiktsvalg > summary {
+    position: absolute;
+    z-index: 1;
+    inset-inline-start: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    display: grid;
+    width: 44px;
+    height: 24px;
+    place-items: center;
+    list-style: none;
+    border-radius: 6px;
+    color: #243846;
+    cursor: pointer;
+}
+
+.offentlig-dashboard .kart-oversiktsvalg > summary::-webkit-details-marker {
+    display: none;
+}
+
+.offentlig-dashboard .kart-oversiktsvalg > summary span {
+    border-inline: 6px solid transparent;
+    border-top: 8px solid currentColor;
+}
+
+.offentlig-dashboard .kart-oversiktsvalg[open] > summary span {
+    transform: rotate(180deg);
+}
+
+.offentlig-dashboard .kart-oversiktsvalg > summary:hover,
+.offentlig-dashboard .kart-oversiktsvalg > summary:focus-visible {
+    background: #e5ebef;
+}
+
+.offentlig-dashboard .kart-oversiktsvalg .kart-oversiktsrad {
+    margin-bottom: 0;
+    padding-bottom: 24px;
+}
+
+#oversiktDialog .oversikt-tabell--kriser {
+    min-width: 0;
+    table-layout: fixed;
+}
+
+#oversiktDialog .oversikt-tabell--kriser :is(th, td) {
+    min-width: 0;
+    padding: 10px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+#oversiktDialog .oversikt-tabell--kriser td:nth-child(7) {
+    white-space: pre-wrap;
+}
+
+#oversiktDialog .oversikt-tabell--kriser :is(.oversikt-radhandlinger, .btn) {
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.oversikt-mobilfelt {
+    display: none;
+}
+
+@media (max-width: 960px) {
+    #oversiktDialog .oversikt-tabell--kriser {
+        display: block;
+    }
+
+    #oversiktDialog .oversikt-tabell--kriser thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+    }
+
+    #oversiktDialog .oversikt-tabell--kriser tbody {
+        display: grid;
+        gap: 8px;
+    }
+
+    #oversiktDialog .oversikt-tabell--kriser tr {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+        gap: 8px;
+        padding: 10px 14px;
+        border: 2px solid var(--kant);
+        border-radius: 10px;
+    }
+
+    #oversiktDialog .oversikt-tabell--kriser td {
+        display: block;
+        padding: 0;
+        border: 0;
+    }
+
+    #oversiktDialog .oversikt-tabell--kriser td:last-child {
+        grid-column: 1 / -1;
+    }
+
+    .oversikt-mobilfelt {
+        display: block;
+        color: var(--dempet);
+        font-weight: 600;
+    }
 }

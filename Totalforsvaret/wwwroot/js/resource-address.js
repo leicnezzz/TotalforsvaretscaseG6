@@ -72,6 +72,19 @@
                 Number.isFinite(Number(longitude.value.replace(',', '.'))) && Math.abs(Number(longitude.value.replace(',', '.'))) <= 180);
         } // Sjekker om adressefelt og koordinater er gyldige. 
 
+        function selectMapPoint(point) {
+            if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lng) ||
+                Math.abs(point.lat) > 90 || Math.abs(point.lng) > 180) return;
+            latitude.value = point.lat.toFixed(6);
+            longitude.value = point.lng.toFixed(6);
+            selectedAddress = '';
+            address.value = allowMapSelection ? '' : 'Valgt plassering på kartet';
+            address.setCustomValidity('');
+            reset(false);
+            status.textContent = 'Plassering valgt på kartet.';
+            onChange('');
+        }
+
         function refresh(recenter = true) {
             if (!mapElement.getClientRects().length) return;
             if (!window.L) {
@@ -84,15 +97,7 @@
                     maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
                 }).addTo(map);
                 if (allowMapSelection) {
-                    map.on('click', ({ latlng }) => {
-                        const point = latlng.wrap();
-                        latitude.value = point.lat.toFixed(6);
-                        longitude.value = point.lng.toFixed(6);
-                        selectedAddress = '';
-                        address.value = '';
-                        reset(false);
-                        onChange('');
-                    });
+                    map.on('click', ({ latlng }) => selectMapPoint(latlng.wrap()));
                 }
             }
             map.invalidateSize();

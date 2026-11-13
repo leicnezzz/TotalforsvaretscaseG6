@@ -108,13 +108,30 @@
                 </div>
             </section>
 
-            <input asp-for="Latitude" type="hidden" />
-            <input asp-for="Longitude" type="hidden" />
+            <section data-need-step>
+                <h2 class="need-step-title" tabindex="-1">Hvor har krisen oppstått?</h2>
+                <p class="need-step-intro">Søk etter en adresse eller klikk på kartet for å velge plassering.</p>
+                <div class="wizard-fields">
+                    <label for="crisis-address" class="form-label">Søk etter adresse</label>
+                    <input id="crisis-address" data-address-input class="form-control" type="search"
+                       autocomplete="off" aria-controls="crisis-address-results" aria-expanded="false"
+                       aria-describedby="crisis-address-status coordinates" />
+                    <ul id="crisis-address-results" class="wizard-address-results" data-address-results hidden></ul>
+                    <p id="crisis-address-status" class="text-muted mt-2" data-address-status role="status"></p>
+                </div>
+                <div id="map" class="wizard-map need-map" data-address-map aria-label="Kart for plassering av krisen"></div>
+                <input asp-for="Latitude" type="hidden" />
+                <input asp-for="Longitude" type="hidden" />
+                <span asp-validation-for="Latitude" class="text-danger"></span>
+                <span asp-validation-for="Longitude" class="text-danger"></span>
+                <p id="coordinates" class="text-muted mt-2" data-need-location data-marker-color="#a64232" role="status">Ingen plassering valgt.</p>
+            </section>
 
             <section data-need-step hidden>
                 <h2 class="need-step-title" tabindex="-1">Se over informasjonen</h2>
                 <p class="need-step-intro">Kontroller opplysningene før du lagrer krisen.</p>
                 <dl class="need-review" data-need-review></dl>
+                <div class="wizard-map need-map need-review-map" data-need-review-map aria-label="Kart over valgt plassering"></div>
             </section>
 
             <div class="need-actions">
@@ -149,5 +166,6 @@
 </div>
 
 @section Scripts {
+    <script src="~/js/resource-address.js" asp-append-version="true"></script>
     <script src="~/js/need-registration.js" asp-append-version="true"></script>
 }

@@ -32,6 +32,10 @@
     const hendelsesvisning = forespurteHendelser.size > 0;
     const valgteHendelser = (data.kriser ?? []).filter(krise => forespurteHendelser.has(String(krise.id)));
     const synligeHendelser = new Set(valgteHendelser.map(krise => krise.id));
+    const harHendelse = valgteHendelser.length > 0;
+    document.getElementById('kartStart').hidden = harHendelse;
+    document.getElementById('kart').hidden = false;
+
     const hendelserUtenPunkt = new Set(valgteHendelser
         .filter(krise => !gyldig(krise.latitude, krise.longitude))
         .map(krise => krise.id));
@@ -319,6 +323,8 @@
     const soneliste = panel.querySelector('#kartSoneliste');
     const sonelisteknapp = panel.querySelector('[aria-controls="kartSoneliste"]');
 
+    sonelisteknapp.disabled = !harHendelse;
+
     function visSoneliste(apent) {
         soneliste.hidden = !apent;
         sonelisteknapp.setAttribute('aria-expanded', String(apent));
@@ -454,7 +460,7 @@
 
     window.addEventListener('resize', oppdaterFullskjerm);
     const hoydeObserver = new ResizeObserver(oppdaterFullskjerm);
-    for (const element of document.querySelectorAll('.offentlig-site-header, .kart-oversiktsrad')) {
+    for (const element of document.querySelectorAll('.offentlig-site-header, .kart-oversiktsvalg')) {
         hoydeObserver.observe(element);
     }
     oppdaterFullskjerm();
@@ -675,10 +681,8 @@
 
             if (type.boks.checked) {
                 for (const markor of type.markorer) {
-                    if (hendelsesvisning) {
-                        if (!synligeHendelser.has(markor.hendelseId)) continue;
-                        if (!['kriser', 'behov', 'soner', 'veihindringer'].includes(type.key)) continue;
-                    }
+                    if (hendelsesvisning && type.key !== 'ressurser' &&
+                        !synligeHendelser.has(markor.hendelseId)) continue;
 
                     const punkt = markor.getLatLng?.();
                     const posisjon = punkt ?? markor.getBounds().getCenter();
@@ -786,7 +790,6 @@
         nullstill.textContent = 'Vis hele kartet';
         hendelsesfilter.append(nullstill);
         felt.before(hendelsesfilter);
-        felt.hidden = true;
     }
 
     for (const type of typer) {
@@ -794,7 +797,7 @@
         const boks = document.createElement('input');
 
         boks.type = 'checkbox';
-        boks.checked = !hendelsesvisning || type.key !== 'ressurser';
+        boks.checked = true;
         boks.addEventListener('change', () => filtrer());
 
         type.boks = boks;
@@ -940,14 +943,13 @@
 
                     sentrum = L.latLng(lat, lon);
                     sok.value = etikett;
-                    radius.value = '0';
-
                     sentrumtekst.textContent =
                         'Valgt sted: ' + etikett + '. Radius er valgfritt.';
 
                     avbryt();
-                    filtrer();
-                    kart.setView(sentrum, feature.properties.housenumber ? 17 : 15);
+                    const harRadius = Number(radius.value) > 0;
+                    filtrer(harRadius);
+                    if (!harRadius) kart.setView(sentrum, feature.properties.housenumber ? 17 : 15);
                     if (markeringSkjema?.dataset.kartmarkering === 'behov' && !markeringSkjema.inert) {
                         velgBehovplassering(sentrum, etikett);
                     }
@@ -982,38 +984,18 @@
 
     const handlinger = kartElement.querySelector('.kart-handlinger');
     const handlingsknapper = [...handlinger.querySelectorAll('.kart-handlingsrad button')];
-    const arbeidValg = document.getElementById('kartArbeidshendelse');
     const arbeidsstatus = document.getElementById('kartArbeidsstatus');
-    const hendelserForm = document.getElementById('kartHendelserForm');
-    const hendelserFelt = document.getElementById('kartHendelserValg');
     const csrf = document.querySelector('#kartAntiforgery input').value;
-    let arbeidId = valgteHendelser.length === 1 ? valgteHendelser[0].id : null;
     let lagrer = false;
     let skjemaEndret = false;
 
-    arbeidValg.add(new Option(valgteHendelser.length ? 'Velg hendelse' : 'Åpne en hendelse først', ''));
-    for (const hendelse of valgteHendelser) arbeidValg.add(new Option(hendelse.navn, hendelse.id));
-    arbeidValg.value = arbeidId ?? '';
-    arbeidValg.disabled = !valgteHendelser.length;
-    for (const hendelse of data.kriser ?? []) {
-        const label = document.createElement('label');
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.name = 'hendelser';
-        checkbox.value = hendelse.id;
-        checkbox.checked = forespurteHendelser.has(String(hendelse.id));
-        label.append(checkbox, document.createTextNode(hendelse.navn + ' · ' + hendelse.status));
-        hendelserFelt.append(label);
-    }
     function oppdaterArbeid() {
-        for (const knapp of handlingsknapper) knapp.disabled = !arbeidId || lagrer;
-        arbeidsstatus.textContent = lagrer ? 'Lagrer …' : !valgteHendelser.length
-            ? 'Åpne minst én hendelse for å gjøre endringer.'
-            : !arbeidId ? 'Velg hvilken hendelse endringene gjelder.' : '';
+        for (const knapp of handlingsknapper) knapp.disabled = !harHendelse || lagrer;
     }
     oppdaterArbeid();
     for (const link of document.querySelectorAll('a[href*="/crisis/overview"]')) {
         const url = new URL(link.href);
+        url.searchParams.delete('hendelser');
         for (const id of forespurteHendelser) url.searchParams.append('hendelser', id);
         link.href = url;
     }
@@ -1031,30 +1013,13 @@
         arbeidsstatus.textContent = 'Fullfør eller avbryt skjemaet før du bytter hendelse.';
         return false;
     }
-    arbeidValg.addEventListener('change', async () => {
-        const neste = Number(arbeidValg.value) || null;
-        arbeidValg.value = arbeidId ?? '';
-        if (!await lagreForBytte()) return;
-        visHandling(null);
-        arbeidId = neste;
-        arbeidValg.value = arbeidId ?? '';
-        oppdaterArbeid();
-        oppdaterSoneliste();
-        filtrerMatch();
-        for (const type of typer) for (const marker of type.markorer) {
-            if (marker.sletteknapp) marker.sletteknapp.disabled = marker.hendelseId !== arbeidId;
-        }
-    });
-    hendelserForm.addEventListener('submit', async event => {
-        event.preventDefault();
-        if (!await lagreForBytte()) return;
-        const url = new URL(hendelserForm.action);
-        for (const id of new FormData(hendelserForm).getAll('hendelser')) url.searchParams.append('hendelser', id);
-        url.hash = 'offentligKart';
-        window.location.assign(url);
-    });
-
-
+    for (const link of document.querySelectorAll('a[href*="/crisis/overview"]')) {
+        link.addEventListener('click', async event => {
+            if (event.ctrlKey || event.metaKey || event.shiftKey) return;
+            event.preventDefault();
+            if (await lagreForBytte()) window.location.assign(link.href);
+        });
+    }
     L.DomEvent.disableClickPropagation(handlinger);
     L.DomEvent.disableScrollPropagation(handlinger);
 
@@ -1123,7 +1088,7 @@
             slett.className = 'btn btn-sm btn-outline-danger';
             slett.textContent = 'Slett';
             slett.setAttribute('aria-label', 'Slett sone ' + navn);
-            slett.disabled = sone.hendelseId !== arbeidId;
+            slett.disabled = !valgteHendelser.some(hendelse => hendelse.id === sone.hendelseId);
             slett.addEventListener('click', () => slettMarkering(sone, soneType, slett));
 
             rad.append(prove, tekst, slett);
@@ -1178,11 +1143,6 @@
 
     const hindringPanel = document.getElementById('kartVeihindring');
     const hindringHint = document.getElementById('kartVelgVeihindring');
-    const behovPanel = document.getElementById('kartNyttBehov');
-    const behovInnhold = behovPanel.querySelector('.kart-behovskjema');
-    const behovStatus = behovPanel.querySelector('.kart-behovstatus');
-    let henterBehov = false;
-
     function visPlassering(punkt) {
         forhandsvisning.clearLayers();
         forhandsvisning.addLayer(L.circleMarker(punkt, {
@@ -1204,167 +1164,6 @@
         visPlassering(punkt);
         if (etikett) markeringSkjema.querySelector('.kart-posisjon').textContent = etikett;
     }
-
-    function aktiverBehovplassering(skjema) {
-        markeringSkjema = skjema;
-        kartElement.classList.add('kart-plassering-aktiv');
-
-        const { Latitude, Longitude } = skjema.elements;
-        if (Latitude.value && Longitude.value) {
-            const lat = Number(Latitude.value.replace(',', '.'));
-            const lon = Number(Longitude.value.replace(',', '.'));
-            if (gyldig(lat, lon)) visPlassering(L.latLng(lat, lon));
-        }
-    }
-
-    function oppdaterPrioritetsvalg(blokk) {
-        const felt = blokk.querySelector('select[name$=".Priority"]');
-        if (!felt.value) felt.value = 'Middels';
-        for (const knapp of blokk.querySelectorAll('[data-prioritet]')) {
-            knapp.setAttribute('aria-pressed', String(knapp.dataset.prioritet === felt.value));
-        }
-    }
-
-    function visPrioritetsvalg(skjema) {
-        for (const blokk of skjema.querySelectorAll('#behov-liste fieldset')) {
-            const felt = blokk.querySelector('select[name$=".Priority"]');
-            const valg = document.createElement('div');
-            valg.className = 'kart-piller';
-            valg.setAttribute('role', 'group');
-            valg.setAttribute('aria-label', 'Prioritet');
-            for (const alternativ of Array.from(felt.options).filter(alternativ => alternativ.value)) {
-                const knapp = document.createElement('button');
-                knapp.type = 'button';
-                knapp.dataset.prioritet = alternativ.value;
-                knapp.textContent = alternativ.value === 'Middels' ? 'Normal' : alternativ.textContent;
-                valg.append(knapp);
-            }
-
-            felt.hidden = true;
-            felt.after(valg);
-            oppdaterPrioritetsvalg(blokk);
-        }
-
-        skjema.addEventListener('click', event => {
-            const knapp = event.target.closest('[data-prioritet]');
-            if (!knapp) return;
-            const blokk = knapp.closest('fieldset');
-            blokk.querySelector('select[name$=".Priority"]').value = knapp.dataset.prioritet;
-            oppdaterPrioritetsvalg(blokk);
-        });
-    }
-
-    function visBehovskjema(skjema) {
-        skjema.dataset.kartmarkering = 'behov';
-        if (skjema.elements.CrisisId) {
-            skjema.elements.CrisisId.value = arbeidId ?? '';
-            skjema.elements.CrisisId.disabled = true;
-        }
-        const posisjonsfelt = skjema.querySelector('[data-behovplassering]');
-        posisjonsfelt.querySelector('#behovKart').remove();
-        posisjonsfelt.querySelector('h2').textContent = 'Sted eller område';
-        posisjonsfelt.querySelector('p').remove();
-        posisjonsfelt.className = 'kart-behovplassering';
-        const sted = posisjonsfelt.querySelector('#behovKartmelding');
-        sted.classList.add('kart-posisjon');
-        sted.textContent = 'Søk etter adresse eller marker i kartet';
-
-        for (const blokk of skjema.querySelectorAll('#behov-liste fieldset')) {
-            const beskrivelse = blokk.querySelector('textarea').closest('.mb-3');
-            const prioritet = blokk.querySelector('select[name$=".Priority"]').closest('.row');
-            prioritet.before(beskrivelse);
-            blokk.querySelector('select[name$=".Status"]').closest('.mb-3').hidden = true;
-        }
-
-        skjema.querySelector('[type="submit"]').parentElement.className = 'kart-panelknapper';
-        skjema.querySelector('[type="submit"]').textContent = 'Registrer behov';
-
-        const avbryt = skjema.querySelector('[data-avbryt-behov]');
-        const avbrytKnapp = document.createElement('button');
-        avbrytKnapp.type = 'button';
-        avbrytKnapp.className = avbryt.className;
-        avbrytKnapp.textContent = avbryt.textContent.trim();
-        avbrytKnapp.addEventListener('click', lukkHandling);
-        avbryt.replaceWith(avbrytKnapp);
-
-        skjema.querySelector('[type="submit"]').disabled = true;
-        visPrioritetsvalg(skjema);
-        window.kobleBehovsliste(skjema, oppdaterPrioritetsvalg);
-        behovInnhold.replaceChildren(skjema);
-        if (!behovPanel.hidden) aktiverBehovplassering(skjema);
-    }
-
-    async function hentBehovskjema() {
-        if (henterBehov) return;
-        henterBehov = true;
-        behovStatus.textContent = 'Henter skjema …';
-
-        try {
-            const svar = await fetch(behovPanel.dataset.skjemaUrl);
-            if (!svar.ok) throw new Error('Skjema utilgjengelig');
-
-            const side = new DOMParser().parseFromString(await svar.text(), 'text/html');
-            const skjema = side.getElementById('flereBehovSkjema');
-            if (!skjema) throw new Error('Skjema mangler');
-
-            visBehovskjema(skjema);
-            behovStatus.textContent = '';
-        } catch {
-            behovStatus.textContent = 'Skjemaet kunne ikke hentes. Lukk og åpne panelet for å prøve igjen.';
-        } finally {
-            henterBehov = false;
-        }
-    }
-
-    behovPanel.addEventListener('submit', async event => {
-        event.preventDefault();
-        const skjema = event.target;
-        if (skjema.inert || !skjema.elements.Latitude.value || !skjema.elements.Longitude.value) return;
-
-        if (!arbeidId || lagrer) return;
-        const data = new FormData(skjema);
-        data.set('CrisisId', String(arbeidId));
-        lagrer = true;
-        oppdaterArbeid();
-        skjema.inert = true;
-        behovStatus.textContent = 'Registrerer behov …';
-
-        try {
-            const svar = await fetch(skjema.action, {
-                method: 'POST',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                body: data
-            });
-            if (!svar.ok) throw new Error('Registrering utilgjengelig');
-
-            if (svar.headers.get('Content-Type')?.includes('application/json')) {
-                const { redirectUrl } = await svar.json();
-                if (!redirectUrl) throw new Error('Oversikten kunne ikke åpnes');
-
-                lagrer = false;
-                skjemaEndret = false;
-                const url = new URL(redirectUrl, window.location.origin);
-                for (const id of forespurteHendelser) url.searchParams.append('hendelser', id);
-                url.hash = 'offentligKart';
-                window.location.assign(url);
-                return;
-            }
-
-            const side = new DOMParser().parseFromString(await svar.text(), 'text/html');
-            const oppdatertSkjema = side.getElementById('flereBehovSkjema');
-            if (!oppdatertSkjema) throw new Error('Uventet svar');
-
-            visBehovskjema(oppdatertSkjema);
-            behovStatus.textContent = 'Se meldingene i skjemaet og prøv igjen.';
-            behovPanel.scrollTop = 0;
-        } catch {
-            skjema.inert = false;
-            behovStatus.textContent = 'Kunne ikke bekrefte registreringen. Sjekk oversikten før du prøver igjen.';
-        } finally {
-            lagrer = false;
-            oppdaterArbeid();
-        }
-    });
 
     function kryssprodukt(a, b, c) {
         return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
@@ -1473,7 +1272,7 @@
     }
 
     function visHandling(knapp) {
-        if (knapp && (!arbeidId || lagrer)) return;
+        if (knapp && (!harHendelse || lagrer)) return;
         nullstillPlassering();
         if (knapp && mobilvisning.matches) {
             visKartfiltre(false);
@@ -1485,8 +1284,9 @@
 
         for (const handling of handlingsknapper) {
             const seksjon = document.getElementById(handling.getAttribute('aria-controls'));
+            if (!seksjon) continue;
             const apen = handling === knapp;
-            const venterPaPlassering = apen && seksjon === hindringPanel;
+            const venterPaPlassering = apen && seksjon === hindringPanel && valgteHendelser.length === 1;
             seksjon.hidden = !apen || venterPaPlassering;
             handling.setAttribute('aria-expanded', String(!seksjon.hidden));
             handling.toggleAttribute('data-venter-plassering', venterPaPlassering);
@@ -1495,10 +1295,6 @@
                 markeringSkjema = seksjon.querySelector('[data-kartmarkering]');
                 if (venterPaPlassering) {
                     hindringHint.textContent = 'Klikk i kartet der veihindringen ligger.';
-                }
-                if (seksjon === behovPanel) {
-                    if (markeringSkjema) aktiverBehovplassering(markeringSkjema);
-                    else hentBehovskjema();
                 }
             }
         }
@@ -1509,6 +1305,12 @@
     for (const knapp of handlingsknapper) {
         knapp.addEventListener('click', async () => {
             if (!await lagreForBytte()) return;
+            if (knapp.getAttribute('aria-controls') === 'kartNyttBehov') {
+                const url = new URL('/Behov', window.location.origin);
+                for (const id of forespurteHendelser) url.searchParams.append('hendelser', id);
+                window.location.assign(url);
+                return;
+            }
             visHandling(aktivKnapp === knapp ? null : knapp);
         });
     }
@@ -1536,7 +1338,7 @@
         const type = matchPanel.querySelector('input[name="matchtype"]:checked').value;
 
         for (const treff of matchTreff) {
-            treff.hidden = !arbeidId || Number(treff.dataset.crisisId) !== arbeidId ||
+            treff.hidden = !valgteHendelser.some(hendelse => hendelse.id === Number(treff.dataset.crisisId)) ||
                 (type && treff.dataset.matchType !== type) ||
                 !treff.dataset.matchSok.toLocaleLowerCase('nb-NO').includes(tekst);
         }
@@ -1548,7 +1350,7 @@
         const form = event.target;
         event.preventDefault();
         const row = form.closest('.kart-matchtreff');
-        if (!arbeidId || Number(row?.dataset.crisisId) !== arbeidId || lagrer) return;
+        if (!valgteHendelser.some(hendelse => hendelse.id === Number(row?.dataset.crisisId)) || lagrer) return;
         lagrer = true;
         oppdaterArbeid();
         form.inert = true;
@@ -1629,7 +1431,7 @@
     }
 
     async function slettMarkering(markor, type, knapp) {
-        if (!arbeidId || markor.hendelseId !== arbeidId || lagrer) return;
+        if (!valgteHendelser.some(hendelse => hendelse.id === markor.hendelseId) || lagrer) return;
         lagrer = true;
         knapp.disabled = true;
         oppdaterArbeid();
@@ -1644,7 +1446,7 @@
             knapp.disabled = false;
         } finally {
             lagrer = false;
-            for (const button of handlingsknapper) button.disabled = !arbeidId;
+            for (const button of handlingsknapper) button.disabled = !harHendelse;
         }
     }
 
@@ -1668,7 +1470,7 @@
             fjern.type = 'button';
             fjern.className = 'btn btn-sm btn-outline-secondary mt-2';
             fjern.textContent = 'Fjern markering';
-            fjern.disabled = arbeidId !== item.crisisId;
+            fjern.disabled = !valgteHendelser.some(hendelse => hendelse.id === item.crisisId);
             fjern.addEventListener('click', () => slettMarkering(markor, type, fjern));
             markor.sletteknapp = fjern;
             innhold.append(fjern);
@@ -1679,14 +1481,21 @@
     }
 
     async function lagreMarkering(skjema) {
-        if (!arbeidId || lagrer || skjema !== markeringSkjema) return false;
+        if (lagrer || skjema !== markeringSkjema) return false;
+        const crisisId = valgteHendelser.length === 1
+            ? valgteHendelser[0].id
+            : Number(skjema.elements.hendelse?.value);
+        if (!valgteHendelser.some(hendelse => hendelse.id === crisisId)) {
+            skjema.elements.hendelse?.reportValidity();
+            return false;
+        }
         const erSone = skjema.dataset.kartmarkering === 'soner';
         if ((erSone ? !gyldigSone(sonehjorner) : !plassering) || !skjema.reportValidity()) {
             arbeidsstatus.textContent = 'Fullfør navn og plassering, eller avbryt, før du bytter hendelse.';
             return false;
         }
         const item = {
-            crisisId: arbeidId, kind: skjema.dataset.kartmarkering,
+            crisisId, kind: skjema.dataset.kartmarkering,
             name: skjema.elements.navn.value.trim(),
             description: skjema.elements.beskrivelse?.value.trim() ?? '',
             impact: skjema.elements.pavirkning?.value ?? '',
@@ -1716,10 +1525,23 @@
         } finally {
             lagrer = false;
             skjema.inert = false;
-            for (const button of handlingsknapper) button.disabled = !arbeidId;
+            for (const button of handlingsknapper) button.disabled = !harHendelse;
         }
     }
     for (const skjema of handlinger.querySelectorAll('[data-kartmarkering]')) {
+        if (valgteHendelser.length > 1 && skjema.dataset.kartmarkering !== 'behov') {
+            const label = document.createElement('label');
+            const valg = document.createElement('select');
+            valg.id = skjema.dataset.kartmarkering + '-hendelse';
+            valg.name = 'hendelse';
+            valg.className = 'form-select';
+            valg.required = true;
+            valg.add(new Option('Velg hendelse', ''));
+            for (const hendelse of valgteHendelser) valg.add(new Option(hendelse.navn, hendelse.id));
+            label.htmlFor = valg.id;
+            label.textContent = 'Hendelse';
+            skjema.prepend(label, valg);
+        }
         skjema.addEventListener('submit', async event => {
             event.preventDefault();
             await lagreMarkering(skjema);
@@ -1732,15 +1554,18 @@
     // Åpner en valgt oppføring fra kortenes lister.
     document.addEventListener('oversikt:vis-pa-kart', event => {
         const valgt = event.detail;
-        if (valgt.type === 'kriser' && !forespurteHendelser.has(String(valgt.id))) {
+        const nyeHendelser = (valgt.ids ?? [valgt.id])
+            .filter(id => !forespurteHendelser.has(String(id)));
+        if (valgt.type === 'kriser' && nyeHendelser.length) {
             lagreForBytte().then(ok => {
                 if (!ok) return;
                 const url = new URL(window.location.href);
-                url.searchParams.append('hendelser', valgt.id);
+                for (const id of nyeHendelser) url.searchParams.append('hendelser', id);
                 window.location.assign(url);
             });
             return;
         }
+        if (valgt.ids) return;
         const type = typer.find(t => t.key === valgt.type);
 
         const markor = type?.markorer.find(

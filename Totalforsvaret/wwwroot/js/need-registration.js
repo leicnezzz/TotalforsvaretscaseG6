@@ -10,6 +10,7 @@
     const cancel = form.querySelector('[data-need-cancel]');
     const submit = form.querySelector('[data-need-submit]');
     const location = form.querySelector('[data-need-location]');
+    const markerColor = location?.dataset.markerColor ?? '#163c4c';
     const review = form.querySelector('[data-need-review]');
     const reviewMapElement = form.querySelector('[data-need-review-map]');
     const reviewStep = steps.length - 1;
@@ -25,7 +26,7 @@
         selectedAddress = label;
         location.textContent = locationText();
         location.classList.remove('text-danger');
-    }, { allowMapSelection: true, markerColor: '#163c4c' }) : null;
+    }, { allowMapSelection: true, markerColor }) : null;
 
     function locationText() {
         if (!address.valid()) return 'Ingen plassering valgt.';
@@ -56,7 +57,7 @@
         reviewMap.setView(point, 16, { animate: false });
         if (reviewMarker) reviewMarker.setLatLng(point);
         else reviewMarker = L.circleMarker(point, {
-            radius: 8, color: '#fff', weight: 2, fillColor: '#163c4c', fillOpacity: 1
+            radius: 8, color: '#fff', weight: 2, fillColor: markerColor, fillOpacity: 1
         }).addTo(reviewMap);
     }
 

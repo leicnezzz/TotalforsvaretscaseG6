@@ -159,6 +159,7 @@ public class OffentligAktorController : Controller
             .ToList();
 
         ViewBag.ForeslatteTreff = forslag.Count;
+        ViewBag.OpptatteRessursIder = aktiveTildelinger.Select(a => a.ResourceId).ToHashSet();
         
         ViewBag.KriserTilLister = _context?.Crises
             .AsNoTracking()
@@ -204,11 +205,8 @@ public class OffentligAktorController : Controller
         return View(tilgjengeligeRessurser);
     }
     [HttpGet]
-    public IActionResult NyRessurs()
-    {
-        ViewBag.Kategorier = _resourceHandler.GetCategories();
-        return View();
-    }
+    public IActionResult NyRessurs() => RedirectToRoute("ressursregistrering");
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> NyRessurs(
@@ -256,7 +254,7 @@ public class OffentligAktorController : Controller
 
         TempData["SuccessMessage"] = "Ressursen er registrert.";
 
-        return RedirectToAction(nameof(Index));
+        return LocalRedirect(this.OversiktUrl());
     }
     [HttpGet]
     public async Task<IActionResult> MineRessurser()
@@ -310,54 +308,59 @@ public class OffentligAktorController : Controller
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> VurderRessurs(int needId, int resourceId)
+    public async Task<IActionResult> VurderRessurs(int[] needId, int[] resourceId)
     {
         if (_context == null)
             return StatusCode(500, "Databasen er ikke tilgjengelig.");
 
-        // Kontroller at behovet fortsatt er aktivt.
-        var behovFinnes = await _context.Needs.AnyAsync(n =>
-            n.Id == needId &&
+        if (resourceId.Length == 0 || (needId.Length != 1 && needId.Length != resourceId.Length) ||
+            resourceId.Distinct().Count() != resourceId.Length ||
+            needId.Distinct().Count() != needId.Length)
+            return BadRequest("Velg ett behov eller ett behov per ressurs.");
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(
+            System.Data.IsolationLevel.Serializable);
+
+        var aktiveBehov = await _context.Needs.CountAsync(n =>
+            Enumerable.Contains(needId, n.Id) &&
             (n.Status == "Åpen" || n.Status == "Under behandling"));
 
-        if (!behovFinnes)
-            return BadRequest("Behovet finnes ikke eller er avsluttet.");
+        if (aktiveBehov != needId.Length)
+            return BadRequest("Et valgt behov finnes ikke eller er avsluttet.");
 
-        // Kontroller at ressursen er tilgjengelig.
-        var ressursFinnes = await _context.Resources.AnyAsync(r =>
-            r.ResourceId == resourceId &&
+        var tilgjengelige = await _context.Resources.CountAsync(r =>
+            Enumerable.Contains(resourceId, r.ResourceId) &&
             r.Available &&
-            (r.TilgjengeligFra == null ||
-             r.TilgjengeligFra <= DateTime.Now));
+            (r.TilgjengeligFra == null || r.TilgjengeligFra <= DateTime.Now));
 
-        if (!ressursFinnes)
-            return BadRequest("Ressursen er ikke tilgjengelig.");
+        if (tilgjengelige != resourceId.Length)
+            return BadRequest("En valgt ressurs er ikke tilgjengelig.");
 
-        // Ressursen må ikke allerede være under vurdering eller tildelt.
         var opptatt = await _context.ResourceAssignments.AnyAsync(a =>
-            a.ResourceId == resourceId &&
-            (a.Status == AssignmentStatus.Requested ||
-             a.Status == AssignmentStatus.Assigned));
+            Enumerable.Contains(resourceId, a.ResourceId) &&
+            (a.Status == AssignmentStatus.Requested || a.Status == AssignmentStatus.Assigned));
 
         if (opptatt)
-            return BadRequest("Ressursen er allerede under vurdering eller tildelt.");
+            return BadRequest("En valgt ressurs er allerede under vurdering eller tildelt.");
 
-        var tildeling = new ResourceAssignment
+        var tidspunkt = DateTime.UtcNow;
+        _context.ResourceAssignments.AddRange(resourceId.Select((id, index) => new ResourceAssignment
         {
-            NeedId = needId,
-            ResourceId = resourceId,
+            NeedId = needId.Length == 1 ? needId[0] : needId[index],
+            ResourceId = id,
             Status = AssignmentStatus.Requested,
-            RequestedAtUtc = DateTime.UtcNow
-        };
-
-        _context.ResourceAssignments.Add(tildeling);
+            RequestedAtUtc = tidspunkt
+        }));
         await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
 
-        TempData["SuccessMessage"] = "Ressursen er sendt til vurdering.";
+        TempData["SuccessMessage"] = resourceId.Length == 1
+            ? "Ressursen er sendt til vurdering."
+            : "Ressursene er sendt til vurdering.";
 
-        return RedirectToAction(nameof(Index));
+        return LocalRedirect(this.OversiktUrl());
     }
-    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> TildelRessurs(int assignmentId)
@@ -412,7 +415,7 @@ public class OffentligAktorController : Controller
 
         TempData["SuccessMessage"] = "Ressursen er tildelt.";
 
-        return RedirectToAction(nameof(Index));
+        return LocalRedirect(this.OversiktUrl());
     }
     
     [HttpPost]
@@ -441,7 +444,7 @@ public class OffentligAktorController : Controller
 
         TempData["SuccessMessage"] = "Ressursen er frigitt.";
 
-        return RedirectToAction(nameof(Index));
+        return LocalRedirect(this.OversiktUrl());
     }
     
     [HttpPost]
@@ -469,7 +472,7 @@ public class OffentligAktorController : Controller
 
         TempData["SuccessMessage"] = "Ressursforslaget er avslått.";
 
-        return RedirectToAction(nameof(Index));
+        return LocalRedirect(this.OversiktUrl());
     }
     private bool TryHentBrukerId(out int brukerId)
     {

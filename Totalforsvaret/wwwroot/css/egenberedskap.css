@@ -823,6 +823,8 @@ body {
     }
 .shelter-aed-controls {
     margin-bottom: 12px;
+}
+
 
     .shelter-aed-controls label {
         display: inline-flex;
@@ -861,7 +863,6 @@ body {
         position: absolute;
         opacity: 0;
     }
-}
 
 #hjertestarter-status:empty {
     display: none;

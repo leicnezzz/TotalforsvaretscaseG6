@@ -33,6 +33,13 @@
     const valgteHendelser = (data.kriser ?? []).filter(krise => forespurteHendelser.has(String(krise.id)));
     const synligeHendelser = new Set(valgteHendelser.map(krise => krise.id));
     const harHendelse = valgteHendelser.length > 0;
+    const lukkHendelser = document.querySelector('[data-lukk-hendelser]');
+    lukkHendelser.hidden = !hendelsesvisning;
+    lukkHendelser.addEventListener('click', async event => {
+        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        if (await lagreForBytte()) window.location.assign(lukkHendelser.href);
+    });
     document.getElementById('kartStart').hidden = harHendelse;
     document.getElementById('kart').hidden = false;
 
@@ -42,13 +49,15 @@
 
     function oppdaterKarthoyde() {
         const topp = kartElement.getBoundingClientRect().top + window.scrollY;
+        const bunnrad = document.querySelector('.kart-bunnrad');
         kartElement.style.setProperty('--kart-topp', Math.ceil(topp) + 'px');
+        kartElement.style.setProperty('--kart-bunnhoyde', Math.ceil(bunnrad.offsetHeight) + 'px');
     }
 
     oppdaterKarthoyde();
 
     const standardvisning = { sentrum: [58.1467, 7.9956], zoom: 13 };
-    const kart = L.map(kartElement, { zoomControl: false, maxZoom: 19 })
+    const kart = L.map(kartElement, { zoomControl: false, scrollWheelZoom: true, maxZoom: 19 })
         .setView(standardvisning.sentrum, standardvisning.zoom);
 
     L.DomEvent.disableClickPropagation(bekreftelse);
@@ -265,10 +274,10 @@
     const panel = L.DomUtil.create('div', 'offentlig-kartfilter');
 
     panel.innerHTML = [
-        '<form class="kart-stedsok" role="search" aria-label="Søk etter sted på kartet">',
-        '<label for="kartSted" class="kart-skjult">Sted eller adresse</label>',
+        '<form class="kart-stedsok" role="search" aria-label="Søk på kartet">',
+        '<label for="kartSted" class="kart-skjult">Sted, ressurs, hendelse eller behov</label>',
         '<div class="kart-sokrad">',
-        '<input id="kartSted" type="search" placeholder="Søk etter ressurs eller sted" autocomplete="off" minlength="2" required />',
+        '<input id="kartSted" type="search" placeholder="Søk etter sted, ressurs, hendelse eller behov" autocomplete="off" minlength="2" required />',
         '<button type="submit">Søk</button>',
         '</div>',
         '<p class="kart-sokstatus" role="status"></p>',
@@ -467,7 +476,7 @@
 
     window.addEventListener('resize', oppdaterFullskjerm);
     const hoydeObserver = new ResizeObserver(oppdaterFullskjerm);
-    for (const element of document.querySelectorAll('.offentlig-site-header, .kart-oversiktsvalg')) {
+    for (const element of document.querySelectorAll('.offentlig-site-header, .kart-oversiktsvalg, .kart-bunnrad, .kart-hendelser, [data-oversikt-varsel]')) {
         hoydeObserver.observe(element);
     }
     oppdaterFullskjerm();
@@ -536,7 +545,9 @@
 
             const merke = L.marker(gruppe[0].markor.getLatLng(), {
                 icon: L.divIcon({
-                    className: 'kart-samlemarkor',
+                    className: 'kart-samlemarkor kart-samlemarkor--' +
+                        (gruppe.every(({ type }) => type.key === gruppe[0].type.key)
+                            ? gruppe[0].type.key : 'blandet'),
                     html: String(gruppe.length),
                     iconSize: [30, 30],
                     iconAnchor: [15, 15],
@@ -976,7 +987,7 @@
     }
 
 // Hvert søkefelt har egne forespørsler og søkeresultater.
-    function kobleSok(skjema, vedValg, inkluderRessurser) {
+    function kobleSok(skjema, vedValg, inkluderKarttreff) {
         const input = skjema.querySelector('input[type="search"]');
         const status = skjema.querySelector('.kart-sokstatus');
         const liste = skjema.querySelector('.kart-stedsforslag');
@@ -1033,50 +1044,38 @@
                 return;
             }
 
-            let ressursAntall = 0;
+            let karttreffAntall = 0;
 
-            if (inkluderRessurser) {
-                const ord = tekst
-                    .toLocaleLowerCase('nb-NO')
-                    .split(/\s+/);
+            if (inkluderKarttreff) {
+                const ord = tekst.toLocaleLowerCase('nb-NO').split(/\s+/);
+                const grupper = [
+                    ['ressurser', 'Ressurs'],
+                    ['kriser', 'Hendelse'],
+                    ['behov', 'Behov']
+                ];
 
-                for (const ressurs of data.ressurser ?? []) {
-                    const kategori = ressurs.kategoriId === 1
-                        ? 'kjøretøy transport'
-                        : ressurs.kategoriId === 2
-                            ? 'utstyr'
-                            : '';
+                for (const [type, etikett] of grupper) {
+                    for (const item of data[type] ?? []) {
+                        if (!gyldig(item.latitude, item.longitude)) continue;
 
-                    const soketekst = [
-                        ressurs.navn,
-                        ressurs.kategori,
-                        kategori,
-                        ressurs.adresse,
-                        ressurs.tilbyder,
-                        ressurs.kontaktpunkt
-                    ]
-                        .filter(Boolean)
-                        .join(' ')
-                        .toLocaleLowerCase('nb-NO');
+                        const kategori = { 1: 'kjøretøy transport', 2: 'utstyr' }[item.kategoriId];
+                        const soketekst = [
+                            item.navn, item.kategori, kategori, item.adresse, item.tilbyder,
+                            item.kontaktpunkt, item.type, item.beskrivelse, item.status
+                        ].filter(Boolean).join(' ').toLocaleLowerCase('nb-NO');
 
-                    if (
-                        !gyldig(ressurs.latitude, ressurs.longitude) ||
-                        !ord.every(del => soketekst.includes(del))
-                    ) {
-                        continue;
+                        if (!ord.every(del => soketekst.includes(del))) continue;
+
+                        leggTil({
+                            navn: item.navn,
+                            punkt: L.latLng(item.latitude, item.longitude),
+                            zoom: 16,
+                            type,
+                            item
+                        }, etikett + ' · ');
+
+                        karttreffAntall++;
                     }
-
-                    leggTil({
-                        navn: ressurs.navn,
-                        punkt: L.latLng(
-                            ressurs.latitude,
-                            ressurs.longitude
-                        ),
-                        zoom: 16,
-                        ressurs
-                    }, 'Ressurs · ');
-
-                    ressursAntall++;
                 }
             }
 
@@ -1092,9 +1091,9 @@
 
             knapp.disabled = true;
 
-            status.textContent = ressursAntall
-                ? ressursAntall +
-                ' ressurser funnet. Søker også etter steder …'
+            status.textContent = karttreffAntall
+                ? karttreffAntall +
+                ' karttreff funnet. Søker også etter steder …'
                 : 'Søker etter sted …';
 
             try {
@@ -1109,14 +1108,14 @@
                     leggTil(sted, 'Sted · ');
                 }
 
-                status.textContent = steder.length || ressursAntall
+                status.textContent = steder.length || karttreffAntall
                     ? 'Velg et treff i listen.'
                     : 'Ingen treff. Prøv et annet søk.';
             } catch {
                 if (minVersjon !== versjon) return;
 
-                status.textContent = ressursAntall
-                    ? 'Velg en ressurs. Stedssøket er utilgjengelig akkurat nå.'
+                status.textContent = karttreffAntall
+                    ? 'Velg et karttreff. Stedssøket er utilgjengelig akkurat nå.'
                     : 'Stedssøket kunne ikke fullføres. Prøv igjen.';
             } finally {
                 clearTimeout(timeout);
@@ -1137,14 +1136,14 @@
             animate: false
         });
 
-        if (treff.ressurs) {
+        if (treff.item) {
             const type = typer.find(
-                type => type.key === 'ressurser'
+                type => type.key === treff.type
             );
 
             L.popup()
                 .setLatLng(treff.punkt)
-                .setContent(popup(treff.ressurs, type.felter))
+                .setContent(popup(treff.item, type.felter))
                 .openOn(kart);
         } else if (
             markeringSkjema?.dataset.kartmarkering === 'behov' &&
@@ -1505,12 +1504,6 @@
     for (const knapp of handlingsknapper) {
         knapp.addEventListener('click', async () => {
             if (!await lagreForBytte()) return;
-            if (knapp.getAttribute('aria-controls') === 'kartNyttBehov') {
-                const url = new URL('/Behov', window.location.origin);
-                for (const id of forespurteHendelser) url.searchParams.append('hendelser', id);
-                window.location.assign(url);
-                return;
-            }
             visHandling(aktivKnapp === knapp ? null : knapp);
         });
     }
@@ -1526,50 +1519,6 @@
     for (const knapp of handlinger.querySelectorAll('[data-kartavbryt]')) {
         knapp.addEventListener('click', lukkHandling);
     }
-
-    const matchPanel = document.getElementById('kartMatch');
-    const matchSok = document.getElementById('kartMatchSok');
-    const matchStatus = matchPanel.querySelector('.kart-matchstatus');
-    const matchTreff = [...matchPanel.querySelectorAll('.kart-matchtreff')];
-
-    function filtrerMatch() {
-        if (!matchStatus) return;
-        const tekst = matchSok.value.trim().toLocaleLowerCase('nb-NO');
-        const type = matchPanel.querySelector('input[name="matchtype"]:checked').value;
-
-        for (const treff of matchTreff) {
-            treff.hidden = !valgteHendelser.some(hendelse => hendelse.id === Number(treff.dataset.crisisId)) ||
-                (type && treff.dataset.matchType !== type) ||
-                !treff.dataset.matchSok.toLocaleLowerCase('nb-NO').includes(tekst);
-        }
-
-        matchStatus.hidden = matchTreff.some(treff => !treff.hidden);
-    }
-
-    matchPanel.addEventListener('submit', async event => {
-        const form = event.target;
-        event.preventDefault();
-        const row = form.closest('.kart-matchtreff');
-        if (!valgteHendelser.some(hendelse => hendelse.id === Number(row?.dataset.crisisId)) || lagrer) return;
-        lagrer = true;
-        oppdaterArbeid();
-        form.inert = true;
-        try {
-            const response = await fetch(form.action, { method: 'POST', body: new FormData(form) });
-            if (!response.ok || new URL(response.url).pathname.toLowerCase().includes('/account/'))
-                throw new Error('Handlingen kunne ikke lagres. Kontroller innloggingen og prøv igjen.');
-            lagrer = false;
-            skjemaEndret = false;
-            window.location.reload();
-        } catch (error) {
-            lagrer = false;
-            form.inert = false;
-            oppdaterArbeid();
-            arbeidsstatus.textContent = error.message;
-        }
-    });
-    matchSok.addEventListener('input', filtrerMatch);
-    matchPanel.querySelector('.kart-valgfelt').addEventListener('change', filtrerMatch);
 
     kartElement.addEventListener('keydown', event => {
         if (event.key === 'Escape' && aktivKnapp) {
@@ -1749,7 +1698,6 @@
     }
     for (const item of data.markeringer ?? []) leggTilMarkering(item);
     oppdaterSoneliste();
-    filtrerMatch();
 
     // Åpner en valgt oppføring fra kortenes lister.
     document.addEventListener('oversikt:vis-pa-kart', event => {

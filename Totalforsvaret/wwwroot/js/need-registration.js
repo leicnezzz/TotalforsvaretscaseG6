@@ -21,19 +21,52 @@
     const fieldError = document.createElement('div');
     steps[0].querySelector('h2').after(fieldError);
     let selectedAddress = '';
+    const area = location?.hasAttribute('data-fill-area') ? form.elements.Area : null;
+    let autoArea = '';
 
     const address = location ? window.ParatusResourceAddress.attach(steps[1], label => {
         selectedAddress = label;
+        if (area && label && (!area.value.trim() || area.value === autoArea)) {
+            autoArea = label.slice(0, area.maxLength);
+            area.value = autoArea;
+        }
         location.textContent = locationText();
         location.classList.remove('text-danger');
-    }, { allowMapSelection: true, markerColor }) : null;
+    }, { allowMapSelection: true, lookupMapAddress: true, markerColor }) : null;
 
+    const crisisLocationsElement = form.querySelector('[data-crisis-locations]');
+    if (address && crisisLocationsElement) {
+        const locations = new Map(JSON.parse(crisisLocationsElement.textContent)
+            .map(point => [String(point.Id), point]));
+        const crisis = form.elements.CrisisId;
+        const useCrisisLocation = form.querySelector('[data-use-crisis-location]');
+        const selectedLocation = () => locations.get(crisis.value);
+
+        function applyCrisisLocation() {
+            const point = selectedLocation();
+            useCrisisLocation.hidden = !point;
+            if (point) {
+                address.lookupAddress({ lat: point.Latitude, lng: point.Longitude });
+            } else {
+                form.elements.Latitude.value = '';
+                form.elements.Longitude.value = '';
+                selectedAddress = '';
+                address.reset();
+                location.textContent = locationText();
+            }
+        }
+
+        useCrisisLocation.hidden = !selectedLocation();
+        useCrisisLocation.addEventListener('click', applyCrisisLocation);
+        crisis.addEventListener('change', applyCrisisLocation);
+        if (!address.valid() && selectedLocation()) applyCrisisLocation();
+    }
     function locationText() {
         if (!address.valid()) return 'Ingen plassering valgt.';
         const latitude = form.elements.Latitude.value;
         const longitude = form.elements.Longitude.value;
         const coordinates = latitude + ', ' + longitude;
-        return selectedAddress ? selectedAddress + ' (' + coordinates + ')' : coordinates;
+        return selectedAddress || 'Kartpunkt: ' + coordinates;
     }
 
     function refreshReviewMap() {
@@ -92,7 +125,7 @@
 
 
     function invalidField() {
-        return fields.find(field => !field.value.trim() || !field.checkValidity());
+        return fields.find(field => (field !== area && !field.value.trim()) || !field.checkValidity());
     }
 
     function showFieldError(field) {
@@ -110,9 +143,16 @@
     }
 
     function checkLocation() {
-        if (!address || address.valid()) return true;
+        if (!address) return true;
+        if (address.pending()) {
+            location.textContent = 'Finner nærmeste adresse …';
+            return false;
+        }
+        if (address.valid() && (!area || area.value.trim())) return true;
         showStep(1);
-        location.textContent = 'Velg en adresse fra forslagene eller klikk på kartet.';
+        location.textContent = address.valid() && area
+            ? 'Ingen adresse ble funnet. Gå tilbake og fyll ut området manuelt.'
+            : 'Velg en adresse fra forslagene eller klikk på kartet.';
         location.classList.add('text-danger');
         return false;
     }
@@ -141,7 +181,10 @@
         if (!checkLocation()) return;
         review.replaceChildren();
         fields.forEach(field => {
-            const value = field.selectedOptions?.[0]?.textContent || field.value;
+            const value = field.type === 'datetime-local' && field.value
+                ? new Intl.DateTimeFormat('nb-NO', { dateStyle: 'short', timeStyle: 'short', hour12: false })
+                    .format(new Date(field.value))
+                : field.selectedOptions?.[0]?.textContent || field.value;
             addReviewItem((field.labels?.[0]?.textContent || field.name).trim(), value.trim());
         });
         if (address) addReviewItem('Plassering', locationText());

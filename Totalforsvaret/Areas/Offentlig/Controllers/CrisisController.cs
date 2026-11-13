@@ -31,7 +31,12 @@ public class CrisisController : Controller
     {
         var crises = await _context.Crises
             .AsNoTracking()
-            .OrderByDescending(crisis => crisis.StartTime)
+            .OrderByDescending(crisis =>
+                crisis.Severity == "Kritisk" ? 4 :
+                crisis.Severity == "Høy" ? 3 :
+                crisis.Severity == "Middels" ? 2 :
+                crisis.Severity == "Lav" ? 1 : 0)
+            .ThenByDescending(crisis => crisis.StartTime)
             .ThenByDescending(crisis => crisis.Id)
             .ToListAsync();
 

@@ -499,3 +499,7 @@ body.offentlig-page .offentlig-site-header .inbox-icon-link {
 body.offentlig-page .offentlig-site-header .account-copy small {
     color: #d3e0e5;
 }
+
+body.offentlig-page .private-page-actions .private-page-action {
+    color: #163c4c;
+}

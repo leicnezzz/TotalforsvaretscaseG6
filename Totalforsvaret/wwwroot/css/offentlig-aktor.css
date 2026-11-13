@@ -218,19 +218,26 @@
 }
 
 /* Operativt kart */
-#kartSokToolbar {
+#kartSokToolbar .kart-stedsok,
+#offentligKart .kart-stedsok {
     --offentlig: #72d9df;
     --kant: #dce5e5;
     --tekst: #20343d;
     --morkegronn: #163c4c;
-    position: relative;
-    z-index: 2;
-    flex: 0 1 380px;
+    --kart-kontrollhoyde: 40px;
     min-width: 0;
     color: var(--tekst);
-    font-size: 14px;
+    font: 14px/1.5 Roboto, sans-serif;
 }
 
+#kartSokToolbar {
+    position: relative;
+    z-index: 2;
+    min-width: 0;
+}
+
+#offentligKart .kart-stedsok .kart-sokstatus,
+#offentligKart .kart-stedsok .kart-stedsforslag,
 #kartSokToolbar .kart-sokstatus,
 #kartSokToolbar .kart-stedsforslag {
     position: absolute;
@@ -241,6 +248,7 @@
     box-shadow: 0 3px 12px #0003;
 }
 
+#offentligKart .kart-stedsok .kart-stedsforslag,
 #kartSokToolbar .kart-stedsforslag {
     top: calc(100% + 36px);
     background: white;
@@ -262,8 +270,8 @@
     --kart-topp: 130px;
     position: relative;
     width: 100%;
-    height: calc(100dvh - var(--kart-topp, 130px) - 8px);
-    min-height: 440px;
+    height: calc(100dvh - var(--kart-topp, 130px) - var(--kart-bunnhoyde, 52px) - 8px);
+    min-height: 0;
     border: 1px solid var(--kant);
     border-radius: 10px;
     background: #dce5e5;
@@ -468,7 +476,7 @@
 }
 
 .kart-handlingsrad > :hover,
-.kart-filterknapp:hover {
+.kart-filterknapp:hover:not(:disabled) {
     background: #eaf2f5;
 }
 
@@ -870,7 +878,7 @@
 
 #offentligKart .kart-stedsok {
     left: 50%;
-    width: min(30%, 340px);
+    width: min(360px, calc(100% - 2 * var(--kart-marg)));
     transform: translateX(-50%);
     z-index: 810;
 }
@@ -889,7 +897,7 @@
     #offentligKart:is(:fullscreen, .kart-fullskjerm) .kart-stedsok {
         top: calc(var(--kart-marg) + var(--kart-kontrollhoyde) + 8px);
         left: var(--kart-marg);
-        width: min(340px, calc(100% - 2 * var(--kart-marg)));
+        width: min(360px, calc(100% - 2 * var(--kart-marg)));
         transform: none;
     }
 
@@ -1881,7 +1889,11 @@ body.offentlig-page {
 .kart-hendelser summary { cursor: pointer; padding: 10px 14px; background: white; border: 1px solid #163c4c; border-radius: 8px; }
 #kartHendelserForm { position: absolute; top: calc(100% + 6px); left: 0; z-index: 1100; width: min(360px, 85vw); padding: 16px; background: white; border: 1px solid #c9d5dc; border-radius: 10px; box-shadow: 0 6px 20px #163c4c20; }
 #kartArbeidsstatus { font-size: 13px; }
-.kart-handlingsrad button:disabled { opacity: .5; cursor: not-allowed; }
+.kart-handlingsrad button:disabled,
+.kart-filterknapp:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
 @media (max-width: 1280px) {
     .offentlig-site-header .primary-nav:has(#kartSokToolbar) {
         grid-template-columns: minmax(0, 1fr) minmax(0, max-content);
@@ -2176,4 +2188,83 @@ body.offentlig-page {
 .kart-tegn-sone {
     border-radius: 50%;
     background: #6e42a1;
+}
+
+.offentlig-dashboard .situasjonskart {
+    margin-bottom: 0;
+}
+
+.kart-bunnrad,
+.kart-bunnhandlinger {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+}
+
+.kart-bunnrad {
+    padding-block: 8px;
+}
+
+.kart-bunnrad .kart-forklaring {
+    margin: 0;
+    padding: 0;
+}
+
+.kart-bunnhandlinger {
+    margin-inline-start: auto;
+}
+
+@media screen {
+    html:has(.offentlig-dashboard #offentligKart),
+    body:has(.offentlig-dashboard #offentligKart) {
+        overflow: clip;
+    }
+}
+
+#kartDetaljer {
+    --morkegronn: #163c4c;
+}
+
+.kart-filterknapp[aria-controls="kartDetaljer"] {
+    border-color: #163c4c;
+    background: #163c4c;
+    color: #fff;
+}
+
+.kart-filterknapp[aria-controls="kartDetaljer"]:hover,
+.kart-filterknapp[aria-controls="kartDetaljer"][aria-expanded="true"] {
+    border-color: #225466;
+    background: #225466;
+    color: #fff;
+}
+
+.offentlig-site-header:has(#kartSokToolbar .kart-stedsforslag:not([hidden])) {
+    position: relative;
+    z-index: 1200;
+    overflow: visible;
+}
+
+#kartSokToolbar:has(.kart-stedsforslag:not([hidden])) {
+    z-index: 3;
+}
+
+:is(#kartSokToolbar, #offentligKart .kart-stedsok)
+    .kart-sokstatus:empty + .kart-stedsforslag {
+    top: calc(100% + 4px);
+}
+
+.kart-samlemarkor--ressurser { background: #3b6e43; }
+.kart-samlemarkor--behov { background: #e7be6b; color: #17252e; }
+.kart-samlemarkor--kriser { background: #a64232; }
+.kart-samlemarkor--veihindringer { background: #a24512; }
+.kart-samlemarkor--blandet { background: #171717; }
+
+[data-oversikt-panel="treff"] .oppfolging-kort {
+    border-color: #a8bcae;
+    padding: 12px 16px;
+}
+
+#kartSokToolbar .kart-stedsforslag {
+    z-index: 4;
 }

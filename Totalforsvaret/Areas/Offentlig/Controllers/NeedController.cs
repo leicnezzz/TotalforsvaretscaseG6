@@ -37,9 +37,10 @@ public class NeedController : Controller
         var viewModel = new NeedCreateViewModel
         {
             Crises = await GetCrisesAsync(apneHendelser),
+            CrisisLocations = await GetCrisisLocationsAsync(apneHendelser),
             CrisisId = apneHendelser.Count == 1 ? apneHendelser[0] :
                 apneHendelser.Count == 0 ? crisisId : null,
-            Status = "Åpen"
+            Status = "Under behandling"
         };
 
         return View(viewModel);
@@ -68,6 +69,7 @@ public class NeedController : Controller
         if (!ModelState.IsValid)
         {
             viewModel.Crises = await GetCrisesAsync(apneHendelser);
+            viewModel.CrisisLocations = await GetCrisisLocationsAsync(apneHendelser);
             return View(viewModel);
         }
 
@@ -140,6 +142,18 @@ public class NeedController : Controller
         }
 
         return LocalRedirect(this.OversiktUrl());
+    }
+
+    private async Task<IReadOnlyList<CrisisMapPoint>> GetCrisisLocationsAsync(List<int> openIds)
+    {
+        var crises = _context.Crises.AsNoTracking()
+            .Where(c => c.Latitude >= -90 && c.Latitude <= 90 &&
+                        c.Longitude >= -180 && c.Longitude <= 180);
+        if (openIds.Count > 0)
+            crises = crises.Where(c => openIds.Contains(c.Id));
+
+        return await crises.Select(c => new CrisisMapPoint(
+            c.Id, c.Name, c.Latitude!.Value, c.Longitude!.Value)).ToListAsync();
     }
 
     private async Task<IReadOnlyList<CrisisMapPoint>> GetActiveCrisesOnMapAsync()

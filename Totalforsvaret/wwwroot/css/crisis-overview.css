@@ -68,15 +68,15 @@
 .crisis-icon {
     display: grid;
     place-items: center;
-    flex: 0 0 58px;
-    height: 58px;
+    flex: 0 0 67px;
+    height: 67px;
     border-radius: 6px;
     background: #eef0f2;
 }
 
 .crisis-icon svg {
-    width: 34px;
-    height: 34px;
+    width: 39px;
+    height: 39px;
 }
 
 .crisis-card-name {
@@ -321,4 +321,17 @@ body:has(.crisis-overview) > .footer {
 .crisis-overview .crisis-batch .crisis-button:enabled:hover {
     border-color: var(--offentlig-blue-hover);
     background: var(--offentlig-blue-hover);
+}
+
+.crisis-card-toggle {
+    border-radius: 8px;
+}
+
+.crisis-card:is(:hover, :focus-within) {
+    box-shadow: 0 5px 16px rgb(36 56 70 / 20%);
+}
+
+.crisis-card-toggle:focus-visible {
+    outline: 2px solid var(--crisis-blue);
+    outline-offset: 3px;
 }

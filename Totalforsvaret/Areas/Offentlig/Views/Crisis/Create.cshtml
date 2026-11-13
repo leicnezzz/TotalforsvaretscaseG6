@@ -31,7 +31,7 @@
           asp-route-id="@(ViewData["EditId"])"
           method="post" class="resource-wizard need-card" data-need-wizard>
 
-            <div asp-validation-summary="All" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <section data-need-step>
                 <h2 class="need-step-title" tabindex="-1">Hva har skjedd?</h2>
@@ -40,7 +40,7 @@
                 </p>
                 <div class="row gy-3">
                     <div class="col-md-6 wizard-fields">
-                        <label asp-for="Name" class="form-label">Navn på hendelsen</label>
+                        <label asp-for="Name" class="form-label">Navn på hendelsen *</label>
                         <input asp-for="Name" class="form-control"
                                placeholder="For eksempel Flom i Kristiansand sentrum"
                                maxlength="100" required />
@@ -48,7 +48,7 @@
                     </div>
 
                     <div class="col-md-6 wizard-fields">
-                        <label asp-for="Type" class="form-label">Type hendelse</label>
+                        <label asp-for="Type" class="form-label">Type hendelse *</label>
                         <select asp-for="Type" class="form-select" required>
                             <option value="">Velg type</option>
                             <option value="Flom">Flom</option>
@@ -60,15 +60,16 @@
                         <span asp-validation-for="Type" class="text-danger"></span>
                     </div>
                     <div class="col-md-6 wizard-fields">
-                        <label asp-for="Area" class="form-label">Område</label>
+                        <label asp-for="Area" class="form-label">Område *</label>
                         <input asp-for="Area" class="form-control"
                                placeholder="For eksempel Kristiansand"
-                               maxlength="100" required />
+                               maxlength="100" aria-describedby="crisis-area-help" />
+                        <small id="crisis-area-help" class="form-text">Stedet som er berørt, for eksempel Kristiansand sentrum. Fylles fra kartvalget hvis feltet er tomt.</small>
                         <span asp-validation-for="Area" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6 wizard-fields">
-                        <label asp-for="Severity" class="form-label">Alvorlighetsgrad</label>
+                        <label asp-for="Severity" class="form-label">Alvorlighetsgrad *</label>
                         <select asp-for="Severity" class="form-select" required>
                             <option value="">Velg alvorlighetsgrad</option>
                             <option value="Lav">Lav</option>
@@ -79,18 +80,19 @@
                         <span asp-validation-for="Severity" class="text-danger"></span>
                     </div>
                     <div class="col-md-6 wizard-fields">
-                        <label asp-for="StartTime" class="form-label">Starttidspunkt</label>
+                        <label asp-for="StartTime" class="form-label">Starttidspunkt *</label>
                         <input asp-for="StartTime"
                                type="datetime-local"
                                asp-format="{0:yyyy-MM-ddTHH:mm}"
-                               step="any"
+                               lang="nb-NO" step="60" aria-describedby="crisis-time-help"
                                class="form-control"
                                required/>
+                        <small id="crisis-time-help" class="form-text">Bruk norsk lokal tid. AM er før kl. 12. PM er fra kl. 12.</small>
                         <span asp-validation-for="StartTime" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6 wizard-fields">
-                        <label asp-for="Status" class="form-label">Status</label>
+                        <label asp-for="Status" class="form-label">Status *</label>
                         <select asp-for="Status" class="form-select" required>
                             <option value="">Velg status</option>
                             <option value="Aktiv">Aktiv</option>
@@ -100,14 +102,15 @@
                         <span asp-validation-for="Status" class="text-danger"></span>
                     </div>
                     <div class="col-12 wizard-fields">
-                        <label asp-for="Description" class="form-label">Beskriv hendelsen</label>
-                    <textarea asp-for="Description" class="form-control"
+                        <label asp-for="Description" class="form-label">Beskriv hendelsen *</label>
+                        <textarea asp-for="Description" class="form-control"
                                   rows="5" maxlength="1500" required></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
                 </div>
+            </section>
 
-            <section data-need-step>
+            <section data-need-step hidden>
                 <h2 class="need-step-title" tabindex="-1">Hvor har hendelsen oppstått?</h2>
                 <p class="need-step-intro">Søk etter en adresse eller klikk på kartet for å velge plassering.</p>
                 <div class="wizard-fields">
@@ -123,7 +126,7 @@
                 <input asp-for="Longitude" type="hidden" />
                 <span asp-validation-for="Latitude" class="text-danger"></span>
                 <span asp-validation-for="Longitude" class="text-danger"></span>
-                <p id="coordinates" class="text-muted mt-2" data-need-location data-marker-color="#a64232" role="status">Ingen plassering valgt.</p>
+                <p id="coordinates" class="text-muted mt-2" data-need-location data-marker-color="#a64232" data-fill-area role="status">Ingen plassering valgt.</p>
             </section>
 
             <section data-need-step hidden>

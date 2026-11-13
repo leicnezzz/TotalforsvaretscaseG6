@@ -80,16 +80,16 @@
 </header>
     }
 <div class="@(ViewData["FullWidth"] is true ? "container-fluid" : "container")">
-    <main role="main" class="pb-3">
+    <main role="main" class="@(ViewData["HideFooter"] is true ? null : "pb-3")">
         @RenderBody()
     </main>
 </div>
 
-@if (ViewData["RegistrationFooter"] is true)
+@if (ViewData["HideFooter"] is not true && ViewData["RegistrationFooter"] is true)
 {
     <partial name="/Areas/Homepage/Views/Shared/_RegistrationFooter.cshtml" />
 }
-else
+else if (ViewData["HideFooter"] is not true)
 {
     <footer class="border-top footer text-muted">
         <div class="container">

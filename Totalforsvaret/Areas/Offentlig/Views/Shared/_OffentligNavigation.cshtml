@@ -27,8 +27,6 @@
         controller.Equals("Crisis", StringComparison.OrdinalIgnoreCase);
     var isProfile =
         controller.Equals("Profile", StringComparison.OrdinalIgnoreCase);
-    var isInbox =
-        controller.Equals("Inbox", StringComparison.OrdinalIgnoreCase);
 
     var account = await UserManager.GetUserAsync(User);
     var displayName = account?.Navn
@@ -67,22 +65,6 @@
         }
 
         <div class="account-actions">
-            <a class="inbox-icon-link"
-               asp-area="Offentlig"
-               asp-controller="Inbox"
-               asp-action="Index"
-               aria-label="Åpne innboksen"
-               aria-current="@(isInbox ? "page" : null)">
-                <svg class="bell"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     aria-hidden="true">
-                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
-                    <path d="M10 21h4" />
-                </svg>
-            </a>
-
             <details class="account-menu">
                 <summary class="account-link @(isProfile ? "active" : "")"
                          aria-label="Brukermeny for @displayName">

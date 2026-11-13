@@ -1,6 +1,16 @@
 (() => {
     'use strict';
 
+    const varsel = document.querySelector('[data-oversikt-varsel]');
+    if (varsel) {
+        const lukk = () => {
+            clearTimeout(timer);
+            varsel.hidden = true;
+        };
+        const timer = setTimeout(lukk, 3000);
+        varsel.querySelector('.btn-close').addEventListener('click', lukk);
+    }
+
     const dialog = document.getElementById('oversiktDialog');
     const dataElement = document.getElementById('oversiktListeData');
 
@@ -237,12 +247,6 @@
                             }
                         })
                     );
-
-                    document.getElementById('offentligKart')
-                        .scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
                 });
 
                 handlinger.append(kartknapp);
@@ -520,6 +524,23 @@
         });
 
     const treffPanel = paneler.find(item => item.dataset.oversiktPanel === 'treff');
+    const treffSok = treffPanel.querySelector('input[data-treff-sok]');
+    const treffType = treffPanel.querySelector('select[data-treff-type]');
+    const treffRader = [...treffPanel.querySelectorAll('[data-treff-rad]')];
+    const treffTom = treffPanel.querySelector('[data-treff-tom]');
+
+    function filtrerTreff() {
+        const tekst = treffSok.value.trim().toLocaleLowerCase('nb-NO');
+        for (const rad of treffRader) {
+            rad.hidden = (treffType.value !== '' && rad.dataset.treffType !== treffType.value) ||
+                !rad.dataset.treffSok.toLocaleLowerCase('nb-NO').includes(tekst);
+        }
+        treffTom.hidden = treffRader.some(rad => !rad.hidden);
+    }
+
+    treffSok?.addEventListener('input', filtrerTreff);
+    treffType?.addEventListener('change', filtrerTreff);
+
     const nokkel = 'offentligOversiktTreff';
     treffPanel.addEventListener('submit', event => {
         if (event.defaultPrevented) return;

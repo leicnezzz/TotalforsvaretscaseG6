@@ -5,6 +5,7 @@
     if (!hendelser.length) return;
 
     for (const element of document.querySelectorAll('a[href], form[method="post"][action]')) {
+        if (element.hasAttribute("data-lukk-hendelser")) continue;
         const attribute = element.matches('a') ? 'href' : 'action';
         const destination = element.getAttribute(attribute);
         if (!destination || destination.startsWith('#')) continue;

@@ -82,7 +82,10 @@
                         <label asp-for="Status" class="form-label">Status</label>
                         <select asp-for="Status" class="form-select">
                             <option value="">Velg status</option>
-                            <option value="Åpen">Åpen</option>
+                            @if (ViewData["EditId"] != null && Model.Status == "Åpen")
+                            {
+                                <option value="Åpen">Åpen (eksisterende status)</option>
+                            }
                             <option value="Under behandling">Under behandling</option>
                             <option value="Løst">Løst</option>
                         </select>
@@ -101,6 +104,13 @@
             <section data-need-step>
                 <h2 class="need-step-title" tabindex="-1">Hvor trengs ressursene?</h2>
                 <p class="need-step-intro">Søk etter en adresse eller klikk på kartet for å velge plassering.</p>
+                @if (ViewData["EditId"] == null)
+                {
+                    <script type="application/json" data-crisis-locations>@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CrisisLocations))</script>
+                    <button type="button" class="public-button public-button-outline mb-3" data-use-crisis-location hidden>
+                        Bruk hendelsens plassering
+                    </button>
+                }
                 <div class="wizard-fields">
                     <label for="need-address" class="form-label">Søk etter adresse</label>
                     <input id="need-address" data-address-input class="form-control" type="search"

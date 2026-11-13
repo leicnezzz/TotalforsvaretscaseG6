@@ -28,7 +28,7 @@
         field('Confirmed').checked = false;
         render();
         saveDraft();
-    });
+    }, { lookupMapAddress: true });
 // Gjenopprettet et lagret utkast som viser melding hvis det ikke kan åpnes.
     function setBusy(value) {
         busy = value;
@@ -231,7 +231,7 @@
                 values.TilgjengeligFra = values.AvailableFrom;
             }
             for (const name of fields) {
-                if (typeof values[name] === 'string') field(name).value = values[name];
+                if ((!compact || name !== 'Available') && typeof values[name] === 'string') field(name).value = values[name];
             }
             const savedKind = draft.kind || (draft.version === 1
                 ? ({ '2': 'vehicle', '3': 'equipment' })[draft.category]
@@ -291,7 +291,7 @@
         }
         render();
         saveDraft();
-    }); // Oppdaterer skjemaet når brukeren velger en ny kategori, og nullstiller feltene som ikke gjelder for ny kategori. 
+    }); // Oppdaterer skjemaet når brukeren velger en ny kategori, og nullstiller feltene som ikke gjelder for ny kategori.
 
     field('HasRegistrationNumber').forEach(radio => radio.addEventListener('change', () => {
         if (radio.checked && radio.value === 'false') {

@@ -77,50 +77,51 @@
                     <p>Søk på adressen din og velg hva du vil se på kartet.</p>
                 </header>
                 <div class="shelter-panel">
-                <div class="shelter-search">
-                    <details class="shelter-help">
-                        <summary>Slik bruker du kartet</summary>
-                        <ol class="shelter-instructions">
-                            <li>Skriv inn gatenavn og husnummer. Velg riktig adresse blant forslagene.</li>
-                            <li>Trykk <strong>Søk</strong>. Hvis du får flere treff, velg riktig adresse.</li>
-                            <li>Velg Tilfluktsrom og/eller Hjertestartere for å se dem på kartet. Hjertestartere vises når du zoomer inn.
-                                Trykk på en adresse i tabellen for å se tilfluktsrommet på kartet.</li>
-                        </ol>
-                    </details>
-                    <form id="tilfluktsrom-sok">
-                        <label for="tilfluktsrom-adresse">Adresse</label>
+                    <div class="shelter-search">
+                   
+                        <form id="tilfluktsrom-sok">
+                            <label for="tilfluktsrom-adresse">Adresse</label>
 
-                        <div class="shelter-search-controls">
-                            <input id="tilfluktsrom-adresse"
-                                   name="adresse"
-                                   type="search"
-                                   placeholder="Gatenavn, husnummer og ev. postnummer"
-                                   aria-describedby="tilfluktsrom-adresse-hjelp"
-                                   required disabled/>
-                            <button type="submit" disabled>Søk</button>
-                        </div>
+                            <div class="shelter-search-controls">
+                                <input id="tilfluktsrom-adresse"
+                                       name="adresse"
+                                       type="search"
+                                       placeholder="Gatenavn, husnummer og ev. postnummer"
+                                       aria-describedby="tilfluktsrom-adresse-hjelp"
+                                       required disabled/>
+                                <button type="submit" disabled>Søk</button>
+                            </div>
 
-                        <p id="tilfluktsrom-adresse-hjelp">Eksempel: Markens gate 12, 4611</p>
+                            <p id="tilfluktsrom-adresse-hjelp">Eksempel: Markens gate 12, 4611</p>
 
-                        <p id="tilfluktsrom-status" role="status"></p>
-                    </form>
-                </div>
+                            <p id="tilfluktsrom-status" role="status"></p>
+                        </form>
+                    </div>
 
-                <p id="tilfluktsrom-utskrift-adresse" class="shelter-print-address"></p>
+                    <p id="tilfluktsrom-utskrift-adresse" class="shelter-print-address"></p>
 
-                <ul id="tilfluktsrom-adressetreff"
-                    aria-label="Adresser som matcher søket"></ul>
-                <div class="shelter-aed-controls" hidden>
-                    <label>
-                        <input id="vis-tilfluktsrom" type="checkbox"/>
-                        Tilfluktsrom
-                    </label>
-                    <label>
-                        <input id="vis-hjertestartere" type="checkbox"/>
-                        Hjertestartere
-                    </label>
-                    <p id="hjertestarter-status" role="status"></p>
-                </div>
+                    <ul id="tilfluktsrom-adressetreff"
+                        aria-label="Adresser som matcher søket"></ul>
+                    <div class="shelter-aed-controls" hidden>
+                        <label>
+                            <input id="vis-tilfluktsrom" type="checkbox"/>
+                            Tilfluktsrom
+                        </label>
+                        <label>
+                            <input id="vis-hjertestartere" type="checkbox"/>
+                            Hjertestartere
+                        </label>
+                        <p id="hjertestarter-status" role="status"></p>
+                    </div>
+                <details class="shelter-help">
+                    <summary>Slik bruker du kartet</summary>
+                    <ol class="shelter-instructions">
+                        <li>Skriv inn gatenavn og husnummer. Velg riktig adresse blant forslagene.</li>
+                        <li>Trykk <strong>Søk</strong>. Hvis du får flere treff, velg riktig adresse.</li>
+                        <li>Velg Tilfluktsrom og/eller Hjertestartere for å se dem på kartet. Hjertestartere vises når du zoomer inn.
+                            Trykk på en adresse i tabellen for å se tilfluktsrommet på kartet.</li>
+                    </ol>
+                </details>
                 </div>
 
                 <div id="tilfluktsrom-kart"

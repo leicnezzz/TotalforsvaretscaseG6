@@ -105,100 +105,102 @@
                         </div>
 
                         <div class="inbox-content">
-                            <section class="inbox-section">
-                                <h3>Behov</h3>
+                            <div class="inbox-info-grid">
+                                <section class="inbox-section">
+                                    <h3>Behov</h3>
 
-                                <dl class="inbox-facts">
-                                    <div>
-                                        <dt>Navn</dt>
-                                        <dd>@item.NeedName</dd>
-                                    </div>
-
-                                    <div>
-                                        <dt>Type</dt>
-                                        <dd>@item.NeedType</dd>
-                                    </div>
-
-                                    <div>
-                                        <dt>Prioritet</dt>
-                                        <dd>@item.NeedPriority</dd>
-                                    </div>
-
-                                    <div>
-                                        <dt>Status</dt>
-                                        <dd>@item.NeedStatus</dd>
-                                    </div>
-
-                                    @if (item.NeedDeadline.HasValue)
-                                    {
+                                    <dl class="inbox-facts">
                                         <div>
-                                            <dt>Frist</dt>
+                                            <dt>Navn</dt>
+                                            <dd>@item.NeedName</dd>
+                                        </div>
+
+                                        <div>
+                                            <dt>Type</dt>
+                                            <dd>@item.NeedType</dd>
+                                        </div>
+
+                                        <div>
+                                            <dt>Prioritet</dt>
+                                            <dd>@item.NeedPriority</dd>
+                                        </div>
+
+                                        <div>
+                                            <dt>Status</dt>
+                                            <dd>@item.NeedStatus</dd>
+                                        </div>
+
+                                        @if (item.NeedDeadline.HasValue)
+                                        {
+                                            <div>
+                                                <dt>Frist</dt>
+                                                <dd>
+                                                    @(item.NeedDeadline.Value.ToString(
+                                                        "dd.MM.yyyy HH:mm"))
+                                                </dd>
+                                            </div>
+                                        }
+                                    </dl>
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        item.NeedDescription))
+                                    {
+                                        <p class="inbox-description">
+                                            @item.NeedDescription
+                                        </p>
+                                    }
+                                </section>
+
+                                <section class="inbox-section">
+                                    <h3>Ressurs</h3>
+
+                                    <dl class="inbox-facts">
+                                        <div>
+                                            <dt>Kategori</dt>
                                             <dd>
-                                                @item.NeedDeadline.Value
-                                                    .ToString("dd.MM.yyyy HH:mm")
+                                                @(item.CategoryName == "Vehicles"
+                                                    ? "Kjøretøy"
+                                                    : "Utstyr")
                                             </dd>
                                         </div>
-                                    }
-                                </dl>
 
-                                @if (!string.IsNullOrWhiteSpace(
-                                    item.NeedDescription))
-                                {
-                                    <p class="inbox-description">
-                                        @item.NeedDescription
-                                    </p>
-                                }
-                            </section>
+                                        <div>
+                                            <dt>Tilgjengelig</dt>
+                                            <dd>
+                                                @(item.ResourceAvailable
+                                                    ? "Ja"
+                                                    : "Nei")
+                                            </dd>
+                                        </div>
 
-                            <section class="inbox-section">
-                                <h3>Ressurs</h3>
+                                        @if (!string.IsNullOrWhiteSpace(
+                                            item.ResourceAddress))
+                                        {
+                                            <div>
+                                                <dt>Plassering</dt>
+                                                <dd>@item.ResourceAddress</dd>
+                                            </div>
+                                        }
 
-                                <dl class="inbox-facts">
-                                    <div>
-                                        <dt>Kategori</dt>
-                                        <dd>
-                                            @(item.CategoryName == "Vehicles"
-                                                ? "Kjøretøy"
-                                                : "Utstyr")
-                                        </dd>
-                                    </div>
-
-                                    <div>
-                                        <dt>Tilgjengelig</dt>
-                                        <dd>
-                                            @(item.ResourceAvailable
-                                                ? "Ja"
-                                                : "Nei")
-                                        </dd>
-                                    </div>
+                                        @if (!string.IsNullOrWhiteSpace(
+                                            item.ResourceCondition))
+                                        {
+                                            <div>
+                                                <dt>Tilstand</dt>
+                                                <dd>@item.ResourceCondition</dd>
+                                            </div>
+                                        }
+                                    </dl>
 
                                     @if (!string.IsNullOrWhiteSpace(
-                                        item.ResourceAddress))
+                                        item.ResourceInformation))
                                     {
-                                        <div>
-                                            <dt>Plassering</dt>
-                                            <dd>@item.ResourceAddress</dd>
-                                        </div>
+                                        <p class="inbox-description">
+                                            @item.ResourceInformation
+                                        </p>
                                     }
-
-                                    @if (!string.IsNullOrWhiteSpace(
-                                        item.ResourceCondition))
-                                    {
-                                        <div>
-                                            <dt>Tilstand</dt>
-                                            <dd>@item.ResourceCondition</dd>
-                                        </div>
-                                    }
-                                </dl>
-
-                                @if (!string.IsNullOrWhiteSpace(
-                                    item.ResourceInformation))
-                                {
-                                    <p class="inbox-description">
-                                        @item.ResourceInformation
-                                    </p>
-                                }
-                            </section>
+                                </section>
+                            </div>
 
                             <section class="inbox-section">
                                 <h3>Kontakt og tidspunkt</h3>
@@ -207,9 +209,8 @@
                                     <div>
                                         <dt>Forespurt</dt>
                                         <dd>
-                                            @item.RequestedAtUtc
-                                                .ToLocalTime()
-                                                .ToString("dd.MM.yyyy HH:mm")
+                                            @(item.RequestedAtUtc.ToLocalTime()
+                                                .ToString("dd.MM.yyyy HH:mm"))
                                         </dd>
                                     </div>
 
@@ -258,11 +259,9 @@
                                                 @message.SenderName
                                             </strong>
 
-                                            <time datetime="@(
-                                                message.SentAtUtc.ToString("O"))">
-                                                @message.SentAtUtc
-                                                    .ToLocalTime()
-                                                    .ToString("dd.MM.yyyy HH:mm")
+                                            <time datetime="@(message.SentAtUtc.ToString("O"))">
+                                                @(message.SentAtUtc.ToLocalTime()
+                                                    .ToString("dd.MM.yyyy HH:mm"))
                                             </time>
 
                                             <p>@message.Body</p>
@@ -270,7 +269,8 @@
                                     }
                                 }
 
-                                <form asp-area="Offentlig"
+                                <form class="inbox-message-form"
+                                      asp-area="Offentlig"
                                       asp-controller="Inbox"
                                       asp-action="Reply"
                                       method="post">

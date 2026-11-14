@@ -11,12 +11,19 @@ public class InboxViewModel
 
     public InboxItemViewModel? SelectedItem =>
         Items.FirstOrDefault(item => item.AssignmentId == SelectedId);
+
+    // Meldinger for den valgte matchen.
+    public IReadOnlyList<InboxMessageViewModel> Messages { get; init; }
+        = Array.Empty<InboxMessageViewModel>();
 }
 
 public class InboxItemViewModel
 {
     public int AssignmentId { get; init; }
     public int ResourceId { get; init; }
+
+    // Bare ressursens eier kan godta, avslå eller frigi den.
+    public bool CanManageAssignment { get; init; }
 
     public string ResourceName { get; init; } = "";
     public string CategoryName { get; init; } = "";
@@ -50,4 +57,11 @@ public class InboxItemViewModel
         AssignmentStatus.Cancelled => "Avbrutt",
         _ => "Ukjent status"
     };
+}
+
+public class InboxMessageViewModel
+{
+    public string SenderName { get; init; } = "";
+    public string Body { get; init; } = "";
+    public DateTime SentAtUtc { get; init; }
 }

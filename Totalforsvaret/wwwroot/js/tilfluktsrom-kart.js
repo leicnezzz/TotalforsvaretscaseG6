@@ -12,6 +12,13 @@ printButton.addEventListener('click', () => window.print());
     const markers = L.featureGroup().addTo(tilfluktsromKart);
     const aedToggle = document.getElementById('vis-hjertestartere');
     const aedStatus = document.getElementById('hjertestarter-status');
+    const aedControls = document.querySelector('.shelter-aed-controls');
+    const shelterToggle = document.getElementById('vis-tilfluktsrom');
+    tilfluktsromKart.getContainer().classList.add('hide-shelters');
+
+    shelterToggle.addEventListener('change', () => {
+        tilfluktsromKart.getContainer().classList.toggle('hide-shelters', !shelterToggle.checked);
+    });
     const aedLayer = L.layerGroup().addTo(tilfluktsromKart);
 
     const aedIcon = L.divIcon({
@@ -229,9 +236,10 @@ shelterResults.replaceChildren();
                 padding: [24, 24],
                 maxZoom: 16
             });
-           status.textContent = `Viser de ${nearest.length} nærmeste offentlige tilfluktsrommene ved ${label}.`;
+            status.textContent = `Valgt adresse: ${label}. Velg hva du vil se på kartet.`;
            printAddress.textContent = `Valgt adresse: ${label}`;
-printButton.hidden = false;
+            printButton.hidden = false;
+            aedControls.hidden = false;
         } catch {
             status.textContent = 'Kunne ikke hente tilfluktsrom. Prøv å søke på nytt.';
         } finally {

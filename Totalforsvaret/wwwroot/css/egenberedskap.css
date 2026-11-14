@@ -919,7 +919,27 @@ body {
         margin-bottom: 16px;
     }
 .shelter-aed-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-bottom: 12px;
+}
+
+.shelter-aed-controls p {
+    flex-basis: 100%;
+    margin: 0;
+}
+
+.shelter-aed-controls label:has(#vis-tilfluktsrom)::before {
+    background: #2e6840;
+}
+
+#tilfluktsrom-kart.hide-shelters .shelter-map-icon {
+    display: none;
+}
+
+.shelter-aed-controls[hidden] {
+    display: none;
 }
 
 

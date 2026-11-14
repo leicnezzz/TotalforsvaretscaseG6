@@ -83,8 +83,8 @@
                         <ol class="shelter-instructions">
                             <li>Skriv inn gatenavn og husnummer. Velg riktig adresse blant forslagene.</li>
                             <li>Trykk <strong>Søk</strong>. Hvis du får flere treff, velg riktig adresse.</li>
-                            <li>Tilfluktsrommene vises i tabellen under kartet. Trykk på en adresse for å se stedet på kartet.
-                                Hjertestartere vises som markører på kartet.</li>
+                            <li>Velg Tilfluktsrom og/eller Hjertestartere for å se dem på kartet. Hjertestartere vises når du zoomer inn.
+                                Trykk på en adresse i tabellen for å se tilfluktsrommet på kartet.</li>
                         </ol>
                     </details>
                     <form id="tilfluktsrom-sok">
@@ -110,6 +110,10 @@
                 <ul id="tilfluktsrom-adressetreff"
                     aria-label="Adresser som matcher søket"></ul>
                 <div class="shelter-aed-controls" hidden>
+                    <label>
+                        <input id="vis-tilfluktsrom" type="checkbox"/>
+                        Tilfluktsrom
+                    </label>
                     <label>
                         <input id="vis-hjertestartere" type="checkbox"/>
                         Hjertestartere

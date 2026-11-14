@@ -224,6 +224,30 @@ public class InboxController(
         });
     }
     
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Release(int assignmentId)
+    {
+        var assignment = await GetOwnedAssignment(assignmentId);
+
+        if (assignment is null)
+            return NotFound();
+
+        if (assignment.Status != AssignmentStatus.Assigned)
+            return BadRequest("Ressursen er ikke tildelt.");
+
+        assignment.Status = AssignmentStatus.Released;
+        assignment.ClosedAtUtc = DateTime.UtcNow;
+
+        await db.SaveChangesAsync();
+
+        TempData["InboxMessage"] = "Ressursen er frigitt.";
+
+        return RedirectToAction(nameof(Index), new
+        {
+            selectedId = assignmentId
+        });
+    }
 
     private async Task<ResourceAssignment?> GetOwnedAssignment(
         int assignmentId)

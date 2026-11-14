@@ -261,6 +261,12 @@ body {
     line-height: 1.5;
 }
 
+.shelter-help {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #e3e9e5;
+}
+
 .shelter-help summary {
     color: #2e6840;
     font-weight: 700;

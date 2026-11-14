@@ -11,30 +11,63 @@ body {
 }
 
 .beredskap-container {
-    width: min(760px, calc(100% - 32px));
+    width: min(1180px, calc(100% - 32px));
     margin: 0 auto;
-    padding: 28px 0 64px;
+    padding: 0;
 }
 
 .contents-card {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 16px;
     margin: 0 auto 24px;
 }
 
 .contents-card a {
-    padding: 10px 18px;
-    border: 1px solid #2e6840;
-    border-radius: 999px;
+    display: flex;
+    flex: 1 1 280px;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 20px 22px;
+    border-radius: 8px;
     background: #fff;
-    color: #2e6840;
-    font-weight: 700;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+    color: #4f5f66;
+    line-height: 1.4;
     text-decoration: none;
 }
 
 .contents-card a:is(:hover, :focus-visible) {
-    background: #e8f2eb;
+    box-shadow: 0 6px 18px rgb(0 0 0 / 12%);
+}
+
+.contents-card a > span {
+    flex: 1;
+}
+
+.contents-card svg {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border-radius: 50%;
+    background: #e3eee6;
+    fill: none;
+    stroke: #2e6840;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.contents-card strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #1f2a2e;
+    font-size: 1.2rem;
+}
+
+.contents-card b {
+    color: #2e6840;
 }
 
 .section-heading {
@@ -167,10 +200,38 @@ body {
 }
 
 .shelter-section {
-    margin-bottom: 32px;
-    padding: clamp(16px, 4vw, 32px);
+    margin-bottom: 0;
+    padding: 0;
+}
+
+.shelter-panel,
+.shelter-table-wrap {
+    padding: 24px;
     border-radius: 8px;
     background: #fff;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+.shelter-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    column-gap: 24px;
+    align-items: start;
+}
+
+.shelter-section > * {
+    grid-column: 1;
+}
+
+.shelter-section > header,
+.shelter-section > .shelter-table-wrap,
+.shelter-section > .shelter-print-button {
+    grid-column: 1 / -1;
+}
+
+.shelter-section > #tilfluktsrom-kart {
+    grid-column: 2;
+    grid-row: 2;
 }
 
 .shelter-section .section-heading,
@@ -271,6 +332,17 @@ body {
     }
 }
 
+@media (max-width: 800px) {
+    .shelter-section {
+        grid-template-columns: 1fr;
+    }
+
+    .shelter-section > #tilfluktsrom-kart {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}
+
 .courses-section {
     position: relative;
     margin-top: 88px;
@@ -365,7 +437,7 @@ body {
 @media (max-width: 600px) {
     .beredskap-container {
         width: min(100% - 32px, 520px);
-        padding: 24px 0 48px;
+        padding: 24px 0 0;
     }
     
     .checklist-grid,
@@ -605,7 +677,7 @@ body {
 .checklist-section,
 .courses-section {
     margin-top: 0;
-    padding: clamp(28px, 5vw, 56px) 16px;
+    padding: 24px 16px;
     border-radius: 0;
     background: none;
 }
@@ -632,8 +704,8 @@ body {
 
     .checklist-heading h2,
     .courses-section .section-heading h2 {
-        color: #214e30;
-        font-size: clamp(26px, 3vw, 36px);
+        color: #1f2a2e;
+        font-size: 30px;
     }
 
 .checklist-heading .checklist-progress {
@@ -778,6 +850,7 @@ body {
     .beredskap-container,
     #tilfluktsrom {
         width: 100%;
+        display: block;
         margin: 0;
         padding: 0;
         background: #fff;

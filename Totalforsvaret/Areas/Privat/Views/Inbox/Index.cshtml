@@ -343,26 +343,7 @@
                                     </form>
                                 </div>
                             }
-                            else if (item.Status == AssignmentStatus.Assigned)
-                            {
-                                <div class="inbox-actions">
-                                    <form asp-area="Privat"
-                                          asp-controller="Inbox"
-                                          asp-action="Release"
-                                          method="post">
-                                        @Html.AntiForgeryToken()
 
-                                        <input type="hidden"
-                                               name="assignmentId"
-                                               value="@item.AssignmentId" />
-
-                                        <button class="inbox-button inbox-button-secondary"
-                                                type="submit">
-                                            Frigi ressurs
-                                        </button>
-                                    </form>
-                                </div>
-                            }
                         </div>
                     </div>
                 </div>

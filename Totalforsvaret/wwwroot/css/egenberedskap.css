@@ -267,6 +267,12 @@ body {
     border-top: 1px solid #e3e9e5;
 }
 
+#tilfluktsrom-adresse-hjelp {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: #4f5f66;
+}
+
 .shelter-help summary {
     color: #2e6840;
     font-weight: 700;

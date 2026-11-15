@@ -30,6 +30,10 @@
     <link rel="stylesheet"
           href="~/css/Private-home.css"
           asp-append-version="true" />
+    @if (!isPrivateUser && !isPublicUser)
+    {
+        <link rel="stylesheet" href="~/css/public-home.css" asp-append-version="true" />
+    }
     <link rel="stylesheet"
           href="~/css/site-header.css"
           asp-append-version="true" />

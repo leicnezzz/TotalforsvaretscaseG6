@@ -668,3 +668,17 @@ body.offentlig-page .private-page-actions .private-page-action {
         width: 100%;
     }
 }
+@media (max-width: 760px) {
+    .primary-nav.nav-with-brand.nav-open {
+        flex-wrap: wrap;
+    }
+
+    .primary-nav.nav-with-brand.nav-open > .nav-links {
+        position: static;
+        order: 4;
+        flex: 0 0 100%;
+        width: 100%;
+        margin-top: 8px;
+        background: #fff;
+    }
+}

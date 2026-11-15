@@ -512,9 +512,7 @@
 
                             @if (tildeling == null && !ressursOpptatt)
                             {
-                                <form asp-area=""
-                                      asp-controller="OffentligAktor"
-                                      asp-action="VurderRessurs"
+                                <form action="@(Url.Action("VurderRessurs", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
                                       method="post">
 
                                     @Html.AntiForgeryToken()

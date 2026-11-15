@@ -41,7 +41,9 @@
         </svg>
     </template>
 
-    <form class="match-actions" asp-action="VurderRessurs" method="post" data-match-form>
+    <form class="match-actions"
+          action="@(Url.Action("VurderRessurs", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
+          asp-antiforgery="true" method="post" data-match-form>
         <div data-match-pairs></div>
         <button type="submit" class="match-button" data-match-confirm disabled>Match</button>
         <p class="match-hint" data-match-summary role="status">Velg minst ett behov og én ressurs.</p>

@@ -470,11 +470,11 @@
         liste.hidden = Boolean(panel);
         antall.hidden = Boolean(panel);
 
-        if (panel) {
-            tittel.textContent = type === 'treff' ? 'Foreslåtte treff' : 'Krever oppfølging';
-            dialog.showModal();
-            return;
-        }
+       if (panel) {
+    tittel.textContent = 'Foreslåtte treff';
+    dialog.showModal();
+    return;
+}
 
         if (type === 'kriser') {
             apneKriser();

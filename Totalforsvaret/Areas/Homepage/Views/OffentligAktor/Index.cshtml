@@ -120,11 +120,6 @@
                         <span>Foreslåtte treff</span>
                         <span class="stat-tall">@ViewBag.ForeslatteTreff</span>
                     </button>
-                    <button type="button" class="stat-kort"
-                            aria-haspopup="dialog" aria-controls="oversiktDialog" data-oversikt-liste="oppfolging">
-                        <span>Krever oppfølging</span>
-                        <span class="stat-tall">@((ViewBag.AktiveBehovListe as System.Collections.ICollection)?.Count ?? 0)</span>
-                    </button>
                 </div>
             </div>
             <div class="oversikt-handlinger">
@@ -338,48 +333,7 @@
            aria-live="polite"></p>
 
         <div id="oversiktListe" class="oversikt-tabellomrade"></div>
-        <div class="oversikt-tabellomrade pt-3" data-oversikt-panel="oppfolging" hidden>
 
-
-            @if (ViewBag.AktiveBehovListe != null &&
-                 ViewBag.AktiveBehovListe.Count > 0)
-            {
-                @foreach (var behov in ViewBag.AktiveBehovListe)
-                {
-                    <div class="oppfolging-kort" data-prioritet="@behov.Priority">
-                        <strong>@behov.Name</strong>
-                        <p>Type: @behov.Type</p>
-                        <p>Prioritet: @behov.Priority</p>
-                        <p>Status: @behov.Status</p>
-
-                        <div class="d-flex flex-wrap gap-2 mt-2">
-                            <a class="btn btn-sm btn-outline-primary"
-                               asp-area="Offentlig"
-                               asp-controller="Need"
-                               asp-action="Edit"
-                               asp-route-id="@behov.Id">
-                                Endre behov
-                            </a>
-
-                            @if (behov.CrisisId != null)
-                            {
-                                <a class="btn btn-sm btn-outline-secondary"
-                                   asp-area="Offentlig"
-                                   asp-controller="Crisis"
-                                   asp-action="Edit"
-                                   asp-route-id="@behov.CrisisId">
-                                    Endre tilhørende krise
-                                </a>
-                            }
-                        </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <p>Ingen aktive behov registrert.</p>
-            }
-        </div>
         <div class="oversikt-tabellomrade pt-3" data-oversikt-panel="treff" hidden>
 
 

@@ -53,8 +53,18 @@
 }
 
 <header class="site-header">
-    <nav class="primary-nav @(isDashboard ? "nav-with-brand" : "")" aria-label="Hovedmeny">
-        <div class="nav-links">
+    <nav class="primary-nav @(isDashboard ? "nav-with-brand" : "")"
+         aria-label="Hovedmeny">
+
+        <button class="nav-toggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="private-nav-links"
+                aria-label="Åpne meny">
+            <span class="nav-toggle-icon" aria-hidden="true">☰</span>
+        </button>
+
+        <div class="nav-links" id="private-nav-links">
             <a class="@(isDashboard ? "active" : "")"
                aria-current="@(isDashboard ? "page" : null)"
                asp-area="Privat"
@@ -86,13 +96,18 @@
                asp-action="Index">
                 Egenberedskap
             </a>
-            
         </div>
 
         @if (isDashboard)
         {
-            <a class="nav-brand paratus-brand" asp-area="Privat" asp-controller="Dashboard" asp-action="Index">
-                <span class="paratus-brand-text"><strong>PARATUS</strong><small>Mennesket som ressurs</small></span>
+            <a class="nav-brand paratus-brand"
+               asp-area="Privat"
+               asp-controller="Dashboard"
+               asp-action="Index">
+                <span class="paratus-brand-text">
+                    <strong>PARATUS</strong>
+                    <small>Mennesket som ressurs</small>
+                </span>
             </a>
         }
 
@@ -119,12 +134,17 @@
                     @if (hasPhoto)
                     {
                         <img class="avatar avatar-small"
-                             src="@Url.Action("Photo", "Profile", new { area = "Privat" })"
+                             src="@Url.Action(
+                                      "Photo",
+                                      "Profile",
+                                      new { area = "Privat" })"
                              alt="" />
                     }
                     else
                     {
-                        <span class="avatar avatar-small" aria-hidden="true">@initials</span>
+                        <span class="avatar avatar-small" aria-hidden="true">
+                            @initials
+                        </span>
                     }
 
                     <span class="account-copy">
@@ -136,20 +156,35 @@
 
                 <ul class="account-menu-list">
                     <li>
-                        <a asp-area="Privat" asp-controller="Profile" asp-action="Index"
-                           aria-current="@(isProfile ? "page" : null)">Min profil</a>
+                        <a asp-area="Privat"
+                           asp-controller="Profile"
+                           asp-action="Index"
+                           aria-current="@(isProfile ? "page" : null)">
+                            Min profil
+                        </a>
                     </li>
                     <li>
-                        <a asp-area="Privat" asp-controller="Dashboard" asp-action="Index"
-                           aria-current="@(isDashboard ? "page" : null)">Min side</a>
+                        <a asp-area="Privat"
+                           asp-controller="Dashboard"
+                           asp-action="Index"
+                           aria-current="@(isDashboard ? "page" : null)">
+                            Min side
+                        </a>
                     </li>
                     <li>
-                        <a asp-area="" asp-controller="Home" asp-action="Privacy"
-                           aria-current="@(isPrivacy ? "page" : null)">Personvern</a>
+                        <a asp-area=""
+                           asp-controller="Home"
+                           asp-action="Privacy"
+                           aria-current="@(isPrivacy ? "page" : null)">
+                            Personvern
+                        </a>
                     </li>
                     <li>
                         <form id="private-logout"
-                              asp-area="" asp-controller="Account" asp-action="Logout" method="post"
+                              asp-area=""
+                              asp-controller="Account"
+                              asp-action="Logout"
+                              method="post"
                               onsubmit="return window.confirm('Er du sikker på at du vil logge ut?');">
                             <button type="submit">Logg ut</button>
                         </form>
@@ -159,9 +194,7 @@
         </div>
     </nav>
 
-   
     <div class="section-bar">
         <span>@sectionName</span>
     </div>
-    
 </header>

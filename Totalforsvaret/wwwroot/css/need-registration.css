@@ -13,10 +13,6 @@ body:has(.need-page) > .container-fluid {
     color: var(--header-green);
 }
 
-.need-page .private-page-action:hover {
-    text-decoration: underline;
-}
-
 .need-registration {
     width: min(calc(100% - 32px), 760px);
     padding-bottom: 64px;
@@ -191,6 +187,10 @@ body:has(.need-page) > .registration-footer a {
     font-size: 1.25rem;
 }
 
+.public-resource-registration .wizard-description .need-step-title {
+    font-size: clamp(24px, 2.3vw, 35px);
+}
+
 .public-resource-registration .wizard-description p {
     margin: 8px 0 0;
     color: var(--muted);
@@ -212,39 +212,20 @@ body:has(.need-page) > .registration-footer a {
     color: var(--header-green);
 }
 
-.public-resource-registration .wizard-location-next {
-    grid-column: 1;
-}
-
-.public-resource-registration [data-continue="details"] {
-    display: none;
-}
-
-/* Earlier steps stay enabled so their values are included on submission. */
-.public-resource-registration [data-phase="contact"] .wizard-step:not([data-step="availability"]),
-.public-resource-registration [data-phase="map"] .wizard-step:not([data-step="location"]),
-.public-resource-registration [data-phase="review"] .wizard-step:not([data-step="account"], [data-step="confirmation"]),
+.public-resource-registration :is([data-continue], #wizard-additional-next, #wizard-contact-next),
 .public-resource-registration :is(.wizard-toolbar, .public-help, .wizard-description p, #vehicle-address-help, #wizard-account-note),
 .public-resource-registration .resource-wizard > .wizard-hint,
 .public-resource-registration [data-step="availability"] .wizard-fields > .wizard-hint {
     display: none;
 }
 
-.public-resource-registration [data-compact-back] {
-    margin-top: 8px;
+.public-resource-registration .resource-step-actions :is([data-compact-next], #vehicle-submit) {
+    margin-inline-start: auto;
+    min-width: min(100%, 11rem);
 }
 
-.public-resource-registration .resource-wizard :is(#wizard-additional-next, #wizard-contact-next, .wizard-location-next, #vehicle-submit, [data-compact-back]) {
-    width: min(100%, 12rem);
-}
-
-.public-resource-registration .resource-wizard [data-compact-back] {
-    justify-content: center;
-}
-
-.need-page .private-page-actions {
-    min-height: 48px;
-    padding-block: 0;
+.public-resource-registration .need-review :is(dt, dd) {
+    margin: 0;
 }
 
 .need-registration .registration-intro p {
@@ -269,10 +250,39 @@ body:has(.need-page) > .registration-footer a {
     height: clamp(215px, 36vh, 340px);
 }
 
-@media (min-width: 700px) {
-    .public-resource-registration [data-phase="details"] .wizard-step {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+.public-resource-registration :is([data-step="registration-choice"], [data-step="registration-number"], [data-step="resource-details"], [data-step="additional"]) .wizard-description {
+    display: none;
+}
+
+.public-resource-registration .resource-field {
+    min-width: 0;
+}
+
+.public-resource-registration .resource-field > label {
+    margin-bottom: 4px;
+}
+
+.public-resource-registration [data-step="registration-choice"] .wizard-label {
+    margin-bottom: 4px;
+}
+
+@media (min-width: 576px) {
+    .public-resource-registration :is([data-step="resource-details"], [data-step="availability"]) > .wizard-fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         column-gap: 24px;
+    }
+
+    .public-resource-registration [data-equipment-fields] {
+        display: contents;
+    }
+
+    .public-resource-registration #vehicle-information-check {
+        grid-column: 1 / -1;
+    }
+
+    .public-resource-registration :is(.wizard-step:first-of-type, [data-step="registration-number"]) > .wizard-fields {
+        width: calc((100% - 24px) / 2);
     }
 }
 

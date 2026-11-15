@@ -36,6 +36,11 @@
         box-shadow: 0 0 0 4px rgb(46 104 64 / 8%);
     }
 
+    .account-page-public .account-input:focus-within {
+        background: #e6edf0;
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--account-green) 8%, transparent);
+    }
+
     :is(.public-card, .action-card) {
         transition: transform 220ms ease, box-shadow 220ms ease;
         animation: site-fade-in 550ms ease-out backwards;

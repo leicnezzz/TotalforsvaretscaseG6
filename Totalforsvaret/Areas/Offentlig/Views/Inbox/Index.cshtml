@@ -23,19 +23,15 @@
     <link rel="stylesheet"
           href="~/css/Inbox-offentlig.css"
           asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
 </head>
 
 <body class="inbox-page offentlig-page offentlig-inbox">
     <partial name="/Areas/Offentlig/Views/Shared/_OffentligNavigation.cshtml" />
 
+    <partial name="/Areas/Offentlig/Views/Shared/_OffentligTilbake.cshtml" />
+
     <main class="inbox-main">
-        <a class="inbox-back"
-           asp-area=""
-           asp-controller="OffentligAktor"
-           asp-action="Index">
-            <span aria-hidden="true">←</span>
-            Tilbake til oversikten
-        </a>
 
         <section class="inbox-card" aria-labelledby="inbox-title">
 

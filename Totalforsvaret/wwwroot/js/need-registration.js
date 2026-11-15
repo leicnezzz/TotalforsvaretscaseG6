@@ -148,11 +148,9 @@
             location.textContent = 'Finner nærmeste adresse …';
             return false;
         }
-        if (address.valid() && (!area || area.value.trim())) return true;
+        if (address.valid()) return true;
         showStep(1);
-        location.textContent = address.valid() && area
-            ? 'Ingen adresse ble funnet. Gå tilbake og fyll ut området manuelt.'
-            : 'Velg en adresse fra forslagene eller klikk på kartet.';
+        location.textContent = 'Velg en adresse fra forslagene eller klikk på kartet.';
         location.classList.add('text-danger');
         return false;
     }
@@ -185,7 +183,9 @@
                 ? new Intl.DateTimeFormat('nb-NO', { dateStyle: 'short', timeStyle: 'short', hour12: false })
                     .format(new Date(field.value))
                 : field.selectedOptions?.[0]?.textContent || field.value;
-            addReviewItem((field.labels?.[0]?.textContent || field.name).trim(), value.trim());
+            if (field !== area || value.trim()) {
+                addReviewItem((field.labels?.[0]?.textContent || field.name).trim(), value.trim());
+            }
         });
         if (address) addReviewItem('Plassering', locationText());
         showStep(reviewStep);

@@ -1,5 +1,6 @@
 @using Totalforsvaret.Models.resourcemodels
 @using System.Text.Json
+@using Totalforsvaret.Controllers
 @using Totalforsvaret.Areas.Offentlig.Models
 @model List<Resource>
 
@@ -10,8 +11,10 @@
     ViewData["RegistrationFooter"] = true;
     ViewData["HideFooter"] = !isMatch;
 
-    // Sender bare opplysningene kartet trenger.
-    var kartRessurser = Model.Select(ressurs => new
+    var nå = DateTime.Now;
+    var kartRessurser = Model
+        .Where(ressurs => ressurs.TilgjengeligFra == null || ressurs.TilgjengeligFra <= nå)
+        .Select(ressurs => new
     {
         id = ressurs.ResourceId,
         kategoriId = ressurs.CategoryId,
@@ -57,7 +60,7 @@
     var opptatteRessursIder = ViewBag.OpptatteRessursIder as HashSet<int> ?? new HashSet<int>();
     var listeRessurser = isMatch
         ? Model.Where(r => !opptatteRessursIder.Contains(r.ResourceId) &&
-                           (r.TilgjengeligFra == null || r.TilgjengeligFra <= DateTime.Now))
+                           (r.TilgjengeligFra == null || r.TilgjengeligFra <= nå))
         : Model;
     var oversiktJson = JsonSerializer.Serialize(new
     {
@@ -84,14 +87,15 @@
 <link rel="stylesheet" href="~/css/resource-registration.css" asp-append-version="true" />
 
 <link rel="stylesheet" href="~/css/offentlig-match.css" asp-append-version="true" />
-@if (isMatch)
-{
-    <link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
-}
+<link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
 
 @if (!isMatch)
 {
 <div class="container-fluid offentlig-dashboard">
+    @if (TempData["MatchError"] is string matchError)
+    {
+        <div class="alert alert-warning" role="alert" data-match-error>@matchError</div>
+    }
     @if (TempData["SuccessMessage"] is string successMessage)
     {
         <div class="alert alert-success alert-dismissible" data-oversikt-varsel>
@@ -123,9 +127,9 @@
                 </div>
             </div>
             <div class="oversikt-handlinger">
-                <a class="egen-ressurs-lenke" asp-area="" asp-controller="Home" asp-action="ResourceRegistration">Ny Ressurs</a>
-                <a class="registrer-behov-knapp" asp-area="Offentlig" asp-controller="Need" asp-action="Create">+ Registrer behov</a>
-                <a class="opprett-krise-knapp" asp-area="Offentlig" asp-controller="Crisis" asp-action="Create">+ Opprett hendelse</a>
+                <a class="egen-ressurs-lenke" href="@(Url.RouteUrl("ressursregistrering") + Context.Request.HendelsesQuery())">Ny ressurs</a>
+                <a class="registrer-behov-knapp" href="@(Url.RouteUrl("behov") + Context.Request.HendelsesQuery())">+ Registrer behov</a>
+                <a class="opprett-krise-knapp" href="@(Url.Action("Create", "Crisis", new { area = "Offentlig" }) + Context.Request.HendelsesQuery())">+ Opprett hendelse</a>
             </div>
         </div>
     </details>
@@ -209,7 +213,7 @@
                                         <span><strong>Rød · Høy risiko</strong><br />Området trenger rask oppfølging.</span>
                                     </label>
                                 </fieldset>
-                                <p class="kart-posisjon" role="status">Klikk minst tre hjørner langs kanten av sonen.</p>
+                                <p class="kart-posisjon" role="status">Klikk på minst tre punkter langs kanten av sonen.</p>
                                 <div class="kart-panelknapper">
                                     <button class="btn btn-outline-secondary" type="button" data-angre-hjorne disabled>Angre siste hjørne</button>
                                     <button class="btn btn-outline-secondary" type="button" data-kartavbryt>Avbryt</button>
@@ -253,9 +257,7 @@
                         <a class="btn btn-outline-danger" data-lukk-hendelser hidden
                            asp-area="" asp-controller="OffentligAktor" asp-action="Index">Forlat krise</a>
                         <a class="skriv-ut-knapp"
-                           asp-area=""
-                           asp-controller="OffentligAktor"
-                           asp-action="MineRessurser">
+                           href="@(Url.Action("MineRessurser", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())">
                             Mine ressurser
                         </a>
                         <div class="dropdown">
@@ -447,9 +449,7 @@
                                  Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned)
                             {
 
-                                <form asp-area=""
-                                      asp-controller="OffentligAktor"
-                                      asp-action="FrigiRessurs"
+                                <form action="@(Url.Action("FrigiRessurs", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
                                       method="post">
 
                                     @Html.AntiForgeryToken()
@@ -469,9 +469,7 @@
 
                             @if (tildeling == null && !ressursOpptatt)
                             {
-                                <form asp-area=""
-                                      asp-controller="OffentligAktor"
-                                      asp-action="VurderRessurs"
+                                <form action="@(Url.Action("VurderRessurs", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
                                       method="post">
 
                                     @Html.AntiForgeryToken()
@@ -492,10 +490,7 @@
                             }
 
                             <a class="btn btn-sm btn-outline-primary treff-handlingsknapp"
-   asp-area="Offentlig"
-   asp-controller="Need"
-   asp-action="Edit"
-   asp-route-id="@treff.NeedId">
+                               href="@(Url.Action("Edit", "Need", new { area = "Offentlig", id = treff.NeedId }) + Context.Request.HendelsesQuery())">
     Se og endre behov
 </a>
                         </div>
@@ -522,7 +517,7 @@
 </section>
     <!-- Ressursliste som bare vises ved utskrift -->
     <section class="print-bare print-ressurser" aria-label="Ressursliste for utskrift">
-        <h1>Ressursliste – Kristiansand kommune</h1>
+        <h1>Ressursliste</h1>
         <p>Utskrift: @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p>
 
         <table class="print-tabell">
@@ -551,7 +546,7 @@
     </section>
     <!-- Aktive behov som bare vises ved utskrift -->
     <section class="print-bare print-behov" aria-label="Aktive behov for utskrift">
-        <h1>Aktive behov – Kristiansand kommune</h1>
+        <h1>Aktive behov</h1>
         <p>Utskrift: @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p>
 
         <table class="print-tabell">

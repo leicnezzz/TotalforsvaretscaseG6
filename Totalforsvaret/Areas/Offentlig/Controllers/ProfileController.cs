@@ -223,6 +223,11 @@ public class ProfileController(
                 .Where(resource => resource.BrukerId == user.Id)
                 .ExecuteDeleteAsync();
 
+            // Assignments owned by other users can still contain messages sent by this account.
+            await db.ResourceMessages
+                .Where(message => message.SenderUserId == user.Id)
+                .ExecuteDeleteAsync();
+
             var result = await users.DeleteAsync(user);
 
             if (!result.Succeeded)

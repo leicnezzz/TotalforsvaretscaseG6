@@ -39,8 +39,8 @@
 .wizard-description p { margin-top: 28px; color: #607078; font-size: 16px; line-height: 1.5; }
 .wizard-step-confirm .wizard-description p { color: #eef2ee; }
 .wizard-fields { min-width: 0; align-self: center; }
-.wizard-fields > label, .wizard-label { display: block; margin: 0 0 10px; font-size: 15px; font-weight: 700; line-height: 1.5; }
-.wizard-fields > input, .wizard-fields > select, .wizard-fields > textarea, .wizard-plate input {
+:is(.wizard-fields, .resource-field) > label, .wizard-label { display: block; margin: 0 0 10px; font-size: 15px; font-weight: 700; line-height: 1.5; }
+:is(.wizard-fields, .resource-field) > :is(input, select, textarea), .wizard-plate input {
     display: block;
     width: 100%;
     min-width: 0;

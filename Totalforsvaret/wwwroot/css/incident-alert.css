@@ -1,12 +1,19 @@
 /* Samme hendelsesvarsel på offentlig forside og privat dashboard. */
 .incident-alert {
+    --incident-accent: #b83d35;
+    --incident-ink: #742722;
     position: relative;
     margin: 0 10px;
     padding: 20px;
-    border: 2px solid #b83d35;
+    border: 2px solid var(--incident-accent);
     border-radius: 8px;
-    background: rgb(184 61 53 / 9%);
-    color: #877272;
+    background: color-mix(in srgb, var(--incident-accent) 9%, transparent);
+    color: var(--incident-ink);
+}
+
+.incident-alert-high {
+    --incident-accent: #ad7900;
+    --incident-ink: #624600;
 }
 
 .incident-alert[hidden] {
@@ -25,7 +32,7 @@
     border: 0;
     border-radius: 5px;
     background: transparent;
-    color: #a8322b;
+    color: var(--incident-ink);
     font-size: 25px;
     line-height: 1;
     cursor: pointer;
@@ -33,7 +40,7 @@
 
 .incident-alert-close:hover,
 .incident-alert-close:focus-visible {
-    background: rgb(184 61 53 / 12%);
+    background: color-mix(in srgb, var(--incident-accent) 12%, transparent);
 }
 
 .incident-alert-close:focus-visible {
@@ -45,7 +52,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #b83d35;
+    color: var(--incident-accent);
 }
 
 .incident-alert-heading svg {
@@ -69,6 +76,7 @@
 
 .incident-alert-description {
     margin-top: 18px !important;
+    overflow-wrap: anywhere;
     font-size: 14px;
     line-height: 1.4;
 }

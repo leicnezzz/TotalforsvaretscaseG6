@@ -1,14 +1,18 @@
+@using Totalforsvaret.Controllers
 <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
 
-<div class="private-page-actions match-page-actions">
-    <a class="private-page-action" asp-area="" asp-controller="OffentligAktor" asp-action="Index">← Tilbake</a>
-</div>
+<partial name="/Areas/Offentlig/Views/Shared/_OffentligTilbake.cshtml" />
 
 <section id="match" class="match-page">
     <header class="match-intro">
         <h1>Match</h1>
-        <p>En enkel måte å bidra for alles sikkerhet</p>
+        <p>Velg et behov og finn ressurser som kan dekke det.</p>
     </header>
+
+    @if (TempData["MatchError"] is string matchError)
+    {
+        <div class="alert alert-warning" role="alert">@matchError</div>
+    }
 
     <div class="match-columns">
         <section aria-labelledby="match-needs">
@@ -42,7 +46,10 @@
         </svg>
     </template>
 
-    <form class="match-actions" asp-action="VurderRessurs" method="post" data-match-form>
+    <form class="match-actions"
+          action="@(Url.Action("VurderRessurs", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
+          asp-antiforgery="true" method="post" data-match-form>
+        <input type="hidden" name="fraMatch" value="true" />
         <div data-match-pairs></div>
         <button type="submit" class="match-button" data-match-confirm disabled>Match</button>
         <p class="match-hint" data-match-summary role="status">Velg minst ett behov og én ressurs.</p>
@@ -58,15 +65,13 @@
     <div class="match-columns match-shortcuts">
         <section>
             <h2>Opprett et nytt behov</h2>
-            <p>Her kan du starte registreringen av et nytt behov.</p>
             <strong class="match-shortcut-label">Registrering</strong>
-            <a asp-route="behov" class="match-button">Nytt behov <span aria-hidden="true">→</span></a>
+            <a href="@(Url.RouteUrl("behov") + Context.Request.HendelsesQuery())" class="match-button">Nytt behov <span aria-hidden="true">→</span></a>
         </section>
         <section>
             <h2>Registrer en ressurs</h2>
-            <p>Her kan du starte en ressursregistrering.</p>
             <strong class="match-shortcut-label">Registrering</strong>
-            <a asp-route="ressursregistrering" class="match-button">Ny ressurs <span aria-hidden="true">→</span></a>
+            <a href="@(Url.RouteUrl("ressursregistrering") + Context.Request.HendelsesQuery())" class="match-button">Ny ressurs <span aria-hidden="true">→</span></a>
         </section>
     </div>
 </section>

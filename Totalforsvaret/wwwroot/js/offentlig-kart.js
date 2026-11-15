@@ -31,7 +31,21 @@
     const forespurteHendelser = new Set(new URLSearchParams(window.location.search).getAll('hendelser'));
     const hendelsesvisning = forespurteHendelser.size > 0;
     const valgteHendelser = (data.kriser ?? []).filter(krise => forespurteHendelser.has(String(krise.id)));
-    const synligeHendelser = new Set(valgteHendelser.map(krise => krise.id));
+    const filterNokkel = 'totalforsvaret.offentligKart.filter.v1';
+    let lagretFilter;
+    try {
+        lagretFilter = JSON.parse(window.localStorage.getItem(filterNokkel));
+    } catch {
+        // Kartfilteret fungerer også uten lokal lagring.
+    }
+
+    const skjulteHendelser = new Set(Array.isArray(lagretFilter?.skjulteHendelser)
+        ? lagretFilter.skjulteHendelser : []);
+    const skjulteTyper = new Set(Array.isArray(lagretFilter?.skjulteTyper)
+        ? lagretFilter.skjulteTyper : []);
+    const synligeHendelser = new Set(valgteHendelser
+        .filter(krise => !skjulteHendelser.has(String(krise.id)))
+        .map(krise => krise.id));
     const harHendelse = valgteHendelser.length > 0;
     const lukkHendelser = document.querySelector('[data-lukk-hendelser]');
     lukkHendelser.hidden = !hendelsesvisning;
@@ -373,16 +387,23 @@
         visKartfiltre(detaljer.hidden);
     });
 
-    for (const valg of panel.querySelectorAll('input[name="karttype"]')) {
+    const karttypevalg = [...panel.querySelectorAll('input[name="karttype"]')];
+
+    function byttKarttype(karttype) {
+        terrengbilde?.remove();
+        lasterTerrengbilde?.remove();
+        terrengbilde = null;
+        lasterTerrengbilde = null;
+        kart.removeLayer(aktivtKart);
+        aktivtKart = bakgrunnskart[karttype].addTo(kart);
+        oppdaterSonefarger();
+        oppdaterTerrengbilde();
+    }
+
+    for (const valg of karttypevalg) {
         valg.addEventListener('change', () => {
-            terrengbilde?.remove();
-            lasterTerrengbilde?.remove();
-            terrengbilde = null;
-            lasterTerrengbilde = null;
-            kart.removeLayer(aktivtKart);
-            aktivtKart = bakgrunnskart[valg.value].addTo(kart);
-            oppdaterSonefarger();
-            oppdaterTerrengbilde();
+            byttKarttype(valg.value);
+            lagreKartfilter();
         });
     }
 
@@ -483,6 +504,21 @@
     oppdaterFullskjerm();
 
     let sentrum = null;
+    let radiussokNavn = '';
+
+    function lagreKartfilter() {
+        try {
+            window.localStorage.setItem(filterNokkel, JSON.stringify({
+                karttype: karttypevalg.find(valg => valg.checked)?.value,
+                skjulteTyper: typer.filter(type => !type.boks.checked).map(type => type.key),
+                skjulteHendelser: [...skjulteHendelser],
+                radius: radius.value,
+                sted: sentrum && { lat: sentrum.lat, lng: sentrum.lng, navn: radiussokNavn }
+            }));
+        } catch {
+            // Nettleseren kan ha sperret lokal lagring.
+        }
+    }
     let sirkel = null;
     let sentrumsmarkor = null;
 
@@ -791,6 +827,16 @@
 
     // Lager avkrysningsboksene.
     const felt = panel.querySelector('.kart-typer:not(.kart-bakgrunn)');
+    const hendelsesbokser = new Map();
+
+    function visHendelse(id) {
+        skjulteHendelser.delete(String(id));
+        const checkbox = hendelsesbokser.get(id);
+        if (checkbox) {
+            checkbox.checked = true;
+            synligeHendelser.add(id);
+        }
+    }
 
     if (hendelsesvisning) {
         const hendelsesfilter = document.createElement('fieldset');
@@ -803,10 +849,17 @@
             const label = document.createElement('label');
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.checked = true;
+            checkbox.checked = synligeHendelser.has(hendelse.id);
+            hendelsesbokser.set(hendelse.id, checkbox);
             checkbox.addEventListener('change', () => {
-                if (checkbox.checked) synligeHendelser.add(hendelse.id);
-                else synligeHendelser.delete(hendelse.id);
+                const id = String(hendelse.id);
+                if (checkbox.checked) {
+                    visHendelse(hendelse.id);
+                } else {
+                    synligeHendelser.delete(hendelse.id);
+                    skjulteHendelser.add(id);
+                }
+                lagreKartfilter();
                 filtrer(true);
                 oppdaterSoneliste();
             });
@@ -827,8 +880,11 @@
         const boks = document.createElement('input');
 
         boks.type = 'checkbox';
-        boks.checked = true;
-        boks.addEventListener('change', () => filtrer());
+        boks.checked = !skjulteTyper.has(type.key);
+        boks.addEventListener('change', () => {
+            lagreKartfilter();
+            filtrer();
+        });
 
         type.boks = boks;
 
@@ -850,7 +906,10 @@
     }
 
     radius.disabled = true;
-    radius.addEventListener('change', () => filtrer(true));
+    radius.addEventListener('change', () => {
+        lagreKartfilter();
+        filtrer(true);
+    });
 
     // Hver tjeneste får maksimalt tre sekunder per forespørsel.
     async function hentSokeJson(url, signal) {
@@ -1157,13 +1216,15 @@
     // Bare søkefeltet i filteret bestemmer sentrum for radiusen.
     const nullstillRadiusSok = kobleSok(radiusForm, treff => {
         sentrum = treff.punkt;
+        radiussokNavn = treff.navn;
         radius.disabled = false;
 
         if (radius.value === '0') {
             radius.value = '5000';
         }
 
-        sentrumtekst.textContent = 'Radius fra: ' + treff.navn;
+        sentrumtekst.textContent = 'Radius fra: ' + radiussokNavn;
+        lagreKartfilter();
         filtrer(true);
     }, false);
 
@@ -1176,10 +1237,11 @@
             radius.disabled = true;
 
             fjernSokesentrum();
-
+            radiussokNavn = '';
             sentrumtekst.textContent =
                 'Velg et sted i filteret for å bruke radius.';
 
+            lagreKartfilter();
             filtrer();
         });
     const handlinger = kartElement.querySelector('.kart-handlinger');
@@ -1202,7 +1264,7 @@
         link.href = url;
     }
     handlinger.addEventListener('input', event => {
-        if (event.target.closest('form')) skjemaEndret = true;
+        if (markeringSkjema?.contains(event.target)) skjemaEndret = true;
     });
     window.addEventListener('beforeunload', event => {
         if (lagrer || skjemaEndret) { event.preventDefault(); event.returnValue = ''; }
@@ -1710,26 +1772,43 @@
         if (valgt.type === 'kriser' && nyeHendelser.length) {
             lagreForBytte().then(ok => {
                 if (!ok) return;
+                for (const id of (valgt.ids ?? [valgt.id])) visHendelse(id);
+                lagreKartfilter();
                 const url = new URL(window.location.href);
                 for (const id of nyeHendelser) url.searchParams.append('hendelser', id);
                 window.location.assign(url);
             });
             return;
         }
-        if (valgt.ids) return;
+        if (valgt.ids) {
+            for (const id of valgt.ids) visHendelse(id);
+            lagreKartfilter();
+            filtrer(true);
+            oppdaterSoneliste();
+            return;
+        }
         const type = typer.find(t => t.key === valgt.type);
 
         const markor = type?.markorer.find(
             m => m.oversiktId === valgt.id
         );
 
-        if (!markor) return;
+        if (!markor) {
+            visBekreftelse('Oppføringen har ingen markør å vise på kartet.');
+            return;
+        }
         if (
             hendelsesvisning &&
             type.key !== 'ressurser' &&
             !synligeHendelser.has(markor.hendelseId)
         ) {
-            return;
+            if (!hendelsesbokser.has(markor.hendelseId)) {
+                visBekreftelse('Oppføringen er utenfor de åpne hendelsene. Velg «Vis hele kartet» i filteret for å se den.');
+                return;
+            }
+
+            visHendelse(markor.hendelseId);
+            oppdaterSoneliste();
         }
 
         // Slår på typen dersom den er skjult i kartfilteret.
@@ -1746,6 +1825,7 @@
                 'Radius fjernet for å vise valgt oppføring.';
         }
 
+        lagreKartfilter();
         filtrer();
 
         kart.setView(
@@ -1757,5 +1837,25 @@
         apneMarkor(markor);
     });
 
-    filtrer(hendelsesvisning);
+    const lagretKarttype = karttypevalg.find(valg => valg.value === lagretFilter?.karttype);
+    if (lagretKarttype && !lagretKarttype.checked) {
+        lagretKarttype.checked = true;
+        byttKarttype(lagretKarttype.value);
+    }
+
+    const sted = lagretFilter?.sted;
+    if (Number.isFinite(sted?.lat) && Math.abs(sted.lat) <= 90 &&
+        Number.isFinite(sted.lng) && Math.abs(sted.lng) <= 180 &&
+        typeof sted.navn === 'string') {
+        sentrum = L.latLng(sted.lat, sted.lng);
+        radiussokNavn = sted.navn;
+        radiusForm.querySelector('input[type="search"]').value = radiussokNavn;
+        radius.disabled = false;
+        if ([...radius.options].some(option => option.value === lagretFilter.radius)) {
+            radius.value = lagretFilter.radius;
+        }
+        sentrumtekst.textContent = 'Radius fra: ' + radiussokNavn;
+    }
+
+    filtrer(hendelsesvisning || Number(radius.value) > 0);
 })();

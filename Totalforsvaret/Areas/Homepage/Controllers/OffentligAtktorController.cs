@@ -318,7 +318,7 @@ public class OffentligAktorController : Controller
         if (harTildeling)
         {
             TempData["ErrorMessage"] = "Ressursen har vært brukt i en tildeling og kan ikke slettes.";
-            return RedirectToAction(nameof(MineRessurser));
+            return LocalRedirect(Url.Action(nameof(MineRessurser)) + Request.HendelsesQuery());
         }
 
         _context.Resources.Remove(ressurs);
@@ -326,11 +326,11 @@ public class OffentligAktorController : Controller
 
         TempData["SuccessMessage"] = "Ressursen er slettet.";
 
-        return RedirectToAction(nameof(MineRessurser));
+        return LocalRedirect(Url.Action(nameof(MineRessurser)) + Request.HendelsesQuery());
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> VurderRessurs(int[] needId, int[] resourceId)
+    public async Task<IActionResult> VurderRessurs(int[] needId, int[] resourceId, bool fraMatch = false)
     {
         if (_context == null)
             return StatusCode(500, "Databasen er ikke tilgjengelig.");
@@ -338,7 +338,7 @@ public class OffentligAktorController : Controller
         if (resourceId.Length == 0 || (needId.Length != 1 && needId.Length != resourceId.Length) ||
             resourceId.Distinct().Count() != resourceId.Length ||
             needId.Distinct().Count() != needId.Length)
-            return BadRequest("Velg ett behov eller ett behov per ressurs.");
+            return VisMatchfeil("Velg ett behov eller ett behov per ressurs.", fraMatch);
 
         await using var transaction = await _context.Database.BeginTransactionAsync(
             System.Data.IsolationLevel.Serializable);
@@ -348,7 +348,7 @@ public class OffentligAktorController : Controller
             (n.Status == "Åpen" || n.Status == "Under behandling"));
 
         if (aktiveBehov != needId.Length)
-            return BadRequest("Et valgt behov finnes ikke eller er avsluttet.");
+            return VisMatchfeil("Et valgt behov finnes ikke eller er avsluttet.", fraMatch);
 
         var tilgjengelige = await _context.Resources.CountAsync(r =>
             Enumerable.Contains(resourceId, r.ResourceId) &&
@@ -356,14 +356,14 @@ public class OffentligAktorController : Controller
             (r.TilgjengeligFra == null || r.TilgjengeligFra <= DateTime.Now));
 
         if (tilgjengelige != resourceId.Length)
-            return BadRequest("En valgt ressurs er ikke tilgjengelig.");
+            return VisMatchfeil("En valgt ressurs er ikke tilgjengelig.", fraMatch);
 
         var opptatt = await _context.ResourceAssignments.AnyAsync(a =>
             Enumerable.Contains(resourceId, a.ResourceId) &&
             (a.Status == AssignmentStatus.Requested || a.Status == AssignmentStatus.Assigned));
 
         if (opptatt)
-            return BadRequest("En valgt ressurs er allerede under vurdering eller tildelt.");
+            return VisMatchfeil("En valgt ressurs er allerede under vurdering eller tildelt.", fraMatch);
 
         var tidspunkt = DateTime.UtcNow;
         _context.ResourceAssignments.AddRange(resourceId.Select((id, index) => new ResourceAssignment
@@ -381,6 +381,14 @@ public class OffentligAktorController : Controller
             : "Ressursene er sendt til vurdering.";
 
         return LocalRedirect(this.OversiktUrl());
+    }
+
+    private IActionResult VisMatchfeil(string melding, bool fraMatch)
+    {
+        TempData["MatchError"] = melding;
+        return LocalRedirect(fraMatch
+            ? Url.RouteUrl("offentlig-match") + Request.HendelsesQuery()
+            : this.OversiktUrl());
     }
 
     [HttpPost]

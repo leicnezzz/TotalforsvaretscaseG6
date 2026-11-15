@@ -552,8 +552,10 @@ if (visning === 'aktive') tabell.classList.add('treff-tabell');
         const posisjon = sessionStorage.getItem(nokkel);
         if (posisjon !== null) {
             sessionStorage.removeItem(nokkel);
-            apne('treff');
-            treffPanel.scrollTop = Number(posisjon);
+            if (!document.querySelector('[data-match-error]')) {
+                apne('treff');
+                treffPanel.scrollTop = Number(posisjon);
+            }
         }
     } catch { /* lagring utilgjengelig */ }
 

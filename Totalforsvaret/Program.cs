@@ -155,10 +155,6 @@ app.MapControllerRoute(
     pattern: "OffentligAktor/match",
     defaults: new { controller = "OffentligAktor", action = "Index", match = true });
 
-app.MapControllerRoute(
-    name: "ressursregistrering",
-    pattern: "Ressurs",
-    defaults: new { controller = "Home", action = "ResourceRegistration" });
 
 
 app.Run();

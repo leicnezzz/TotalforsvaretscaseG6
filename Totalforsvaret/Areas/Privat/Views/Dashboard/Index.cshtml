@@ -49,7 +49,7 @@
            asp-action="Index">← Tilbake</a>
     </div>
 
-    <partial name="/Areas/Homepage/Views/Shared/_IncidentAlert.cshtml" />
+    @await Component.InvokeAsync("IncidentAlert")
 </div>
 
     <main class="home-content">

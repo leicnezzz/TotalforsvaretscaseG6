@@ -10,12 +10,14 @@
     const compact = form.dataset.compact === 'true';
     let authenticated = compact || form.dataset.authenticated === 'true';
     const compactBack = form.querySelector('[data-compact-back]');
+    const compactNext = form.querySelector('[data-compact-next]');
     const message = document.getElementById('wizard-message');
     const submit = document.getElementById('vehicle-submit');
-    const draftKey = 'paratus.resource-draft.v2';
+    const draftKey = 'paratus.resource-draft.v2:' + (compact ? 'offentlig:' : 'privat:') + form.dataset.draftOwner;
     const fields = ['Object', 'Condition', 'RequiredLicense', 'RegistrationNumber', 'EquipmentType',
         'Quantity', 'AdditionalInformation', 'Kontaktpunkt', 'Available', 'TilgjengeligFra',
-        'Address', 'Latitude', 'Longitude'];
+        'Address', 'Latitude', 'Longitude', 'ContactFirstName', 'ContactLastName', 'ContactEmail']
+        .filter(name => field(name));
     let stage = 0;
     let accountMode = 'register';
     let accountReady = authenticated;
@@ -41,10 +43,10 @@
         message.hidden = !text;
     }
 
-    function showStep(name, visible) {
+    function showStep(name, visible, enabled = visible) {
         const element = step(name);
         element.hidden = !visible;
-        element.disabled = !visible;
+        element.disabled = !enabled;
     }
 
     function clearVehicleCheck() {
@@ -54,6 +56,12 @@
     function refreshValidity() {
         for (const name of ['Object', 'Condition']) {
             field(name).setCustomValidity(field(name).value.trim() ? '' : 'Fyll ut dette feltet.');
+        }
+        if (compact) {
+            const registrationNumber = field('RegistrationNumber');
+            const value = registrationNumber.value.trim();
+            registrationNumber.setCustomValidity(value && !/^[\p{L}\p{N} -]{2,12}$/u.test(value)
+                ? 'Bruk 2–12 tegn. Bokstaver, tall, mellomrom og bindestrek er tillatt.' : '');
         }
         const phone = field('Kontaktpunkt');
         phone.setCustomValidity(window.ParatusResources.validPhone(phone.value)
@@ -93,7 +101,7 @@
             ['Tilstand', data.Condition]
         ];
         if (data.Vehicle) {
-            rows.push(['Registreringsnummer', data.Vehicle.RegistrationNumber || 'Uten registreringsnummer'],
+            rows.push(['Registreringsnummer', data.Vehicle.RegistrationNumber || 'Ikke oppgitt'],
                 ['Førerkortklasse', data.Vehicle.RequiredLicense || 'Ikke oppgitt']);
         }
         if (data.Equipment) rows.push(['Utstyrstype', data.Equipment.EquipmentType], ['Antall', String(data.Equipment.Quantity)]);
@@ -120,17 +128,27 @@
         const vehicle = kind() === 'vehicle';
         const equipment = kind() === 'equipment';
         const supported = (vehicle || equipment) && !completed;
-        form.querySelector('.wizard-step').hidden = completed;
+        const detailsVisible = !compact || stage === 0;
+        form.querySelector('.wizard-step').hidden = completed || !detailsVisible;
         const numbered = field('HasRegistrationNumber').value === 'true';
-        showStep('registration-choice', supported && vehicle);
-        showStep('registration-number', supported && vehicle && numbered);
-        showStep('resource-details', supported && (equipment || Boolean(field('HasRegistrationNumber').value)));
-        showStep('additional', supported && (compact || stage >= 1));
-        showStep('availability', supported && stage >= 2);
-        showStep('location', supported && stage >= 3);
+        // Keep completed fields enabled so FormData includes them on review and submission.
+        const detailsEnabled = supported && (compact || equipment || Boolean(field('HasRegistrationNumber').value));
+        const registrationChoiceEnabled = supported && vehicle && !compact;
+        const registrationNumberEnabled = supported && vehicle && (compact || numbered);
+        showStep('registration-choice', detailsVisible && registrationChoiceEnabled, registrationChoiceEnabled);
+        showStep('registration-number', detailsVisible && registrationNumberEnabled, registrationNumberEnabled);
+        showStep('resource-details', detailsVisible && detailsEnabled, detailsEnabled);
+        const additionalEnabled = supported && (compact || stage >= 1);
+        const contactEnabled = supported && stage >= 2;
+        const locationEnabled = supported && stage >= 3;
+        showStep('additional', detailsVisible && additionalEnabled, additionalEnabled);
+        showStep('availability', contactEnabled && (!compact || stage === 2), contactEnabled);
+        showStep('location', locationEnabled && (!compact || stage === 3), locationEnabled);
         if (compact) {
-            form.dataset.phase = completed ? 'done' : stage >= 4 ? 'review' : stage === 3 ? 'map' : stage === 2 ? 'contact' : 'details';
-            compactBack.hidden = completed || stage < 2;
+            compactBack.hidden = completed || stage === 0;
+            compactNext.hidden = completed || stage === 4;
+            compactNext.disabled = !supported;
+            submit.hidden = completed || stage !== 4;
         }
         showStep('account', supported && stage >= 4 && !authenticated);
         showStep('confirmation', supported && stage >= 4 && accountReady);
@@ -141,14 +159,14 @@
             group.hidden = !visible;
             group.querySelectorAll('input, select').forEach(element => { element.disabled = !visible; });
         }
-        const demo = vehicle && numbered && field('RegistrationNumber').value.replace(/[ -]/g, '').toUpperCase() === 'AB12345';
+        const demo = !compact && vehicle && numbered && field('RegistrationNumber').value.replace(/[ -]/g, '').toUpperCase() === 'AB12345';
         field('Object').readOnly = demo && !manualVehicleEdit;
         field('RequiredLicense').readOnly = demo && !manualVehicleEdit;
         document.getElementById('vehicle-lookup-status').textContent = demo
             ? 'Eksempeldata er fylt inn. Kontroller opplysningene og oppgi tilstanden.'
-            : 'Kjøretøyoppslag kobles til senere. Fyll inn manuelt, eller prøv AB12345 for demodata.';
+            : compact ? '' : 'Kjøretøyoppslag kobles til senere. Fyll inn manuelt, eller prøv AB12345 for demodata.';
         const check = document.getElementById('vehicle-information-check');
-        check.hidden = !vehicle || !numbered || step('resource-details').hidden;
+        check.hidden = compact || !vehicle || !numbered || step('resource-details').hidden;
         check.querySelectorAll('input').forEach(radio => {
             radio.disabled = check.hidden;
             radio.required = !check.hidden;
@@ -162,7 +180,7 @@
         document.getElementById('vehicle-additional-count').textContent = field('AdditionalInformation').value.length;
         document.getElementById('wizard-progress').textContent = completed ? 'Registreringen er fullført.'
             : !supported ? ''
-            : compact ? (stage >= 4 ? 'Kontroller og bekreft' : stage === 3 ? 'Velg plassering' : stage === 2 ? 'Kontakt og tilgjengelighet' : 'Fyll ut ressursopplysningene')
+            : compact ? (stage === 4 ? 'Kontroller og bekreft' : stage === 3 ? 'Velg plassering' : stage === 2 ? 'Kontaktperson' : 'Fyll ut ressursopplysningene')
             : ['1 av 5 · Ressursinformasjon', '2 av 5 · Ytterligere informasjon', '3 av 5 · Kontakt og tilgjengelighet',
                 '4 av 5 · Plassering', '5 av 5 · Kontroller og bekreft'][stage];
         form.querySelectorAll('.wizard-step:not(.wizard-step-confirm)').forEach(element => {
@@ -213,9 +231,7 @@
 
     function restoreDraft() {
         try {
-            const current = sessionStorage.getItem(draftKey);
-            const legacy = current ? null : sessionStorage.getItem('paratus.vehicle-draft.v1');
-            const raw = current || legacy;
+            const raw = sessionStorage.getItem(draftKey);
             if (!raw || raw.length > 20000) return;
             const draft = JSON.parse(raw);
             if (![1, 2].includes(draft.version) || !Number.isFinite(draft.updated) ||
@@ -255,7 +271,7 @@
         field('Confirmed').checked = name === 'Confirmed' && field('Confirmed').checked;
         if (['Object', 'Condition', 'RequiredLicense', 'EquipmentType', 'Quantity', 'RegistrationNumber', 'VehicleInfoCorrect', 'HasRegistrationNumber'].includes(name)) stage = 0;
         if (['Kontaktpunkt', 'Available', 'TilgjengeligFra'].includes(name)) stage = Math.min(stage, 2);
-        if (name === 'RegistrationNumber') {
+        if (!compact && name === 'RegistrationNumber') {
             const demo = field('RegistrationNumber').value.replace(/[ -]/g, '').toUpperCase() === 'AB12345';
             const previousDemo = field('Object').value === 'Toyota Hiace (demodata)';
             if (demo) {
@@ -305,11 +321,11 @@
 
     function validateDetails() {
         if (kind() === 'vehicle') {
-            if (!validate(step('registration-choice'))) return false;
-            if (field('HasRegistrationNumber').value === 'true' && !validate(step('registration-number'))) return false;
+            if (!compact && !validate(step('registration-choice'))) return false;
+            if (!validate(step('registration-number'))) return false;
         }
         if (!validate(step('resource-details'))) return false;
-        if (kind() === 'vehicle' && field('HasRegistrationNumber').value === 'true' && field('VehicleInfoCorrect').value !== 'true') {
+        if (!compact && kind() === 'vehicle' && field('HasRegistrationNumber').value === 'true' && field('VehicleInfoCorrect').value !== 'true') {
             showMessage('Rett opplysningene og velg «Ja, informasjonen stemmer» før du fortsetter.');
             return false;
         }
@@ -333,10 +349,29 @@
         stage = 3;
         moveTo('location');
     });
-    form.querySelector('[data-continue="location"]').addEventListener('click', () => {
+    function goToReview() {
         if (!validate(step('location')) || !address.valid()) return;
         stage = 4;
         moveTo(accountReady ? 'confirmation' : 'account');
+    }
+
+    form.querySelector('[data-continue="location"]').addEventListener('click', goToReview);
+    compactNext?.addEventListener('click', () => {
+        if (stage === 3) {
+            goToReview();
+            return;
+        }
+
+        if (stage === 2) {
+            if (!validate(step('availability'))) return;
+            stage = 3;
+            moveTo('location');
+            return;
+        }
+
+        if (!validateDetails() || !validate(step('additional'))) return;
+        stage = 2;
+        moveTo('availability');
     });
 
     for (const button of form.querySelectorAll('[data-account-mode]')) {

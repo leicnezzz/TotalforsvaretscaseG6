@@ -76,7 +76,7 @@
         </section>
         <div class="public-content">
             <div class="public-home-incident">
-                <partial name="/Areas/Homepage/Views/Shared/_IncidentAlert.cshtml" />
+                @await Component.InvokeAsync("IncidentAlert")
             </div>
 
             <section id="registrer-ressurs" class="public-registration" aria-labelledby="registration-title">

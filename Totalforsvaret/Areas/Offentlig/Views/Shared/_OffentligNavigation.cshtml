@@ -1,5 +1,6 @@
 @using System
 @using System.Linq
+@using Totalforsvaret.Controllers
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using Totalforsvaret.DataAccess
@@ -8,11 +9,7 @@
 @inject AppDbContext Db
 
 @{
-    var eventQuery = Microsoft.AspNetCore.Http.QueryString.Create(
-        Context.Request.Query["hendelser"]
-            .Select(id => new KeyValuePair<string, string?>("hendelser", id)))
-        .ToString();
-
+    var eventQuery = Context.Request.HendelsesQuery();
     var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
@@ -48,14 +45,6 @@
 
 <header class="site-header offentlig-site-header">
     <nav class="primary-nav" aria-label="Hovedmeny">
-        <button class="nav-toggle"
-                type="button"
-                aria-expanded="false"
-                aria-controls="public-nav-links"
-                aria-label="Åpne meny">
-            <span class="nav-toggle-icon" aria-hidden="true">☰</span>
-        </button>
-
         <div class="nav-links" id="public-nav-links">
             <a class="@(isOverview ? "active" : "")"
                aria-current="@(isOverview ? "page" : null)"
@@ -69,19 +58,19 @@
                 Hendelser
             </a>
 
-            <a asp-route="behov"
+            <a href="@(Url.RouteUrl("behov") + eventQuery)"
                class="@(isNeedPage ? "active" : "")"
                aria-current="@(isNeedPage ? "page" : null)">
                 Registrer behov
             </a>
 
-            <a asp-route="ressursregistrering"
+            <a href="@(Url.RouteUrl("ressursregistrering") + eventQuery)"
                class="@(isResourcePage ? "active" : "")"
                aria-current="@(isResourcePage ? "page" : null)">
                 Registrer ressurs
             </a>
 
-            <a asp-route="offentlig-match"
+            <a href="@(Url.RouteUrl("offentlig-match") + eventQuery)"
                class="@(isMatch ? "active" : "")"
                aria-current="@(isMatch ? "page" : null)">
                 Match
@@ -89,22 +78,6 @@
         </div>
 
         <div class="account-actions">
-            <a class="inbox-icon-link"
-               asp-area="Offentlig"
-               asp-controller="Inbox"
-               asp-action="Index"
-               aria-label="Åpne innboksen"
-               aria-current="@(isInbox ? "page" : null)">
-                <svg class="bell"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     aria-hidden="true">
-                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
-                    <path d="M10 21h4" />
-                </svg>
-            </a>
-
             <details class="account-menu">
                 <summary class="account-link @(isProfile ? "active" : "")"
                          aria-label="Brukermeny for @displayName">
@@ -148,6 +121,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="@(Url.Action("Index", "Inbox", new { area = "Offentlig" }) + eventQuery)"
+                           aria-current="@(isInbox ? "page" : null)">
+                            Innboks
+                        </a>
+                    </li>
+                    <li>
                         <form asp-area=""
                               asp-controller="Account"
                               asp-action="Logout"
@@ -161,5 +140,3 @@
         </div>
     </nav>
 </header>
-
-<script src="~/js/site-navigation.js" asp-append-version="true"></script>

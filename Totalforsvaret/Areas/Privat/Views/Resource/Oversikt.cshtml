@@ -31,7 +31,7 @@
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
     <div class="resource-incident-row">
         <partial name="/Areas/Homepage/Views/Shared/_PrivatePageAction.cshtml" />
-        <partial name="/Areas/Homepage/Views/Shared/_IncidentAlert.cshtml" />
+        @await Component.InvokeAsync("IncidentAlert")
     </div>
     <main class="overview-content">
         <h1>Liste over dine ressurser</h1>

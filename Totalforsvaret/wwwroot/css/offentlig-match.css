@@ -337,22 +337,6 @@ body:has(.match-page:not([hidden])) > .container-fluid {
     }
 }
 
-.match-page-actions {
-    --header-green: #163c4c;
-    width: min(100% - 32px, 920px);
-    min-height: 44px;
-    margin-inline: auto;
-    padding: 0;
-}
-
-.match-page-actions .private-page-action:hover {
-    text-decoration: underline;
-}
-
-.match-page-actions + .match-page {
-    padding-top: 4px;
-}
-
 .match-map-section {
     margin-top: clamp(18px, 3vw, 28px);
 }

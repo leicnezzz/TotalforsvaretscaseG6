@@ -16,7 +16,8 @@ public class HomeController : Controller
     }
 
     [Authorize(Policy = "KunOffentlig")]
-    [HttpGet]
+    [HttpGet("/OffentligAktor/RegistrerRessurs", Name = "ressursregistrering")]
+    [HttpGet("/Ressurs")]
     public IActionResult ResourceRegistration([FromServices] ResourceHandler resourceHandler)
     {
         return View(BuildResourceModel(resourceHandler));

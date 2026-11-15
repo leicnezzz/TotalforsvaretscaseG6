@@ -109,7 +109,7 @@
                                 <h2>@item.ResourceName</h2>
                             </div>
 
-                            <span class="inbox-status">
+                            <span class="inbox-status @(item.Status == AssignmentStatus.Requested ? "is-waiting" : "")">
                                 @item.StatusLabel
                             </span>
                         </div>

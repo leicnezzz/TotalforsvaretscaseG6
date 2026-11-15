@@ -194,31 +194,52 @@
 .inbox-detail-heading {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 14px;
     padding-bottom: 16px;
-    border-bottom: 1px solid #929b95;
 }
 
 .inbox-detail-heading h2 {
     margin: 0;
     color: #2e6840;
-    font-size: 22px;
+    font-size: 26px;
 }
 
 .inbox-eyebrow {
     margin: 0 0 6px;
-    color: #607078;
+    color: #5c6b64;
     font-size: 13px;
 }
 
 .inbox-status {
-    padding: 8px 14px;
-    border: 1px solid #79a184;
-    border-radius: 8px;
-    color: #245536;
-    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: #e6efe8;
+    color: #2e6840;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.inbox-status::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.inbox-status.is-waiting {
+    background: #fcf0d4;
+    color: #7a4e00;
+}
+
+.inbox-status.is-waiting::before {
+    background: #d98e04;
 }
 
 .inbox-content {

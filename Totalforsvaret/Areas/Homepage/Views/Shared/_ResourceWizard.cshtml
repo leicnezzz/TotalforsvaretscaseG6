@@ -8,9 +8,12 @@
       action="#registrer-ressurs" method="post" novalidate
       data-authenticated="@(hasSession ? "true" : "false")"
       data-private="@(isPrivate ? "true" : "false")" data-compact="@(compact ? "true" : "false")" data-resource-registration>
-    <div class="wizard-toolbar"><p id="wizard-progress" role="status">Velg en ressurstype for å begynne.</p><button type="button" class="wizard-text-button" id="wizard-clear">Tøm utkast</button></div><noscript><p class="wizard-message">Aktiver JavaScript for å bruke den trinnvise registreringen.</p></noscript>
+    <noscript><p class="wizard-message">Aktiver JavaScript for å bruke den trinnvise registreringen.</p></noscript>
     <p id="wizard-message" class="wizard-message" role="status" tabindex="-1" hidden></p>
-    <p class="wizard-hint">Opplysningene lagres når du bekrefter registreringen.</p>
+    <div class="wizard-toolbar">
+        <p id="wizard-progress" role="status"></p>
+        <button type="button" class="wizard-text-button" id="wizard-clear">Tøm utkast</button>
+    </div>
 
     <section class="wizard-step wizard-step-white" aria-labelledby="wizard-category-title">
         <details class="public-help">

@@ -1,3 +1,4 @@
+@using Totalforsvaret.Controllers
 @model IEnumerable<Totalforsvaret.Models.resourcemodels.Resource>
 @{
     ViewData["Title"] = "Mine ressurser";
@@ -44,7 +45,8 @@
                     <td>@r.Address</td>
                     <td>@r.Kontaktpunkt</td>
                     <td class="text-end">
-                        <form asp-action="SlettRessurs" method="post"
+                        <form action="@(Url.Action("SlettRessurs") + Context.Request.HendelsesQuery())"
+                              asp-antiforgery="true" method="post"
                               onsubmit="return confirm('Vil du slette denne ressursen?');">
                             <input type="hidden" name="resourceId" value="@r.ResourceId" />
                             <button type="submit" class="btn btn-outline-danger btn-sm">Slett</button>
@@ -56,5 +58,5 @@
         </table>
     }
 
-    <a class="btn btn-primary" asp-action="NyRessurs">Legg til ressurs</a>
+    <a class="btn btn-primary" href="@(Url.RouteUrl("ressursregistrering") + Context.Request.HendelsesQuery())">Legg til ressurs</a>
 </div>

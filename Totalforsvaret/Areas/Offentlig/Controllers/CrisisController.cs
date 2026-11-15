@@ -92,11 +92,10 @@ public class CrisisController : Controller
                 nameof(crisis.Description),
                 "Beskrivelsen må fylles ut og kan ha maksimalt 1500 tegn.");
 
-        if (string.IsNullOrWhiteSpace(crisis.Area) ||
-            crisis.Area.Length > 100)
+        if (crisis.Area.Length > 100)
             ModelState.AddModelError(
                 nameof(crisis.Area),
-                "Området må fylles ut og kan ha maksimalt 100 tegn.");
+                "Områdedetaljene kan ha maksimalt 100 tegn.");
 
         var gyldigeTyper = new[]
         {
@@ -199,12 +198,11 @@ public async Task<IActionResult> Edit(
             "Beskrivelsen må fylles ut og kan ha maksimalt 1500 tegn.");
     }
 
-    if (string.IsNullOrWhiteSpace(crisis.Area) ||
-        crisis.Area.Length > 100)
+    if (crisis.Area.Length > 100)
     {
         ModelState.AddModelError(
             nameof(crisis.Area),
-            "Området må fylles ut og kan ha maksimalt 100 tegn.");
+            "Områdedetaljene kan ha maksimalt 100 tegn.");
     }
 
     var gyldigeTyper = new[]

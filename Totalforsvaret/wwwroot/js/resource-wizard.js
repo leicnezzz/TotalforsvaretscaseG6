@@ -57,6 +57,12 @@
         for (const name of ['Object', 'Condition']) {
             field(name).setCustomValidity(field(name).value.trim() ? '' : 'Fyll ut dette feltet.');
         }
+        if (compact) {
+            const registrationNumber = field('RegistrationNumber');
+            const value = registrationNumber.value.trim();
+            registrationNumber.setCustomValidity(value && !/^[\p{L}\p{N} -]{2,12}$/u.test(value)
+                ? 'Bruk 2–12 tegn. Bokstaver, tall, mellomrom og bindestrek er tillatt.' : '');
+        }
         const phone = field('Kontaktpunkt');
         phone.setCustomValidity(window.ParatusResources.validPhone(phone.value)
             ? '' : 'Skriv et telefonnummer med 8–15 sifre, eventuelt med landskode.');

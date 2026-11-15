@@ -1,4 +1,5 @@
 
+@using Totalforsvaret.Controllers
 @model Totalforsvaret.Models.Crisis
 
 @{
@@ -20,14 +21,12 @@
     <div class="registration-content need-registration">
         <section class="registration-intro" aria-labelledby="need-title">
             <h1 id="need-title">@ViewData["Title"]</h1>
-            <p>Beskriv situasjonen og oppgi hvilket område som er berørt.</p>
+            <p>Beskriv situasjonen og velg plassering på kartet.</p>
         </section>
 
-        <form asp-area="Offentlig"
-          asp-controller="Crisis"
-          asp-action="@(ViewData["EditId"] != null ? "Edit" : "Create")"
-          asp-route-id="@(ViewData["EditId"])"
-          method="post" class="resource-wizard need-card" data-need-wizard>
+        <form action="@(Url.Action(ViewData["EditId"] != null ? "Edit" : "Create", "Crisis",
+              new { area = "Offentlig", id = ViewData["EditId"] }) + Context.Request.HendelsesQuery())"
+          asp-antiforgery="true" method="post" class="resource-wizard need-card" data-need-wizard>
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -58,11 +57,11 @@
                         <span asp-validation-for="Type" class="text-danger"></span>
                     </div>
                     <div class="col-md-6 wizard-fields">
-                        <label asp-for="Area" class="form-label">Område *</label>
+                        <label asp-for="Area" class="form-label">Områdedetaljer (valgfritt)</label>
                         <input asp-for="Area" class="form-control"
                                placeholder="For eksempel Kristiansand"
                                maxlength="100" aria-describedby="crisis-area-help" />
-                        <small id="crisis-area-help" class="form-text">Stedet som er berørt, for eksempel Kristiansand sentrum. Fylles fra kartvalget hvis feltet er tomt.</small>
+                        <small id="crisis-area-help" class="form-text">Legg til detaljer om området ved behov. Feltet fylles ut fra kartvalget hvis det står tomt.</small>
                         <span asp-validation-for="Area" class="text-danger"></span>
                     </div>
 
@@ -136,7 +135,7 @@
 
             <div class="need-actions">
                 <div>
-                    <a asp-area="" asp-controller="OffentligAktor" asp-action="Index"
+                    <a href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
                    class="public-button public-button-outline" data-need-cancel>Avbryt</a>
                     <button type="button" class="public-button public-button-outline" data-need-back hidden>← Tilbake</button>
                 </div>
@@ -155,7 +154,7 @@
               asp-route-id="@(ViewData["EditId"])"
               method="post"
               class="resource-wizard mt-3"
-              onsubmit="return confirm('Er du sikker på at du vil slette hele denne hendelsen og ALLE behov som er knyttet til den? Ressurskoblingene til behovene slettes også. Dette kan ikke angres.');">
+              onsubmit="return confirm('Er du sikker på at du vil slette hele denne hendelsen og ALLE behov som er knyttet til den? Ressurskoblingene og meldingene til behovene slettes også. Dette kan ikke angres.');">
 
                 <button type="submit" class="public-button public-button-outline need-delete">
                     Slett hendelse og tilknyttede behov

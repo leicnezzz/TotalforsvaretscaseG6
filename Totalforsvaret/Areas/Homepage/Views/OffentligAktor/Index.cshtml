@@ -90,6 +90,10 @@
 @if (!isMatch)
 {
 <div class="container-fluid offentlig-dashboard">
+    @if (TempData["MatchError"] is string matchError)
+    {
+        <div class="alert alert-warning" role="alert">@matchError</div>
+    }
     @if (TempData["SuccessMessage"] is string successMessage)
     {
         <div class="alert alert-success alert-dismissible" data-oversikt-varsel>
@@ -128,7 +132,7 @@
             <div class="oversikt-handlinger">
                 <a class="egen-ressurs-lenke" href="@(Url.RouteUrl("ressursregistrering") + Context.Request.HendelsesQuery())">Ny ressurs</a>
                 <a class="registrer-behov-knapp" href="@(Url.RouteUrl("behov") + Context.Request.HendelsesQuery())">+ Registrer behov</a>
-                <a class="opprett-krise-knapp" asp-area="Offentlig" asp-controller="Crisis" asp-action="Create">+ Opprett hendelse</a>
+                <a class="opprett-krise-knapp" href="@(Url.Action("Create", "Crisis", new { area = "Offentlig" }) + Context.Request.HendelsesQuery())">+ Opprett hendelse</a>
             </div>
         </div>
     </details>
@@ -256,9 +260,7 @@
                         <a class="btn btn-outline-danger" data-lukk-hendelser hidden
                            asp-area="" asp-controller="OffentligAktor" asp-action="Index">Forlat krise</a>
                         <a class="skriv-ut-knapp"
-                           asp-area=""
-                           asp-controller="OffentligAktor"
-                           asp-action="MineRessurser">
+                           href="@(Url.Action("MineRessurser", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())">
                             Mine ressurser
                         </a>
                         <div class="dropdown">
@@ -445,9 +447,7 @@
                                     Status: Til vurdering
                                 </span>
                                 <div class="knapperad">
-                                <form asp-area=""
-                                      asp-controller="OffentligAktor"
-                                      asp-action="TildelRessurs"
+                                <form action="@(Url.Action("TildelRessurs", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
                                       method="post">
 
                                     @Html.AntiForgeryToken()
@@ -462,9 +462,7 @@
                                     </button>
                                 </form>
 
-                                <form asp-area=""
-                                      asp-controller="OffentligAktor"
-                                      asp-action="AvslaRessurs"
+                                <form action="@(Url.Action("AvslaRessurs", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
                                       method="post">
 
                                     @Html.AntiForgeryToken()
@@ -490,9 +488,7 @@
                                     Status: Tildelt
                                 </span>
 
-                                <form asp-area=""
-                                      asp-controller="OffentligAktor"
-                                      asp-action="FrigiRessurs"
+                                <form action="@(Url.Action("FrigiRessurs", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
                                       method="post">
 
                                     @Html.AntiForgeryToken()

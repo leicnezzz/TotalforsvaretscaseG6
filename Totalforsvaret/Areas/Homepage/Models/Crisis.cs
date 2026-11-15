@@ -17,6 +17,7 @@ public class Crisis
     public string Description { get; set; } = "";
 
     [Column("Sted")]
+    [DisplayFormat(ConvertEmptyStringToNull = false)]
     public string Area { get; set; } = "";
 
     [Column("Breddegrad")]

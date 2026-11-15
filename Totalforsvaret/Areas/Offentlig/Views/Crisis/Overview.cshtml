@@ -1,3 +1,4 @@
+@using Totalforsvaret.Controllers
 @model IReadOnlyList<Totalforsvaret.Models.Crisis>
 
 @{
@@ -26,7 +27,7 @@
     <section class="crisis-create">
         <h2>Opprett en ny hendelse</h2>
         <div class="crisis-create-action"><strong>Ny hendelse</strong>
-        <a class="crisis-button" asp-area="Offentlig" asp-controller="Crisis" asp-action="Create">Registrer hendelse <span aria-hidden="true">→</span></a></div>
+        <a class="crisis-button" href="@(Url.Action("Create", "Crisis", new { area = "Offentlig" }) + Context.Request.HendelsesQuery())">Registrer hendelse <span aria-hidden="true">→</span></a></div>
     </section>
 
     @foreach (var group in groups)

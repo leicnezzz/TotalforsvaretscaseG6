@@ -9,6 +9,11 @@
         <p>Velg et behov og finn ressurser som kan dekke det.</p>
     </header>
 
+    @if (TempData["MatchError"] is string matchError)
+    {
+        <div class="alert alert-warning" role="alert">@matchError</div>
+    }
+
     <div class="match-columns">
         <section aria-labelledby="match-needs">
             <h2 id="match-needs">Behov</h2>
@@ -44,6 +49,7 @@
     <form class="match-actions"
           action="@(Url.Action("VurderRessurs", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
           asp-antiforgery="true" method="post" data-match-form>
+        <input type="hidden" name="fraMatch" value="true" />
         <div data-match-pairs></div>
         <button type="submit" class="match-button" data-match-confirm disabled>Match</button>
         <p class="match-hint" data-match-summary role="status">Velg minst ett behov og én ressurs.</p>

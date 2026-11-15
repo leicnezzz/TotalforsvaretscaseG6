@@ -1793,7 +1793,10 @@
             m => m.oversiktId === valgt.id
         );
 
-        if (!markor) return;
+        if (!markor) {
+            visBekreftelse('Oppføringen har ingen markør å vise på kartet.');
+            return;
+        }
         if (
             hendelsesvisning &&
             type.key !== 'ressurser' &&

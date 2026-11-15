@@ -605,3 +605,66 @@ body.offentlig-page .private-page-actions .private-page-action {
         margin-top: 4px;
     }
 }
+@media (max-width: 760px) {
+    .primary-nav.nav-with-brand {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-width: 0;
+        padding: 8px 12px;
+    }
+
+    .primary-nav.nav-with-brand > .nav-toggle {
+        order: 1;
+        flex: 0 0 40px;
+    }
+
+    .primary-nav.nav-with-brand > .nav-brand {
+        order: 2;
+        flex: 1 1 auto;
+        min-width: 0;
+        margin: 0;
+    }
+
+    .primary-nav.nav-with-brand .paratus-brand-text strong {
+        font-size: clamp(16px, 5vw, 20px);
+        letter-spacing: 0.1em;
+    }
+
+    .primary-nav.nav-with-brand .paratus-brand-text small,
+    .primary-nav.nav-with-brand .account-copy {
+        display: none;
+    }
+
+    .primary-nav.nav-with-brand > .account-actions {
+        order: 3;
+        flex: 0 0 auto;
+        gap: 6px;
+        margin-inline-start: 0;
+    }
+
+    .primary-nav.nav-with-brand .inbox-icon-link {
+        width: 32px;
+        flex-basis: 32px;
+    }
+
+    .primary-nav.nav-with-brand .account-link {
+        min-height: 44px;
+        gap: 0;
+    }
+
+    .primary-nav.nav-with-brand .account-link .avatar-small {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+    }
+
+    .primary-nav.nav-with-brand .nav-links {
+        order: 4;
+        flex-basis: 100%;
+        width: 100%;
+    }
+}

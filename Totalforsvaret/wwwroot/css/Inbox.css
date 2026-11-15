@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     margin: 0;
-    background: #eef3ef;
+    background: #eef2ee;
     color: #172c34;
     font-family: Roboto, Arial, sans-serif;
 }
@@ -52,17 +52,17 @@
 
 .inbox-back {
     color: #2e6840;
-    font-size: 19px;
+    font-size: 17px;
     font-weight: 700;
     text-decoration: none;
 }
 
 .inbox-card {
-    margin: 42px auto 0;
+    margin: 18px auto 0;
     padding: 28px;
     background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgb(20 45 30 / 5%);
+    border-radius: 12px;
+    box-shadow: 0 3px 18px rgb(20 45 30 / 8%);
 }
 
 .inbox-card > h1 {

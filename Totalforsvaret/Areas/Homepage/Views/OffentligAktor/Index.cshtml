@@ -126,7 +126,7 @@
                 </div>
             </div>
             <div class="oversikt-handlinger">
-                <a class="egen-ressurs-lenke" href="@(Url.RouteUrl("ressursregistrering") + Context.Request.HendelsesQuery())">Ny Ressurs</a>
+                <a class="egen-ressurs-lenke" href="@(Url.RouteUrl("ressursregistrering") + Context.Request.HendelsesQuery())">Ny ressurs</a>
                 <a class="registrer-behov-knapp" href="@(Url.RouteUrl("behov") + Context.Request.HendelsesQuery())">+ Registrer behov</a>
                 <a class="opprett-krise-knapp" asp-area="Offentlig" asp-controller="Crisis" asp-action="Create">+ Opprett hendelse</a>
             </div>
@@ -212,7 +212,7 @@
                                         <span><strong>Rød · Høy risiko</strong><br />Området trenger rask oppfølging.</span>
                                     </label>
                                 </fieldset>
-                                <p class="kart-posisjon" role="status">Klikk minst tre hjørner langs kanten av sonen.</p>
+                                <p class="kart-posisjon" role="status">Klikk på minst tre punkter langs kanten av sonen.</p>
                                 <div class="kart-panelknapper">
                                     <button class="btn btn-outline-secondary" type="button" data-angre-hjorne disabled>Angre siste hjørne</button>
                                     <button class="btn btn-outline-secondary" type="button" data-kartavbryt>Avbryt</button>

@@ -20,13 +20,13 @@
 <div class="crisis-overview" data-crisis-map-url="@Url.Action("Index", "OffentligAktor", new { area = "" })">
     <section class="registration-intro" aria-labelledby="crisis-title">
         <h1 id="crisis-title">Hendelser</h1>
-        <p>En enkel måte å bidra for alles sikkerhet</p>
+        <p>Åpne en hendelse på kartet, eller marker flere for å åpne dem sammen.</p>
     </section>
 
     <section class="crisis-create">
-        <div><h2>Opprett ny hendelse</h2><p>Her kan du lage en ny</p></div>
+        <h2>Opprett en ny hendelse</h2>
         <div class="crisis-create-action"><strong>Ny hendelse</strong>
-        <a class="crisis-button" asp-area="Offentlig" asp-controller="Crisis" asp-action="Create">Hendelsesregistrering <span aria-hidden="true">→</span></a></div>
+        <a class="crisis-button" asp-area="Offentlig" asp-controller="Crisis" asp-action="Create">Registrer hendelse <span aria-hidden="true">→</span></a></div>
     </section>
 
     @foreach (var group in groups)

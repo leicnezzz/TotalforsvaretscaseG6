@@ -112,20 +112,25 @@ body.offentlig-page .offentlig-back-actions .private-page-action:focus-visible {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+    .offentlig-page :is(.registration-intro, .match-intro, .offentlig-back-actions) {
+        animation: offentlig-card-in 160ms ease-out;
+    }
+
     :is(.crisis-overview, .match-page, .need-page, .offentlig-dashboard, .offentlig-back-actions)
         :is(a, button, input, textarea, select, .crisis-card, summary) {
         transition: background-color 160ms ease, border-color 160ms ease,
             color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
     }
 
-    :is(.crisis-overview, .match-page, .need-page)
-        :is(.registration-intro, .match-intro),
     .offentlig-dashboard dialog[open],
-    .offentlig-dashboard .kart-sidepanel:not([hidden]),
+    .offentlig-dashboard :is(.kart-sidepanel, .kart-handlingspanel):not([hidden]) {
+        animation: offentlig-fade-in 160ms ease-out;
+    }
+
     .need-card [data-need-step].is-entering,
     .public-resource-registration .wizard-step:not([hidden]),
     .public-resource-registration .wizard-success:not([hidden]) {
-        animation: offentlig-fade-in 180ms ease-out both;
+        animation: offentlig-card-in 180ms ease-out;
     }
 
     .offentlig-site-header .account-menu .chevron,
@@ -182,6 +187,11 @@ body.offentlig-page .offentlig-back-actions .private-page-action:focus-visible {
     @keyframes offentlig-menu-in {
         from { opacity: 0; translate: 0 -3px; }
         to { opacity: 1; translate: 0 0; }
+    }
+
+    @keyframes offentlig-card-in {
+        from { translate: 0 4px; }
+        to { translate: none; }
     }
 
     @keyframes offentlig-fade-in {

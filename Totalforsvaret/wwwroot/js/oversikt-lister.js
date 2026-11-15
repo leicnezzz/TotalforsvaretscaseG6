@@ -140,6 +140,7 @@
         }
 
         const tabell = element('table', null, 'oversikt-tabell');
+if (visning === 'aktive') tabell.classList.add('treff-tabell');
 
         tabell.append(element(
             'caption',
@@ -339,7 +340,7 @@
         const tabell = element(
             'table',
             null,
-            'oversikt-tabell oversikt-tabell--kriser'
+            'oversikt-tabell oversikt-tabell--kriser treff-tabell'
         );
 
         tabell.append(element(
@@ -464,17 +465,18 @@
         dialog.showModal();
     }
     function apne(type) {
+        dialog.dataset.visning = type;
         const panel = paneler.find(item => item.dataset.oversiktPanel === type);
         for (const item of paneler) item.hidden = item !== panel;
         filtre.hidden = Boolean(panel);
         liste.hidden = Boolean(panel);
         antall.hidden = Boolean(panel);
 
-        if (panel) {
-            tittel.textContent = type === 'treff' ? 'Foreslåtte treff' : 'Krever oppfølging';
-            dialog.showModal();
-            return;
-        }
+       if (panel) {
+    tittel.textContent = 'Foreslåtte treff';
+    dialog.showModal();
+    return;
+}
 
         if (type === 'kriser') {
             apneKriser();

@@ -759,6 +759,13 @@ body.offentlig-page .private-page-actions .private-page-action {
         margin-top: 4px;
     }
 }
+@media (max-width: 760px) {
+    .site-header .primary-nav:has(> .nav-toggle) {
+        align-content: start;
+        padding-block: 14px;
+    }
+}
+
 @media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
     .site-header .primary-nav:has(> .nav-toggle) {
         flex-wrap: wrap;

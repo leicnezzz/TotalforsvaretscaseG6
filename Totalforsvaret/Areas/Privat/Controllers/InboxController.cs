@@ -82,7 +82,8 @@ public class InboxController(
                 {
                     SenderName = message.Sender.Navn,
                     Body = message.Body,
-                    SentAtUtc = message.SentAtUtc
+                    SentAtUtc = message.SentAtUtc,
+                    IsOwnMessage = message.SenderUserId == bruker.Id
                 })
                 .ToListAsync()
             : new List<InboxMessageViewModel>();

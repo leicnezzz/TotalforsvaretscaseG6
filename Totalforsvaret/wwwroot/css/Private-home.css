@@ -376,13 +376,19 @@
     justify-content: space-between;
     gap: 20px;
     padding: 10px 16px;
-    font-size: clamp(13px, 1.25vw, 25px);
+    font-size: 14px;
 }
 
 .footer-links {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+}
+
+@media (max-width: 600px) {
+    .footer-bottom {
+        font-size: 12px;
+    }
 }
 
 @media (max-width: 760px) {

@@ -105,11 +105,10 @@
 #vehicle-information-check { margin-top: 22px; }
 #vehicle-lookup-status { font-weight: 500; }
 .wizard-account-actions { display: grid; gap: 14px; }
-.wizard-account-choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 8px; }
-.wizard-account-mode { min-height: 44px; padding: 10px; border: 1.5px solid #2e6840; border-radius: 5px; background: #fff; color: #2e6840; font: inherit; font-weight: 700; cursor: pointer; }
-.wizard-account-mode[aria-pressed="true"] { background: #2e6840; color: #fff; }
+.wizard-account-switch { font-size: 14px; font-weight: 400; }
 .wizard-auth-panel { margin: 0; padding: 0; border: 0; min-width: 0; }
 .wizard-auth-panel .public-button { margin-top: 24px; }
+.resource-wizard #wizard-register-panel .public-button { min-height: 52px; }
 .wizard-auth-panel .wizard-hint { margin: -8px 0 18px !important; }
 #wizard-account-complete-text { line-height: 1.5; margin-bottom: 18px; }
 .wizard-field-error { margin: -10px 0 20px !important; color: #8b2d22; font-size: 14px; line-height: 1.4; }

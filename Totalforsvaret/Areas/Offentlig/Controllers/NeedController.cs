@@ -293,6 +293,12 @@ public class NeedController : Controller
         if (need == null)
             return NotFound();
 
+        var assignments = await _context.ResourceAssignments
+            .Where(assignment => assignment.NeedId == id)
+            .ToListAsync();
+
+        _context.ResourceAssignments.RemoveRange(assignments);
+
         _context.Needs.Remove(need);
         await _context.SaveChangesAsync();
 

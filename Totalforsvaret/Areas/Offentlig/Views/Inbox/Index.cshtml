@@ -175,45 +175,25 @@
                         </div>
 
                         <div class="inbox-content">
-                            <div class="inbox-info-grid">
-                                <section class="inbox-section">
-                                    <h3>Behov</h3>
+                            <div class="inbox-summary">
+                                <section class="inbox-summary-card">
+                                    <p class="inbox-summary-label">BEHOV</p>
+                                    <p class="inbox-summary-title">@item.NeedName · @item.NeedType</p>
 
-                                    <dl class="inbox-facts">
-                                        <div>
-                                            <dt>Navn</dt>
-                                            <dd>@item.NeedName</dd>
-                                        </div>
-
-                                        <div>
-                                            <dt>Type</dt>
-                                            <dd>@item.NeedType</dd>
-                                        </div>
-
-                                        <div>
-                                            <dt>Prioritet</dt>
-                                            <dd>@item.NeedPriority</dd>
-                                        </div>
-
-                                        <div>
-                                            <dt>Status</dt>
-                                            <dd>@item.NeedStatus</dd>
-                                        </div>
+                                    <div class="inbox-chips">
+                                        <span class="inbox-chip">Prioritet: @item.NeedPriority</span>
+                                        <span class="inbox-chip">Status: @item.NeedStatus</span>
 
                                         @if (item.NeedDeadline.HasValue)
                                         {
-                                            <div>
-                                                <dt>Frist</dt>
-                                                <dd>
-                                                    @(item.NeedDeadline.Value.ToString(
-                                                        "dd.MM.yyyy HH:mm"))
-                                                </dd>
-                                            </div>
+                                            <span class="inbox-chip">
+                                                Frist: @(item.NeedDeadline.Value.ToString("dd.MM.yyyy HH:mm"))
+                                            </span>
                                         }
-                                    </dl>
+                                    </div>
 
                                     @if (!string.IsNullOrWhiteSpace(
-                                        item.NeedDescription))
+                                             item.NeedDescription))
                                     {
                                         <p class="inbox-description">
                                             @item.NeedDescription
@@ -221,49 +201,31 @@
                                     }
                                 </section>
 
-                                <section class="inbox-section">
-                                    <h3>Ressurs</h3>
+                                <svg class="inbox-summary-arrow" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
 
-                                    <dl class="inbox-facts">
-                                        <div>
-                                            <dt>Kategori</dt>
-                                            <dd>
-                                                @(item.CategoryName == "Vehicles"
-                                                    ? "Kjøretøy"
-                                                    : "Utstyr")
-                                            </dd>
-                                        </div>
+                                <section class="inbox-summary-card">
+                                    <p class="inbox-summary-label">RESSURS</p>
+                                    <p class="inbox-summary-title">
+                                        @(item.CategoryName == "Vehicles" ? "Kjøretøy" : "Utstyr")
+                                        · @(item.ResourceAvailable ? "Tilgjengelig" : "Ikke tilgjengelig")
+                                    </p>
 
-                                        <div>
-                                            <dt>Tilgjengelig</dt>
-                                            <dd>
-                                                @(item.ResourceAvailable
-                                                    ? "Ja"
-                                                    : "Nei")
-                                            </dd>
-                                        </div>
-
+                                    <div class="inbox-chips">
                                         @if (!string.IsNullOrWhiteSpace(
-                                            item.ResourceAddress))
+                                                 item.ResourceCondition))
                                         {
-                                            <div>
-                                                <dt>Plassering</dt>
-                                                <dd>@item.ResourceAddress</dd>
-                                            </div>
+                                            <span class="inbox-chip">Tilstand: @item.ResourceCondition</span>
                                         }
 
                                         @if (!string.IsNullOrWhiteSpace(
-                                            item.ResourceCondition))
+                                                 item.ResourceAddress))
                                         {
-                                            <div>
-                                                <dt>Tilstand</dt>
-                                                <dd>@item.ResourceCondition</dd>
-                                            </div>
+                                            <span class="inbox-chip">@item.ResourceAddress</span>
                                         }
-                                    </dl>
+                                    </div>
 
                                     @if (!string.IsNullOrWhiteSpace(
-                                        item.ResourceInformation))
+                                             item.ResourceInformation))
                                     {
                                         <p class="inbox-description">
                                             @item.ResourceInformation
@@ -272,46 +234,15 @@
                                 </section>
                             </div>
 
-                            <section class="inbox-section">
-                                <h3>Kontakt og tidspunkt</h3>
-
-                                <dl class="inbox-facts">
-                                    <div>
-                                        <dt>Forespurt</dt>
-                                        <dd>
-                                            @(item.RequestedAtUtc.ToLocalTime()
-                                                .ToString("dd.MM.yyyy HH:mm"))
-                                        </dd>
-                                    </div>
-
-                                    @if (!string.IsNullOrWhiteSpace(
-                                        item.NeedContactPerson))
-                                    {
-                                        <div>
-                                            <dt>Kontaktperson</dt>
-                                            <dd>@item.NeedContactPerson</dd>
-                                        </div>
-                                    }
-
-                                    @if (!string.IsNullOrWhiteSpace(
-                                        item.NeedContactPoint))
-                                    {
-                                        <div>
-                                            <dt>Kontaktpunkt</dt>
-                                            <dd>@item.NeedContactPoint</dd>
-                                        </div>
-                                    }
-
-                                    @if (!string.IsNullOrWhiteSpace(
-                                        item.NeedPhoneNumber))
-                                    {
-                                        <div>
-                                            <dt>Telefon</dt>
-                                            <dd>@item.NeedPhoneNumber</dd>
-                                        </div>
-                                    }
-                                </dl>
-                            </section>
+                            @if (!string.IsNullOrWhiteSpace(item.NeedContactPerson)
+                                 || !string.IsNullOrWhiteSpace(item.NeedContactPoint)
+                                 || !string.IsNullOrWhiteSpace(item.NeedPhoneNumber))
+                            {
+                                <p class="inbox-contact">
+                                    Kontakt:
+                                    <strong>@string.Join(" · ", new[] { item.NeedContactPerson, item.NeedContactPoint, item.NeedPhoneNumber }.Where(x => !string.IsNullOrWhiteSpace(x)))</strong>
+                                </p>
+                            }
 
                             <section class="inbox-section">
                                 <h3>Meldinger om denne matchen</h3>

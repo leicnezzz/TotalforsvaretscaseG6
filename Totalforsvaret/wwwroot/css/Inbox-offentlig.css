@@ -102,3 +102,23 @@
 .offentlig-inbox .inbox-footer a {
     color: #163c4c;
 }
+
+.offentlig-inbox .inbox-summary-label,
+.offentlig-inbox .inbox-summary-arrow,
+.offentlig-inbox .inbox-summary-title {
+    color: #163c4c;
+}
+
+.offentlig-inbox .inbox-summary-card {
+    background: #eef1f3;
+}
+
+.offentlig-inbox .inbox-chip {
+    border-color: #c6d4da;
+    color: #163c4c;
+}
+
+.offentlig-inbox .inbox-contact,
+.offentlig-inbox .inbox-contact strong {
+    color: #344c58;
+}

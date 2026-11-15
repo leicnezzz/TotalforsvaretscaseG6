@@ -107,8 +107,15 @@ body.offentlig-page .offentlig-back-actions .private-page-action:focus-visible {
     color: var(--offentlig-blue);
 }
 
-.offentlig-page :is(.crisis-card, .stat-kort[data-oversikt-liste]):is(:hover, :focus-within) {
+.offentlig-page .crisis-card:is(:hover, :focus-within) {
     box-shadow: var(--offentlig-card-hover);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .offentlig-page .offentlig-dashboard:not(:has(#oversiktDialog[open]))
+        .stat-kort[data-oversikt-liste]:hover {
+        box-shadow: var(--offentlig-card-hover);
+    }
 }
 
 @media (prefers-reduced-motion: no-preference) {

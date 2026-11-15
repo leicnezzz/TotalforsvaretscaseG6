@@ -1270,10 +1270,6 @@ body.kart-fullskjerm-apen {
     cursor: pointer;
 }
 
-.stat-kort[data-oversikt-liste]:hover {
-    box-shadow: 0 3px 12px #0002;
-}
-
 .stat-kort[data-oversikt-liste]:focus-visible {
     outline: 3px solid var(--offentlig);
     outline-offset: 3px;
@@ -1843,7 +1839,7 @@ body.offentlig-page {
 }
 
 .offentlig-dashboard .egen-ressurs-lenke:hover {
-    text-decoration: underline;
+    background: #dceaf3;
 }
 
 .offentlig-dashboard .egen-ressurs-lenke:focus-visible {
@@ -1860,6 +1856,8 @@ body.offentlig-page {
 .offentlig-dashboard .kart-oversiktsgruppe { gap: 14px; }
 .offentlig-dashboard .statistikk-rad { gap: 8px; }
 .offentlig-dashboard .stat-kort { border: 2px solid #163c4c; border-radius: 10px; padding: 8px 14px; gap: 12px; }
+.offentlig-dashboard .behov-kort { border-color: #a64b3c; }
+.offentlig-dashboard .treff-kort { border-color: #426747; }
 .offentlig-dashboard .egen-ressurs-lenke::after { content: none; }
 .offentlig-site-header .primary-nav:has(#kartSokToolbar) {
     display: grid;

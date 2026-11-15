@@ -53,6 +53,7 @@
 }
 
 <header class="site-header">
+    <script src="~/js/site-navigation.js" asp-append-version="true"></script>
     <nav class="primary-nav @(isDashboard ? "nav-with-brand" : "")"
          aria-label="Hovedmeny">
 
@@ -123,8 +124,8 @@
                      fill="none"
                      stroke="currentColor"
                      aria-hidden="true">
-                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
-                    <path d="M10 21h4" />
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/>
+                    <path d="M10 21h4"/>
                 </svg>
             </a>
 
@@ -138,7 +139,7 @@
                                       "Photo",
                                       "Profile",
                                       new { area = "Privat" })"
-                             alt="" />
+                             alt=""/>
                     }
                     else
                     {

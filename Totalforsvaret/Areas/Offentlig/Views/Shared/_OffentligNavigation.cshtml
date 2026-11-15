@@ -44,6 +44,7 @@
 }
 
 <header class="site-header offentlig-site-header">
+    <script src="~/js/site-navigation.js" asp-append-version="true"></script>
     <nav class="primary-nav" aria-label="Hovedmeny">
         <button class="nav-toggle"
                 type="button"
@@ -86,7 +87,7 @@
         </div>
 
         @if (isOverview && action.Equals(
-            "Index", StringComparison.OrdinalIgnoreCase))
+                 "Index", StringComparison.OrdinalIgnoreCase))
         {
             <div id="kartSokToolbar"></div>
         }
@@ -102,7 +103,7 @@
                                       "Photo",
                                       "Profile",
                                       new { area = "Offentlig" })"
-                             alt="" />
+                             alt=""/>
                     }
                     else
                     {

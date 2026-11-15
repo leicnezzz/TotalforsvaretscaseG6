@@ -305,7 +305,11 @@ public async Task<IActionResult> Delete(int id)
         .Where(n => n.CrisisId == id)
         .ToListAsync();
 
-    // Sletter behovene og deretter selve krisen.
+    var assignments = await _context.ResourceAssignments
+        .Where(assignment => assignment.Need.CrisisId == id)
+        .ToListAsync();
+
+    _context.ResourceAssignments.RemoveRange(assignments);
     _context.Needs.RemoveRange(needs);
     _context.Crises.Remove(crisis);
 

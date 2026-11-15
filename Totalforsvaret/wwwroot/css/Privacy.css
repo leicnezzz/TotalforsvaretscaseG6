@@ -7,6 +7,7 @@
 
 .privacy-page {
     --privacy-green: #2e6840;
+    --public-green: var(--privacy-green);
     --privacy-page: #eef2ee;
     --privacy-text: #263b32;
     --privacy-muted: #607078;
@@ -48,6 +49,16 @@
 .privacy-page .privacy-actor-section-bar {
     position: relative;
     z-index: 1;
+}
+
+/* Lenker i toppen skal ikke understrekes, som på hovedsiden */
+.privacy-page .public-header a {
+    text-decoration: none;
+}
+
+/* Logoen ligger til venstre i headeren, som på forsiden */
+.privacy-page .nav-brand {
+    justify-self: start;
 }
 
 /* Seksjonslinjen fra privatnavigasjonen */

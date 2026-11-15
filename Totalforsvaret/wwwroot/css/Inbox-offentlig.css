@@ -1,12 +1,13 @@
 .offentlig-inbox {
-    background: #eef0f2;
+    background: #eef1f3;
     color: #172c34;
 }
 
 .offentlig-inbox .inbox-back,
-.offentlig-inbox .inbox-card > h1,
+.offentlig-inbox .inbox-sidebar h1,
 .offentlig-inbox .inbox-detail-heading h2,
-.offentlig-inbox .inbox-section h3,
+.offentlig-inbox .inbox-conversation-head h3,
+.offentlig-inbox .inbox-empty h1,
 .offentlig-inbox .inbox-empty h2 {
     color: #163c4c;
 }
@@ -16,50 +17,79 @@
 }
 
 .offentlig-inbox .inbox-flash {
-    background: #e9f5f6;
+    background: #e1ecf1;
     color: #163c4c;
 }
 
-.offentlig-inbox .inbox-list {
-    border-color: #b8cbd2;
+.offentlig-inbox .inbox-sidebar {
+    border-color: #dce5e9;
 }
 
 .offentlig-inbox .inbox-list-item:hover,
 .offentlig-inbox .inbox-list-item.is-selected {
-    background: #e7f0f3;
+    background: #e1ecf1;
 }
 
 .offentlig-inbox .inbox-list-icon {
-    background: #eef0f2;
-}
-
-.offentlig-inbox .inbox-list-copy span,
-.offentlig-inbox .inbox-eyebrow,
-.offentlig-inbox .inbox-facts dt,
-.offentlig-inbox .inbox-empty p {
-    color: #526671;
+    background: #e1ecf1;
+    color: #163c4c;
 }
 
 .offentlig-inbox .inbox-list-copy small {
     color: #163c4c;
 }
 
-.offentlig-inbox .inbox-detail-heading {
-    border-color: #c6d4da;
+.offentlig-inbox .inbox-list-copy small.is-waiting {
+    color: #7a4e00;
+}
+
+.offentlig-inbox .inbox-list-copy span,
+.offentlig-inbox .inbox-eyebrow,
+.offentlig-inbox .inbox-empty p {
+    color: #526671;
 }
 
 .offentlig-inbox .inbox-status {
-    border-color: #72d9df;
+    background: #e1ecf1;
     color: #163c4c;
 }
 
-.offentlig-inbox .inbox-section {
-    border-color: #dce5e9;
-    background: #fbfcfd;
+.offentlig-inbox .inbox-status.is-waiting {
+    background: #fcf0d4;
+    color: #7a4e00;
+}
+
+.offentlig-inbox .inbox-summary-label,
+.offentlig-inbox .inbox-summary-arrow,
+.offentlig-inbox .inbox-summary-title {
+    color: #163c4c;
+}
+
+.offentlig-inbox .inbox-summary-card {
+    background: #eef1f3;
+}
+
+.offentlig-inbox .inbox-chip {
+    border-color: #c6d4da;
+    color: #163c4c;
+}
+
+.offentlig-inbox .inbox-contact,
+.offentlig-inbox .inbox-contact strong {
+    color: #344c58;
 }
 
 .offentlig-inbox .inbox-description {
     color: #344c58;
+}
+
+.offentlig-inbox .inbox-message.is-own .inbox-message-text {
+    background: #163c4c;
+}
+
+.offentlig-inbox .inbox-conversation .inbox-message-form textarea:focus {
+    border-color: #163c4c;
+    outline: 3px solid rgb(22 60 76 / 16%);
 }
 
 .offentlig-inbox .inbox-button {
@@ -81,7 +111,7 @@
 }
 
 .offentlig-inbox .inbox-button-secondary:hover {
-    background: #e7f0f3;
+    background: #e1ecf1;
 }
 
 .offentlig-inbox .inbox-button:focus-visible,
@@ -91,10 +121,7 @@
     outline-offset: 3px;
 }
 
-.offentlig-inbox .inbox-footer {
-    color: #163c4c;
-}
-
+.offentlig-inbox .inbox-footer,
 .offentlig-inbox .inbox-footer a {
     color: #163c4c;
 }

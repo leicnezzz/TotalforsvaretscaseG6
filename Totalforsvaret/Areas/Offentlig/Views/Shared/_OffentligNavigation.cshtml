@@ -25,6 +25,8 @@
         controller.Equals("Crisis", StringComparison.OrdinalIgnoreCase);
     var isProfile =
         controller.Equals("Profile", StringComparison.OrdinalIgnoreCase);
+    var isInbox =
+        controller.Equals("Inbox", StringComparison.OrdinalIgnoreCase);
 
     var account = await UserManager.GetUserAsync(User);
     var displayName = account?.Navn
@@ -119,9 +121,8 @@
                         </a>
                     </li>
                     <li>
-                        <a asp-area="Offentlig"
-                           asp-controller="Inbox"
-                           asp-action="Index">
+                        <a href="@(Url.Action("Index", "Inbox", new { area = "Offentlig" }) + eventQuery)"
+                           aria-current="@(isInbox ? "page" : null)">
                             Innboks
                         </a>
                     </li>

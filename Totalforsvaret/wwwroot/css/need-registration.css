@@ -199,17 +199,16 @@ body:has(.need-page) > .registration-footer a {
 .public-resource-registration .wizard-fields :is(input, select, textarea),
 .public-resource-registration .public-button,
 .public-resource-registration .public-help :is(summary, p),
-.public-resource-registration .wizard-account-mode,
 .public-resource-registration .wizard-address-results button {
     border-color: var(--header-green);
 }
 
-.public-resource-registration :is(.public-button-primary, .wizard-step-confirm .public-button, .wizard-account-mode[aria-pressed="true"]) {
+.public-resource-registration :is(.public-button-primary, .wizard-step-confirm .public-button) {
     background: var(--header-green);
     color: #fff;
 }
 
-.public-resource-registration :is(.public-button-outline, .wizard-text-button, .wizard-account-mode:not([aria-pressed="true"]), .wizard-address-results button) {
+.public-resource-registration :is(.public-button-outline, .wizard-text-button, .wizard-address-results button) {
     color: var(--header-green);
 }
 

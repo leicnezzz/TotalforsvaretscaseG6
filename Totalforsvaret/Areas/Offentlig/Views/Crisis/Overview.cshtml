@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Hendelser";
     ViewData["FullWidth"] = true;
+    ViewData["RegistrationFooter"] = true;
     var groups = new[]
     {
         new { Title = "Aktive hendelser", Key = "active", Items = Model.Where(crisis => crisis.Status is "Aktiv" or "Under kontroll").ToList() },
@@ -10,6 +11,7 @@
     };
 }
 
+<link rel="stylesheet" href="~/css/resource-registration.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/crisis-overview.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
 

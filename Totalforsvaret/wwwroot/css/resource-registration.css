@@ -19,6 +19,15 @@
 .registration-help p { position: absolute; right: 0; z-index: 2; width: min(260px, 70vw); margin: 10px 0 0; padding: 16px; background: white; border: 1px solid var(--green); border-radius: 6px; font-size: 14px; box-shadow: 0 4px 12px #0002; }
 .registration-footer { display: flex; justify-content: space-between; gap: 24px; padding: 24px; font-size: 14px; }
 .registration-footer > div { display: flex; gap: 16px; flex-wrap: wrap; }
+body.offentlig-page:has(.crisis-overview, .match-page) > .registration-footer {
+    color: #163c4c;
+    font-family: "Roboto", Arial, sans-serif;
+}
+
+body.offentlig-page:has(.crisis-overview, .match-page) > .registration-footer a {
+    color: inherit;
+}
+
 .registration-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (max-width: 600px) {
     .registration-main { padding: 0 16px 80px; }

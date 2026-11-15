@@ -21,6 +21,14 @@
     font-family: Roboto, Arial, sans-serif;
 }
 
+.privacy-guest .public-header {
+    --public-green: var(--privacy-green);
+}
+
+.privacy-guest .nav-button-primary {
+    text-decoration: none;
+}
+
 /* Offentlig aktør får blågrønn aksentfarge */
 .privacy-page.privacy-public {
     --privacy-green: #163c4c;

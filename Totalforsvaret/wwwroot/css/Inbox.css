@@ -251,42 +251,6 @@
     padding-top: 18px;
 }
 
-.inbox-section {
-    padding: 18px;
-    border: 1px solid #e0e8e1;
-    border-radius: 8px;
-    background: #fbfcfb;
-}
-
-.inbox-section h3 {
-    margin: 0 0 14px;
-    color: #2e6840;
-    font-size: 17px;
-}
-
-.inbox-facts {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px 22px;
-    margin: 0;
-}
-
-.inbox-facts > div {
-    min-width: 0;
-}
-
-.inbox-facts dt {
-    margin-bottom: 4px;
-    color: #607078;
-    font-size: 12px;
-}
-
-.inbox-facts dd {
-    margin: 0;
-    overflow-wrap: anywhere;
-    font-size: 14px;
-}
-
 .inbox-description {
     margin: 16px 0 0;
     color: #394a41;
@@ -399,10 +363,6 @@
         padding: 20px 14px;
     }
 
-    .inbox-facts {
-        grid-template-columns: 1fr;
-    }
-
     .inbox-actions,
     .inbox-actions form,
     .inbox-button {
@@ -412,20 +372,11 @@
     .inbox-footer {
         flex-direction: column;
     }
+
     .inbox-page .primary-nav .account-actions .inbox-icon-link,
     .inbox-page .primary-nav .account-actions .account-link {
         align-self: center;
     }
-}
-.inbox-info-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-}
-
-.inbox-info-grid .inbox-section {
-    min-width: 0;
-    margin: 0;
 }
 
 .inbox-message-form {
@@ -471,12 +422,6 @@
     min-width: 130px;
     border-radius: 24px;
     white-space: nowrap;
-}
-
-@media (max-width: 760px) {
-    .inbox-info-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 @media (max-width: 480px) {
@@ -681,13 +626,16 @@
     color: #2e6840;
 }
 
-.inbox-message.is-own { align-self: flex-end; }
+.inbox-message.is-own {
+    align-self: flex-end;
+}
 
-.inbox-message.is-own .inbox-message-meta { text-align: right; }
+.inbox-message.is-own .inbox-message-meta {
+    text-align: right;
+}
 
 .inbox-message.is-own .inbox-message-text {
     border-radius: 14px 14px 4px 14px;
     background: #2e6840;
     color: #fff;
 }
-

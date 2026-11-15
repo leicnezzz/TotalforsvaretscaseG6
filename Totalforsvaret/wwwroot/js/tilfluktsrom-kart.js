@@ -64,12 +64,8 @@ printButton.addEventListener('click', () => window.print());
 
             count++;
         }
-
-        aedStatus.textContent = count
-            ? `Registrerte hjertestartere i kartutsnittet: ${count}. Kilde: OpenStreetMap.`
-            : 'Ingen registrerte hjertestartere i dette kartutsnittet.';
+        aedStatus.textContent = '';
     }
-
     aedToggle.addEventListener('change', async () => {
         if (!aedToggle.checked) {
             aedLayer.clearLayers();

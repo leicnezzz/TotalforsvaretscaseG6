@@ -759,6 +759,31 @@ body.offentlig-page .private-page-actions .private-page-action {
         margin-top: 4px;
     }
 }
+@media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
+    .site-header .primary-nav:has(> .nav-toggle) {
+        flex-wrap: wrap;
+    }
+
+    .site-header .primary-nav:has(> .nav-toggle) > .nav-links {
+        opacity: 0;
+        translate: 0 -3px;
+        transition: opacity 160ms ease-out, translate 160ms ease-out,
+            display 160ms allow-discrete;
+    }
+
+    .site-header .primary-nav.nav-open:has(> .nav-toggle) > .nav-links {
+        opacity: 1;
+        translate: none;
+    }
+
+    @starting-style {
+        .site-header .primary-nav.nav-open:has(> .nav-toggle) > .nav-links {
+            opacity: 0;
+            translate: 0 -3px;
+        }
+    }
+}
+
 /* Offentlig aktør: hvit nedtrekksmeny med blå tekst */
 .offentlig-site-header .account-menu-list {
     border-color: #d7e1d9;

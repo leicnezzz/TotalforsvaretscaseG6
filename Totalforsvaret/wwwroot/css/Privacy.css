@@ -28,12 +28,16 @@
     --wave-dark: #4b8499;
 }
 
-/* Hold innholdet over bølgene */
+/* Hold navigasjonen over sideinnholdet og bølgene */
 .privacy-page .site-header,
-.privacy-page .public-header,
-.privacy-main,
-.privacy-footer,
-.privacy-actor-section-bar {
+.privacy-page .public-header {
+    position: relative;
+    z-index: 1300;
+}
+
+.privacy-page .privacy-main,
+.privacy-page .privacy-footer,
+.privacy-page .privacy-actor-section-bar {
     position: relative;
     z-index: 1;
 }

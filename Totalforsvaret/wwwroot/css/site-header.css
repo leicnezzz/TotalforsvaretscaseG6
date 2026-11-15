@@ -673,3 +673,20 @@ body.offentlig-page .private-page-actions .private-page-action {
         margin-top: 4px;
     }
 }
+/* Offentlig aktør: hvit nedtrekksmeny med blå tekst */
+.offentlig-site-header .account-menu-list {
+    border-color: #d7e1d9;
+    background-color: #fff;
+}
+
+.offentlig-site-header .account-menu-list a,
+.offentlig-site-header .account-menu-list button {
+    color: #163c4c;
+}
+
+.offentlig-site-header .account-menu-list a:hover,
+.offentlig-site-header .account-menu-list button:hover,
+.offentlig-site-header .account-menu-list a[aria-current="page"] {
+    background-color: #e8eff2;
+    color: #163c4c;
+}

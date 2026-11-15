@@ -24,21 +24,23 @@ public class InboxController(
         if (bruker is null)
             return Challenge();
 
-        // Only show assignments for resources owned by the signed-in user.
+        // Privat bruker ser bare matcher knyttet til egne ressurser.
         var assignments = await db.ResourceAssignments
             .AsNoTracking()
-            .Where(assignment => assignment.Resource.BrukerId == bruker.Id)
+            .Where(assignment =>
+                assignment.Resource.BrukerId == bruker.Id)
             .Include(assignment => assignment.Resource)
                 .ThenInclude(resource => resource.Category)
             .Include(assignment => assignment.Need)
             .OrderByDescending(assignment => assignment.RequestedAtUtc)
             .ToListAsync();
 
-        var items = assignments.Select(assignment =>
-            new InboxItemViewModel
+        var items = assignments
+            .Select(assignment => new InboxItemViewModel
             {
                 AssignmentId = assignment.Id,
                 ResourceId = assignment.ResourceId,
+                CanManageAssignment = true,
 
                 ResourceName = assignment.Resource.Object,
                 CategoryName = assignment.Resource.Category.Name,
@@ -65,15 +67,86 @@ public class InboxController(
             })
             .ToList();
 
+        // Bruk valgt match bare hvis den tilhører denne brukeren.
+        var valgtId = items.Any(item => item.AssignmentId == selectedId)
+            ? selectedId
+            : items.FirstOrDefault()?.AssignmentId;
+
+        var messages = valgtId.HasValue
+            ? await db.ResourceMessages
+                .AsNoTracking()
+                .Where(message =>
+                    message.AssignmentId == valgtId.Value)
+                .OrderBy(message => message.SentAtUtc)
+                .Select(message => new InboxMessageViewModel
+                {
+                    SenderName = message.Sender.Navn,
+                    Body = message.Body,
+                    SentAtUtc = message.SentAtUtc
+                })
+                .ToListAsync()
+            : new List<InboxMessageViewModel>();
+
         var model = new InboxViewModel
         {
             Items = items,
-            SelectedId = items.Any(item => item.AssignmentId == selectedId)
-                ? selectedId
-                : items.FirstOrDefault()?.AssignmentId
+            SelectedId = valgtId,
+            Messages = messages
         };
 
         return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SendMessage(
+        int assignmentId,
+        string body)
+    {
+        var bruker = await users.GetUserAsync(User);
+
+        if (bruker is null)
+            return Challenge();
+
+        body = body?.Trim() ?? "";
+
+        if (body.Length == 0 || body.Length > 2000)
+        {
+            TempData["InboxMessage"] =
+                "Meldingen må inneholde mellom 1 og 2000 tegn.";
+
+            return RedirectToAction(nameof(Index), new
+            {
+                selectedId = assignmentId
+            });
+        }
+
+        // Kontroller at matchen gjelder en ressurs brukeren eier.
+        var assignment = await db.ResourceAssignments
+            .Include(item => item.Resource)
+            .SingleOrDefaultAsync(item =>
+                item.Id == assignmentId &&
+                item.Resource.BrukerId == bruker.Id);
+
+        if (assignment is null)
+            return NotFound();
+
+        db.ResourceMessages.Add(new ResourceMessage
+        {
+            AssignmentId = assignment.Id,
+            SenderUserId = bruker.Id,
+            Body = body,
+            SentAtUtc = DateTime.UtcNow
+        });
+
+        await db.SaveChangesAsync();
+
+        TempData["InboxMessage"] = "Meldingen er sendt.";
+
+        return RedirectToAction(nameof(Index), new
+        {
+            selectedId = assignmentId
+        });
     }
 
     [HttpPost]
@@ -88,7 +161,9 @@ public class InboxController(
         if (assignment.Status != AssignmentStatus.Requested)
             return BadRequest("Forespørselen venter ikke lenger på svar.");
 
-        var activeNeed = assignment.Need.Status is "Åpen" or "Under behandling";
+        var activeNeed =
+            assignment.Need.Status is "Åpen" or "Under behandling";
+
         if (!activeNeed)
             return BadRequest("Behovet er ikke lenger aktivt.");
 
@@ -106,7 +181,10 @@ public class InboxController(
              other.Status == AssignmentStatus.Assigned));
 
         if (alreadyInUse)
-            return BadRequest("Ressursen er allerede under vurdering eller tildelt.");
+        {
+            return BadRequest(
+                "Ressursen er allerede under vurdering eller tildelt.");
+        }
 
         assignment.Status = AssignmentStatus.Assigned;
         assignment.AssignedAtUtc = DateTime.UtcNow;
@@ -114,7 +192,11 @@ public class InboxController(
         await db.SaveChangesAsync();
 
         TempData["InboxMessage"] = "Forespørselen er godtatt.";
-        return RedirectToAction(nameof(Index), new { selectedId = assignmentId });
+
+        return RedirectToAction(nameof(Index), new
+        {
+            selectedId = assignmentId
+        });
     }
 
     [HttpPost]
@@ -135,29 +217,13 @@ public class InboxController(
         await db.SaveChangesAsync();
 
         TempData["InboxMessage"] = "Forespørselen er avslått.";
-        return RedirectToAction(nameof(Index), new { selectedId = assignmentId });
+
+        return RedirectToAction(nameof(Index), new
+        {
+            selectedId = assignmentId
+        });
     }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Release(int assignmentId)
-    {
-        var assignment = await GetOwnedAssignment(assignmentId);
-
-        if (assignment is null)
-            return NotFound();
-
-        if (assignment.Status != AssignmentStatus.Assigned)
-            return BadRequest("Ressursen er ikke tildelt.");
-
-        assignment.Status = AssignmentStatus.Released;
-        assignment.ClosedAtUtc = DateTime.UtcNow;
-
-        await db.SaveChangesAsync();
-
-        TempData["InboxMessage"] = "Ressursen er frigitt.";
-        return RedirectToAction(nameof(Index), new { selectedId = assignmentId });
-    }
+    
 
     private async Task<ResourceAssignment?> GetOwnedAssignment(
         int assignmentId)

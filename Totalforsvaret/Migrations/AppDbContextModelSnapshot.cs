@@ -187,6 +187,37 @@ namespace Totalforsvaret.Migrations
                     b.ToTable("ResourceAssignments");
                 });
 
+            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.ResourceMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssignmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<int>("SenderUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SentAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SenderUserId");
+
+                    b.HasIndex("AssignmentId", "SentAtUtc");
+
+                    b.ToTable("ResourceMessages");
+                });
+
             modelBuilder.Entity("Totalforsvaret.Areas.Privat.Models.EgenberedskapChecklistStatus", b =>
                 {
                     b.Property<int>("BrukerId")
@@ -619,6 +650,25 @@ namespace Totalforsvaret.Migrations
                     b.Navigation("Resource");
                 });
 
+            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.ResourceMessage", b =>
+                {
+                    b.HasOne("Totalforsvaret.Areas.Offentlig.Models.ResourceAssignment", "Assignment")
+                        .WithMany("Messages")
+                        .HasForeignKey("AssignmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Totalforsvaret.Models.Bruker", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Assignment");
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("Totalforsvaret.Areas.Privat.Models.EgenberedskapChecklistStatus", b =>
                 {
                     b.HasOne("Totalforsvaret.Models.Bruker", null)
@@ -697,6 +747,11 @@ namespace Totalforsvaret.Migrations
                         .IsRequired();
 
                     b.Navigation("Resource");
+                });
+
+            modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.ResourceAssignment", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("Totalforsvaret.Models.Crisis", b =>

@@ -2268,3 +2268,46 @@ body.offentlig-page {
 #kartSokToolbar .kart-stedsforslag {
     z-index: 4;
 }
+/* Søk ved siden av Soner på kartet */
+#offentligKart .kart-handlinger {
+    width: min(900px, calc(100% - 340px));
+}
+
+#offentligKart .kart-handlingsrad {
+    align-items: center;
+}
+
+#offentligKart .kart-handlingsrad > .kart-stedsok {
+    position: relative;
+    inset: auto;
+    transform: none;
+    flex: 0 1 360px;
+    width: auto;
+    min-width: 0;
+    max-width: 360px;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    cursor: auto;
+    display: block;
+    pointer-events: auto;
+}
+
+#offentligKart .kart-handlingspanel {
+    max-width: 480px;
+}
+
+@media (max-width: 900px) {
+    #offentligKart .kart-handlinger {
+        width: calc(100% - 2 * var(--kart-marg));
+    }
+
+    #offentligKart .kart-handlingsrad > .kart-stedsok {
+        flex: 0 0 100%;
+        max-width: 420px;
+    }
+}

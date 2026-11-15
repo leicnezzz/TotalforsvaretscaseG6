@@ -9,6 +9,12 @@
     var completedItems =
         ViewData["CompletedChecklistItems"] as HashSet<string>
         ?? new HashSet<string>();
+    var matOgVann = new[] { "water", "stored-food", "cooking-equipment", "fuel", "pet-supplies", "cash" };
+    var varmeOgLys = new[] { "warm-clothes", "matches", "firewood", "heater", "overnight", "flashlights" };
+    var informasjon = new[] { "radio", "batteries", "phone-list" };
+    var legemidler = new[] { "medicine", "iodine", "hygiene" };
+    var antallPunkter = Convert.ToInt32(ViewData["ChecklistItemCount"]);
+    var prosent = completedItems.Count * 100 / antallPunkter;
 }
 
 <!DOCTYPE html>
@@ -40,87 +46,110 @@
    <partial name="/Areas/Homepage/Views/Shared/_PrivatePageAction.cshtml" />
 
     <main>
-    <div class="beredskap-container">
-        <header class="page-header">
-            <h1>Oversikt over egen beredskap</h1>
-            <p>For deg som ønsker å bli en bedre ressurs for samfunnet.</p>
-        </header>
+        <div class="beredskap-container">
+            <nav class="contents-card" aria-label="Innhold på siden">
+                <a href="#tilfluktsrom">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+                    <span>
+                        <strong>Finn hjelp nær deg</strong>
+                        Tilfluktsrom og hjertestartere på kart
+                    </span>
+                </a>
+                <a href="#checklist">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>
+                    <span>
+                        <strong>Sjekkliste for beredskap</strong>
+                        <b>@completedItems.Count av @antallPunkter</b> punkter fullført
+                        <span class="progress-bar"><span style="width: @(prosent)%"></span></span>
+                    </span>
+                </a>
+                <a href="#courses">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-4 9 4-9 4-9-4z"/><path d="M7 11.5V16c0 1.2 2.2 2.5 5 2.5s5-1.3 5-2.5v-4.5"/></svg>
+                    <span>
+                        <strong>Kurs og opplæring</strong>
+                        Førstehjelp, brann og akuttberedskap
+                    </span>
+                </a>
+            </nav>
+            <section id="tilfluktsrom" class="shelter-section" aria-labelledby="tilfluktsrom-tittel">
+                <header class="section-heading">
+                    <h2 id="tilfluktsrom-tittel">Finn hjelp nær deg</h2>
+                    <p>Søk på adressen din og velg hva du vil se på kartet.</p>
+                </header>
+                <div class="shelter-panel">
+                    <div class="shelter-search">
+                   
+                        <form id="tilfluktsrom-sok">
+                            <label for="tilfluktsrom-adresse">Adresse</label>
 
-        <nav class="contents-card" aria-label="Innhold på siden">
-            <h2>Innhold</h2>
-            <p>Her er en oversikt over informasjon du finner på denne siden.</p>
-            <a href="#tilfluktsrom">— &nbsp; Kart over offentlige tilfluktsrom</a>
-            <a href="#checklist">— &nbsp; Sjekkliste for beredskap</a>
-            <a href="#courses">— &nbsp; Oversikt over diverse kurs</a>
-        </nav>
-        <section id="tilfluktsrom" class="shelter-section" aria-labelledby="tilfluktsrom-tittel">
-            <header class="section-heading">
-                <h2 id="tilfluktsrom-tittel">Finn nærmeste offentlige tilfluktsrom</h2>
-            </header>
-            <div class="shelter-search">
-                <ol class="shelter-instructions">
-    <li>Skriv inn gatenavn og husnummer. Velg riktig adresse blant forslagene.</li>
-    <li>Trykk <strong>Søk</strong>. Hvis du får flere treff, velg riktig adresse.</li>
-    <li>Se de nærmeste tilfluktsrommene under kartet.
-       Trykk på en adresse i tabellen for å se tilfluktsrommet på kartet.</li>
-</ol>
+                            <div class="shelter-search-controls">
+                                <input id="tilfluktsrom-adresse"
+                                       name="adresse"
+                                       type="search"
+                                       placeholder="Gatenavn, husnummer og ev. postnummer"
+                                       aria-describedby="tilfluktsrom-adresse-hjelp"
+                                       required disabled/>
+                                <button type="submit" disabled>Søk</button>
+                            </div>
 
-              <form id="tilfluktsrom-sok">
-    <label for="tilfluktsrom-adresse">Adresse</label>
-   <p id="tilfluktsrom-adresse-hjelp">Eksempel: Markens gate 12, 4611</p>
+                            <p id="tilfluktsrom-adresse-hjelp">Eksempel: Markens gate 12, 4611</p>
 
-    <div class="shelter-search-controls">
-        <input id="tilfluktsrom-adresse"
-               name="adresse"
-               type="search"
-               placeholder="Gatenavn, husnummer og ev. postnummer"
-               aria-describedby="tilfluktsrom-adresse-hjelp"
-               required disabled />
-        <button type="submit" disabled>Søk</button>
-    </div>
+                            <p id="tilfluktsrom-status" role="status"></p>
+                        </form>
+                    </div>
 
-    <p id="tilfluktsrom-status" role="status"></p>
-</form>
-            </div>
+                    <p id="tilfluktsrom-utskrift-adresse" class="shelter-print-address"></p>
 
-<p id="tilfluktsrom-utskrift-adresse" class="shelter-print-address"></p>
-
-            <ul id="tilfluktsrom-adressetreff"
-                aria-label="Adresser som matcher søket"></ul>
-                <div class="shelter-aed-controls">
-                    <label>
-                        <input id="vis-hjertestartere" type="checkbox" />
-                        Vis hjertestartere
-                    </label>
-                    <p id="hjertestarter-status" role="status"></p>
+                    <ul id="tilfluktsrom-adressetreff"
+                        aria-label="Adresser som matcher søket"></ul>
+                    <div class="shelter-aed-controls" hidden>
+                        <label>
+                            <input id="vis-tilfluktsrom" type="checkbox" checked />
+                            Tilfluktsrom
+                        </label>
+                        <label>
+                            <input id="vis-hjertestartere" type="checkbox"/>
+                            Hjertestartere
+                        </label>
+                        <p id="hjertestarter-status" role="status"></p>
+                    </div>
+                <details class="shelter-help">
+                    <summary>Slik bruker du kartet</summary>
+                    <ol class="shelter-instructions">
+                        <li>Skriv inn gatenavn og husnummer. Velg riktig adresse blant forslagene.</li>
+                        <li>Trykk <strong>Søk</strong>. Hvis du får flere treff, velg riktig adresse.</li>
+                        <li>Velg Tilfluktsrom og/eller Hjertestartere for å se dem på kartet. Hjertestartere vises når du zoomer inn.
+                            Trykk på en adresse i tabellen for å se tilfluktsrommet på kartet.</li>
+                    </ol>
+                </details>
                 </div>
 
-            <div id="tilfluktsrom-kart"
-                 role="region"
-                 aria-label="Kart for tilfluktsrom"></div>
+                <div id="tilfluktsrom-kart"
+                     role="region"
+                     aria-label="Kart for tilfluktsrom"></div>
 
-<div class="shelter-table-wrap">
-<table class="shelter-table">
-<caption>Nærmeste offentlige tilfluktsrom</caption>
-<thead>
-<tr>
-<th scope="col">Adresse</th>
-<th scope="col">Avstand i luftlinje</th>
-<th scope="col">Koordinater</th>
-</tr>
-</thead>
-<tbody id="tilfluktsrom-resultater"></tbody>
-    </table>
-</div>
+                <div class="shelter-table-wrap">
+                    <table class="shelter-table">
+                        <caption>Nærmeste offentlige tilfluktsrom</caption>
+                        <thead>
+                        <tr>
+                            <th scope="col">Adresse</th>
+                            <th scope="col">Avstand i luftlinje</th>
+                            <th scope="col">Koordinater</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tilfluktsrom-resultater"></tbody>
+                    </table>
+                </div>
 
-<button id="tilfluktsrom-skriv-ut"
-        class="shelter-print-button"
-        type="button"
-        hidden>
-    Skriv ut
-</button>
-        </section>
-          </div>
+                <button id="tilfluktsrom-skriv-ut"
+                        class="shelter-print-button"
+                        type="button"
+                        hidden>
+                    Skriv ut
+                </button>
+            </section>
+        </div>
 
         <section id="checklist"
                  class="checklist-section"
@@ -129,9 +158,9 @@
                 <h2 id="checklist-title">Sjekkliste for beredskap</h2>
 
                 <p class="checklist-progress">
-                    <strong>@completedItems.Count av @(ViewData["ChecklistItemCount"])</strong>
+                    <strong>@completedItems.Count av @antallPunkter</strong>
                     punkter fullført
-                </p>
+                    <span class="progress-bar"><span style="width: @(prosent)%"></span></span>
 
                 <p class="checklist-instructions">
                     Kryss av når du har et punkt på plass. Valget lagres automatisk.
@@ -139,8 +168,8 @@
                 </p>
             </header>
             <div class="checklist-grid">
-                <article class="preparedness-card">
-                    <h3>Mat og vann</h3>
+                <details class="preparedness-card" name="sjekkliste">
+                    <summary>Mat og vann <span class="checklist-count">@matOgVann.Count(completedItems.Contains) av @matOgVann.Length</span></summary>
                     <ul>
                         <li>
                             <form asp-area="Privat" asp-controller="Egenberedskap"
@@ -227,10 +256,10 @@
                             </form>
                         </li>
                     </ul>
-                </article>
-
-                <article class="preparedness-card">
-                    <h3>Varme og lys</h3>
+                </details>
+                
+                <details class="preparedness-card" name="sjekkliste">
+                    <summary>Varme og lys <span class="checklist-count">@varmeOgLys.Count(completedItems.Contains) av @varmeOgLys.Length</span></summary>
                     <ul>
                         <li>
                             <form asp-area="Privat" asp-controller="Egenberedskap"
@@ -317,10 +346,10 @@
                             </form>
                         </li>
                     </ul>
-                </article>
+                </details>
 
-                <article class="preparedness-card">
-                    <h3>Informasjon</h3>
+                <details class="preparedness-card" name="sjekkliste">
+                    <summary>Informasjon <span class="checklist-count">@informasjon.Count(completedItems.Contains) av @informasjon.Length</span></summary>
                     <ul>
                         <li>
                             <form asp-area="Privat" asp-controller="Egenberedskap"
@@ -365,10 +394,10 @@
                             </form>
                         </li>
                     </ul>
-                </article>
+                </details>
 
-                <article class="preparedness-card">
-                    <h3>Legemidler og hygiene</h3>
+                <details class="preparedness-card" name="sjekkliste">
+                    <summary>Legemidler og hygiene <span class="checklist-count">@legemidler.Count(completedItems.Contains) av @legemidler.Length</span></summary>
                     <ul>
                         <li>
                             <form asp-area="Privat" asp-controller="Egenberedskap"
@@ -413,20 +442,20 @@
                             </form>
                         </li>
                     </ul>
-                </article>
+                </details>
             </div>
         </section>
         <section id="courses"
          class="courses-section"
          aria-labelledby="courses-title">
     <header class="section-heading">
-        <h2 id="courses-title">Oversikt over diverse kurs</h2>
-        <p>Her er en oversikt over kurs som kan forbedre dine ferdigheter.</p>
+        <h2 id="courses-title">Lær mer: kurs som styrker beredskapen</h2>
+        <p>Mangler du et punkt på sjekklisten? Disse kursene hjelper deg videre.</p>
     </header>
             <div class="courses-grid">
                 <article class="course-card">
-                    <h3>Kurs hos Norsk Luftambulanse</h3>
-                    <p>Her får du gratis nettkurs i førstehjelp.</p>
+                    <h3>Norsk Luftambulanse</h3>
+                    <p>Gratis nettkurs i førstehjelp:</p>
                     <ul>
                         <li>Hjerte- og lungeredning</li>
                         <li>Tegn på hjerneslag</li>
@@ -435,7 +464,7 @@
                     <a class="course-link-text"
                        href="https://norskluftambulanse.no/akutt-abc"
                        target="_blank"
-                       rel="noopener noreferrer">Åpne kursoversikten</a>
+                       rel="noopener noreferrer">åpne kursoversikten →</a>
                 </article>
 
                 <article class="course-card">
@@ -450,7 +479,7 @@
                     <a class="course-link-text"
                        href="https://www.rodekors.no/forstehjelp/kurs/"
                        target="_blank"
-                       rel="noopener noreferrer">Åpne kursoversikten</a>
+                       rel="noopener noreferrer">åpne kursoversikten →</a>
                 </article>
 
                 <article class="course-card">
@@ -464,7 +493,7 @@
                     <a class="course-link-text"
                        href="https://www.brannvernforeningen.no/kursoversikt/nettkurs-i-brannvern"
                        target="_blank"
-                       rel="noopener noreferrer">Åpne kursoversikten</a>
+                       rel="noopener noreferrer">åpne kursoversikten →</a>
                 </article>
             </div>
         </section>
@@ -515,6 +544,16 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(tilfluktsromKart);
 </script>
-<script src="~/js/tilfluktsrom-kart.js" asp-append-version="true"></script>
+   <script src="~/js/tilfluktsrom-kart.js" asp-append-version="true"></script>
+   <script>
+    // Siden lastes på nytt ved hver avkryssing, så vi husker hvilken kategori som var åpen
+    document.querySelectorAll('.preparedness-card').forEach((kort, i) => {
+        kort.open = sessionStorage.getItem('apenKategori') === String(i);
+        kort.addEventListener('toggle', () => {
+            if (kort.open) sessionStorage.setItem('apenKategori', String(i));
+            else if (sessionStorage.getItem('apenKategori') === String(i)) sessionStorage.removeItem('apenKategori');
+        });
+    });
+</script>
 </body>
 </html>

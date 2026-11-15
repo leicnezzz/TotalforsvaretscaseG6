@@ -12,6 +12,11 @@ printButton.addEventListener('click', () => window.print());
     const markers = L.featureGroup().addTo(tilfluktsromKart);
     const aedToggle = document.getElementById('vis-hjertestartere');
     const aedStatus = document.getElementById('hjertestarter-status');
+    const aedControls = document.querySelector('.shelter-aed-controls');
+    const shelterToggle = document.getElementById('vis-tilfluktsrom');
+    shelterToggle.addEventListener('change', () => {
+        tilfluktsromKart.getContainer().classList.toggle('hide-shelters', !shelterToggle.checked);
+    });
     const aedLayer = L.layerGroup().addTo(tilfluktsromKart);
 
     const aedIcon = L.divIcon({
@@ -34,8 +39,7 @@ printButton.addEventListener('click', () => window.print());
         }
 
         const bounds = tilfluktsromKart.getBounds();
-        let count = 0;
-
+        
         for (const feature of aedPoints) {
             const [longitude, latitude] = feature.geometry.coordinates;
             const point = [latitude, longitude];
@@ -56,15 +60,10 @@ printButton.addEventListener('click', () => window.print());
             L.marker(point, { icon: aedIcon, title: 'Hjertestarter' })
                 .bindPopup(popup)
                 .addTo(aedLayer);
-
-            count++;
+            
         }
-
-        aedStatus.textContent = count
-            ? `Registrerte hjertestartere i kartutsnittet: ${count}. Kilde: OpenStreetMap.`
-            : 'Ingen registrerte hjertestartere i dette kartutsnittet.';
+        aedStatus.textContent = '';
     }
-
     aedToggle.addEventListener('change', async () => {
         if (!aedToggle.checked) {
             aedLayer.clearLayers();
@@ -229,9 +228,10 @@ shelterResults.replaceChildren();
                 padding: [24, 24],
                 maxZoom: 16
             });
-           status.textContent = `Viser de ${nearest.length} nærmeste offentlige tilfluktsrommene ved ${label}.`;
+            status.textContent = `Valgt adresse: ${label}. Velg hva du vil se på kartet.`;
            printAddress.textContent = `Valgt adresse: ${label}`;
-printButton.hidden = false;
+            printButton.hidden = false;
+            aedControls.hidden = false;
         } catch {
             status.textContent = 'Kunne ikke hente tilfluktsrom. Prøv å søke på nytt.';
         } finally {

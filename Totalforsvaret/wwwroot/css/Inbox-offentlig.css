@@ -122,3 +122,16 @@
 .offentlig-inbox .inbox-contact strong {
     color: #344c58;
 }
+
+.offentlig-inbox .inbox-conversation-head h3 {
+    color: #163c4c;
+}
+
+.offentlig-inbox .inbox-message.is-own .inbox-message-text {
+    background: #163c4c;
+}
+
+.offentlig-inbox .inbox-conversation .inbox-message-form textarea:focus {
+    border-color: #163c4c;
+    outline: 3px solid rgb(22 60 76 / 16%);
+}

@@ -617,6 +617,7 @@
     color: #5c6b64;
     font-size: 14px;
     text-align: center;
+    align-self: center;
 }
 
 .inbox-message {

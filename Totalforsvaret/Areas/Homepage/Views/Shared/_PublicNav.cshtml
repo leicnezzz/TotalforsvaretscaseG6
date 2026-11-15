@@ -1,14 +1,19 @@
 <nav class="public-nav nav-with-brand" aria-label="Hovedmeny">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="home-nav-menu" aria-label="Åpne meny">
+        <span class="nav-toggle-icon" aria-hidden="true">≡</span>
+    </button>
     <a class="nav-brand paratus-brand" asp-area="" asp-controller="Home" asp-action="Index">
         <span class="paratus-brand-text">
             <strong>PARATUS</strong>
             <small>Mennesket som ressurs</small>
         </span>
     </a>
-    <div class="public-nav-pages">
-        <a asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="om-paratus">Om Paratus</a>
-        <a asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="slik-fungerer-det">Slik fungerer det</a>
-        <a asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="registrer-ressurs">Registrer ressurs</a>
+    <div class="public-nav-menu" id="home-nav-menu">
+        <div class="public-nav-pages">
+            <a asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="om-paratus">Om Paratus</a>
+            <a asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="slik-fungerer-det">Slik fungerer det</a>
+            <a asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="registrer-ressurs">Registrer ressurs</a>
+        </div>
     </div>
     <div class="public-nav-account">
         @if (User.Identity?.IsAuthenticated == true)

@@ -173,4 +173,72 @@
     .public-footer-content { padding: 0 0 60px; }
     .public-footer-bottom { flex-direction: column; padding: 16px; }
 }
+.public-nav-menu {
+    display: contents;
+}
+
+@media (max-width: 600px) {
+    .public-nav {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 16px;
+    }
+
+    .public-nav > .nav-brand {
+        order: 1;
+        margin-right: auto;
+    }
+
+    .public-nav > .nav-toggle {
+        display: inline-flex;
+        order: 2;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border: 1px solid var(--public-green, #2e6840);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--public-green, #2e6840);
+        cursor: pointer;
+    }
+
+    .public-nav-menu {
+        display: none;
+        order: 3;
+        flex: 0 0 100%;
+        width: 100%;
+        padding-top: 8px;
+        border-top: 1px solid #dce5e5;
+    }
+
+    .public-nav.nav-open .public-nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .public-nav-menu .public-nav-pages {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 0;
+    }
+
+    .public-nav-menu .public-nav-pages a {
+        min-height: 44px;
+        padding: 12px 0;
+    }
+
+    .public-nav-menu .public-nav-account {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+}
 

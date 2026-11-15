@@ -1,18 +1,19 @@
 (() => {
     "use strict";
 
-    document.querySelectorAll(".site-header .nav-toggle").forEach(button => {
-        const nav = button.closest(".primary-nav");
+    document.querySelectorAll(".nav-toggle").forEach(button => {
+        const nav = button.closest(".primary-nav, .public-nav");
         const menuId = button.getAttribute("aria-controls");
         const menu = menuId ? document.getElementById(menuId) : null;
+        const icon = button.querySelector(".nav-toggle-icon");
 
-        if (!nav || !menu) return;
+        if (!nav || !menu || !icon) return;
 
         const setOpen = open => {
             nav.classList.toggle("nav-open", open);
             button.setAttribute("aria-expanded", String(open));
             button.setAttribute("aria-label", open ? "Lukk meny" : "Åpne meny");
-            button.querySelector(".nav-toggle-icon").textContent = open ? "×" : "☰";
+            icon.textContent = open ? "×" : "☰";
         };
 
         button.addEventListener("click", () => {

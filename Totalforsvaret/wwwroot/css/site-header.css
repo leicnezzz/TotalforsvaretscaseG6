@@ -606,79 +606,99 @@ body.offentlig-page .private-page-actions .private-page-action {
     }
 }
 @media (max-width: 760px) {
-    .primary-nav.nav-with-brand {
+    .site-header .primary-nav {
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
         align-items: center;
         justify-content: space-between;
         gap: 8px;
-        min-width: 0;
         padding: 8px 12px;
     }
 
-    .primary-nav.nav-with-brand > .nav-toggle {
-        order: 1;
-        flex: 0 0 40px;
+    .site-header .primary-nav.nav-open {
+        flex-wrap: wrap;
     }
 
-    .primary-nav.nav-with-brand > .nav-brand {
+    .site-header .primary-nav > .nav-toggle {
+        display: inline-flex;
+        order: 1;
+        flex: 0 0 40px;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 44px;
+        padding: 0;
+        border: 1px solid currentColor;
+        border-radius: 8px;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+    }
+
+    .site-header .nav-toggle-icon {
+        font-size: 24px;
+        line-height: 1;
+    }
+
+    .site-header .primary-nav > .nav-brand {
         order: 2;
         flex: 1 1 auto;
         min-width: 0;
-        margin: 0;
+        margin-inline: auto;
     }
 
-    .primary-nav.nav-with-brand .paratus-brand-text strong {
-        font-size: clamp(16px, 5vw, 20px);
-        letter-spacing: 0.1em;
-    }
-
-    .primary-nav.nav-with-brand .paratus-brand-text small,
-    .primary-nav.nav-with-brand .account-copy {
-        display: none;
-    }
-
-    .primary-nav.nav-with-brand > .account-actions {
+    .site-header .primary-nav > .account-actions {
         order: 3;
         flex: 0 0 auto;
         gap: 6px;
-        margin-inline-start: 0;
+        margin-inline-start: auto;
     }
 
-    .primary-nav.nav-with-brand .inbox-icon-link {
+    .site-header .primary-nav .account-copy {
+        display: none;
+    }
+
+    .site-header .primary-nav .inbox-icon-link {
         width: 32px;
         flex-basis: 32px;
     }
 
-    .primary-nav.nav-with-brand .account-link {
+    .site-header .primary-nav .account-link {
         min-height: 44px;
         gap: 0;
     }
 
-    .primary-nav.nav-with-brand .account-link .avatar-small {
+    .site-header .primary-nav .account-link .avatar-small {
         width: 34px;
         height: 34px;
         flex-basis: 34px;
     }
 
-    .primary-nav.nav-with-brand .nav-links {
-        order: 4;
-        flex-basis: 100%;
-        width: 100%;
-    }
-}
-@media (max-width: 760px) {
-    .primary-nav.nav-with-brand.nav-open {
-        flex-wrap: wrap;
-    }
-
-    .primary-nav.nav-with-brand.nav-open > .nav-links {
-        position: static;
+    .site-header .primary-nav .nav-links {
+        display: none;
         order: 4;
         flex: 0 0 100%;
+        flex-direction: column;
+        align-items: stretch;
         width: 100%;
         margin-top: 8px;
+        border-top: 1px solid rgb(128 128 128 / 30%);
         background: #fff;
+    }
+
+    .site-header .primary-nav.nav-open .nav-links {
+        display: flex;
+        position: static;
+    }
+
+    .site-header .primary-nav .nav-links a {
+        min-height: 44px;
+        padding: 10px 4px;
+        white-space: normal;
+    }
+
+    .offentlig-site-header .nav-toggle {
+        color: #fff;
     }
 }

@@ -2218,7 +2218,10 @@ body.offentlig-page {
 }
 
 @media screen {
-    html:has(.offentlig-dashboard #offentligKart),
+    html:has(.offentlig-dashboard #offentligKart) {
+        overflow: hidden;
+    }
+
     body:has(.offentlig-dashboard #offentligKart) {
         overflow: clip;
     }

@@ -199,3 +199,21 @@
     font-weight: 400;
 }
 
+@media (max-width: 760px) {
+    .paratus-first-screen {
+        min-height: 0;
+    }
+
+    .paratus-first-screen > .public-video-hero {
+        flex: none;
+        height: clamp(300px, 54svh, 460px);
+    }
+
+    .public-hero-video iframe {
+        transform: translate(-50%, -50%);
+    }
+
+    .paratus-hero-text {
+        padding-bottom: 32px;
+    }
+}

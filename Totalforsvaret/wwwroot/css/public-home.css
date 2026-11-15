@@ -34,13 +34,16 @@
     pointer-events: none;
 }
 .public-hero-poster { object-fit: cover; z-index: -3; }
-.public-hero-video { z-index: -2; }
+.public-hero-video {
+    z-index: -2;
+    container-type: size;
+}
 .public-hero-video iframe {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: max(100%, calc(var(--hero-height) * 16 / 9));
-    height: max(100%, 56.25vw);
+    width: max(100cqw, calc(100cqh * 16 / 9));
+    height: max(100cqh, calc(100cqw * 9 / 16));
     transform: translate(-50%, -50%);
     border: 0;
 }
@@ -203,8 +206,9 @@
         flex-wrap: nowrap;
         align-items: center;
         justify-content: space-between;
+        align-content: start;
         gap: 6px;
-        padding: 8px 10px;
+        padding: 14px 10px;
     }
 
     .public-home .public-nav > .nav-toggle {

@@ -2268,3 +2268,16 @@ body.offentlig-page {
 #kartSokToolbar .kart-stedsforslag {
     z-index: 4;
 }
+/* Mobilvisning: gi kartet høyde og la siden rulle vertikalt */
+@media screen and (max-width: 760px) {
+    .offentlig-dashboard #offentligKart {
+        height: clamp(360px, 65dvh, 650px);
+        min-height: 360px;
+    }
+
+    html:has(.offentlig-dashboard #offentligKart),
+    body:has(.offentlig-dashboard #offentligKart) {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+}

@@ -527,3 +527,81 @@ body.offentlig-page .offentlig-site-header .account-copy small {
 body.offentlig-page .private-page-actions .private-page-action {
     color: #163c4c;
 }
+/* Hamburgmeny på mobil for privat og offentlig aktør */
+.nav-toggle {
+    display: none;
+}
+
+@media (max-width: 760px) {
+    .primary-nav,
+    .primary-nav.nav-with-brand,
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px 12px;
+        padding: 8px 16px;
+    }
+
+    .primary-nav .nav-toggle {
+        display: inline-flex;
+        order: 1;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border: 1px solid currentColor;
+        border-radius: 8px;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+    }
+
+    .nav-toggle-icon {
+        font-size: 24px;
+        line-height: 1;
+    }
+
+    .primary-nav .nav-brand {
+        order: 2;
+        margin-inline: auto;
+    }
+
+    .primary-nav .account-actions {
+        order: 3;
+        margin-inline-start: auto;
+    }
+
+    .primary-nav .nav-links {
+        display: none;
+        order: 4;
+        flex: 0 0 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        width: 100%;
+        overflow: visible;
+        border-top: 1px solid rgb(128 128 128 / 30%);
+    }
+
+    .primary-nav.nav-open .nav-links {
+        display: flex;
+    }
+
+    .primary-nav .nav-links a {
+        min-height: 44px;
+        padding: 10px 4px;
+        white-space: normal;
+    }
+
+    .offentlig-site-header .primary-nav #kartSokToolbar {
+        order: 5;
+        flex: 0 0 100%;
+        width: 100%;
+        max-width: none;
+        margin-top: 4px;
+    }
+}

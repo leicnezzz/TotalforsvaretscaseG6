@@ -2281,3 +2281,21 @@ body.offentlig-page {
         overflow-y: auto;
     }
 }
+@media (max-width: 760px) {
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px 12px;
+    }
+
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) #kartSokToolbar {
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .offentlig-site-header .nav-toggle {
+        color: #fff;
+    }
+}

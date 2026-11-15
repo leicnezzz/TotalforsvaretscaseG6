@@ -39,8 +39,7 @@ printButton.addEventListener('click', () => window.print());
         }
 
         const bounds = tilfluktsromKart.getBounds();
-        let count = 0;
-
+        
         for (const feature of aedPoints) {
             const [longitude, latitude] = feature.geometry.coordinates;
             const point = [latitude, longitude];
@@ -61,8 +60,7 @@ printButton.addEventListener('click', () => window.print());
             L.marker(point, { icon: aedIcon, title: 'Hjertestarter' })
                 .bindPopup(popup)
                 .addTo(aedLayer);
-
-            count++;
+            
         }
         aedStatus.textContent = '';
     }

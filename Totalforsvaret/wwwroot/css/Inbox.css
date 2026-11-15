@@ -181,11 +181,6 @@
     background: #d98e04;
 }
 
-.inbox-list-copy span {
-    color: #607078;
-    font-size: 13px;
-}
-
 .inbox-detail {
     min-width: 0;
     padding: 28px 32px 24px;
@@ -210,6 +205,14 @@
     margin: 0 0 6px;
     color: #5c6b64;
     font-size: 13px;
+}
+
+.inbox-heading-side {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
 .inbox-status {
@@ -305,10 +308,11 @@
 
 .inbox-button {
     min-height: 44px;
-    padding: 10px 16px;
-    border: 1px solid #2e6840;
-    border-radius: 6px;
+    padding: 10px 22px;
+    border: 2px solid #2e6840;
     font: inherit;
+    border-radius: 999px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
 }
@@ -488,5 +492,70 @@
 
     .inbox-message-form .inbox-button {
         justify-self: end;
+    }
+}
+
+.inbox-summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+}
+
+.inbox-summary-card {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 18px;
+    border-radius: 10px;
+    background: #f6f8f6;
+}
+
+.inbox-summary-label {
+    margin: 0;
+    color: #2e6840;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.inbox-summary-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.inbox-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.inbox-chip {
+    padding: 4px 10px;
+    border: 1px solid #dfe7e2;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 13px;
+}
+
+.inbox-summary-card .inbox-description {
+    margin: 0;
+    color: #5c6b64;
+}
+
+.inbox-summary-arrow {
+    color: #2e6840;
+}
+
+@media (max-width: 760px) {
+    .inbox-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .inbox-summary-arrow {
+        justify-self: center;
+        transform: rotate(90deg);
     }
 }

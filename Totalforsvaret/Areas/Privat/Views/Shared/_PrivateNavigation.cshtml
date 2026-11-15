@@ -11,7 +11,8 @@
     var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
-    var isDashboard = controller.Equals("Dashboard", StringComparison.OrdinalIgnoreCase);
+    var isDashboard =
+        controller.Equals("Dashboard", StringComparison.OrdinalIgnoreCase);
 
     var isResourceForm =
         controller.Equals("Resource", StringComparison.OrdinalIgnoreCase) &&
@@ -21,13 +22,15 @@
         controller.Equals("Resource", StringComparison.OrdinalIgnoreCase) &&
         action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase);
 
-    var isProfile = controller.Equals("Profile", StringComparison.OrdinalIgnoreCase);
-    
-    var isInbox = controller.Equals("Inbox", StringComparison.OrdinalIgnoreCase);
+    var isProfile =
+        controller.Equals("Profile", StringComparison.OrdinalIgnoreCase);
+
+    var isInbox =
+        controller.Equals("Inbox", StringComparison.OrdinalIgnoreCase);
 
     var isEgenberedskap =
         controller.Equals("Egenberedskap", StringComparison.OrdinalIgnoreCase);
-    
+
     var isPrivacy =
         controller.Equals("Home", StringComparison.OrdinalIgnoreCase) &&
         action.Equals("Privacy", StringComparison.OrdinalIgnoreCase);
@@ -43,7 +46,9 @@
 
     var account = await UserManager.GetUserAsync(User);
     var displayName = account?.Navn ?? User.Identity?.Name ?? "Privat aktør";
-    var hasPhoto = account != null && await Db.ProfilePhotos.AnyAsync(photo => photo.BrukerId == account.Id);
+
+    var hasPhoto = account != null &&
+        await Db.ProfilePhotos.AnyAsync(photo => photo.BrukerId == account.Id);
 
     var initials = string.Concat(
         displayName
@@ -53,7 +58,6 @@
 }
 
 <header class="site-header">
-    <script src="~/js/site-navigation.js" asp-append-version="true"></script>
     <nav class="primary-nav @(isDashboard ? "nav-with-brand" : "")"
          aria-label="Hovedmeny">
 
@@ -124,8 +128,8 @@
                      fill="none"
                      stroke="currentColor"
                      aria-hidden="true">
-                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/>
-                    <path d="M10 21h4"/>
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
+                    <path d="M10 21h4" />
                 </svg>
             </a>
 
@@ -139,7 +143,7 @@
                                       "Photo",
                                       "Profile",
                                       new { area = "Privat" })"
-                             alt=""/>
+                             alt="" />
                     }
                     else
                     {
@@ -152,6 +156,7 @@
                         <strong>@displayName</strong>
                         <small>Privat aktør</small>
                     </span>
+
                     <span class="chevron" aria-hidden="true">⌄</span>
                 </summary>
 
@@ -199,3 +204,5 @@
         <span>@sectionName</span>
     </div>
 </header>
+
+<script src="~/js/site-navigation.js" asp-append-version="true"></script>

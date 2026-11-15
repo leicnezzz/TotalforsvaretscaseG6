@@ -9,18 +9,19 @@
 
 @{
     var eventQuery = Microsoft.AspNetCore.Http.QueryString.Create(
-        Context.Request.Query["hendelser"].Select(id => new KeyValuePair<string, string?>("hendelser", id))).ToString();
+        Context.Request.Query["hendelser"]
+            .Select(id => new KeyValuePair<string, string?>("hendelser", id)))
+        .ToString();
+
     var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
     var isMatch = ViewContext.RouteData.Values["match"] is true;
     var isResourcePage =
-        action.Equals("ResourceRegistration",
-            StringComparison.OrdinalIgnoreCase);
+        action.Equals("ResourceRegistration", StringComparison.OrdinalIgnoreCase);
     var isOverview =
         !isMatch &&
-        controller.Equals("OffentligAktor",
-            StringComparison.OrdinalIgnoreCase);
+        controller.Equals("OffentligAktor", StringComparison.OrdinalIgnoreCase);
     var isNeedPage =
         controller.Equals("Need", StringComparison.OrdinalIgnoreCase);
     var isCrisisPage =
@@ -32,9 +33,9 @@
     var displayName = account?.Navn
         ?? User.Identity?.Name
         ?? "Offentlig aktør";
+
     var hasPhoto = account != null &&
-        await Db.ProfilePhotos.AnyAsync(
-            photo => photo.BrukerId == account.Id);
+        await Db.ProfilePhotos.AnyAsync(photo => photo.BrukerId == account.Id);
 
     var initials = string.Concat(
         displayName
@@ -44,7 +45,6 @@
 }
 
 <header class="site-header offentlig-site-header">
-    <script src="~/js/site-navigation.js" asp-append-version="true"></script>
     <nav class="primary-nav" aria-label="Hovedmeny">
         <button class="nav-toggle"
                 type="button"
@@ -87,7 +87,7 @@
         </div>
 
         @if (isOverview && action.Equals(
-                 "Index", StringComparison.OrdinalIgnoreCase))
+            "Index", StringComparison.OrdinalIgnoreCase))
         {
             <div id="kartSokToolbar"></div>
         }
@@ -103,7 +103,7 @@
                                       "Photo",
                                       "Profile",
                                       new { area = "Offentlig" })"
-                             alt=""/>
+                             alt="" />
                     }
                     else
                     {
@@ -116,6 +116,7 @@
                         <strong>@displayName</strong>
                         <small>Offentlig aktør</small>
                     </span>
+
                     <span class="chevron" aria-hidden="true">⌄</span>
                 </summary>
 
@@ -155,3 +156,5 @@
         </div>
     </nav>
 </header>
+
+<script src="~/js/site-navigation.js" asp-append-version="true"></script>

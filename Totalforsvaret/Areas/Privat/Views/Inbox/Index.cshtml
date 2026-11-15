@@ -59,6 +59,7 @@
             @if (Model.Items.Count == 0)
             {
                 <div class="inbox-empty">
+                    <h1 id="inbox-title">Innboks</h1>
                     <h2>Ingen forespørsler ennå</h2>
                     <p>
                         Forespørsler om ressursene dine vises her når
@@ -70,34 +71,35 @@
             {
                 <div class="inbox-layout">
                     <aside class="inbox-sidebar">
-                    <h1 id="inbox-title">Innboks</h1>
-                <nav class="inbox-list"
-                     aria-label="Ressursforespørsler">
+                        <h1 id="inbox-title">Innboks</h1>
 
-                    @foreach (var listItem in Model.Items)
-                    {
-                        var selected =
-                            listItem.AssignmentId == Model.SelectedId;
+                        <nav class="inbox-list"
+                             aria-label="Ressursforespørsler">
 
-                        <a class="inbox-list-item @(selected ? "is-selected" : "")"
-                           asp-area="Privat"
-                           asp-controller="Inbox"
-                           asp-action="Index"
-                           asp-route-selectedId="@listItem.AssignmentId"
-                           aria-current="@(selected ? "true" : null)">
+                            @foreach (var listItem in Model.Items)
+                            {
+                                var selected =
+                                    listItem.AssignmentId == Model.SelectedId;
 
-                            <span class="inbox-list-icon" aria-hidden="true">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v-4l1.8-4.2A2 2 0 0 1 7.7 6.5h8.6a2 2 0 0 1 1.9 1.3L20 12v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M4 12h16"/><circle cx="8" cy="14.5" r=".6"/><circle cx="16" cy="14.5" r=".6"/></svg>
-                            </span>
+                                <a class="inbox-list-item @(selected ? "is-selected" : "")"
+                                   asp-area="Privat"
+                                   asp-controller="Inbox"
+                                   asp-action="Index"
+                                   asp-route-selectedId="@listItem.AssignmentId"
+                                   aria-current="@(selected ? "true" : null)">
 
-                            <span class="inbox-list-copy">
-                                <strong>@listItem.ResourceName</strong>
-                                <span>@listItem.NeedName</span>
-                                <small class="@(listItem.Status == AssignmentStatus.Requested ? "is-waiting" : "")">@listItem.StatusLabel</small>
-                            </span>
-                        </a>
-                    }
-                </nav>
+                                    <span class="inbox-list-icon" aria-hidden="true">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v-4l1.8-4.2A2 2 0 0 1 7.7 6.5h8.6a2 2 0 0 1 1.9 1.3L20 12v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M4 12h16"/><circle cx="8" cy="14.5" r=".6"/><circle cx="16" cy="14.5" r=".6"/></svg>
+                                    </span>
+
+                                    <span class="inbox-list-copy">
+                                        <strong>@listItem.ResourceName</strong>
+                                        <span>@listItem.NeedName</span>
+                                        <small class="@(listItem.Status == AssignmentStatus.Requested ? "is-waiting" : "")">@listItem.StatusLabel</small>
+                                    </span>
+                                </a>
+                            }
+                        </nav>
                     </aside>
 
                     <div class="inbox-detail">
@@ -109,9 +111,48 @@
                                 <h2>@item.ResourceName</h2>
                             </div>
 
-                            <span class="inbox-status @(item.Status == AssignmentStatus.Requested ? "is-waiting" : "")">
-                                @item.StatusLabel
-                            </span>
+                            <div class="inbox-heading-side">
+                                <span class="inbox-status @(item.Status == AssignmentStatus.Requested ? "is-waiting" : "")">
+                                    @item.StatusLabel
+                                </span>
+
+                                @if (item.Status == AssignmentStatus.Requested)
+                                {
+                                    <div class="inbox-actions">
+                                        <form asp-area="Privat"
+                                              asp-controller="Inbox"
+                                              asp-action="Decline"
+                                              method="post">
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="assignmentId"
+                                                   value="@item.AssignmentId" />
+
+                                            <button class="inbox-button inbox-button-secondary"
+                                                    type="submit">
+                                                Avslå
+                                            </button>
+                                        </form>
+
+                                        <form asp-area="Privat"
+                                              asp-controller="Inbox"
+                                              asp-action="Accept"
+                                              method="post">
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="assignmentId"
+                                                   value="@item.AssignmentId" />
+
+                                            <button class="inbox-button inbox-button-primary"
+                                                    type="submit">
+                                                Godta
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                            </div>
                         </div>
 
                         <div class="inbox-content">
@@ -288,7 +329,7 @@
 
                                     <input type="hidden"
                                            name="assignmentId"
-                                           value="@item.AssignmentId"/>
+                                           value="@item.AssignmentId" />
 
                                     <label for="private-message-body">
                                         Skriv en melding
@@ -305,43 +346,6 @@
                                     </button>
                                 </form>
                             </section>
-
-                            @if (item.Status == AssignmentStatus.Requested)
-                            {
-                                <div class="inbox-actions">
-                                    <form asp-area="Privat"
-                                          asp-controller="Inbox"
-                                          asp-action="Decline"
-                                          method="post">
-                                        @Html.AntiForgeryToken()
-
-                                        <input type="hidden"
-                                               name="assignmentId"
-                                               value="@item.AssignmentId"/>
-
-                                        <button class="inbox-button inbox-button-secondary"
-                                                type="submit">
-                                            Avslå forespørsel
-                                        </button>
-                                    </form>
-
-                                    <form asp-area="Privat"
-                                          asp-controller="Inbox"
-                                          asp-action="Accept"
-                                          method="post">
-                                        @Html.AntiForgeryToken()
-
-                                        <input type="hidden"
-                                               name="assignmentId"
-                                               value="@item.AssignmentId"/>
-
-                                        <button class="inbox-button inbox-button-primary"
-                                                type="submit">
-                                            Godta forespørsel
-                                        </button>
-                                    </form>
-                                </div>
-                            }
                         </div>
                     </div>
                 </div>

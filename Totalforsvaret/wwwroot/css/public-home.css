@@ -83,36 +83,29 @@
 }
 
 .public-home-incident .incident-alert {
-    width: min(100%, 680px);
-    margin: 0 auto;
-    padding: 8px 12px;
-}
-
-.public-home-incident .incident-alert-heading {
-    gap: 7px;
-}
-
-.public-home-incident .incident-alert-heading > div {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 2px 8px;
+    margin: 0;
+    padding: clamp(16px, 2.2vw, 30px);
+    background: #fae9e6;
+    color: #792a25;
 }
 
 .public-home-incident .incident-alert-heading svg {
-    flex-basis: 24px;
-    width: 24px;
-    height: 24px;
+    flex-basis: 48px;
+    width: 48px;
+    height: 48px;
 }
 
-.public-home-incident .incident-alert h2 {
-    font-size: 16px;
+.public-home-incident .incident-alert-label {
+    font-size: 14px;
+    font-weight: 700;
 }
 
 .public-home-incident :is(.incident-alert-description, .incident-alert-updated) {
-    margin-top: 4px !important;
-    font-size: 12px;
-    line-height: 1.35;
+    margin: 8px 0 0 60px !important;
+}
+
+.public-home-incident:has(.incident-alert:not([hidden])) + .public-registration {
+    margin-top: clamp(24px, 3vw, 40px);
 }
 
 .public-incident { margin-inline: 20px; padding: 20px; border: 2px solid #b83d35; border-radius: 8px; background: rgb(184 61 53 / 9%); color: #877272; }
@@ -211,6 +204,22 @@
 /* Hamburgmeny på hovedsiden */
 .public-nav-menu {
     display: contents;
+    .public-nav { flex-wrap: wrap; gap: 12px; padding: 0 16px 14px; }
+    .public-nav-pages { width: 100%; gap: 24px; }
+    .public-nav-account { width: 100%; justify-content: flex-end; }
+    .nav-button { min-width: 100px; font-size: 13px; }
+    .public-section-bar { height: 28px; }
+    .public-content, .public-footer-content { width: calc(100% - 32px); }
+    .public-content { padding-block: 10px 70px; }
+    .public-home-incident :is(.incident-alert-description, .incident-alert-updated) {
+        margin-inline-start: 0 !important;
+    }
+    .public-incident { margin-inline: 0; padding: 16px; }
+    .public-registration { margin-top: 48px; }
+    .public-resource-card { grid-template-columns: 1fr; gap: 30px; margin-top: 30px; padding: 40px 28px 32px; }
+    .public-resource-description p { margin-top: 20px; }
+    .public-footer-content { padding: 0 0 60px; }
+    .public-footer-bottom { flex-direction: column; padding: 16px; }
 }
 
 @media (max-width: 760px) {

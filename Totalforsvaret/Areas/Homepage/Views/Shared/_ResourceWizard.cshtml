@@ -8,9 +8,12 @@
       action="#registrer-ressurs" method="post" novalidate
       data-authenticated="@(hasSession ? "true" : "false")"
       data-private="@(isPrivate ? "true" : "false")" data-compact="@(compact ? "true" : "false")" data-resource-registration>
-    <div class="wizard-toolbar"><p id="wizard-progress" role="status">Velg en ressurstype for å begynne.</p><button type="button" class="wizard-text-button" id="wizard-clear">Tøm utkast</button></div><noscript><p class="wizard-message">Aktiver JavaScript for å bruke den trinnvise registreringen.</p></noscript>
+    <noscript><p class="wizard-message">Aktiver JavaScript for å bruke den trinnvise registreringen.</p></noscript>
     <p id="wizard-message" class="wizard-message" role="status" tabindex="-1" hidden></p>
-    <p class="wizard-hint">Opplysningene lagres når du bekrefter registreringen.</p>
+    <div class="wizard-toolbar">
+        <p id="wizard-progress" role="status"></p>
+        <button type="button" class="wizard-text-button" id="wizard-clear">Tøm utkast</button>
+    </div>
 
     <section class="wizard-step wizard-step-white" aria-labelledby="wizard-category-title">
         <details class="public-help">
@@ -191,24 +194,22 @@
     <fieldset class="wizard-step wizard-step-blue" data-step="account" hidden disabled>
         <legend class="wizard-sr-only">Konto</legend>
         <div class="wizard-description">
-            <h3>Logg inn eller opprett bruker</h3>
-            <p>Du er snart ferdig. Velg om du vil bruke en eksisterende konto eller opprette en ny, uten å forlate registreringen.</p>
-            <p class="wizard-hint">Ressursen knyttes til den private kontoen du logger inn med eller oppretter her.</p>
+            <h3>Du er nesten i mål</h3>
+            <p>Opprett en konto for å knytte ressursen til deg. Med en konto kan du finne den igjen under «Mine ressurser» og oppdatere opplysningene hvis noe endrer seg, for eksempel når ressursen er tilgjengelig.</p>
+            <p>Opplysningene du allerede har fylt inn, blir med videre. Etter at du har opprettet kontoen, får du se over dem før du bekrefter registreringen.</p>
+            <p>Har du allerede en konto? Bruk innloggingslenken under knappen for å fortsette der du slapp.</p>
         </div>
         <div class="wizard-fields wizard-account-actions">
-            <div id="wizard-account-choice" class="wizard-account-choice" role="group" aria-label="Velg innlogging eller ny bruker">
-                <button type="button" class="wizard-account-mode" data-account-mode="login" aria-pressed="true" aria-controls="wizard-login-panel">Logg inn</button>
-                <button type="button" class="wizard-account-mode" data-account-mode="register" aria-pressed="false" aria-controls="wizard-register-panel">Opprett bruker</button>
-            </div>
-            <fieldset id="wizard-login-panel" class="wizard-fields wizard-auth-panel" data-account-panel="login">
+            <fieldset id="wizard-login-panel" class="wizard-fields wizard-auth-panel" data-account-panel="login" hidden disabled>
                 <legend class="wizard-sr-only">Logg inn i registreringsflyten</legend>
                 <label for="wizard-login-email">E-post *</label>
                 <input id="wizard-login-email" type="email" name="PreviewLoginEmail" autocomplete="username" placeholder="navn@eksempel.no" required />
                 <label for="wizard-login-password">Passord *</label>
                 <input id="wizard-login-password" type="password" name="PreviewLoginPassword" autocomplete="current-password" placeholder="Skriv inn passord" required />
                 <button type="button" class="public-button public-button-primary" data-account-continue>Logg inn og fortsett</button>
+                <button type="button" class="wizard-text-button wizard-account-switch" data-account-mode="register" aria-controls="wizard-register-panel">Ingen bruker? Opprett en her</button>
             </fieldset>
-            <fieldset id="wizard-register-panel" class="wizard-fields wizard-auth-panel" data-account-panel="register" hidden disabled>
+            <fieldset id="wizard-register-panel" class="wizard-fields wizard-auth-panel" data-account-panel="register">
                 <legend class="wizard-sr-only">Opprett bruker i registreringsflyten</legend>
                 <label for="wizard-register-firstname">Fornavn *</label>
                 <input id="wizard-register-firstname" name="PreviewFirstName" maxlength="100" autocomplete="off" required />
@@ -221,7 +222,8 @@
                 <p id="wizard-password-help" class="wizard-hint">Minst 12 tegn, med bokstaver og tall.</p>
                 <label for="wizard-register-confirm-password">Gjenta passord *</label>
                 <input id="wizard-register-confirm-password" name="PreviewConfirmPassword" type="password" autocomplete="new-password" required />
-                <button type="button" class="public-button public-button-primary" data-account-continue>Opprett bruker og fortsett</button>
+                <button type="button" class="public-button public-button-primary" data-account-continue>Opprett bruker</button>
+                <button type="button" class="wizard-text-button wizard-account-switch" data-account-mode="login" aria-controls="wizard-login-panel">Allerede bruker? Logg inn her</button>
             </fieldset>
             <div id="wizard-account-complete" hidden>
                 <p id="wizard-account-complete-text" role="status"></p>

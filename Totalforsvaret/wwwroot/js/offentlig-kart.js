@@ -329,8 +329,12 @@
     kartElement.append(panel);
 
     const form = panel.querySelector('form');
-    const sokToolbar = document.getElementById('kartSokToolbar');
-    sokToolbar?.append(form);
+    const sokPlassering = kartElement.querySelector('.kart-handlingsrad');
+    sokPlassering.append(form);
+
+    L.DomEvent.disableClickPropagation(form);
+    L.DomEvent.disableScrollPropagation(form);
+    
     const radiusForm = panel.querySelector('.kart-radius-sok');
     const radius = panel.querySelector('select');
     const sentrumtekst = panel.querySelector('.kart-sentrum');
@@ -401,9 +405,6 @@
         const aktiv =
             document.fullscreenElement === kartElement ||
             kartElement.classList.contains('kart-fullskjerm');
-
-        const sokPlass = aktiv ? panel : sokToolbar;
-        if (form.parentElement !== sokPlass) sokPlass.append(form);
 
         fullKnapp.textContent = aktiv ? '⤡' : '⤢';
         fullKnapp.title = aktiv
@@ -1182,7 +1183,9 @@
             filtrer();
         });
     const handlinger = kartElement.querySelector('.kart-handlinger');
-    const handlingsknapper = [...handlinger.querySelectorAll('.kart-handlingsrad button')];
+    const handlingsknapper = [
+        ...handlinger.querySelectorAll('.kart-handlingsrad > button')
+    ];
     const arbeidsstatus = document.getElementById('kartArbeidsstatus');
     const csrf = document.querySelector('#kartAntiforgery input').value;
     let lagrer = false;

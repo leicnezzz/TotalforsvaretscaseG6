@@ -13,6 +13,7 @@ namespace Totalforsvaret.Areas.Offentlig.Controllers;
 [Authorize(Policy = "KunOffentlig")]
 
 
+
 public class CrisisController : Controller
 {
     private readonly AppDbContext _context;

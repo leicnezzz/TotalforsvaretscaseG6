@@ -315,6 +315,9 @@
         </div>
 
         <div class="oversikt-filtre">
+             <button type="button" class="btn btn-primary" data-utskrift="oversiktsliste">
+        Skriv ut
+    </button>
             <label for="oversiktType">
                 Type
                 <select id="oversiktType" class="form-select"></select>
@@ -439,50 +442,7 @@
     @(treff.DistanceKm is double km ? $"{km:0.0} km" : "–")
 </td>
 <td class="treff-handling">
-
-
-                        <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
-                            @if (tildeling?.Status == Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Requested)
-                            {
-                                <div class="knapperad">
-                                <form asp-area=""
-                                      asp-controller="OffentligAktor"
-                                      asp-action="TildelRessurs"
-                                      method="post">
-
-                                    @Html.AntiForgeryToken()
-
-                                    <input type="hidden"
-                                           name="assignmentId"
-                                           value="@tildeling.Id"/>
-
-                                    <button type="submit"
-                                            class="btn btn-sm btn-outline-primary">
-                                        Tildel ressurs
-                                    </button>
-                                </form>
-
-                                <form asp-area=""
-                                      asp-controller="OffentligAktor"
-                                      asp-action="AvslaRessurs"
-                                      method="post">
-
-                                    @Html.AntiForgeryToken()
-
-                                    <input type="hidden"
-                                           name="assignmentId"
-                                           value="@tildeling.Id" />
-
-                                    <button type="submit"
-                                            class="btn btn-sm btn-outline-primary"
-                                            onclick="return confirm('Avslå denne ressursen?');">
-                                        Avslå ressurs
-                                    </button>
-                                </form>
-                                </div>
-
-                            }
-
+    <div class="treff-knapper">
                             @if (tildeling?.Status ==
                                  Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned)
                             {
@@ -499,7 +459,7 @@
                                            value="@tildeling.Id" />
 
                                     <button type="submit"
-                                             class="btn btn-sm btn-outline-primary"
+                                             class="btn btn-sm btn-outline-primary treff-handlingsknapp"
                                              onclick="return confirm('Frigi denne ressursen?');">
                                         Frigi ressurs
                                     </button>
@@ -531,13 +491,13 @@
                                 </form>
                             }
 
-                            <a class="btn btn-sm btn-outline-primary"
-                               asp-area="Offentlig"
-                               asp-controller="Need"
-                               asp-action="Edit"
-                               asp-route-id="@treff.NeedId">
-                                Se og endre behov
-                            </a>
+                            <a class="btn btn-sm btn-outline-primary treff-handlingsknapp"
+   asp-area="Offentlig"
+   asp-controller="Need"
+   asp-action="Edit"
+   asp-route-id="@treff.NeedId">
+    Se og endre behov
+</a>
                         </div>
                                     </td>
                 </tr>

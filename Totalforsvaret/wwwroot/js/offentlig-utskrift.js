@@ -4,15 +4,25 @@
     document.querySelectorAll('[data-utskrift]').forEach(knapp => {
         knapp.addEventListener('click', () => {
             const utskrift = knapp.dataset.utskrift;
-if (utskrift === 'treff') {
-    const tabell = document.querySelector('#oversiktDialog .treff-tabell');
+if (utskrift === 'treff' || utskrift === 'oversiktsliste') {
+    const erTreff = utskrift === 'treff';
+    const tabell = document.querySelector(erTreff
+        ? '#oversiktDialog .treff-tabellramme table'
+        : '#oversiktListe table');
+
     if (!tabell) return;
+
+    const tittel = erTreff
+        ? 'Foreslåtte treff'
+        : document.getElementById('oversiktListeTittel').textContent.trim();
 
     const kopi = tabell.cloneNode(true);
     kopi.removeAttribute('class');
+    kopi.querySelectorAll('.oversikt-mobilfelt, caption.visually-hidden')
+    .forEach(element => element.remove());
 
     kopi.querySelectorAll('tbody tr[hidden]').forEach(rad => rad.remove());
-    kopi.querySelectorAll('thead th:last-child, td.treff-handling')
+    kopi.querySelectorAll('thead th:last-child, tbody td:last-child')
         .forEach(celle => celle.remove());
 
     const ramme = document.createElement('iframe');

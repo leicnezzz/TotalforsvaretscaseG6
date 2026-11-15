@@ -681,3 +681,13 @@
     color: #2e6840;
 }
 
+.inbox-message.is-own { align-self: flex-end; }
+
+.inbox-message.is-own .inbox-message-meta { text-align: right; }
+
+.inbox-message.is-own .inbox-message-text {
+    border-radius: 14px 14px 4px 14px;
+    background: #2e6840;
+    color: #fff;
+}
+

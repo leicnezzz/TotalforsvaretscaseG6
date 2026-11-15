@@ -247,7 +247,7 @@
                                     {
                                         @foreach (var message in Model.Messages)
                                         {
-                                            <article class="inbox-message">
+                                            <article class="inbox-message @(message.IsOwnMessage ? "is-own" : "")">
                                                 <p class="inbox-message-meta">
                                                     @message.SenderName ·
                                                     <time datetime="@(message.SentAtUtc.ToString("O"))">

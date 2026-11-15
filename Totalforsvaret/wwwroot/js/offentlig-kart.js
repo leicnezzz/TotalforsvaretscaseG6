@@ -1202,7 +1202,7 @@
         link.href = url;
     }
     handlinger.addEventListener('input', event => {
-        if (event.target.closest('form')) skjemaEndret = true;
+        if (markeringSkjema?.contains(event.target)) skjemaEndret = true;
     });
     window.addEventListener('beforeunload', event => {
         if (lagrer || skjemaEndret) { event.preventDefault(); event.returnValue = ''; }

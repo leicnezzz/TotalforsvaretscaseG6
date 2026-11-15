@@ -342,9 +342,14 @@
                 var matchForslag = ViewBag.MatchForslag as
                                        List<Totalforsvaret.Areas.Offentlig.ViewModels.MatchSuggestionViewModel>
                                    ?? new();
-                var aktiveTildelinger = ViewBag.AktiveTildelinger as
-                                            List<Totalforsvaret.Areas.Offentlig.Models.ResourceAssignment>
-                                        ?? new();
+                    var aktiveTildelinger = ViewBag.AktiveTildelinger as
+        List<Totalforsvaret.Areas.Offentlig.Models.ResourceAssignment>
+        ?? new();
+
+    var treffStatuser = ViewBag.TreffStatuser as
+        Dictionary<(int, int), Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus>
+        ?? new();
+
             }
 
             @if (matchForslag.Count > 0)
@@ -353,7 +358,10 @@
                     Kategoribaserte forslag som må vurderes før tildeling.
                 </p>
 
-                <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
+              <div class="treff-filtre">
+    <button type="button" class="btn btn-primary" data-utskrift="treff">
+        Skriv ut
+    </button>
                     <label>
                         Søk
                         <input type="search" class="form-control" data-treff-sok placeholder="Søk på ressurs eller behov" />
@@ -369,6 +377,18 @@
                 </div>
                 <p data-treff-tom role="status" hidden>Ingen treff med disse filtrene.</p>
 
+                <div class="treff-tabellramme">
+    <table class="treff-tabell" aria-label="Foreslåtte treff">
+        <thead>
+            <tr>
+                <th scope="col">Status</th>
+                <th scope="col">Behov</th>
+                <th scope="col">Foreslått ressurs</th>
+                <th scope="col">Luftlinje</th>
+                <th scope="col">Handling</th>
+            </tr>
+        </thead>
+        <tbody>
                 @foreach (var treff in matchForslag)
                 {
                     var tildeling = aktiveTildelinger.FirstOrDefault(a =>
@@ -376,30 +396,54 @@
                         a.ResourceId == treff.ResourceId);
                     var ressursOpptatt = aktiveTildelinger.Any(a =>
                         a.ResourceId == treff.ResourceId);
-                    <div class="oppfolging-kort" data-treff-rad data-treff-type="@kategorier.GetValueOrDefault(treff.ResourceId)"
-                         data-treff-sok="@treff.ResourceName @treff.NeedName">
-                        <strong>@treff.NeedName</strong>
-                        <p>Ressurs: @treff.ResourceName</p>
+                  <tr data-treff-rad
+    data-treff-type="@kategorier.GetValueOrDefault(treff.ResourceId)"
+    data-treff-sok="@treff.ResourceName @treff.NeedName">
+  @{
+    var harStatus = treffStatuser.TryGetValue(
+        (treff.NeedId, treff.ResourceId), out var treffStatus);
 
-                        @if (treff.DistanceKm.HasValue)
-                        {
-                            <p>
-                                Luftlinje:
-                                @(treff.DistanceKm.Value.ToString("0.0")) km
-                            </p>
-                        }
-                        else
-                        {
-                            <p>Avstand ikke tilgjengelig.</p>
-                        }
+    Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus? status =
+        harStatus ? treffStatus : null;
+
+    var (statustekst, statusklasse) = status switch
+    {
+        Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Requested
+            => ("Til vurdering", "status-vurderes"),
+        Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned
+            => ("Tildelt", "status-tildelt"),
+        Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Rejected
+            => ("Avslått", "status-tildelt"),
+        Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Released
+            => ("Frigitt", "status-tildelt"),
+        _ => ("Ikke vurdert", "status-ikke-vurdert")
+    };
+}
+
+<td>
+    <span class="status-merkelapp @statusklasse">@statustekst</span>
+</td>
+<td><strong>@treff.NeedName</strong></td>
+<td>
+    <strong>@treff.ResourceName</strong>
+    <small class="treff-kategori">
+        @(kategorier.GetValueOrDefault(treff.ResourceId) switch
+        {
+            "Vehicles" => "Kjøretøy",
+            "Equipment" => "Utstyr",
+            _ => "Annen kategori"
+        })
+    </small>
+</td>
+<td class="treff-avstand">
+    @(treff.DistanceKm is double km ? $"{km:0.0} km" : "–")
+</td>
+<td class="treff-handling">
 
 
                         <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
                             @if (tildeling?.Status == Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Requested)
                             {
-                                <span class="status-merkelapp status-vurderes">
-                                    Status: Til vurdering
-                                </span>
                                 <div class="knapperad">
                                 <form asp-area=""
                                       asp-controller="OffentligAktor"
@@ -442,9 +486,6 @@
                             @if (tildeling?.Status ==
                                  Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned)
                             {
-                                <span class="status-merkelapp status-tildelt">
-                                    Status: Tildelt
-                                </span>
 
                                 <form asp-area=""
                                       asp-controller="OffentligAktor"
@@ -484,7 +525,7 @@
                                            value="@treff.ResourceId"/>
 
                                     <button type="submit"
-                                            class="btn btn-sm btn-outline-primary">
+                                            class="btn btn-sm btn-primary">
                                         Vurder ressurs
                                     </button>
                                 </form>
@@ -497,11 +538,14 @@
                                asp-route-id="@treff.NeedId">
                                 Se og endre behov
                             </a>
-
                         </div>
+                                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
-                    </div>
-                }
             }
             else
             {
@@ -512,6 +556,10 @@
             }
         </div>
     </dialog>
+    <section class="print-bare print-treff">
+    <h1>Foreslåtte treff</h1>
+    <div id="treffUtskriftInnhold"></div>
+</section>
     <!-- Ressursliste som bare vises ved utskrift -->
     <section class="print-bare print-ressurser" aria-label="Ressursliste for utskrift">
         <h1>Ressursliste – Kristiansand kommune</h1>

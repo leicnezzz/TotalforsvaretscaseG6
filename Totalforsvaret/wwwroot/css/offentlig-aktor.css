@@ -1643,6 +1643,11 @@ body.offentlig-page {
     cursor: default;
 }
 
+    .offentlig-dashboard .status-merkelapp.status-ikke-vurdert {
+        background-color: #fce4e4;
+        color: #8a1c1c;
+    }
+
 .offentlig-dashboard .status-vurderes {
     background: var(--planlagt);
 }
@@ -1780,7 +1785,8 @@ body.offentlig-page {
     }
 
     body[data-utskrift="ressurser"] .print-ressurser,
-    body[data-utskrift="behov"] .print-behov {
+    body[data-utskrift="behov"] .print-behov,
+    body[data-utskrift="treff"] .print-treff {
         display: block !important;
     }
 }
@@ -2267,4 +2273,117 @@ body.offentlig-page {
 
 #kartSokToolbar .kart-stedsforslag {
     z-index: 4;
+}
+
+#oversiktDialog:has([data-oversikt-panel="treff"]:not([hidden])) {
+    width: min(1008px, 96vw);
+    height: auto;
+    max-height: 92dvh;
+    background: #f3f5f8;
+    color: #1c263b;
+}
+
+    #oversiktDialog:has([data-oversikt-panel="treff"]:not([hidden])) .oversikt-dialogtopp {
+        background: #fff;
+    }
+
+.treff-filtre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 10px 12px;
+    border: 1px solid #d8deea;
+    border-radius: 9px;
+    background: #fff;
+}
+
+    .treff-filtre label {
+        font-size: .8rem;
+        font-weight: 600;
+    }
+
+    .treff-filtre input {
+        width: min(260px, 100%);
+    }
+
+    .treff-filtre select {
+        min-width: 148px;
+    }
+
+.treff-tabellramme {
+    overflow-x: auto;
+    border: 1px solid #d8deea;
+    border-radius: 9px;
+    background: #fff;
+}
+
+.treff-tabell {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+}
+
+    .treff-tabell th,
+    .treff-tabell td {
+        padding: 14px;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .treff-tabell th {
+        background: #edf0f4;
+        color: #46536a;
+        font-size: .8rem;
+    }
+
+    .treff-tabell td {
+        border-top: 1px solid #d8deea;
+    }
+
+    .treff-tabell tbody tr:nth-child(even of :not([hidden])) {
+        background: #f6f7fa;
+    }
+
+.treff-kategori {
+    display: block;
+    margin-top: 3px;
+    color: #46536a;
+}
+
+.treff-avstand,
+.treff-tabell .status-merkelapp {
+    white-space: nowrap;
+}
+
+.treff-tabell .status-merkelapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+    .treff-tabell .status-merkelapp::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+[data-oversikt-panel="treff"] .btn-primary {
+    --bs-btn-bg: #163c4c;
+    --bs-btn-border-color: #163c4c;
+    --bs-btn-hover-bg: #102e3b;
+    --bs-btn-hover-border-color: #102e3b;
+    --bs-btn-active-bg: #102e3b;
+    --bs-btn-active-border-color: #102e3b;
+}
+
+[data-oversikt-panel="treff"] .btn-outline-primary {
+    --bs-btn-color: #163c4c;
+    --bs-btn-border-color: #163c4c;
+    --bs-btn-hover-bg: #163c4c;
+    --bs-btn-hover-border-color: #163c4c;
+    --bs-btn-active-bg: #102e3b;
+    --bs-btn-active-border-color: #102e3b;
 }

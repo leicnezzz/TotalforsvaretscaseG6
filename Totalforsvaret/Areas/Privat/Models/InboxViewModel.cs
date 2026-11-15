@@ -64,4 +64,5 @@ public class InboxMessageViewModel
     public string SenderName { get; init; } = "";
     public string Body { get; init; } = "";
     public DateTime SentAtUtc { get; init; }
+    public bool IsOwnMessage { get; init; }
 }

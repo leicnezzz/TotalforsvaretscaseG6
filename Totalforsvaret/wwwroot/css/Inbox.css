@@ -498,7 +498,7 @@
 .inbox-summary {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr);
-    align-items: center;
+    align-items: stretch;
     gap: 12px;
 }
 
@@ -546,6 +546,7 @@
 }
 
 .inbox-summary-arrow {
+    align-self: center;
     color: #2e6840;
 }
 
@@ -674,3 +675,8 @@
     border-radius: 999px;
     font-size: 15px;
 }
+
+.inbox-page .inbox-back {
+    color: #2e6840;
+}
+

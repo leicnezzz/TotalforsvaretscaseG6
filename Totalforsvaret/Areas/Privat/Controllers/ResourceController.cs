@@ -169,8 +169,23 @@ public class ResourceController(
         if (resource is null)
             return NotFound();
 
+        if (await db.ResourceAssignments.AnyAsync(assignment => assignment.ResourceId == id))
+        {
+            return Conflict(new { message = "Ressursen har vært brukt i en tildeling og kan ikke slettes." });
+        }
+
         db.Resources.Remove(resource);
-        await db.SaveChangesAsync();
+        try
+        {
+            await db.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            if (!await db.ResourceAssignments.AnyAsync(assignment => assignment.ResourceId == id))
+                throw;
+
+            return Conflict(new { message = "Ressursen har vært brukt i en tildeling og kan ikke slettes." });
+        }
 
         return Ok(new { resourceId = id });
     }

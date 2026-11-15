@@ -11,8 +11,10 @@
     ViewData["RegistrationFooter"] = true;
     ViewData["HideFooter"] = !isMatch;
 
-    // Sender bare opplysningene kartet trenger.
-    var kartRessurser = Model.Select(ressurs => new
+    var nå = DateTime.Now;
+    var kartRessurser = Model
+        .Where(ressurs => ressurs.TilgjengeligFra == null || ressurs.TilgjengeligFra <= nå)
+        .Select(ressurs => new
     {
         id = ressurs.ResourceId,
         kategoriId = ressurs.CategoryId,
@@ -58,7 +60,7 @@
     var opptatteRessursIder = ViewBag.OpptatteRessursIder as HashSet<int> ?? new HashSet<int>();
     var listeRessurser = isMatch
         ? Model.Where(r => !opptatteRessursIder.Contains(r.ResourceId) &&
-                           (r.TilgjengeligFra == null || r.TilgjengeligFra <= DateTime.Now))
+                           (r.TilgjengeligFra == null || r.TilgjengeligFra <= nå))
         : Model;
     var oversiktJson = JsonSerializer.Serialize(new
     {
@@ -488,10 +490,7 @@
                             }
 
                             <a class="btn btn-sm btn-outline-primary treff-handlingsknapp"
-   asp-area="Offentlig"
-   asp-controller="Need"
-   asp-action="Edit"
-   asp-route-id="@treff.NeedId">
+                               href="@(Url.Action("Edit", "Need", new { area = "Offentlig", id = treff.NeedId }) + Context.Request.HendelsesQuery())">
     Se og endre behov
 </a>
                         </div>
@@ -518,7 +517,7 @@
 </section>
     <!-- Ressursliste som bare vises ved utskrift -->
     <section class="print-bare print-ressurser" aria-label="Ressursliste for utskrift">
-        <h1>Ressursliste – Kristiansand kommune</h1>
+        <h1>Ressursliste</h1>
         <p>Utskrift: @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p>
 
         <table class="print-tabell">
@@ -547,7 +546,7 @@
     </section>
     <!-- Aktive behov som bare vises ved utskrift -->
     <section class="print-bare print-behov" aria-label="Aktive behov for utskrift">
-        <h1>Aktive behov – Kristiansand kommune</h1>
+        <h1>Aktive behov</h1>
         <p>Utskrift: @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p>
 
         <table class="print-tabell">

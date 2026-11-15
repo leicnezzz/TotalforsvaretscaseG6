@@ -7,6 +7,7 @@
 }
 <form id="resource-wizard" class="resource-wizard @(compact ? "need-card" : null)"
       action="#registrer-ressurs" method="post" novalidate
+      data-draft-owner="@(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "guest")"
       data-authenticated="@(hasSession ? "true" : "false")"
       data-private="@(isPrivate ? "true" : "false")" data-compact="@(compact ? "true" : "false")" data-resource-registration>
     <noscript><p class="wizard-message">Aktiver JavaScript for å bruke den trinnvise registreringen.</p></noscript>

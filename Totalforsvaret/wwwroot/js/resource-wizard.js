@@ -13,7 +13,7 @@
     const compactNext = form.querySelector('[data-compact-next]');
     const message = document.getElementById('wizard-message');
     const submit = document.getElementById('vehicle-submit');
-    const draftKey = 'paratus.resource-draft.v2';
+    const draftKey = 'paratus.resource-draft.v2:' + (compact ? 'offentlig:' : 'privat:') + form.dataset.draftOwner;
     const fields = ['Object', 'Condition', 'RequiredLicense', 'RegistrationNumber', 'EquipmentType',
         'Quantity', 'AdditionalInformation', 'Kontaktpunkt', 'Available', 'TilgjengeligFra',
         'Address', 'Latitude', 'Longitude', 'ContactFirstName', 'ContactLastName', 'ContactEmail']
@@ -231,9 +231,7 @@
 
     function restoreDraft() {
         try {
-            const current = sessionStorage.getItem(draftKey);
-            const legacy = current ? null : sessionStorage.getItem('paratus.vehicle-draft.v1');
-            const raw = current || legacy;
+            const raw = sessionStorage.getItem(draftKey);
             if (!raw || raw.length > 20000) return;
             const draft = JSON.parse(raw);
             if (![1, 2].includes(draft.version) || !Number.isFinite(draft.updated) ||

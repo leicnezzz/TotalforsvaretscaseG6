@@ -159,13 +159,13 @@ public class InboxController(
             return NotFound();
 
         if (assignment.Status != AssignmentStatus.Requested)
-            return BadRequest("Forespørselen venter ikke lenger på svar.");
+            return VisHandlingsfeil(assignmentId, "Forespørselen venter ikke lenger på svar.");
 
         var activeNeed =
             assignment.Need.Status is "Åpen" or "Under behandling";
 
         if (!activeNeed)
-            return BadRequest("Behovet er ikke lenger aktivt.");
+            return VisHandlingsfeil(assignmentId, "Behovet er ikke lenger aktivt.");
 
         var resourceAvailable =
             assignment.Resource.Available &&
@@ -173,7 +173,7 @@ public class InboxController(
              assignment.Resource.TilgjengeligFra <= DateTime.Now);
 
         if (!resourceAvailable)
-            return BadRequest("Ressursen er ikke lenger tilgjengelig.");
+            return VisHandlingsfeil(assignmentId, "Ressursen er ikke lenger tilgjengelig.");
 
         var alreadyInUse = await db.ResourceAssignments.AnyAsync(other =>
             other.Id != assignment.Id &&
@@ -183,8 +183,7 @@ public class InboxController(
 
         if (alreadyInUse)
         {
-            return BadRequest(
-                "Ressursen er allerede under vurdering eller tildelt.");
+            return VisHandlingsfeil(assignmentId, "Ressursen er allerede under vurdering eller tildelt.");
         }
 
         assignment.Status = AssignmentStatus.Assigned;
@@ -210,7 +209,7 @@ public class InboxController(
             return NotFound();
 
         if (assignment.Status != AssignmentStatus.Requested)
-            return BadRequest("Forespørselen venter ikke lenger på svar.");
+            return VisHandlingsfeil(assignmentId, "Forespørselen venter ikke lenger på svar.");
 
         assignment.Status = AssignmentStatus.Rejected;
         assignment.ClosedAtUtc = DateTime.UtcNow;
@@ -235,7 +234,7 @@ public class InboxController(
             return NotFound();
 
         if (assignment.Status != AssignmentStatus.Assigned)
-            return BadRequest("Ressursen er ikke tildelt.");
+            return VisHandlingsfeil(assignmentId, "Ressursen er ikke tildelt.");
 
         assignment.Status = AssignmentStatus.Released;
         assignment.ClosedAtUtc = DateTime.UtcNow;
@@ -248,6 +247,12 @@ public class InboxController(
         {
             selectedId = assignmentId
         });
+    }
+
+    private IActionResult VisHandlingsfeil(int assignmentId, string melding)
+    {
+        TempData["InboxMessage"] = melding;
+        return RedirectToAction(nameof(Index), new { selectedId = assignmentId });
     }
 
     private async Task<ResourceAssignment?> GetOwnedAssignment(

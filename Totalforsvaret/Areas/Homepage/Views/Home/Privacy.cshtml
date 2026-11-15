@@ -26,6 +26,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
           rel="stylesheet" />
+    <link rel="stylesheet"
+          href="~/css/public-home.css"
+          asp-append-version="true" />
 
     <link rel="stylesheet"
           href="~/css/Private-home.css"
@@ -54,25 +57,7 @@
     else
     {
         <header class="public-header">
-            <nav class="public-nav" aria-label="Hovedmeny">
-                <div class="public-nav-pages">
-                    <a asp-area=""
-                       asp-controller="Home"
-                       asp-action="Index">
-                        Hovedside
-                    </a>
-                </div>
-
-                <div class="public-nav-account">
-                    <a class="nav-button nav-button-primary"
-                       asp-area=""
-                       asp-controller="Account"
-                       asp-action="Login">
-                        Logg inn
-                    </a>
-                </div>
-            </nav>
-
+            <partial name="/Areas/Homepage/Views/Shared/_PublicNav.cshtml" />
             <div class="public-section-bar">
                 <span>Personvern</span>
             </div>
@@ -102,7 +87,6 @@
                     <time datetime="2026-11-09">9. november 2026</time>
                 </p>
             </header>
-
             <nav class="privacy-contents" aria-label="Innhold på siden">
                 <a href="#ansvarlig">Behandlingsansvarlig</a>
                 <a href="#opplysninger">Opplysninger vi behandler</a>

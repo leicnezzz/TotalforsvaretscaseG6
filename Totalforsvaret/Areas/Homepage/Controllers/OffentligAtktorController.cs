@@ -103,7 +103,22 @@ public class OffentligAktorController : Controller
 
         ViewBag.AktiveTildelinger = aktiveTildelinger;
 
-        if (_context != null)
+		var avsluttedeVurderinger = _context?.ResourceAssignments
+	.AsNoTracking()
+	.Where(a => (a.Status == AssignmentStatus.Rejected ||
+				 a.Status == AssignmentStatus.Released) &&
+				(a.Need.Status == "Åpen" || a.Need.Status == "Under behandling"))
+	.ToList() ?? new List<ResourceAssignment>();
+
+		var treffStatuser = aktiveTildelinger
+			.OrderByDescending(a => a.Id)
+			.Concat(avsluttedeVurderinger.OrderByDescending(a => a.Id))
+			.GroupBy(a => (a.NeedId, a.ResourceId))
+			.ToDictionary(gruppe => gruppe.Key, gruppe => gruppe.First().Status);
+
+		ViewBag.TreffStatuser = treffStatuser;
+
+		if (_context != null)
         {
             var aktiveBehov = _context.Needs
                 .AsNoTracking()
@@ -152,13 +167,20 @@ public class OffentligAktorController : Controller
             }
         }
 
-        ViewBag.MatchForslag = forslag
-            .OrderBy(f => f.DistanceKm ?? double.MaxValue)
-            .ThenBy(f => f.NeedId)
-            .ThenBy(f => f.ResourceId)
-            .ToList();
+		ViewBag.MatchForslag = forslag
+	 .OrderBy(f =>
+	 {
+		 if (!treffStatuser.TryGetValue((f.NeedId, f.ResourceId), out var status))
+			 return 0; // Ikke vurdert
 
-        ViewBag.ForeslatteTreff = forslag.Count;
+		 return status == AssignmentStatus.Requested ? 1 : 2;
+	 })
+	 .ThenBy(f => f.DistanceKm ?? double.MaxValue)
+	 .ThenBy(f => f.NeedId)
+	 .ThenBy(f => f.ResourceId)
+	 .ToList();
+
+		ViewBag.ForeslatteTreff = forslag.Count;
         ViewBag.OpptatteRessursIder = aktiveTildelinger.Select(a => a.ResourceId).ToHashSet();
         
         ViewBag.KriserTilLister = _context?.Crises

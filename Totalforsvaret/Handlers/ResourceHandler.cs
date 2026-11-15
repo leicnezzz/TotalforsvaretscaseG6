@@ -68,7 +68,8 @@ public class ResourceHandler(AppDbContext db)
     public List<Resource> GetResources()
     {
         return db.Resources
-            .AsNoTracking()
+		.Include(r => r.Category)
+			.AsNoTracking()
             .ToList();
     }
 

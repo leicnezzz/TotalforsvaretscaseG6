@@ -179,7 +179,7 @@
         field('Object').placeholder = equipment ? 'Eks. DJI Mavic 4 eller Honda aggregat' : 'Eks. Toyota Hiace';
         document.getElementById('vehicle-additional-count').textContent = field('AdditionalInformation').value.length;
         document.getElementById('wizard-progress').textContent = completed ? 'Registreringen er fullført.'
-            : !supported ? 'Velg en ressurstype for å begynne.'
+            : !supported ? ''
             : compact ? (stage === 4 ? 'Kontroller og bekreft' : stage === 3 ? 'Velg plassering' : stage === 2 ? 'Kontaktperson' : 'Fyll ut ressursopplysningene')
             : ['1 av 5 · Ressursinformasjon', '2 av 5 · Ytterligere informasjon', '3 av 5 · Kontakt og tilgjengelighet',
                 '4 av 5 · Plassering', '5 av 5 · Kontroller og bekreft'][stage];

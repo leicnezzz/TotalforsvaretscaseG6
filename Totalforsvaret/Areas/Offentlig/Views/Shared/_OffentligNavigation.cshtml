@@ -58,12 +58,6 @@
             <a asp-route="offentlig-match" class="@(isMatch ? "active" : "")" aria-current="@(isMatch ? "page" : null)">Match</a>
         </div>
 
-        @if (isOverview && action.Equals(
-            "Index", StringComparison.OrdinalIgnoreCase))
-        {
-            <div id="kartSokToolbar"></div>
-        }
-
         <div class="account-actions">
             <details class="account-menu">
                 <summary class="account-link @(isProfile ? "active" : "")"

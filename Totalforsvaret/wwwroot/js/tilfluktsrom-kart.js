@@ -14,8 +14,6 @@ printButton.addEventListener('click', () => window.print());
     const aedStatus = document.getElementById('hjertestarter-status');
     const aedControls = document.querySelector('.shelter-aed-controls');
     const shelterToggle = document.getElementById('vis-tilfluktsrom');
-    tilfluktsromKart.getContainer().classList.add('hide-shelters');
-
     shelterToggle.addEventListener('change', () => {
         tilfluktsromKart.getContainer().classList.toggle('hide-shelters', !shelterToggle.checked);
     });

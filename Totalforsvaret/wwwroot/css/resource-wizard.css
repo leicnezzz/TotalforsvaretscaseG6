@@ -78,7 +78,7 @@
 }
 .wizard-fields [data-vehicle-fields] label,
 .wizard-fields [data-equipment-fields] label { font-size: 15px; font-weight: 700; }
-.wizard-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; font-size: 14px; }
+.wizard-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 4px; font-size: 14px; }
 .wizard-text-button { min-height: 44px; padding: 8px 0; border: 0; background: transparent; color: #2e6840; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
 .resource-wizard .public-button { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 44px; padding: 12px 16px; gap: 16px; border: 1.5px solid #2e6840; border-radius: 6px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; }
 .resource-wizard .public-button-primary { background: #2e6840; color: white; }

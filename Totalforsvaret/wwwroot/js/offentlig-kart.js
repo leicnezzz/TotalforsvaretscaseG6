@@ -827,6 +827,16 @@
 
     // Lager avkrysningsboksene.
     const felt = panel.querySelector('.kart-typer:not(.kart-bakgrunn)');
+    const hendelsesbokser = new Map();
+
+    function visHendelse(id) {
+        skjulteHendelser.delete(String(id));
+        const checkbox = hendelsesbokser.get(id);
+        if (checkbox) {
+            checkbox.checked = true;
+            synligeHendelser.add(id);
+        }
+    }
 
     if (hendelsesvisning) {
         const hendelsesfilter = document.createElement('fieldset');
@@ -840,11 +850,11 @@
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.checked = synligeHendelser.has(hendelse.id);
+            hendelsesbokser.set(hendelse.id, checkbox);
             checkbox.addEventListener('change', () => {
                 const id = String(hendelse.id);
                 if (checkbox.checked) {
-                    synligeHendelser.add(hendelse.id);
-                    skjulteHendelser.delete(id);
+                    visHendelse(hendelse.id);
                 } else {
                     synligeHendelser.delete(hendelse.id);
                     skjulteHendelser.add(id);
@@ -1762,13 +1772,21 @@
         if (valgt.type === 'kriser' && nyeHendelser.length) {
             lagreForBytte().then(ok => {
                 if (!ok) return;
+                for (const id of (valgt.ids ?? [valgt.id])) visHendelse(id);
+                lagreKartfilter();
                 const url = new URL(window.location.href);
                 for (const id of nyeHendelser) url.searchParams.append('hendelser', id);
                 window.location.assign(url);
             });
             return;
         }
-        if (valgt.ids) return;
+        if (valgt.ids) {
+            for (const id of valgt.ids) visHendelse(id);
+            lagreKartfilter();
+            filtrer(true);
+            oppdaterSoneliste();
+            return;
+        }
         const type = typer.find(t => t.key === valgt.type);
 
         const markor = type?.markorer.find(
@@ -1781,7 +1799,13 @@
             type.key !== 'ressurser' &&
             !synligeHendelser.has(markor.hendelseId)
         ) {
-            return;
+            if (!hendelsesbokser.has(markor.hendelseId)) {
+                visBekreftelse('Oppføringen er utenfor de åpne hendelsene. Velg «Vis hele kartet» i filteret for å se den.');
+                return;
+            }
+
+            visHendelse(markor.hendelseId);
+            oppdaterSoneliste();
         }
 
         // Slår på typen dersom den er skjult i kartfilteret.

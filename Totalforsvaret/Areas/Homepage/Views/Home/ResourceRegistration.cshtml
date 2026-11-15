@@ -1,3 +1,4 @@
+@using Totalforsvaret.Controllers
 @model Totalforsvaret.Models.PublicHomeViewModel
 
 @{
@@ -15,7 +16,7 @@
 
 <div class="need-page public-resource-registration">
     <div class="private-page-actions">
-        <a class="private-page-action" asp-area="" asp-controller="OffentligAktor" asp-action="Index">← Tilbake</a>
+        <a class="private-page-action" href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())">← Tilbake</a>
     </div>
 
     <div class="registration-content need-registration">

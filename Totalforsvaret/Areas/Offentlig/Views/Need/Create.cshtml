@@ -1,4 +1,5 @@
 
+@using Totalforsvaret.Controllers
 @model Totalforsvaret.Areas.Offentlig.ViewModels.NeedCreateViewModel
 
 @{
@@ -16,7 +17,7 @@
 
 <div class="need-page">
     <div class="private-page-actions">
-        <a asp-area="" asp-controller="OffentligAktor" asp-action="Index"
+        <a href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
            class="private-page-action">← Tilbake</a>
     </div>
     <div class="registration-content need-registration">
@@ -25,11 +26,9 @@
             <p>Beskriv behovet og velg hvor ressursene trengs.</p>
         </section>
 
-        <form asp-area="Offentlig"
-          asp-controller="Need"
-          asp-action="@(ViewData["EditId"] != null ? "Edit" : "Create")"
-          asp-route-id="@(ViewData["EditId"])"
-          method="post" class="resource-wizard need-card" data-need-wizard>
+        <form action="@(Url.Action(ViewData["EditId"] != null ? "Edit" : "Create", "Need",
+              new { area = "Offentlig", id = ViewData["EditId"] }) + Context.Request.HendelsesQuery())"
+          asp-antiforgery="true" method="post" class="resource-wizard need-card" data-need-wizard>
 
             <div asp-validation-summary="All" class="text-danger"></div>
         
@@ -136,7 +135,7 @@
 
             <div class="need-actions">
                 <div>
-                    <a asp-area="" asp-controller="OffentligAktor" asp-action="Index"
+                    <a href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
                    class="public-button public-button-outline" data-need-cancel>Avbryt</a>
                     <button type="button" class="public-button public-button-outline" data-need-back hidden>← Tilbake</button>
                 </div>

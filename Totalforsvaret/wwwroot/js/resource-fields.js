@@ -12,9 +12,10 @@
         const data = new FormData(form);
         const text = name => String(data.get(name) ?? '').trim();
         const category = Number(text('CategoryId'));
+        const compact = form.dataset.compact === 'true';
         const kind = form.dataset.resourceKind || form.querySelector('[name="CategoryId"]')?.selectedOptions?.[0]?.dataset.resourceKind;
         return {
-            ...(form.dataset.compact === 'true' ? {
+            ...(compact ? {
                 ContactFirstName: text('ContactFirstName'),
                 ContactLastName: text('ContactLastName'),
                 ContactEmail: text('ContactEmail')
@@ -30,7 +31,9 @@
             AdditionalInformation: text('AdditionalInformation'),
             Condition: text('Condition'),
             Vehicle: kind === 'vehicle' ? {
-                RegistrationNumber: text('HasRegistrationNumber') === 'true' ? text('RegistrationNumber').toUpperCase() : null,
+                RegistrationNumber: compact || text('HasRegistrationNumber') === 'true'
+                    ? (text('RegistrationNumber').toUpperCase() || null)
+                    : null,
                 RequiredLicense: text('RequiredLicense')
             } : null,
             Equipment: kind === 'equipment' ? {

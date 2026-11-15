@@ -1,10 +1,11 @@
+@using Totalforsvaret.Controllers
 @model IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>
 @{
     var isPrivate = User.Identity?.IsAuthenticated == true && User.HasClaim("Brukertype", "Privat");
     var compact = ViewData["PublicResourceRegistration"] is true;
     var hasSession = User.Identity?.IsAuthenticated == true;
 }
-<form id="resource-wizard" class="resource-wizard"
+<form id="resource-wizard" class="resource-wizard @(compact ? "need-card" : null)"
       action="#registrer-ressurs" method="post" novalidate
       data-authenticated="@(hasSession ? "true" : "false")"
       data-private="@(isPrivate ? "true" : "false")" data-compact="@(compact ? "true" : "false")" data-resource-registration>
@@ -18,11 +19,11 @@
             <p>Kategorien bestemmer hvilke spørsmål du får. Velg kjøretøy eller utstyr for å fylle inn opplysningene som passer ressursen.</p>
         </details>
         <div class="wizard-description">
-            <h3 id="wizard-category-title">Hva ønsker du å registrere?</h3>
+            <h3 id="wizard-category-title" class="@(compact ? "need-step-title" : null)">Hva ønsker du å registrere?</h3>
             <p>Her kan du velge hvilken type ressurs du ønsker å stille til rådighet.</p>
         </div>
         <div class="wizard-fields">
-            <label for="wizard-category">Velg en ressurstype</label>
+            <label for="wizard-category">@(compact ? "Ressurstype" : "Velg en ressurstype")</label>
             <select id="wizard-category" name="CategoryId" required>
                 <option value="">Ressurstype</option>
                 @foreach (var category in Model)
@@ -64,10 +65,13 @@
             <p>Oppgi registreringsnummeret for å hente kjøretøyinformasjon. I denne forhåndsvisningen kan du prøve AB12345 for å se automatisk utfylling med tydelig merkede eksempeldata.</p>
         </div>
         <div class="wizard-fields">
-            <label for="vehicle-registration-number">Registreringsnummer</label>
-            <div class="wizard-plate">
-                <span aria-hidden="true">N</span>
-                <input id="vehicle-registration-number" name="RegistrationNumber" maxlength="12" minlength="2" placeholder="Eks. AB 12345" autocomplete="off" required />
+            <label for="vehicle-registration-number">@(compact ? "Registreringsnummer (valgfritt)" : "Registreringsnummer")</label>
+            <div class="@(compact ? "resource-field" : "wizard-plate")">
+                @if (!compact)
+                {
+                    <span aria-hidden="true">N</span>
+                }
+                <input id="vehicle-registration-number" name="RegistrationNumber" maxlength="12" minlength="2" placeholder="Eks. AB 12345" autocomplete="off" required="@(!compact)" />
             </div>
             <p id="vehicle-lookup-status" class="wizard-hint" role="status"></p>
         </div>
@@ -80,24 +84,32 @@
             <p id="resource-details-description">Fyll inn modell, tilstand og eventuell førerkortklasse.</p>
         </div>
         <div class="wizard-fields">
-            <label for="vehicle-model" id="resource-name-label">Modell / serie *</label>
-            <input id="vehicle-model" name="Object" maxlength="100" placeholder="Eks. BMW 3-serie" required />
-            <label for="vehicle-condition">Tilstand *</label>
-            <input id="vehicle-condition" name="Condition" maxlength="100" placeholder="Eks. god, kjørbar, behov for service" required />
+            <div class="resource-field">
+                <label for="vehicle-model" id="resource-name-label">Modell / serie *</label>
+                <input id="vehicle-model" name="Object" maxlength="100" placeholder="Eks. BMW 3-serie" required />
+            </div>
+            <div class="resource-field">
+                <label for="vehicle-condition">Tilstand *</label>
+                <input id="vehicle-condition" name="Condition" maxlength="100" placeholder="Eks. god, kjørbar, behov for service" required />
+            </div>
             <div data-vehicle-fields><label for="vehicle-license">Påkrevd førerkortklasse</label>
             <input id="vehicle-license" name="RequiredLicense" maxlength="100" placeholder="Eks. B, BE, C1, C eller T" /></div>
             <div data-equipment-fields hidden>
-                <label for="equipment-type">Utstyrstype *</label>
-                <select id="equipment-type" name="EquipmentType" required disabled>
-                    <option value="">Velg utstyrstype</option>
-                    <option value="Drone">Drone</option>
-                    <option value="Verktøy">Verktøy</option>
-                    <option value="Aggregat">Aggregat</option>
-                    <option value="Sambandsutstyr">Sambandsutstyr</option>
-                    <option value="Annet utstyr">Annet utstyr</option>
-                </select>
-                <label for="equipment-quantity">Antall *</label>
-                <input id="equipment-quantity" name="Quantity" type="number" min="1" max="100000" step="1" value="1" required disabled />
+                <div class="resource-field">
+                    <label for="equipment-type">Utstyrstype *</label>
+                    <select id="equipment-type" name="EquipmentType" required disabled>
+                        <option value="">Velg utstyrstype</option>
+                        <option value="Drone">Drone</option>
+                        <option value="Verktøy">Verktøy</option>
+                        <option value="Aggregat">Aggregat</option>
+                        <option value="Sambandsutstyr">Sambandsutstyr</option>
+                        <option value="Annet utstyr">Annet utstyr</option>
+                    </select>
+                </div>
+                <div class="resource-field">
+                    <label for="equipment-quantity">Antall *</label>
+                    <input id="equipment-quantity" name="Quantity" type="number" min="1" max="100000" step="1" value="1" required disabled />
+                </div>
             </div>
             <div id="vehicle-information-check" hidden>
                 <p class="wizard-label" id="vehicle-information-question">Stemmer informasjonen?</p>
@@ -117,7 +129,7 @@
             <p>Har du praktiske opplysninger om ressursen, kapasitet eller begrensninger? Dette feltet er valgfritt.</p>
         </div>
         <div class="wizard-fields">
-            <label for="vehicle-additional">Har du noe ytterligere du ønsker å informere om?</label>
+            <label for="vehicle-additional">@(compact ? "Tilleggsinformasjon (valgfritt)" : "Har du noe ytterligere du ønsker å informere om?")</label>
             <textarea id="vehicle-additional" name="AdditionalInformation" maxlength="200" rows="5" placeholder="Skriv her"></textarea>
             <p class="wizard-counter"><span id="vehicle-additional-count">0</span>/200</p>
             <button id="wizard-additional-next" class="public-button public-button-primary" type="button">
@@ -129,22 +141,30 @@
     <fieldset class="wizard-step wizard-step-soft" data-step="availability" hidden disabled>
         <legend class="wizard-sr-only">Kontakt og tilgjengelighet</legend>
         <div class="wizard-description">
-            <h3>Kontakt og tilgjengelighet</h3>
+            <h3>@(compact ? "Kontaktperson" : "Kontakt og tilgjengelighet")</h3>
             <p>Oppgi telefonnummeret du kan kontaktes på, og når ressursen kan stilles til rådighet. E-postadressen knyttes til kontoen din.</p>
         </div>
         <div class="wizard-fields">
             @if (compact)
             {
-                <label for="resource-contact-firstname">Fornavn *</label>
-                <input id="resource-contact-firstname" name="ContactFirstName" maxlength="99" autocomplete="given-name" required />
-                <label for="resource-contact-lastname">Etternavn *</label>
-                <input id="resource-contact-lastname" name="ContactLastName" maxlength="100" autocomplete="family-name" required />
-                <label for="resource-contact-email">E-post *</label>
-                <input id="resource-contact-email" name="ContactEmail" type="email" maxlength="172" autocomplete="email" required />
+                <div class="resource-field">
+                    <label for="resource-contact-firstname">Fornavn *</label>
+                    <input id="resource-contact-firstname" name="ContactFirstName" maxlength="99" autocomplete="given-name" required />
+                </div>
+                <div class="resource-field">
+                    <label for="resource-contact-lastname">Etternavn *</label>
+                    <input id="resource-contact-lastname" name="ContactLastName" maxlength="100" autocomplete="family-name" required />
+                </div>
+                <div class="resource-field">
+                    <label for="resource-contact-email">E-post *</label>
+                    <input id="resource-contact-email" name="ContactEmail" type="email" maxlength="172" autocomplete="email" required />
+                </div>
             }
-            <label for="vehicle-contact">Telefon *</label>
-            <input id="vehicle-contact" name="Kontaktpunkt" type="tel" inputmode="tel" maxlength="25" autocomplete="tel" placeholder="Eks. +47 900 12 345" aria-describedby="vehicle-contact-error" required />
-            <p id="vehicle-contact-error" class="wizard-field-error" role="status" hidden></p>
+            <div class="resource-field">
+                <label for="vehicle-contact">Telefon *</label>
+                <input id="vehicle-contact" name="Kontaktpunkt" type="tel" inputmode="tel" maxlength="25" autocomplete="tel" placeholder="Eks. +47 900 12 345" aria-describedby="vehicle-contact-error" required />
+                <p id="vehicle-contact-error" class="wizard-field-error" role="status" hidden></p>
+            </div>
             @if (compact)
             {
                 <input type="hidden" name="Available" value="true" />
@@ -170,7 +190,7 @@
     <fieldset class="wizard-step wizard-step-white" data-step="location" data-resource-address hidden disabled>
         <legend class="wizard-sr-only">Plassering</legend>
         <div class="wizard-description">
-            <h3>Hvor finnes ressursen?</h3>
+            <h3 class="@(compact ? "need-step-title" : null)">Hvor finnes ressursen?</h3>
             <p>Velg en adresse fra forslagene eller klikk på kartet der ressursen befinner seg.</p>
         </div>
         <div class="wizard-fields">
@@ -232,21 +252,28 @@
     <fieldset class="wizard-step wizard-step-confirm" data-step="confirmation" hidden disabled>
         <legend class="wizard-sr-only">Bekreft registrering</legend>
         <div class="wizard-description">
-            <h3>Registrer ressurs</h3>
+            <h3 class="@(compact ? "need-step-title" : null)">@(compact ? "Se over informasjonen" : "Registrer ressurs")</h3>
             <p>Kontroller opplysningene før du registrerer ressursen.</p>
         </div>
         <div class="wizard-fields">
-            <dl id="vehicle-summary" class="wizard-summary"></dl>
+            <dl id="vehicle-summary" class="wizard-summary @(compact ? "need-review" : null)"></dl>
             <label class="wizard-confirm-label"><input type="checkbox" name="Confirmed" value="true" required /> Jeg bekrefter at opplysningene er korrekte, og at ressursen kan gjøres tilgjengelig for relevante beredskapsaktører.</label>
             <p id="wizard-account-note" class="wizard-hint">Ressursen knyttes til kontoen din.</p>
             <p id="wizard-prerequisite-note" class="wizard-prerequisite" role="status" hidden></p>
-            <button id="vehicle-submit" type="submit" class="public-button" disabled><span>Registrer ressurs</span>@if (!compact) { <span aria-hidden="true">→</span> }</button>
+            @if (!compact)
+            {
+                <button id="vehicle-submit" type="submit" class="public-button" disabled><span>Registrer ressurs</span><span aria-hidden="true">→</span></button>
+            }
         </div>
     </fieldset>
 
     @if (compact)
     {
-        <button type="button" class="public-button public-button-outline" data-compact-back hidden>← Tilbake</button>
+        <div class="need-actions resource-step-actions">
+            <button type="button" class="public-button public-button-outline" data-compact-back hidden>← Tilbake</button>
+            <button type="button" class="public-button public-button-primary" data-compact-next disabled>Neste →</button>
+            <button id="vehicle-submit" type="submit" class="public-button public-button-primary" hidden disabled>Registrer ressurs</button>
+        </div>
     }
 
     <section id="wizard-success" class="wizard-success" tabindex="-1" hidden>
@@ -254,7 +281,7 @@
         <p id="wizard-success-message"></p>
         @if (compact)
         {
-            <a class="public-button public-button-primary" asp-area="" asp-controller="OffentligAktor" asp-action="Index">Gå til oversikten</a>
+            <a class="public-button public-button-primary" href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())">Gå til oversikten</a>
         }
         else
         {

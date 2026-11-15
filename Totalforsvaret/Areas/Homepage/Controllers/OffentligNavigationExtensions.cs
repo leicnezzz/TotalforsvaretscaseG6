@@ -4,6 +4,10 @@ namespace Totalforsvaret.Controllers;
 
 internal static class OffentligNavigationExtensions
 {
+    public static QueryString HendelsesQuery(this HttpRequest request) =>
+        QueryString.Create(request.Query["hendelser"]
+            .Select(id => new KeyValuePair<string, string?>("hendelser", id)));
+
     public static string OversiktUrl(this Controller controller, int? fallbackCrisisId = null, int? openCrisisId = null)
     {
         var url = controller.Url.Action("Index", "OffentligAktor", new { area = "" })!;

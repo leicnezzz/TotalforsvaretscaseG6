@@ -1,7 +1,8 @@
+@using Totalforsvaret.Controllers
 <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
 
 <div class="private-page-actions match-page-actions">
-    <a class="private-page-action" asp-area="" asp-controller="OffentligAktor" asp-action="Index">← Tilbake</a>
+    <a class="private-page-action" href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())">← Tilbake</a>
 </div>
 
 <section id="match" class="match-page">
@@ -60,13 +61,13 @@
             <h2>Opprett et nytt behov</h2>
             <p>Her kan du starte registreringen av et nytt behov.</p>
             <strong class="match-shortcut-label">Registrering</strong>
-            <a asp-route="behov" class="match-button">Nytt behov <span aria-hidden="true">→</span></a>
+            <a href="@(Url.RouteUrl("behov") + Context.Request.HendelsesQuery())" class="match-button">Nytt behov <span aria-hidden="true">→</span></a>
         </section>
         <section>
             <h2>Registrer en ressurs</h2>
             <p>Her kan du starte en ressursregistrering.</p>
             <strong class="match-shortcut-label">Registrering</strong>
-            <a asp-route="ressursregistrering" class="match-button">Ny ressurs <span aria-hidden="true">→</span></a>
+            <a href="@(Url.RouteUrl("ressursregistrering") + Context.Request.HendelsesQuery())" class="match-button">Ny ressurs <span aria-hidden="true">→</span></a>
         </section>
     </div>
 </section>

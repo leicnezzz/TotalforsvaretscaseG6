@@ -540,7 +540,30 @@ body.offentlig-page .offentlig-site-header .nav-links a:focus-visible,
 
 @media (max-width: 760px) {
     .site-header.offentlig-site-header > .primary-nav {
+        display: flex;
         padding: 8px 16px;
+    }
+
+    .site-header.offentlig-site-header > .primary-nav > .account-actions {
+        order: 3;
+        margin-inline-start: auto;
+    }
+
+    .site-header.offentlig-site-header > .primary-nav > .nav-links {
+        display: none;
+        order: 4;
+        flex: 0 0 100%;
+        flex-flow: column nowrap;
+    }
+
+    .site-header.offentlig-site-header > .primary-nav.nav-open > .nav-links {
+        display: flex;
+    }
+
+    .site-header.offentlig-site-header > .primary-nav > .nav-toggle {
+        border-color: #fff;
+        background: #163c4c;
+        color: #fff;
     }
 
     .site-header.offentlig-site-header .nav-links > a {

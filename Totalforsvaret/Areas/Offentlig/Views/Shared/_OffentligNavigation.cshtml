@@ -45,6 +45,11 @@
 
 <header class="site-header offentlig-site-header">
     <nav class="primary-nav" aria-label="Hovedmeny">
+        <button class="nav-toggle" type="button" aria-expanded="false"
+                aria-controls="public-nav-links" aria-label="Åpne meny">
+            <span class="nav-toggle-icon" aria-hidden="true">☰</span>
+        </button>
+
         <div class="nav-links" id="public-nav-links">
             <a class="@(isOverview ? "active" : "")"
                aria-current="@(isOverview ? "page" : null)"
@@ -140,3 +145,4 @@
         </div>
     </nav>
 </header>
+<script src="~/js/site-navigation.js" asp-append-version="true"></script>

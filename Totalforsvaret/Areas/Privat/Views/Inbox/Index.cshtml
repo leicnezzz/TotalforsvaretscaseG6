@@ -48,7 +48,6 @@
         </a>
 
         <section class="inbox-card" aria-labelledby="inbox-title">
-            <h1 id="inbox-title">Innboks</h1>
 
             @if (TempData["InboxMessage"] is string notice)
             {
@@ -70,36 +69,39 @@
             else if (Model.SelectedItem is { } item)
             {
                 <div class="inbox-layout">
-                    <nav class="inbox-list"
-                         aria-label="Ressursforespørsler">
+                    <aside class="inbox-sidebar">
+                    <h1 id="inbox-title">Innboks</h1>
+                <nav class="inbox-list"
+                     aria-label="Ressursforespørsler">
 
-                        @foreach (var listItem in Model.Items)
-                        {
-                            var selected =
-                                listItem.AssignmentId == Model.SelectedId;
+                    @foreach (var listItem in Model.Items)
+                    {
+                        var selected =
+                            listItem.AssignmentId == Model.SelectedId;
 
-                            <a class="inbox-list-item @(selected ? "is-selected" : "")"
-                               asp-area="Privat"
-                               asp-controller="Inbox"
-                               asp-action="Index"
-                               asp-route-selectedId="@listItem.AssignmentId"
-                               aria-current="@(selected ? "true" : null)">
+                        <a class="inbox-list-item @(selected ? "is-selected" : "")"
+                           asp-area="Privat"
+                           asp-controller="Inbox"
+                           asp-action="Index"
+                           asp-route-selectedId="@listItem.AssignmentId"
+                           aria-current="@(selected ? "true" : null)">
 
-                                <span class="inbox-list-icon"
-                                      aria-hidden="true">
-                                    @(listItem.CategoryName == "Vehicles"
-                                        ? "🚜"
-                                        : "🧰")
-                                </span>
+                            <span class="inbox-list-icon"
+                                  aria-hidden="true">
+                                @(listItem.CategoryName == "Vehicles"
+                                    ? "🚜"
+                                    : "🧰")
+                            </span>
 
-                                <span class="inbox-list-copy">
-                                    <strong>@listItem.ResourceName</strong>
-                                    <span>@listItem.NeedName</span>
-                                    <small>@listItem.StatusLabel</small>
-                                </span>
-                            </a>
-                        }
-                    </nav>
+                            <span class="inbox-list-copy">
+                                <strong>@listItem.ResourceName</strong>
+                                <span>@listItem.NeedName</span>
+                                <small>@listItem.StatusLabel</small>
+                            </span>
+                        </a>
+                    }
+                </nav>
+                    </aside>
 
                     <div class="inbox-detail">
                         <div class="inbox-detail-heading">
@@ -154,7 +156,7 @@
                                     </dl>
 
                                     @if (!string.IsNullOrWhiteSpace(
-                                        item.NeedDescription))
+                                             item.NeedDescription))
                                     {
                                         <p class="inbox-description">
                                             @item.NeedDescription
@@ -185,7 +187,7 @@
                                         </div>
 
                                         @if (!string.IsNullOrWhiteSpace(
-                                            item.ResourceAddress))
+                                                 item.ResourceAddress))
                                         {
                                             <div>
                                                 <dt>Plassering</dt>
@@ -194,7 +196,7 @@
                                         }
 
                                         @if (!string.IsNullOrWhiteSpace(
-                                            item.ResourceCondition))
+                                                 item.ResourceCondition))
                                         {
                                             <div>
                                                 <dt>Tilstand</dt>
@@ -204,7 +206,7 @@
                                     </dl>
 
                                     @if (!string.IsNullOrWhiteSpace(
-                                        item.ResourceInformation))
+                                             item.ResourceInformation))
                                     {
                                         <p class="inbox-description">
                                             @item.ResourceInformation
@@ -226,7 +228,7 @@
                                     </div>
 
                                     @if (!string.IsNullOrWhiteSpace(
-                                        item.NeedContactPerson))
+                                             item.NeedContactPerson))
                                     {
                                         <div>
                                             <dt>Kontaktperson</dt>
@@ -235,7 +237,7 @@
                                     }
 
                                     @if (!string.IsNullOrWhiteSpace(
-                                        item.NeedContactPoint))
+                                             item.NeedContactPoint))
                                     {
                                         <div>
                                             <dt>Kontaktpunkt</dt>
@@ -244,7 +246,7 @@
                                     }
 
                                     @if (!string.IsNullOrWhiteSpace(
-                                        item.NeedPhoneNumber))
+                                             item.NeedPhoneNumber))
                                     {
                                         <div>
                                             <dt>Telefon</dt>
@@ -289,7 +291,7 @@
 
                                     <input type="hidden"
                                            name="assignmentId"
-                                           value="@item.AssignmentId" />
+                                           value="@item.AssignmentId"/>
 
                                     <label for="private-message-body">
                                         Skriv en melding
@@ -318,7 +320,7 @@
 
                                         <input type="hidden"
                                                name="assignmentId"
-                                               value="@item.AssignmentId" />
+                                               value="@item.AssignmentId"/>
 
                                         <button class="inbox-button inbox-button-secondary"
                                                 type="submit">
@@ -334,7 +336,7 @@
 
                                         <input type="hidden"
                                                name="assignmentId"
-                                               value="@item.AssignmentId" />
+                                               value="@item.AssignmentId"/>
 
                                         <button class="inbox-button inbox-button-primary"
                                                 type="submit">

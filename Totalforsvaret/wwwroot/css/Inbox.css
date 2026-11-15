@@ -59,19 +59,14 @@
 
 .inbox-card {
     margin: 18px auto 0;
-    padding: 28px;
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 3px 18px rgb(20 45 30 / 8%);
-}
-
-.inbox-card > h1 {
-    margin: 0 0 24px;
-    color: #2e6840;
-    font-size: 28px;
+    overflow: hidden;
 }
 
 .inbox-flash {
+    margin: 16px 28px 0;
     padding: 12px 16px;
     border-radius: 6px;
     background: #e7f2e9;
@@ -81,47 +76,65 @@
 .inbox-layout {
     min-height: 520px;
     display: grid;
-    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+    grid-template-columns: 340px minmax(0, 1fr);
+}
+
+.inbox-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 28px 20px 20px 28px;
+    border-right: 1px solid #e3e9e5;
+}
+
+.inbox-sidebar h1 {
+    margin: 0;
+    color: #2e6840;
+    font-size: 30px;
+    line-height: 1.2;
 }
 
 .inbox-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding-right: 14px;
-    border-right: 1px solid #8aac95;
+    gap: 6px;
 }
 
 .inbox-list-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px;
-    border-radius: 8px;
+    padding: 12px 14px;
+    border-radius: 10px;
     color: inherit;
     text-decoration: none;
 }
 
 .inbox-list-item:hover,
 .inbox-list-item.is-selected {
-    background: #eaf1ec;
+    background: #e6efe8;
 }
 
 .inbox-list-icon {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     display: grid;
-    flex: 0 0 42px;
+    flex: 0 0 40px;
     place-items: center;
-    border-radius: 7px;
-    background: #eef3ef;
+    border-radius: 10px;
+    background: #e6efe8;
+    color: #2e6840;
     font-size: 22px;
+}
+
+.inbox-list-item.is-selected .inbox-list-icon {
+    background: #fff;
 }
 
 .inbox-list-copy {
     min-width: 0;
     display: grid;
-    gap: 3px;
+    gap: 2px;
 }
 
 .inbox-list-copy strong,
@@ -131,6 +144,23 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+.inbox-list-copy strong {
+    font-size: 15px;
+    line-height: 1.25;
+}
+
+.inbox-list-copy span {
+    color: #5c6b64;
+    font-size: 13px;
+}
+
+.inbox-list-copy small {
+    color: #2e6840;
+    font-size: 13px;
+    font-weight: 500;
+}
+
 
 .inbox-list-copy strong {
     font-size: 15px;
@@ -148,7 +178,7 @@
 
 .inbox-detail {
     min-width: 0;
-    padding-left: 28px;
+    padding: 28px 32px 24px;
 }
 
 .inbox-detail-heading {
@@ -275,6 +305,12 @@
     text-align: center;
 }
 
+.inbox-empty h1 {
+    margin: 0 0 12px;
+    color: #2e6840;
+    font-size: 30px;
+}
+
 .inbox-empty h2 {
     color: #2e6840;
 }
@@ -310,7 +346,6 @@
 
     .inbox-card {
         margin-top: 26px;
-        padding: 20px 14px;
     }
 
     .inbox-layout {
@@ -326,7 +361,7 @@
     }
 
     .inbox-detail {
-        padding: 20px 0 0;
+        padding: 20px 14px;
     }
 
     .inbox-facts {

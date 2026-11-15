@@ -527,6 +527,79 @@ body.offentlig-page .offentlig-site-header .account-copy small {
 body.offentlig-page .private-page-actions .private-page-action {
     color: #163c4c;
 }
+/* Hamburgmeny: samme tykkelse på ramme og streker */
+.nav-toggle {
+    display: none;
+}
+
+.nav-toggle .nav-toggle-icon {
+    display: block;
+    flex: 0 0 24px;
+    width: 24px;
+    height: 18px;
+    margin: auto;
+    overflow: hidden;
+    font-size: 0;
+    line-height: 0;
+    background-image:
+            linear-gradient(currentColor, currentColor),
+            linear-gradient(currentColor, currentColor),
+            linear-gradient(currentColor, currentColor);
+    background-position:
+            center top,
+            center center,
+            center bottom;
+    background-repeat: no-repeat;
+    background-size:
+            24px 2px,
+            24px 2px,
+            24px 2px;
+}
+
+@media (max-width: 760px) {
+    .site-header .primary-nav {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 12px;
+    }
+
+    .site-header .primary-nav.nav-open {
+        flex-wrap: wrap;
+    }
+
+    .site-header .primary-nav > .nav-toggle {
+        display: inline-flex;
+        order: 1;
+        flex: 0 0 44px;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border: 2px solid #2e6840;
+        border-radius: 8px;
+        background: transparent;
+        color: #2e6840;
+        cursor: pointer;
+    }
+
+    .site-header .primary-nav > .nav-brand {
+        order: 2;
+        flex: 1 1 auto;
+        min-width: 0;
+        margin-inline: auto;
+    }
+
+    .site-header .primary-nav > .account-actions {
+        order: 3;
+        flex: 0 0 auto;
+        gap: 6px;
+        margin-inline-start: auto;
+    }
 
 .offentlig-site-header .account-actions .inbox-icon-link {
     color: #fff;
@@ -539,4 +612,94 @@ body.offentlig-page .private-page-actions .private-page-action {
     stroke: #fff;
     stroke-width: 1.8;
     opacity: 1;
+}
+
+    .site-header .primary-nav .account-copy {
+        display: none;
+    }
+
+    .site-header .primary-nav .inbox-icon-link {
+        width: 32px;
+        flex-basis: 32px;
+    }
+
+    .site-header .primary-nav .account-link {
+        min-height: 44px;
+        gap: 0;
+    }
+
+    .site-header .primary-nav .account-link .avatar-small {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+    }
+
+    .site-header .primary-nav .nav-links {
+        display: none;
+        order: 4;
+        flex: 0 0 100%;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        margin-top: 8px;
+        border-top: 1px solid rgb(128 128 128 / 30%);
+        background: #fff;
+    }
+
+    .site-header .primary-nav.nav-open .nav-links {
+        display: flex;
+        position: static;
+    }
+
+    .site-header .primary-nav .nav-links a {
+        min-height: 44px;
+        padding: 10px 4px;
+        white-space: normal;
+    }
+
+    .site-header.offentlig-site-header .primary-nav .nav-toggle {
+        border-color: #fff;
+        background-color: #163c4c;
+        color: #fff;
+    }
+
+    .site-header.offentlig-site-header .primary-nav .nav-links {
+        background-color: #163c4c;
+    }
+
+    .site-header.offentlig-site-header .primary-nav .nav-links a {
+        color: #fff;
+        background-color: #163c4c;
+    }
+
+    .site-header.offentlig-site-header .primary-nav .nav-links a:hover,
+    .site-header.offentlig-site-header .primary-nav .nav-links a:focus-visible {
+        color: #fff;
+        background-color: #225466;
+    }
+
+    .offentlig-site-header .primary-nav #kartSokToolbar {
+        order: 5;
+        flex: 0 0 100%;
+        width: 100%;
+        max-width: none;
+        margin-top: 4px;
+    }
+}
+/* Offentlig aktør: hvit nedtrekksmeny med blå tekst */
+.offentlig-site-header .account-menu-list {
+    border-color: #d7e1d9;
+    background-color: #fff;
+}
+
+.offentlig-site-header .account-menu-list a,
+.offentlig-site-header .account-menu-list button {
+    color: #163c4c;
+}
+
+.offentlig-site-header .account-menu-list a:hover,
+.offentlig-site-header .account-menu-list button:hover,
+.offentlig-site-header .account-menu-list a[aria-current="page"] {
+    background-color: #e8eff2;
+    color: #163c4c;
 }

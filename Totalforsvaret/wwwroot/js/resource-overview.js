@@ -88,7 +88,7 @@
             setPickingCard(null);
             if (!card.open || card.hidden || editor.busy) return;
             clearPreview(card);
-            editor.location.selectMapPoint(map.wrapLatLng(event.latlng));
+            editor.location.lookupAddress(map.wrapLatLng(event.latlng));
             editor.pickButton.focus();
         });
         document.addEventListener('keydown', event => {

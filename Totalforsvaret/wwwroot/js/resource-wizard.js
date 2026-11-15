@@ -17,7 +17,7 @@
         'Quantity', 'AdditionalInformation', 'Kontaktpunkt', 'Available', 'TilgjengeligFra',
         'Address', 'Latitude', 'Longitude'];
     let stage = 0;
-    let accountMode = 'login';
+    let accountMode = 'register';
     let accountReady = authenticated;
     let manualVehicleEdit = false;
     let completed = false;
@@ -78,11 +78,7 @@
     }
     // Validerer feltene i skjemaet og viser feilmeldinger for manglende eller ugyldige verdier. 
     function renderAccount() {
-        document.getElementById('wizard-account-choice').hidden = accountReady;
         document.getElementById('wizard-account-complete').hidden = !accountReady;
-        for (const button of form.querySelectorAll('[data-account-mode]')) {
-            button.setAttribute('aria-pressed', String(button.dataset.accountMode === accountMode));
-        }
         for (const panel of form.querySelectorAll('[data-account-panel]')) {
             panel.hidden = accountReady || panel.dataset.accountPanel !== accountMode;
             panel.disabled = panel.hidden || step('account').hidden;
@@ -165,7 +161,7 @@
         field('Object').placeholder = equipment ? 'Eks. DJI Mavic 4 eller Honda aggregat' : 'Eks. Toyota Hiace';
         document.getElementById('vehicle-additional-count').textContent = field('AdditionalInformation').value.length;
         document.getElementById('wizard-progress').textContent = completed ? 'Registreringen er fullført.'
-            : !supported ? 'Velg en ressurstype for å begynne.'
+            : !supported ? ''
             : compact ? (stage >= 4 ? 'Kontroller og bekreft' : stage === 3 ? 'Velg plassering' : stage === 2 ? 'Kontakt og tilgjengelighet' : 'Fyll ut ressursopplysningene')
             : ['1 av 5 · Ressursinformasjon', '2 av 5 · Ytterligere informasjon', '3 av 5 · Kontakt og tilgjengelighet',
                 '4 av 5 · Plassering', '5 av 5 · Kontroller og bekreft'][stage];
@@ -345,9 +341,12 @@
 
     for (const button of form.querySelectorAll('[data-account-mode]')) {
         button.addEventListener('click', () => {
+            if (busy) return;
             accountMode = button.dataset.accountMode;
             form.querySelectorAll('.wizard-auth-panel input[type="password"]').forEach(element => { element.value = ''; });
+            showMessage('');
             render();
+            document.getElementById(button.getAttribute('aria-controls')).querySelector('input').focus();
         });
     }
     for (const button of form.querySelectorAll('[data-account-continue]')) {
@@ -452,7 +451,7 @@
         stage = 0;
         completed = false;
         accountReady = authenticated;
-        accountMode = 'login';
+        accountMode = 'register';
         manualVehicleEdit = false;
         lastCategory = '';
         for (const name of fields) field(name).setCustomValidity('');

@@ -1,5 +1,5 @@
 /* Felles uttrykk for offentlige sider. */
-body:has(:is(.crisis-overview, .match-page, .need-page)) {
+body.offentlig-page {
     --offentlig-width: 920px;
     --offentlig-gutter: clamp(16px, 3vw, 28px);
     --offentlig-space: clamp(16px, 3vw, 24px);
@@ -8,10 +8,14 @@ body:has(:is(.crisis-overview, .match-page, .need-page)) {
     --offentlig-muted: #526671;
     --offentlig-border: #dce5e9;
     --offentlig-radius: 10px;
+    --offentlig-card-hover: 0 5px 16px rgb(36 56 70 / 18%);
+}
+
+body:has(:is(.crisis-overview, .match-page, .need-page)) {
     background: #eef0f2;
 }
 
-:is(.match-page, .match-page-actions, .crisis-overview, .need-page .need-registration) {
+:is(.match-page, .crisis-overview, .need-page .need-registration) {
     width: min(calc(100% - 2 * var(--offentlig-gutter)), var(--offentlig-width));
     max-width: none;
     margin-inline: auto;
@@ -23,18 +27,18 @@ body:has(:is(.crisis-overview, .match-page, .need-page)) {
     padding: var(--offentlig-space) 0 64px;
 }
 
-.match-page-actions + .match-page {
-    padding-top: var(--offentlig-space);
+body.offentlig-page > .container-fluid:has(.offentlig-back-actions) {
+    padding-inline: 0;
 }
 
-:is(.need-page, .match-page-actions) {
-    --header-green: var(--offentlig-blue);
+body.offentlig-page .offentlig-back-actions .private-page-action:hover {
+    color: var(--offentlig-blue-hover);
+    text-decoration: underline;
 }
 
-.need-page .private-page-actions {
-    width: min(calc(100% - 2 * var(--offentlig-gutter)), var(--offentlig-width));
-    margin-inline: auto;
-    padding: 0;
+body.offentlig-page .offentlig-back-actions .private-page-action:focus-visible {
+    outline: 2px solid var(--offentlig-blue);
+    outline-offset: 4px;
 }
 
 :is(.need-page .registration-intro, .crisis-overview .registration-intro, .match-page .match-intro) {
@@ -96,24 +100,92 @@ body:has(:is(.crisis-overview, .match-page, .need-page)) {
     color: #fff;
 }
 
+.offentlig-page :is(.need-page .public-button-outline, .crisis-overview .crisis-button-outline,
+    .offentlig-dashboard .skriv-ut-knapp):hover:not(:disabled) {
+    border-color: var(--offentlig-blue);
+    background: #edf3f6;
+    color: var(--offentlig-blue);
+}
+
+.offentlig-page :is(.crisis-card, .stat-kort[data-oversikt-liste]):is(:hover, :focus-within) {
+    box-shadow: var(--offentlig-card-hover);
+}
+
 @media (prefers-reduced-motion: no-preference) {
-    :is(.crisis-overview, .match-page, .match-page-actions, .need-page)
-        :is(a, button, input, textarea, select, .crisis-card) {
+    :is(.crisis-overview, .match-page, .need-page, .offentlig-dashboard, .offentlig-back-actions)
+        :is(a, button, input, textarea, select, .crisis-card, summary) {
         transition: background-color 160ms ease, border-color 160ms ease,
             color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
     }
 
     :is(.crisis-overview, .match-page, .need-page)
         :is(.registration-intro, .match-intro),
-    .crisis-details:not([hidden]),
+    .offentlig-dashboard dialog[open],
+    .offentlig-dashboard .kart-sidepanel:not([hidden]),
     .need-card [data-need-step].is-entering,
     .public-resource-registration .wizard-step:not([hidden]),
     .public-resource-registration .wizard-success:not([hidden]) {
         animation: offentlig-fade-in 180ms ease-out both;
     }
 
+    .offentlig-site-header .account-menu .chevron,
+    .offentlig-dashboard .kart-oversiktsvalg > summary span {
+        transition: transform 160ms ease;
+    }
+
+    .offentlig-site-header .account-menu[open] > .account-menu-list,
+    .offentlig-dashboard .kart-oversiktsvalg[open] > .kart-oversiktsrad,
+    .offentlig-dashboard .kart-stedsforslag:not([hidden]),
+    .offentlig-page .need-page .wizard-address-results:not([hidden]) {
+        animation: offentlig-menu-in 160ms ease-out;
+    }
+
+    @supports selector(details::details-content) {
+        .offentlig-site-header .account-menu::details-content {
+            opacity: 0;
+            transition: opacity 160ms ease-out, content-visibility 160ms allow-discrete;
+        }
+
+        .offentlig-site-header .account-menu[open]::details-content {
+            opacity: 1;
+        }
+
+        .offentlig-site-header .account-menu[open] > .account-menu-list {
+            animation: none;
+        }
+    }
+
+    @supports (interpolate-size: allow-keywords) and selector(details::details-content) {
+        .offentlig-dashboard .kart-oversiktsvalg {
+            interpolate-size: allow-keywords;
+        }
+
+        .offentlig-dashboard .kart-oversiktsvalg::details-content {
+            block-size: 0;
+            opacity: 0;
+            overflow: clip;
+            overflow-clip-margin: 4px;
+            transition: block-size 180ms ease-out, opacity 160ms ease-out,
+                content-visibility 180ms allow-discrete;
+        }
+
+        .offentlig-dashboard .kart-oversiktsvalg[open]::details-content {
+            block-size: auto;
+            opacity: 1;
+        }
+
+        .offentlig-dashboard .kart-oversiktsvalg[open] > .kart-oversiktsrad {
+            animation: none;
+        }
+    }
+
+    @keyframes offentlig-menu-in {
+        from { opacity: 0; translate: 0 -3px; }
+        to { opacity: 1; translate: 0 0; }
+    }
+
     @keyframes offentlig-fade-in {
-        from { opacity: .68; }
+        from { opacity: .8; }
         to { opacity: 1; }
     }
 }

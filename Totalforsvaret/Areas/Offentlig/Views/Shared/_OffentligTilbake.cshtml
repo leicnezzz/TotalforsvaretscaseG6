@@ -1,0 +1,8 @@
+@using Totalforsvaret.Controllers
+
+<div class="private-page-actions offentlig-back-actions">
+    <a class="private-page-action"
+       href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())">
+        ← Tilbake
+    </a>
+</div>

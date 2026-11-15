@@ -1,7 +1,11 @@
 @model IEnumerable<Totalforsvaret.Models.resourcemodels.Resource>
 @{
     ViewData["Title"] = "Mine ressurser";
+    ViewData["FullWidth"] = true;
 }
+
+<link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
+<partial name="/Areas/Offentlig/Views/Shared/_OffentligTilbake.cshtml" />
 
 <div class="container pt-4 pb-5 mb-5" style="max-width: 900px;">
     <h1>Mine ressurser</h1>
@@ -52,6 +56,5 @@
         </table>
     }
 
-    <a class="btn btn-outline-secondary" asp-action="Index">Tilbake til oversikten</a>
     <a class="btn btn-primary" asp-action="NyRessurs">Legg til ressurs</a>
 </div>

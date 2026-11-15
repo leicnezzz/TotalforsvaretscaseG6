@@ -1,9 +1,7 @@
 @using Totalforsvaret.Controllers
 <link rel="stylesheet" href="~/css/site-header.css" asp-append-version="true" />
 
-<div class="private-page-actions match-page-actions">
-    <a class="private-page-action" href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())">← Tilbake</a>
-</div>
+<partial name="/Areas/Offentlig/Views/Shared/_OffentligTilbake.cshtml" />
 
 <section id="match" class="match-page">
     <header class="match-intro">

@@ -14,11 +14,9 @@
 <link rel="stylesheet" href="~/css/need-registration.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
 
+<partial name="/Areas/Offentlig/Views/Shared/_OffentligTilbake.cshtml" />
+
 <div class="need-page">
-    <div class="private-page-actions">
-        <a asp-area="" asp-controller="OffentligAktor" asp-action="Index"
-           class="private-page-action">← Tilbake</a>
-    </div>
     <div class="registration-content need-registration">
         <section class="registration-intro" aria-labelledby="need-title">
             <h1 id="need-title">@ViewData["Title"]</h1>

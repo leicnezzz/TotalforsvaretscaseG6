@@ -13,10 +13,6 @@ body:has(.need-page) > .container-fluid {
     color: var(--header-green);
 }
 
-.need-page .private-page-action:hover {
-    text-decoration: underline;
-}
-
 .need-registration {
     width: min(calc(100% - 32px), 760px);
     padding-bottom: 64px;
@@ -230,11 +226,6 @@ body:has(.need-page) > .registration-footer a {
 
 .public-resource-registration .need-review :is(dt, dd) {
     margin: 0;
-}
-
-.need-page .private-page-actions {
-    min-height: 48px;
-    padding-block: 0;
 }
 
 .need-registration .registration-intro p {

@@ -156,24 +156,34 @@
 }
 
 .inbox-list-copy small {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     color: #2e6840;
     font-size: 13px;
     font-weight: 500;
 }
 
+.inbox-list-copy small::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 50%;
+    background: currentColor;
+}
 
-.inbox-list-copy strong {
-    font-size: 15px;
+.inbox-list-copy small.is-waiting {
+    color: #7a4e00;
+}
+
+.inbox-list-copy small.is-waiting::before {
+    background: #d98e04;
 }
 
 .inbox-list-copy span {
     color: #607078;
     font-size: 13px;
-}
-
-.inbox-list-copy small {
-    color: #2e6840;
-    font-size: 12px;
 }
 
 .inbox-detail {

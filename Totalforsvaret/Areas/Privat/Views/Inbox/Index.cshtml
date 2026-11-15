@@ -86,17 +86,14 @@
                            asp-route-selectedId="@listItem.AssignmentId"
                            aria-current="@(selected ? "true" : null)">
 
-                            <span class="inbox-list-icon"
-                                  aria-hidden="true">
-                                @(listItem.CategoryName == "Vehicles"
-                                    ? "🚜"
-                                    : "🧰")
+                            <span class="inbox-list-icon" aria-hidden="true">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v-4l1.8-4.2A2 2 0 0 1 7.7 6.5h8.6a2 2 0 0 1 1.9 1.3L20 12v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M4 12h16"/><circle cx="8" cy="14.5" r=".6"/><circle cx="16" cy="14.5" r=".6"/></svg>
                             </span>
 
                             <span class="inbox-list-copy">
                                 <strong>@listItem.ResourceName</strong>
                                 <span>@listItem.NeedName</span>
-                                <small>@listItem.StatusLabel</small>
+                                <small class="@(listItem.Status == AssignmentStatus.Requested ? "is-waiting" : "")">@listItem.StatusLabel</small>
                             </span>
                         </a>
                     }

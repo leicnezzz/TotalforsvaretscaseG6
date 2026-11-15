@@ -9,18 +9,19 @@
 
 @{
     var eventQuery = Microsoft.AspNetCore.Http.QueryString.Create(
-        Context.Request.Query["hendelser"].Select(id => new KeyValuePair<string, string?>("hendelser", id))).ToString();
+        Context.Request.Query["hendelser"]
+            .Select(id => new KeyValuePair<string, string?>("hendelser", id)))
+        .ToString();
+
     var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
     var isMatch = ViewContext.RouteData.Values["match"] is true;
     var isResourcePage =
-        action.Equals("ResourceRegistration",
-            StringComparison.OrdinalIgnoreCase);
+        action.Equals("ResourceRegistration", StringComparison.OrdinalIgnoreCase);
     var isOverview =
         !isMatch &&
-        controller.Equals("OffentligAktor",
-            StringComparison.OrdinalIgnoreCase);
+        controller.Equals("OffentligAktor", StringComparison.OrdinalIgnoreCase);
     var isNeedPage =
         controller.Equals("Need", StringComparison.OrdinalIgnoreCase);
     var isCrisisPage =
@@ -32,9 +33,9 @@
     var displayName = account?.Navn
         ?? User.Identity?.Name
         ?? "Offentlig aktør";
+
     var hasPhoto = account != null &&
-        await Db.ProfilePhotos.AnyAsync(
-            photo => photo.BrukerId == account.Id);
+        await Db.ProfilePhotos.AnyAsync(photo => photo.BrukerId == account.Id);
 
     var initials = string.Concat(
         displayName
@@ -45,24 +46,45 @@
 
 <header class="site-header offentlig-site-header">
     <nav class="primary-nav" aria-label="Hovedmeny">
-        <div class="nav-links">
+        <button class="nav-toggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="public-nav-links"
+                aria-label="Åpne meny">
+            <span class="nav-toggle-icon" aria-hidden="true">☰</span>
+        </button>
+
+        <div class="nav-links" id="public-nav-links">
             <a class="@(isOverview ? "active" : "")"
                aria-current="@(isOverview ? "page" : null)"
                href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + eventQuery)">
                 Oversikt
             </a>
 
-            <a href="@(Url.RouteUrl("crisis-overview") + eventQuery)" class="@(isCrisisPage ? "active" : "")" aria-current="@(isCrisisPage ? "page" : null)">Hendelser</a>
-            <a asp-route="behov" class="@(isNeedPage ? "active" : "")" aria-current="@(isNeedPage ? "page" : null)">Registrer behov</a>
-            <a asp-route="ressursregistrering" class="@(isResourcePage ? "active" : "")" aria-current="@(isResourcePage ? "page" : null)">Registrer ressurs</a>
-            <a asp-route="offentlig-match" class="@(isMatch ? "active" : "")" aria-current="@(isMatch ? "page" : null)">Match</a>
-        </div>
+            <a href="@(Url.RouteUrl("crisis-overview") + eventQuery)"
+               class="@(isCrisisPage ? "active" : "")"
+               aria-current="@(isCrisisPage ? "page" : null)">
+                Hendelser
+            </a>
 
-        @if (isOverview && action.Equals(
-            "Index", StringComparison.OrdinalIgnoreCase))
-        {
-            <div id="kartSokToolbar"></div>
-        }
+            <a asp-route="behov"
+               class="@(isNeedPage ? "active" : "")"
+               aria-current="@(isNeedPage ? "page" : null)">
+                Registrer behov
+            </a>
+
+            <a asp-route="ressursregistrering"
+               class="@(isResourcePage ? "active" : "")"
+               aria-current="@(isResourcePage ? "page" : null)">
+                Registrer ressurs
+            </a>
+
+            <a asp-route="offentlig-match"
+               class="@(isMatch ? "active" : "")"
+               aria-current="@(isMatch ? "page" : null)">
+                Match
+            </a>
+        </div>
 
         <div class="account-actions">
             <details class="account-menu">
@@ -88,11 +110,18 @@
                         <strong>@displayName</strong>
                         <small>Offentlig aktør</small>
                     </span>
+
                     <span class="chevron" aria-hidden="true">⌄</span>
                 </summary>
 
                 <ul class="account-menu-list">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Privacy">Personvern</a></li>
+                    <li>
+                        <a asp-area=""
+                           asp-controller="Home"
+                           asp-action="Privacy">
+                            Personvern
+                        </a>
+                    </li>
                     <li>
                         <a asp-area="Offentlig"
                            asp-controller="Profile"
@@ -121,3 +150,5 @@
         </div>
     </nav>
 </header>
+
+<script src="~/js/site-navigation.js" asp-append-version="true"></script>

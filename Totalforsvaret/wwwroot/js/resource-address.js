@@ -87,7 +87,7 @@
         }
 
         function refresh(recenter = true) {
-            if (!mapElement.getClientRects().length) return;
+            if (!mapElement?.getClientRects().length) return;
             if (!window.L) {
                 status.textContent = 'Kartet kunne ikke lastes. Adresseforslag kan fortsatt brukes.';
                 return;

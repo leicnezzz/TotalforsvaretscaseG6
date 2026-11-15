@@ -2473,3 +2473,116 @@ body.offentlig-page {
 #oversiktDialog[data-visning="kriser"] {
     width: min(1250px, 96vw);
 }
+
+/* Mobilvisning: gi kartet høyde og la siden rulle vertikalt */
+@media screen and (max-width: 760px) {
+    .offentlig-dashboard #offentligKart {
+        height: clamp(360px, 65dvh, 650px);
+        min-height: 360px;
+    }
+
+    html:has(.offentlig-dashboard #offentligKart),
+    body:has(.offentlig-dashboard #offentligKart) {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+}
+@media (max-width: 760px) {
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px 12px;
+    }
+
+    .offentlig-site-header .primary-nav:has(#kartSokToolbar) #kartSokToolbar {
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .offentlig-site-header .nav-toggle {
+        color: #fff;
+    }
+}
+@media (max-width: 760px) {
+    .offentlig-site-header .primary-nav .nav-toggle {
+        display: inline-flex;
+        visibility: visible;
+        opacity: 1;
+        border: 2px solid #fff;
+        border-radius: 8px;
+        background: #163c4c;
+        color: #fff;
+    }
+}
+@media (max-width: 760px) {
+    .offentlig-site-header .primary-nav .nav-links {
+        background-color: #163c4c !important;
+    }
+
+    .offentlig-site-header .primary-nav .nav-links a {
+        color: #fff !important;
+        background-color: #163c4c;
+    }
+
+    .offentlig-site-header .primary-nav .nav-links a:hover,
+    .offentlig-site-header .primary-nav .nav-links a:focus-visible {
+        color: #fff !important;
+        background-color: #225466;
+    }
+}
+@media (max-width: 760px) {
+    .offentlig-site-header .primary-nav .nav-toggle {
+        border: 2px solid #fff;
+        background-color: #163c4c;
+        color: #fff;
+    }
+
+    .offentlig-site-header .primary-nav .nav-toggle .nav-toggle-icon {
+        color: #fff;
+    }
+}
+/* Søk ved siden av Soner på kartet */
+#offentligKart .kart-handlinger {
+    width: min(900px, calc(100% - 340px));
+}
+
+#offentligKart .kart-handlingsrad {
+    align-items: center;
+}
+
+#offentligKart .kart-handlingsrad > .kart-stedsok {
+    position: relative;
+    inset: auto;
+    transform: none;
+    flex: 0 1 360px;
+    width: auto;
+    min-width: 0;
+    max-width: 360px;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    cursor: auto;
+    display: block;
+    pointer-events: auto;
+}
+
+#offentligKart .kart-handlingspanel {
+    max-width: 480px;
+}
+
+@media (max-width: 900px) {
+    #offentligKart .kart-handlinger {
+        width: calc(100% - 2 * var(--kart-marg));
+    }
+
+    #offentligKart .kart-handlingsrad > .kart-stedsok {
+        flex: 0 0 100%;
+        max-width: 420px;
+    }
+}

@@ -19,42 +19,80 @@
     <link rel="stylesheet" href="~/css/resource-wizard.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/paratus-forside.css" asp-append-version="true" />
     <script src="~/js/help-dismiss.js" asp-append-version="true" defer></script>
+    <script src="~/js/site-navigation.js" asp-append-version="true" defer></script>
 </head>
 <body class="public-home">
     <main>
         <div class="paratus-first-screen">
             <header class="public-header">
                 <nav class="public-nav nav-with-brand" aria-label="Hovedmeny">
-                    <a class="nav-brand paratus-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <button class="nav-toggle"
+                            type="button"
+                            aria-expanded="false"
+                            aria-controls="home-nav-menu"
+                            aria-label="Åpne meny">
+                        <span class="nav-toggle-icon" aria-hidden="true">☰</span>
+                    </button>
+
+                    <a class="nav-brand paratus-brand"
+                       asp-area=""
+                       asp-controller="Home"
+                       asp-action="Index">
                         <span class="paratus-brand-text">
                             <strong>PARATUS</strong>
                             <small>Mennesket som ressurs</small>
                         </span>
                     </a>
-                    <div class="public-nav-pages">
-                        <a href="#om-paratus">Om Paratus</a>
-                        <a href="#slik-fungerer-det">Slik fungerer det</a>
-                        <a href="#registrer-ressurs">Registrer ressurs</a>
+
+                    <div class="public-nav-menu" id="home-nav-menu">
+                        <div class="public-nav-pages">
+                            <a href="#om-paratus">Om Paratus</a>
+                            <a href="#slik-fungerer-det">Slik fungerer det</a>
+                            <a href="#registrer-ressurs">Registrer ressurs</a>
+                        </div>
                     </div>
+
                     <div class="public-nav-account">
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             @if (User.HasClaim("Brukertype", "Privat"))
                             {
-                                <a class="nav-button nav-button-primary" asp-area="Privat" asp-controller="Dashboard" asp-action="Index">Min side</a>
+                                <a class="nav-button nav-button-primary"
+                                   asp-area="Privat"
+                                   asp-controller="Dashboard"
+                                   asp-action="Index">
+                                    Min side
+                                </a>
                             }
 
-                            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
-                                <button class="nav-button nav-button-outline" type="submit">Logg ut</button>
+                            <form asp-area=""
+                                  asp-controller="Account"
+                                  asp-action="Logout"
+                                  method="post">
+                                <button class="nav-button nav-button-outline" type="submit">
+                                    Logg ut
+                                </button>
                             </form>
                         }
                         else
                         {
-                            <a class="nav-button nav-button-primary" asp-area="" asp-controller="Account" asp-action="Login">Logg inn</a>
-                            <a class="nav-button nav-button-outline" asp-area="" asp-controller="Account" asp-action="Register">Opprett bruker</a>
+                            <a class="nav-button nav-button-primary"
+                               asp-area=""
+                               asp-controller="Account"
+                               asp-action="Login">
+                                Logg inn
+                            </a>
+
+                            <a class="nav-button nav-button-outline"
+                               asp-area=""
+                               asp-controller="Account"
+                               asp-action="Register">
+                                Opprett bruker
+                            </a>
                         }
                     </div>
                 </nav>
+                
                 <div class="public-section-bar">
                     <span>Sammen om beredskapen</span>
                     <span>Felles trygghet.</span>

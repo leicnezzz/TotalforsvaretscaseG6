@@ -2470,3 +2470,6 @@ body.offentlig-page {
     font-weight: 600;
     white-space: nowrap;
 }
+#oversiktDialog[data-visning="kriser"] {
+    width: min(1250px, 96vw);
+}

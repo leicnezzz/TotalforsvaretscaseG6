@@ -215,72 +215,52 @@
                                 </section>
                             </div>
 
-                            <section class="inbox-section">
-                                <h3>Kontakt og tidspunkt</h3>
+                            @if (!string.IsNullOrWhiteSpace(item.NeedContactPerson)
+                                 || !string.IsNullOrWhiteSpace(item.NeedContactPoint)
+                                 || !string.IsNullOrWhiteSpace(item.NeedPhoneNumber))
+                            {
+                                <p class="inbox-contact">
+                                    Kontakt:
+                                    <strong>@string.Join(" · ", new[] { item.NeedContactPerson, item.NeedContactPoint, item.NeedPhoneNumber }.Where(x => !string.IsNullOrWhiteSpace(x)))</strong>
+                                </p>
+                            }
 
-                                <dl class="inbox-facts">
-                                    <div>
-                                        <dt>Forespurt</dt>
-                                        <dd>
-                                            @(item.RequestedAtUtc.ToLocalTime()
-                                                .ToString("dd.MM.yyyy HH:mm"))
-                                        </dd>
-                                    </div>
+                            <section class="inbox-conversation"
+                                     aria-labelledby="inbox-conversation-title">
+                                <div class="inbox-conversation-head">
+                                    <h3 id="inbox-conversation-title">Samtale om denne matchen</h3>
+                                    <span>
+                                        Forespurt @(item.RequestedAtUtc.ToLocalTime()
+                                            .ToString("dd.MM.yyyy HH:mm"))
+                                    </span>
+                                </div>
 
-                                    @if (!string.IsNullOrWhiteSpace(
-                                             item.NeedContactPerson))
+                                <div class="inbox-conversation-body">
+                                    @if (Model.Messages.Count == 0)
                                     {
-                                        <div>
-                                            <dt>Kontaktperson</dt>
-                                            <dd>@item.NeedContactPerson</dd>
-                                        </div>
+                                        <p class="inbox-conversation-empty">
+                                            Ingen meldinger ennå. Skriv første melding
+                                            for å avklare detaljer om matchen.
+                                        </p>
                                     }
-
-                                    @if (!string.IsNullOrWhiteSpace(
-                                             item.NeedContactPoint))
+                                    else
                                     {
-                                        <div>
-                                            <dt>Kontaktpunkt</dt>
-                                            <dd>@item.NeedContactPoint</dd>
-                                        </div>
+                                        @foreach (var message in Model.Messages)
+                                        {
+                                            <article class="inbox-message">
+                                                <p class="inbox-message-meta">
+                                                    @message.SenderName ·
+                                                    <time datetime="@(message.SentAtUtc.ToString("O"))">
+                                                        @(message.SentAtUtc.ToLocalTime()
+                                                            .ToString("dd.MM.yyyy HH:mm"))
+                                                    </time>
+                                                </p>
+
+                                                <p class="inbox-message-text">@message.Body</p>
+                                            </article>
+                                        }
                                     }
-
-                                    @if (!string.IsNullOrWhiteSpace(
-                                             item.NeedPhoneNumber))
-                                    {
-                                        <div>
-                                            <dt>Telefon</dt>
-                                            <dd>@item.NeedPhoneNumber</dd>
-                                        </div>
-                                    }
-                                </dl>
-                            </section>
-
-                            <section class="inbox-section">
-                                <h3>Meldinger om denne matchen</h3>
-
-                                @if (Model.Messages.Count == 0)
-                                {
-                                    <p>Ingen meldinger ennå.</p>
-                                }
-                                else
-                                {
-                                    @foreach (var message in Model.Messages)
-                                    {
-                                        <article class="inbox-message">
-                                            <strong>
-                                                @message.SenderName
-                                            </strong>
-
-                                            <time datetime="@(message.SentAtUtc.ToString("O"))">
-                                                @(message.SentAtUtc.ToLocalTime()
-                                                    .ToString("dd.MM.yyyy HH:mm"))
-                                            </time>
-
-                                            <p>@message.Body</p>
-                                        </article>
-                                    }
-                                }
+                                </div>
 
                                 <form class="inbox-message-form"
                                       asp-area="Privat"
@@ -299,6 +279,8 @@
 
                                     <textarea id="private-message-body"
                                               name="body"
+                                              rows="2"
+                                              placeholder="Skriv en melding …"
                                               maxlength="2000"
                                               required></textarea>
 

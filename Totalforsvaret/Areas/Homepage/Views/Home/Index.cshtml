@@ -26,6 +26,14 @@
         <div class="paratus-first-screen">
             <header class="public-header">
                 <nav class="public-nav nav-with-brand" aria-label="Hovedmeny">
+                    <button class="nav-toggle"
+                            type="button"
+                            aria-expanded="false"
+                            aria-controls="home-nav-menu"
+                            aria-label="Åpne meny">
+                        <span class="nav-toggle-icon" aria-hidden="true">☰</span>
+                    </button>
+
                     <a class="nav-brand paratus-brand"
                        asp-area=""
                        asp-controller="Home"
@@ -36,60 +44,52 @@
                         </span>
                     </a>
 
-                    <button class="nav-toggle"
-                            type="button"
-                            aria-expanded="false"
-                            aria-controls="home-nav-menu"
-                            aria-label="Åpne meny">
-                        <span class="nav-toggle-icon" aria-hidden="true">☰</span>
-                    </button>
-
                     <div class="public-nav-menu" id="home-nav-menu">
                         <div class="public-nav-pages">
                             <a href="#om-paratus">Om Paratus</a>
                             <a href="#slik-fungerer-det">Slik fungerer det</a>
                             <a href="#registrer-ressurs">Registrer ressurs</a>
                         </div>
+                    </div>
 
-                        <div class="public-nav-account">
-                            @if (User.Identity?.IsAuthenticated == true)
-                            {
-                                @if (User.HasClaim("Brukertype", "Privat"))
-                                {
-                                    <a class="nav-button nav-button-primary"
-                                       asp-area="Privat"
-                                       asp-controller="Dashboard"
-                                       asp-action="Index">
-                                        Min side
-                                    </a>
-                                }
-
-                                <form asp-area=""
-                                      asp-controller="Account"
-                                      asp-action="Logout"
-                                      method="post">
-                                    <button class="nav-button nav-button-outline" type="submit">
-                                        Logg ut
-                                    </button>
-                                </form>
-                            }
-                            else
+                    <div class="public-nav-account">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            @if (User.HasClaim("Brukertype", "Privat"))
                             {
                                 <a class="nav-button nav-button-primary"
-                                   asp-area=""
-                                   asp-controller="Account"
-                                   asp-action="Login">
-                                    Logg inn
-                                </a>
-
-                                <a class="nav-button nav-button-outline"
-                                   asp-area=""
-                                   asp-controller="Account"
-                                   asp-action="Register">
-                                    Opprett bruker
+                                   asp-area="Privat"
+                                   asp-controller="Dashboard"
+                                   asp-action="Index">
+                                    Min side
                                 </a>
                             }
-                        </div>
+
+                            <form asp-area=""
+                                  asp-controller="Account"
+                                  asp-action="Logout"
+                                  method="post">
+                                <button class="nav-button nav-button-outline" type="submit">
+                                    Logg ut
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="nav-button nav-button-primary"
+                               asp-area=""
+                               asp-controller="Account"
+                               asp-action="Login">
+                                Logg inn
+                            </a>
+
+                            <a class="nav-button nav-button-outline"
+                               asp-area=""
+                               asp-controller="Account"
+                               asp-action="Register">
+                                Opprett bruker
+                            </a>
+                        }
                     </div>
                 </nav>
                 

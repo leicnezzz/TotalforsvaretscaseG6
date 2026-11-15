@@ -158,87 +158,126 @@
 @media (max-width: 1000px) {
     .public-content, .public-footer-content { width: min(85%, 760px); }
 }
+/* Andre mobiltilpasninger på hovedsiden */
 @media (max-width: 600px) {
-    .public-nav { flex-wrap: wrap; gap: 12px; padding: 0 16px 14px; }
-    .public-nav-pages { width: 100%; gap: 24px; }
-    .public-nav-account { width: 100%; justify-content: flex-end; }
-    .nav-button { min-width: 100px; font-size: 13px; }
-    .public-section-bar { height: 28px; }
-    .public-content, .public-footer-content { width: calc(100% - 32px); }
-    .public-content { padding-block: 10px 70px; }
-    .public-incident { margin-inline: 0; padding: 16px; }
-    .public-registration { margin-top: 48px; }
-    .public-resource-card { grid-template-columns: 1fr; gap: 30px; margin-top: 30px; padding: 40px 28px 32px; }
-    .public-resource-description p { margin-top: 20px; }
-    .public-footer-content { padding: 0 0 60px; }
-    .public-footer-bottom { flex-direction: column; padding: 16px; }
+    .nav-button {
+        min-width: 100px;
+        font-size: 13px;
+    }
+
+    .public-section-bar {
+        height: 28px;
+    }
+
+    .public-content,
+    .public-footer-content {
+        width: calc(100% - 32px);
+    }
+
+    .public-content {
+        padding-block: 10px 70px;
+    }
+
+    .public-incident {
+        margin-inline: 0;
+        padding: 16px;
+    }
+
+    .public-registration {
+        margin-top: 48px;
+    }
+
+    .public-resource-card {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        margin-top: 30px;
+        padding: 40px 28px 32px;
+    }
+
+    .public-resource-description p {
+        margin-top: 20px;
+    }
+
+    .public-footer-content {
+        padding: 0 0 60px;
+    }
+
+    .public-footer-bottom {
+        flex-direction: column;
+        padding: 16px;
+    }
 }
+
+/* Hamburgmeny på hovedsiden */
 .public-nav-menu {
     display: contents;
 }
 
-@media (max-width: 600px) {
-    .public-nav {
+@media (max-width: 760px) {
+    .public-home .public-nav.nav-with-brand {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         align-items: center;
         justify-content: space-between;
-        gap: 8px;
-        padding: 8px 16px;
+        gap: 6px;
+        padding: 8px 10px;
     }
 
-    .public-nav > .nav-brand {
+    .public-home .public-nav > .nav-toggle {
         order: 1;
-        margin-right: auto;
-    }
-
-    .public-nav > .nav-toggle {
-        display: inline-flex;
-        order: 2;
-        align-items: center;
-        justify-content: center;
-        width: 44px;
+        flex: 0 0 40px;
+        width: 40px;
         height: 44px;
-        border: 1px solid var(--public-green, #2e6840);
-        border-radius: 8px;
-        background: #fff;
-        color: var(--public-green, #2e6840);
-        cursor: pointer;
     }
 
-    .public-nav-menu {
+    .public-home .public-nav > .nav-brand {
+        order: 2;
+        flex: 1 1 auto;
+        min-width: 0;
+        margin: 0;
+    }
+
+    .public-home .paratus-brand-text strong {
+        font-size: clamp(15px, 3.5vw, 21px);
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+    }
+
+    .public-home .paratus-brand-text small {
         display: none;
+    }
+
+    .public-home .public-nav > .public-nav-account {
         order: 3;
+        display: flex;
+        flex: 0 1 auto;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 5px;
+        width: auto;
+        min-width: 0;
+    }
+
+    .public-home .public-nav-account .nav-button {
+        min-width: 0;
+        padding: 8px 7px;
+        font-size: clamp(10px, 2.5vw, 13px);
+        white-space: nowrap;
+    }
+
+    .public-home .public-nav-menu {
+        display: none;
+        order: 4;
         flex: 0 0 100%;
         width: 100%;
-        padding-top: 8px;
-        border-top: 1px solid #dce5e5;
     }
 
-    .public-nav.nav-open .public-nav-menu {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .public-nav-menu .public-nav-pages {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        gap: 0;
-    }
-
-    .public-nav-menu .public-nav-pages a {
-        min-height: 44px;
-        padding: 12px 0;
-    }
-
-    .public-nav-menu .public-nav-account {
-        display: flex;
+    .public-home .public-nav.nav-open {
         flex-wrap: wrap;
-        width: 100%;
-        justify-content: flex-start;
-        gap: 8px;
+    }
+
+    .public-home .public-nav.nav-open .public-nav-menu {
+        display: block;
     }
 }
-

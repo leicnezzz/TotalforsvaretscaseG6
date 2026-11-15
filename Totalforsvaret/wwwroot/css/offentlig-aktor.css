@@ -2299,3 +2299,41 @@ body.offentlig-page {
         color: #fff;
     }
 }
+@media (max-width: 760px) {
+    .offentlig-site-header .primary-nav .nav-toggle {
+        display: inline-flex;
+        visibility: visible;
+        opacity: 1;
+        border: 2px solid #fff;
+        border-radius: 8px;
+        background: #163c4c;
+        color: #fff;
+    }
+}
+@media (max-width: 760px) {
+    .offentlig-site-header .primary-nav .nav-links {
+        background-color: #163c4c !important;
+    }
+
+    .offentlig-site-header .primary-nav .nav-links a {
+        color: #fff !important;
+        background-color: #163c4c;
+    }
+
+    .offentlig-site-header .primary-nav .nav-links a:hover,
+    .offentlig-site-header .primary-nav .nav-links a:focus-visible {
+        color: #fff !important;
+        background-color: #225466;
+    }
+}
+@media (max-width: 760px) {
+    .offentlig-site-header .primary-nav .nav-toggle {
+        border: 2px solid #fff;
+        background-color: #163c4c;
+        color: #fff;
+    }
+
+    .offentlig-site-header .primary-nav .nav-toggle .nav-toggle-icon {
+        color: #fff;
+    }
+}

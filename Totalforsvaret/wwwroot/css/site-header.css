@@ -527,3 +527,16 @@ body.offentlig-page .offentlig-site-header .account-copy small {
 body.offentlig-page .private-page-actions .private-page-action {
     color: #163c4c;
 }
+
+.offentlig-site-header .account-actions .inbox-icon-link {
+    color: #fff;
+    opacity: 1;
+}
+
+.offentlig-site-header .account-actions .inbox-icon-link .bell {
+    width: 24px;
+    height: 24px;
+    stroke: #fff;
+    stroke-width: 1.8;
+    opacity: 1;
+}

@@ -158,10 +158,9 @@
                 <h2 id="checklist-title">Sjekkliste for beredskap</h2>
 
                 <p class="checklist-progress">
-                    <strong>@completedItems.Count av @(ViewData["ChecklistItemCount"])</strong>
+                    <strong>@completedItems.Count av @antallPunkter</strong>
                     punkter fullført
-                    <span class="progress-bar"><span style="width: @(completedItems.Count * 100 / Convert.ToInt32(ViewData["ChecklistItemCount"]))%"></span></span>
-                </p>
+                    <span class="progress-bar"><span style="width: @(prosent)%"></span></span>
 
                 <p class="checklist-instructions">
                     Kryss av når du har et punkt på plass. Valget lagres automatisk.

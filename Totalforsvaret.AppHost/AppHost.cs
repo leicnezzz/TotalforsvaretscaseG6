@@ -6,7 +6,7 @@ using Totalforsvaret.AppHost;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-// Passordet leses fra AppHost sine User Secrets.
+// Passordet leses fra AppHost sine User Secrets. og opretter nå nytt ved første oppstart.
 var password = builder.AddParameter(
     "mariadb-password",
     new GenerateParameterDefault

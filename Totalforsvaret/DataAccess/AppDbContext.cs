@@ -110,8 +110,13 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
             .HasForeignKey(n => n.CrisisId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // Kobling fra Behov til den offentlige aktøren som opprettet det
         builder.Entity<Need>()
-            .Ignore(n => n.OffentligAktor);
+            .HasOne(n => n.OffentligAktor)
+            .WithMany()
+            .HasForeignKey(n => n.OffentligAktorId)
+            .OnDelete(DeleteBehavior.SetNull);
+        
 
         builder.Entity<Crisis>()
             .HasOne(c => c.OffentligAktor)
@@ -128,6 +133,10 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
 
             entity.Property(resource => resource.Longitude)
                 .HasPrecision(9, 6);
+            
+            // Ressurser som finnes fra før, får dagens dato
+            entity.Property(resource => resource.RegistrertDato)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
             // Knytter ressursen til den eksisterende Identity-brukeren.
             entity.HasOne(resource => resource.Bruker)

@@ -149,6 +149,8 @@ namespace Totalforsvaret.Migrations
 
                     b.HasIndex("CrisisId");
 
+                    b.HasIndex("OffentligAktorId");
+
                     b.ToTable("Behov");
                 });
 
@@ -543,6 +545,11 @@ namespace Totalforsvaret.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<DateTime>("RegistrertDato")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+
                     b.Property<DateTime?>("TilgjengeligFra")
                         .HasColumnType("datetime(6)");
 
@@ -588,9 +595,6 @@ namespace Totalforsvaret.Migrations
                 {
                     b.HasBaseType("Totalforsvaret.Models.Bruker");
 
-                    b.Property<string>("Organisasjonnummer")
-                        .HasColumnType("longtext");
-
                     b.HasDiscriminator().HasValue("Privat");
                 });
 
@@ -628,7 +632,14 @@ namespace Totalforsvaret.Migrations
                         .HasForeignKey("CrisisId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("Totalforsvaret.Areas.Offentlig.Models.Offentligaktør", "OffentligAktor")
+                        .WithMany()
+                        .HasForeignKey("OffentligAktorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Crisis");
+
+                    b.Navigation("OffentligAktor");
                 });
 
             modelBuilder.Entity("Totalforsvaret.Areas.Offentlig.Models.ResourceAssignment", b =>

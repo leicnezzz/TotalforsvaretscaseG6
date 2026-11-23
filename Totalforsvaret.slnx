@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Dokumentasjon/">
+    <File Path="README.md" />
     <File Path="Oppstart.md" />
   </Folder>
   <Project Path="Totalforsvaret.AppHost/Totalforsvaret.AppHost.csproj" />

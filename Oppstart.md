@@ -1,43 +1,94 @@
-## Oppstart
+# Oppstart
 
-### Forutsetninger
-- .NET 10 SDK
-- Docker Desktop med Linux-containere, startet før applikasjonen
-- Visual Studio eller Rider med støtte for prosjektets .NET-versjon
+Veiledningen gjelder utviklingskjøring gjennom `Totalforsvaret.AppHost` i Visual Studio eller Rider.
 
-### Arkitektur
-Aspire AppHost starter:
-- MariaDB 11.4 i en Docker-container.
-- ASP.NET Core-webappen i en Docker-container med HTTPS.
+## 1. Installer og klargjør
 
-MariaDB bruker et navngitt Docker-volum som bevarer data
-når containeren gjenskapes.
+- Installer .NET 10 SDK og en Visual Studio- eller Rider-versjon som støtter .NET 10 og Aspire.
+- Installer og start Docker Desktop. Bruk Linux-containere.
+- Klon repoet og åpne `Totalforsvaret.slnx`.
+- Kjør kommandoene nedenfor fra repoets rotmappe, der `Totalforsvaret.slnx` ligger.
 
-### Lokal konfigurasjon
-Hver utvikler oppretter og stoler på sitt eget
-HTTPS-utviklingssertifikat.
+## 2. Klargjør HTTPS én gang per maskin
 
-Sertifikatet eksporteres til:
-~/.aspnet/https/totalforsvaret.pfx
+Velg ditt eget lokale sertifikatpassord. Erstatt `<sertifikatpassord>` med samme verdi i begge kommandoene som bruker passordet. Behold anførselstegnene.
 
-AppHost trenger følgende lokale User Secrets:
-- Parameters:mariadb-password genereres og lagres automatisk hvis verdien mangler.
-- Parameters:https-password
+Opprett og godkjenn utviklingssertifikatet. Godta forespørselen fra operativsystemet:
 
-Sertifikatpassordet må samsvare med det eksporterte sertifikatet.
-Databasepassordet må samsvare med den lokale databasen.
-Passord og sertifikatfiler skal ikke legges i Git.
+```text
+dotnet dev-certs https --trust
+```
 
-### Kjøring
-1. Start Docker Desktop.
-2. Visual Studio: Velg Totalforsvaret.AppHost og HTTPS-profilen. I Rider velger du en Aspire Host-kjørekonfigurasjon for samme prosjekt og profil.
-3. Åpne webappens HTTPS-lenke i Aspire-dashboardet.
+Opprett mappen for sertifikatet.
 
-AppHost er det felles oppstartsoppsettet for Windows og Mac.
+Windows, i PowerShell:
 
-### Databasetabeller
-Tabellene opprettes og oppdateres automatisk ved oppstart i Development-miljøet, før testbrukerne opprettes.
+```powershell
+New-Item -ItemType Directory -Force -Path "$HOME/.aspnet/https"
+```
 
-### Verifisering
-- Windows/Visual Studio: begge containere starter, og innlogging fungerer.
-- Mac/Rider: ikke verifisert ennå.
+Mac, i terminalen:
+
+```bash
+mkdir -p "$HOME/.aspnet/https"
+```
+
+Eksporter sertifikatet. Denne kommandoen fungerer i PowerShell og i terminalen på Mac:
+
+```text
+dotnet dev-certs https --export-path "$HOME/.aspnet/https/totalforsvaret.pfx" --password "<sertifikatpassord>"
+```
+
+Lagre det samme passordet lokalt for AppHost:
+
+```text
+dotnet user-secrets set "Parameters:https-password" "<sertifikatpassord>" --project Totalforsvaret.AppHost
+```
+
+Sertifikatet og passordet gjenbrukes ved senere oppstarter. Passord og sertifikatfiler skal holdes utenfor Git.
+
+## 3. Start applikasjonen
+
+1. Kontroller at Docker Desktop kjører.
+2. I Visual Studio velger du `Totalforsvaret.AppHost` som oppstartsprosjekt og `https` som profil.
+3. I Rider velger du en Aspire Host-kjørekonfigurasjon med `Totalforsvaret.AppHost` og launch-profilen `https`.
+4. Trykk Start/Run. Første oppstart kan ta tid mens Docker-imagene lastes ned og webappen bygges.
+5. Aspire-dashboardet åpnes. Vent til MariaDB svarer og webappen har startet.
+6. Åpne HTTPS-lenken for ressursen `totalforsvaret` i dashboardet.
+
+AppHost starter MariaDB 11.4 og webappen i hver sin Docker-container. Databasepassordet genereres automatisk og lagres i AppHost sine lokale User Secrets. Tilkoblingsstrengen sendes automatisk til webappen. Tabellene opprettes eller oppdateres før testbrukeren opprettes.
+
+## 4. Logg inn
+
+Offentlig demokonto:
+E-post: offentlig@example.com
+Passord: Passordet12345
+
+Velg innlogging for offentlig aktør. Kontoen opprettes i Development-miljøet dersom den mangler. En eksisterende konto beholder sitt passord.
+
+For privat aktør velger du «Opprett bruker» og registrerer din egen konto.
+
+## 5. Stopp og start igjen
+
+Stopp AppHost i IDE-en. Neste gang starter du samme AppHost med profilen `https`.
+
+Dataene ligger i Docker-volumet `totalforsvaretscaseg6_mariadbdata` og beholdes mellom oppstarter. Behold volumet og AppHost sine User Secrets. Hvis et eksisterende databasevolum bruker et eldre passord, må `Parameters:mariadb-password` fortsatt samsvare med dette.
+
+## Feilsøking
+
+- **HTTPS-sertifikatet mangler** – kontroller at filen ligger på `~/.aspnet/https/totalforsvaret.pfx`, og fullfør steg 2.
+- **Sertifikatet kan ikke åpnes** – passordet i `Parameters:https-password` må være identisk med eksportpassordet.
+- **MariaDB blir ikke klar** – kontroller Docker-loggen og om det eksisterende volumet og passordet hører sammen.
+- **Porten er opptatt** – stopp en tidligere AppHost-kjøring. MariaDB bruker verts port 3308, og launch-profilen angir dashboardets porter.
+
+## Kjør enhetstestene
+
+Fra repoets rotmappe:
+
+```text
+dotnet test Totalforsvaret.Tests/Totalforsvaret.Tests.csproj
+```
+
+## Verifisering
+
+Veiledningen er kontrollert mot prosjektets konfigurasjon. Oppstart fra en helt ny maskin og Mac/Rider må fortsatt verifiseres.

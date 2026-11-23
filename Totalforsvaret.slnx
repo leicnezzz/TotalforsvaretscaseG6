@@ -2,9 +2,6 @@
   <Folder Name="/Dokumentasjon/">
     <File Path="Oppstart.md" />
   </Folder>
-  <Project Path="docker-compose.dcproj">
-    <Build />
-  </Project>
   <Project Path="Totalforsvaret.AppHost/Totalforsvaret.AppHost.csproj" />
   <Project Path="Totalforsvaret.ServiceDefaults/Totalforsvaret.ServiceDefaults.csproj" />
   <Project Path="Totalforsvaret/Totalforsvaret.csproj">

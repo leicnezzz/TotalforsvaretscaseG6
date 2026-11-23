@@ -1,11 +1,8 @@
-Når dere skal sette opp databasen, bruk disse kommandoene for ditt OS:
+# Oppstart
 
-FOR WINDOWS BRUKERE:
-docker compose \
--f docker-compose.yml \
--f docker-compose.override.windows.yml up
+Start Docker Desktop og åpne Totalforsvaret.slnx.
 
-FOR MAC BRUKERE:
-docker compose \
--f docker-compose.yml \
--f docker-compose.override.mac.yml up
+- Visual Studio: Velg Totalforsvaret.AppHost som oppstartsprosjekt og profilen https.
+- Rider: Velg en Aspire Host-kjørekonfigurasjon for Totalforsvaret.AppHost og profilen https.
+
+HTTPS-sertifikat og lokalt oppsett er beskrevet i [Oppstart.md](Oppstart.md).

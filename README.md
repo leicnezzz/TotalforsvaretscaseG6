@@ -19,13 +19,9 @@ Paratus er en ASP.NET Core MVC-applikasjon. Applikasjonen er delt inn i Controll
 ## **Kjøring med docker** ##
 
 1. Hent prosjektet fra `main`: Hvis dette er første gang du åpner prosjektet, kloner du repoet og åpner `Totalforsvaret.slnx` fra rotmappen. Hvis du allerede har klonet repoet, åpner du prosjektet i Visual Studio, velger grenen `main` og velger **Git → Pull** for å hente den siste versjonen fra GitHub.
-2. Klargjør Docker, HTTPS-sertifikat og User Secrets: Installer .NET 10 SDK og start Docker Desktop med Linux-containere. Vent til Docker kjører. Bruk et lokalt HTTPS-utviklingssertifikat på `~/.aspnet/https/totalforsvaret.pfx`. Dette utviklingssertifikatet tillater webappen å ta imot HTTPS-trafikk lokalt. Angi `Parameters:mariadb-password` og `Parameters:https-password` i User Secrets for `Totalforsvaret.AppHost`. For mer informasjon, se på [oppstartsveiledningen](Oppstart.md).
-3. Start prosjektet i Visual Studio: Velg `Totalforsvaret.AppHost` som oppstartsprosjekt og `https` som oppstartsprofil. Trykk på den grønne startknappen. Aspire starter da webappen og MariaDB 11.4 i hver sin Docker-container. Så lenge det navngitte Docker-volumet beholdes, bevares dataene selv om databasecontaineren gjenskapes.
-4. Kjør migrasjonene ved førstegangsoppsett: Etter at MariaDB-containeren har startet, setter du `ConnectionStrings__DefaultConnection` i terminalen slik at den peker til den lokale MariaDB-instansen. Kjør deretter kommandoen fra rotmappen i repoet. Migrasjonene oppretter eller oppdaterer tabellene som appen trenger.
-
-   ```powershell
-   dotnet ef database update --project Totalforsvaret --startup-project Totalforsvaret
-   ```
+2. Klargjør Docker, HTTPS-sertifikat og User Secrets: Installer .NET 10 SDK og start Docker Desktop med Linux-containere. Vent til Docker kjører. Bruk et lokalt HTTPS-utviklingssertifikat på `~/.aspnet/https/totalforsvaret.pfx`. Dette utviklingssertifikatet tillater webappen å ta imot HTTPS-trafikk lokalt. Databasepassordet genereres automatisk og lagres lokalt. Angi `Parameters:https-password` i User Secrets for `Totalforsvaret.AppHost`. For mer informasjon, se på [oppstartsveiledningen](Oppstart.md).
+3. Start prosjektet i Visual Studio eller Rider: Velg `Totalforsvaret.AppHost` som oppstartsprosjekt og `https` som oppstartsprofil. I Rider velger du en Aspire Host-kjørekonfigurasjon for samme prosjekt og profil. Trykk Start. Aspire starter da webappen og MariaDB 11.4 i hver sin Docker-container. Så lenge det navngitte Docker-volumet beholdes, bevares dataene selv om databasecontaineren gjenskapes.
+4. Databasetabeller og testbrukere opprettes automatisk ved oppstart i Development-miljøet.
 
 5. Åpne webappen: Når databasen er klar, finner du `totalforsvaret` i Aspire-dashboardet og klikker på HTTPS-lenken for å åpne webappen.
 

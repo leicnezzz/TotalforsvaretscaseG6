@@ -21,7 +21,7 @@ Sertifikatet eksporteres til:
 ~/.aspnet/https/totalforsvaret.pfx
 
 AppHost trenger følgende lokale User Secrets:
-- Parameters:mariadb-password
+- Parameters:mariadb-password genereres og lagres automatisk hvis verdien mangler.
 - Parameters:https-password
 
 Sertifikatpassordet må samsvare med det eksporterte sertifikatet.
@@ -30,15 +30,13 @@ Passord og sertifikatfiler skal ikke legges i Git.
 
 ### Kjøring
 1. Start Docker Desktop.
-2. Start Totalforsvaret.AppHost med HTTPS-profilen.
+2. Visual Studio: Velg Totalforsvaret.AppHost og HTTPS-profilen. I Rider velger du en Aspire Host-kjørekonfigurasjon for samme prosjekt og profil.
 3. Åpne webappens HTTPS-lenke i Aspire-dashboardet.
 
-Ikke start Docker Compose samtidig med Aspire.
+AppHost er det felles oppstartsoppsettet for Windows og Mac.
 
-### Førstegangsopprettelse av tabeller
-Når MariaDB kjører, opprettes tabellene med:
-
-dotnet ef database update --project Totalforsvaret --startup-project Totalforsvaret
+### Databasetabeller
+Tabellene opprettes og oppdateres automatisk ved oppstart i Development-miljøet, før testbrukerne opprettes.
 
 ### Verifisering
 - Windows/Visual Studio: begge containere starter, og innlogging fungerer.

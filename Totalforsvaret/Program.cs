@@ -99,6 +99,9 @@ if (app.Environment.IsDevelopment())
 {
     await using var scope = app.Services.CreateAsyncScope();
 
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+
     await TestUserSeeder.SeedAsync(scope.ServiceProvider);
 }
 

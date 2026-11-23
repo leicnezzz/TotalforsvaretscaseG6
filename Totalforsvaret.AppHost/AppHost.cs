@@ -15,7 +15,7 @@ var password = builder.AddParameter(
         Lower = true,
         Upper = true,
         Numeric = true,
-        Special = true
+        Special = false
     },
     secret: true,
     persist: true);

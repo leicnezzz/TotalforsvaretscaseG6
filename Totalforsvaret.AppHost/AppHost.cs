@@ -112,15 +112,6 @@ if (!File.Exists(certificatePath))
 
 var certificatePassword = builder.AddParameter(
     "https-password",
-    new GenerateParameterDefault
-    {
-        MinLength = 32,
-        Lower = true,
-        Upper = true,
-        Numeric = true,
-        Special = true
-    },
-    persist: true,
     secret: true);
 
 builder

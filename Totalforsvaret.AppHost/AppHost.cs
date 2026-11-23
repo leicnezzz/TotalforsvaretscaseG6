@@ -9,7 +9,16 @@ var builder = DistributedApplication.CreateBuilder(args);
 // Passordet leses fra AppHost sine User Secrets.
 var password = builder.AddParameter(
     "mariadb-password",
-    secret: true);
+    new GenerateParameterDefault
+    {
+        MinLength = 32,
+        Lower = true,
+        Upper = true,
+        Numeric = true,
+        Special = true
+    },
+    secret: true,
+    persist: true);
 
 // Aspire starter MariaDB i Docker.
 var mariadb = builder
@@ -103,6 +112,15 @@ if (!File.Exists(certificatePath))
 
 var certificatePassword = builder.AddParameter(
     "https-password",
+    new GenerateParameterDefault
+    {
+        MinLength = 32,
+        Lower = true,
+        Upper = true,
+        Numeric = true,
+        Special = true
+    },
+    persist: true,
     secret: true);
 
 builder

@@ -13,8 +13,6 @@ namespace Totalforsvaret.Areas.Privat.Models
 
         // Automatisk arvet fra Bruker:
         // Navn (string) - Brukerens navn
-
-        // Egenskaper spesifikke for Offentligaktor:
-        public string? Organisasjonnummer { get; set; } // Ikke required fordi privat personer også skal kunne oprette bruker
+        
     }
 }

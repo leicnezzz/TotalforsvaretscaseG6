@@ -28,6 +28,9 @@ public class Resource
     public string Kontaktpunkt { get; set; } = string.Empty;
 
     public DateTime? TilgjengeligFra { get; set; }
+    
+    // Når ressursen ble registrert. Settes automatisk når ressursen opprettes.
+    public DateTime RegistrertDato { get; set; } = DateTime.UtcNow;
 
     [MaxLength(250)]
     public string Address { get; set; } = string.Empty;

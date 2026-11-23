@@ -1,5 +1,4 @@
-# **Oppgave 2** #
-**Gruppenummer og studentnavn:**
+# **Gruppenummer og studentnavn:**
 Gruppe 6
 
 Emma Moland Leiknes - emmaml@uia.no,
@@ -11,7 +10,7 @@ Marcia Kristine Olsen - marciako@uia.no,
 
 Kurskode og navn: IS-202-1 26H Programmeringsprosjekt
 
-Dato: 05.11.2026
+Dato: HUSK OG ENDRE MEG
 
 ## **Systemarkitektur, oppstart og testing** ##
 Paratus er en ASP.NET Core MVC-applikasjon. Applikasjonen er delt inn i Controllere som håndterer forespørsler, Razor-visninger som viser grensesnittet, og Entity Framework Core til å lagre data i MariaDB. ASP.NET Core Identity håndterer alt av konto og innlogging. Det er brukertypen som styrer tilgangen til applikasjonen, så private aktører kan administrere egne ressurser, og offentlige aktører har skjemaet for kriser og behov. Systemet bruker Leaflet som kartfunksjon.
@@ -28,7 +27,7 @@ Paratus er en ASP.NET Core MVC-applikasjon. Applikasjonen er delt inn i Controll
 ## **Bruk av applikasjonen** ##
 Som privat aktør kan du opprette en konto og logge inn. Gå til ressursskjemaet for å registrere en ressurs. Fyll inn opplysningene, velg et punkt på kartet og lagre. I ressursoversikten kan du finne, endre eller slette egne ressurser.
 
-Offentlige aktører har egne skjemaer og oversikter for kriser og behov.
+Offentlige aktører har egne skjemaer og oversikter for kriser og behov via en egen innlogging.
 
 ## **Gjennomførte tester** ##
 Gruppen valgte å teste validering av navn, kartplassering og tilgjengelighet. Testene bekrefter at registreringer uten navn og plassering blir avvist, og at "Nei" godtas som et gyldig valg for tilgjengelighet. En ressurs kan dermed registreres selv om den ikke er tilgjengelig, noe som gir grunnlag for videre arbeid med spesifikke tilgjengelighetstider.

@@ -1,4 +1,4 @@
-## Oppstart – innlevering 2
+## Oppstart
 
 ### Forutsetninger
 - .NET 10 SDK

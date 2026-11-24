@@ -52,11 +52,33 @@ public class CrisisInputTests
         Assert.That(InvalidFields(input), Is.EqualTo(new[] { nameof(input.Status) }));
     }
 
+    [TestCase(CrisisType.Flood, "Flom")]
+    [TestCase(CrisisType.Fire, "Brann")]
+    [TestCase(CrisisType.PowerOutage, "Strømbrudd")]
+    [TestCase(CrisisType.ExtremeWeather, "Ekstremvær")]
+    [TestCase(CrisisType.Other, "Annet")]
+    [TestCase(CrisisType.Unspecified, "")]
+    public void CrisisTypePreservesStoredValues(CrisisType type, string storedValue)
+    {
+        Assert.That(type.ToNorwegianText(), Is.EqualTo(storedValue));
+        Assert.That(CrisisTypeText.FromStoredValue(storedValue), Is.EqualTo(type));
+    }
+
+    [TestCase(CrisisType.Unspecified)]
+    [TestCase((CrisisType)99)]
+    public void InvalidCrisisTypeCannotBeSubmitted(CrisisType type)
+    {
+        var input = Fill(new CrisisInput());
+        input.Type = type;
+
+        Assert.That(InvalidFields(input), Is.EqualTo(new[] { nameof(input.Type) }));
+    }
+
     private static CrisisInput Fill(CrisisInput input)
     {
         input.Name = " Hendelse ";
         input.Description = " Beskrivelse ";
-        input.Type = " Flom ";
+        input.Type = CrisisType.Flood;
         input.Severity = CrisisSeverity.High;
         input.Status = CrisisStatus.Active;
         input.StartTime = new DateTime(2026, 1, 1);

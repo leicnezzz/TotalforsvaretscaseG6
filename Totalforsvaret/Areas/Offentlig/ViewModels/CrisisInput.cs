@@ -17,8 +17,9 @@ public class CrisisInput : IValidatableObject
     public string? Area { get => field; set => field = value?.Trim(); }
 
     [Required(ErrorMessage = "Velg en gyldig krisetype.")]
-    [AllowedValues("Flom", "Brann", "Strømbrudd", "Ekstremvær", "Annet", ErrorMessage = "Velg en gyldig krisetype.")]
-    public string Type { get => field; set => field = value?.Trim() ?? ""; } = "";
+    [AllowedValues(CrisisType.Flood, CrisisType.Fire, CrisisType.PowerOutage, CrisisType.ExtremeWeather, CrisisType.Other,
+        ErrorMessage = "Velg en gyldig krisetype.")]
+    public CrisisType? Type { get; set; }
 
     [Required(ErrorMessage = "Velg en gyldig alvorlighetsgrad.")]
     [AllowedValues(CrisisSeverity.Low, CrisisSeverity.Medium, CrisisSeverity.High, CrisisSeverity.Critical,

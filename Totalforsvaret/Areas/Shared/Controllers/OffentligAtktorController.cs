@@ -61,7 +61,7 @@ public class OffentligAktorController : Controller
             {
                 id = c.Id,
                 navn = c.Name,
-                type = c.Type,
+                type = c.Type.ToNorwegianText(),
                 alvorlighetsgrad = c.Severity.ToNorwegianText(),
                 status = c.Status.ToNorwegianText(),
                 beskrivelse = c.Description,
@@ -110,7 +110,7 @@ public class OffentligAktorController : Controller
             {
                 id = c.Id,
                 navn = c.Name,
-                type = c.Type,
+                type = c.Type.ToNorwegianText(),
                 omrade = c.Area,
                 alvorlighetsgrad = c.Severity.ToNorwegianText(),
                 starttidspunkt = c.StartTime,

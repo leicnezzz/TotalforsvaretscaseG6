@@ -19,7 +19,7 @@ public interface IPublicOverviewRepository
 }
 
 public record OverviewCrisis(
-    int Id, string Name, string Type, string Area, CrisisSeverity Severity,
+    int Id, string Name, CrisisType Type, string Area, CrisisSeverity Severity,
     DateTime StartTime, CrisisStatus Status, string Description, decimal? Latitude, decimal? Longitude);
 
 public record OverviewNeed(

@@ -39,7 +39,7 @@ public class Crisis
     public CrisisStatus Status { get; set; }
 
     // Ny informasjon som må legges til i databasen
-    public string Type { get; set; } = "";
+    public CrisisType Type { get; set; }
 
     public int? OffentligAktorId { get; set; }
 

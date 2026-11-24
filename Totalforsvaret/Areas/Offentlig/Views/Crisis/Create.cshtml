@@ -49,11 +49,10 @@
                         <label asp-for="Type" class="form-label">Type hendelse *</label>
                         <select asp-for="Type" class="form-select" required>
                             <option value="">Velg type</option>
-                            <option value="Flom">Flom</option>
-                            <option value="Brann">Brann</option>
-                            <option value="Strømbrudd">Strømbrudd</option>
-                            <option value="Ekstremvær">Ekstremvær</option>
-                            <option value="Annet">Annet</option>
+                            @foreach (var type in new[] { CrisisType.Flood, CrisisType.Fire, CrisisType.PowerOutage, CrisisType.ExtremeWeather, CrisisType.Other })
+                            {
+                                <option value="@((int)type)">@type.ToNorwegianText()</option>
+                            }
                         </select>
                         <span asp-validation-for="Type" class="text-danger"></span>
                     </div>

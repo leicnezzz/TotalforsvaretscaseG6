@@ -83,7 +83,7 @@ public async Task<IActionResult> Edit(int id)
         Name = crisis.Name,
         Description = crisis.Description,
         Area = crisis.Area,
-        Type = crisis.Type,
+        Type = crisis.Type == CrisisType.Unspecified ? null : crisis.Type,
         Severity = crisis.Severity == CrisisSeverity.Unspecified ? null : crisis.Severity,
         StartTime = crisis.StartTime,
         Status = crisis.Status == CrisisStatus.Unspecified ? null : crisis.Status,
@@ -147,7 +147,7 @@ public async Task<IActionResult> Avslutt(int id)
         crisis.Name = input.Name;
         crisis.Description = input.Description;
         crisis.Area = input.Area ?? "";
-        crisis.Type = input.Type;
+        crisis.Type = input.Type!.Value;
         crisis.Severity = input.Severity!.Value;
         crisis.StartTime = input.StartTime!.Value;
         crisis.Status = input.Status!.Value;

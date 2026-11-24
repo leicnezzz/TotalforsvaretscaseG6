@@ -124,6 +124,11 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
         
 
         builder.Entity<Crisis>()
+            .Property(crisis => crisis.Type)
+            .HasConversion(type => type.ToNorwegianText(), value => CrisisTypeText.FromStoredValue(value))
+            .HasColumnType("longtext");
+
+        builder.Entity<Crisis>()
             .Property(crisis => crisis.Severity)
             .HasConversion(severity => severity.ToNorwegianText(), value => CrisisSeverityText.FromStoredValue(value))
             .HasColumnType("longtext");

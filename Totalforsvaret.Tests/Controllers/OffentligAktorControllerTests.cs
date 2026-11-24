@@ -53,4 +53,64 @@ public class OffentligAktorControllerTests
         Assert.That(((LocalRedirectResult)result).Url, Is.EqualTo(OverviewUrl));
         Assert.That(db.ResourceAssignments.Single().Status, Is.EqualTo(AssignmentStatus.Assigned));
     }
+    /// <summary>
+    /// An assignment that does not exist returns NotFound.
+    /// </summary>
+    [Test]
+    public async Task TildelRessurs_AssignmentNotFound_ReturnsNotFound()
+    {
+        using var db = CreateDb();
+
+        var result = await CreateController(db).TildelRessurs(99);
+
+        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
+    }
+
+    /// <summary>
+    /// A resource that is already assigned cannot be assigned again.
+    /// </summary>
+    [Test]
+    public async Task TildelRessurs_AlreadyAssigned_ReturnsBadRequest()
+    {
+        using var db = CreateDb();
+        AddNeed(db, 1);
+        AddResource(db, 1);
+        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Assigned);
+
+        var result = await CreateController(db).TildelRessurs(1);
+
+        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
+    }
+
+    /// <summary>
+    /// A need that is resolved cannot receive new resources.
+    /// </summary>
+    [Test]
+    public async Task TildelRessurs_NeedResolved_ReturnsBadRequest()
+    {
+        using var db = CreateDb();
+        AddNeed(db, 1, status: "Løst");
+        AddResource(db, 1);
+        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
+
+        var result = await CreateController(db).TildelRessurs(1);
+
+        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
+    }
+
+    /// <summary>
+    /// A resource that is not available cannot be assigned.
+    /// </summary>
+    [Test]
+    public async Task TildelRessurs_ResourceUnavailable_ReturnsBadRequest()
+    {
+        using var db = CreateDb();
+        AddNeed(db, 1);
+        AddResource(db, 1, available: false);
+        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
+
+        var result = await CreateController(db).TildelRessurs(1);
+
+        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
+    }
 }

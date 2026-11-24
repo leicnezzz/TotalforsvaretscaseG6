@@ -30,7 +30,8 @@
 
     const forespurteHendelser = new Set(new URLSearchParams(window.location.search).getAll('hendelser'));
     const hendelsesvisning = forespurteHendelser.size > 0;
-    const valgteHendelser = (data.kriser ?? []).filter(krise => forespurteHendelser.has(String(krise.id)));
+    const kriser = JSON.parse(document.getElementById('oversiktListeData').textContent).kriser;
+    const valgteHendelser = kriser.filter(krise => forespurteHendelser.has(String(krise.id)));
     const filterNokkel = 'totalforsvaret.offentligKart.filter.v1';
     let lagretFilter;
     try {

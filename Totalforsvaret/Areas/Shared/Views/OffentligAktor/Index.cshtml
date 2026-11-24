@@ -51,18 +51,7 @@
                 id = a.Id, crisisId = a.CrisisId, kind = a.Kind, name = a.Name,
                 description = a.Description, impact = a.Impact, risk = a.Risk,
                 coordinates = JsonSerializer.Deserialize<double[][]>(a.CoordinatesJson)
-            }),
-        kriser = Model.Crises.Select(crisis => new
-        {
-            id = crisis.Id,
-            navn = crisis.Name,
-            type = crisis.Type.ToNorwegianText(),
-            alvorlighetsgrad = crisis.Severity.ToNorwegianText(),
-            status = crisis.Status.ToNorwegianText(),
-            beskrivelse = crisis.Description,
-            latitude = crisis.Latitude,
-            longitude = crisis.Longitude
-        })
+            })
     });
 
     var opptatteRessursIder = Model.BusyResourceIds;

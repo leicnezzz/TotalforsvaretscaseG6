@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Controllers;
 using Totalforsvaret.DataAccess;
+using Totalforsvaret.Models.resourcemodels;
 using static Totalforsvaret.Tests.Helpers.PublicActorTestHelper;
 
 namespace Totalforsvaret.Tests.Controllers;
@@ -170,5 +171,35 @@ public class OffentligAktorControllerTests
         var result = await CreateController(db).AvslaRessurs(1);
 
         Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
+    }
+    
+    /// <summary>
+    /// The user only sees their own resources.
+    /// </summary>
+    [Test]
+    public async Task MineRessurser_ShowsOnlyOwnResources()
+    {
+        using var db = CreateDb();
+        AddResource(db, 1, userId: 1);
+        AddResource(db, 2, userId: 2);
+
+        var result = await CreateController(db, userId: 1).MineRessurser();
+
+        Assert.That(result, Is.TypeOf<ViewResult>());
+        var resources = (IEnumerable<Resource>)((ViewResult)result).Model!;
+        Assert.That(resources.Select(r => r.ResourceId), Is.EqualTo(new[] { 1 }));
+    }
+
+    /// <summary>
+    /// Without a signed-in user, the user is asked to sign in.
+    /// </summary>
+    [Test]
+    public async Task MineRessurser_NotSignedIn_ReturnsChallenge()
+    {
+        using var db = CreateDb();
+
+        var result = await CreateController(db, userId: null).MineRessurser();
+
+        Assert.That(result, Is.TypeOf<ChallengeResult>());
     }
 }

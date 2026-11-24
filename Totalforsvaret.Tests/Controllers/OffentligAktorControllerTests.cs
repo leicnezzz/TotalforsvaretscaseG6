@@ -234,4 +234,48 @@ public class OffentligAktorControllerTests
         Assert.That(result, Is.TypeOf<RedirectToActionResult>());
         Assert.That(db.Resources, Is.Empty);
     }
+    
+    /// <summary>
+    /// The user's own resource without assignments is deleted.
+    /// </summary>
+    [Test]
+    public async Task SlettRessurs_OwnResource_IsDeleted()
+    {
+        using var db = CreateDb();
+        AddResource(db, 1, userId: 1);
+
+        await CreateController(db, userId: 1).SlettRessurs(1);
+
+        Assert.That(db.Resources, Is.Empty);
+    }
+
+    /// <summary>
+    /// A user cannot delete another user's resource.
+    /// </summary>
+    [Test]
+    public async Task SlettRessurs_OtherUsersResource_ReturnsNotFound()
+    {
+        using var db = CreateDb();
+        AddResource(db, 1, userId: 2);
+
+        var result = await CreateController(db, userId: 1).SlettRessurs(1);
+
+        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
+        Assert.That(db.Resources.Count(), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// A resource that has been assigned is kept for history.
+    /// </summary>
+    [Test]
+    public async Task SlettRessurs_HasBeenAssigned_IsNotDeleted()
+    {
+        using var db = CreateDb();
+        AddResource(db, 1, userId: 1);
+        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Released);
+
+        await CreateController(db, userId: 1).SlettRessurs(1);
+
+        Assert.That(db.Resources.Count(), Is.EqualTo(1));
+    }
 }

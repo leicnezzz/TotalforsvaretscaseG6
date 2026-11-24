@@ -100,12 +100,5 @@ internal sealed class ResourceAssignmentRepository(AppDbContext db) : IResourceA
     public Task<ResourceAssignment?> FindAsync(int assignmentId) =>
         db.ResourceAssignments.FirstOrDefaultAsync(assignment => assignment.Id == assignmentId);
 
-    public Task<bool> HasActiveNeedAsync(int needId) => db.Needs.AnyAsync(need =>
-        need.Id == needId && (need.Status == NeedStatus.Open || need.Status == NeedStatus.InProgress));
-
-    public Task<bool> HasAvailableResourceAsync(int resourceId) => db.Resources.AnyAsync(resource =>
-        resource.ResourceId == resourceId && resource.Available &&
-        (resource.TilgjengeligFra == null || resource.TilgjengeligFra <= DateTime.Now));
-
     public Task SaveChangesAsync() => db.SaveChangesAsync();
 }

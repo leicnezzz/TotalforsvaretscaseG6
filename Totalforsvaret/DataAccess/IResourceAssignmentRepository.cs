@@ -16,8 +16,6 @@ public interface IResourceAssignmentRepository
     Task AddMessageAsync(ResourceMessage message);
     Task<RequestAssignmentResult> RequestAsync(int[] needIds, int[] resourceIds);
     Task<ResourceAssignment?> FindAsync(int assignmentId);
-    Task<bool> HasActiveNeedAsync(int needId);
-    Task<bool> HasAvailableResourceAsync(int resourceId);
     Task SaveChangesAsync();
 }
 

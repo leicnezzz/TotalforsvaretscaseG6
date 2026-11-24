@@ -71,84 +71,6 @@ public class PublicActorControllerTests
     }
 
     /// <summary>
-    /// A requested resource is assigned when both need and resource are valid.
-    /// </summary>
-    [Test]
-    public async Task TildelRessurs_ValidRequest_AssignsResource()
-    {
-        using var db = CreateDb();
-        AddNeed(db, 1);
-        AddResource(db, 1);
-        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
-
-        var result = await CreateController(db).AssignResource(1);
-
-        Assert.That(result, Is.TypeOf<LocalRedirectResult>());
-        Assert.That(((LocalRedirectResult)result).Url, Is.EqualTo(OverviewUrl));
-        Assert.That(db.ResourceAssignments.Single().Status, Is.EqualTo(AssignmentStatus.Assigned));
-    }
-    /// <summary>
-    /// An assignment that does not exist returns NotFound.
-    /// </summary>
-    [Test]
-    public async Task TildelRessurs_AssignmentNotFound_ReturnsNotFound()
-    {
-        using var db = CreateDb();
-
-        var result = await CreateController(db).AssignResource(99);
-
-        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
-    }
-
-    /// <summary>
-    /// A resource that is already assigned cannot be assigned again.
-    /// </summary>
-    [Test]
-    public async Task TildelRessurs_AlreadyAssigned_ReturnsBadRequest()
-    {
-        using var db = CreateDb();
-        AddNeed(db, 1);
-        AddResource(db, 1);
-        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Assigned);
-
-        var result = await CreateController(db).AssignResource(1);
-
-        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
-    }
-
-    /// <summary>
-    /// A need that is resolved cannot receive new resources.
-    /// </summary>
-    [Test]
-    public async Task TildelRessurs_NeedResolved_ReturnsBadRequest()
-    {
-        using var db = CreateDb();
-        AddNeed(db, 1, status: NeedStatus.Resolved);
-        AddResource(db, 1);
-        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
-
-        var result = await CreateController(db).AssignResource(1);
-
-        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
-    }
-
-    /// <summary>
-    /// A resource that is not available cannot be assigned.
-    /// </summary>
-    [Test]
-    public async Task TildelRessurs_ResourceUnavailable_ReturnsBadRequest()
-    {
-        using var db = CreateDb();
-        AddNeed(db, 1);
-        AddResource(db, 1, available: false);
-        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
-
-        var result = await CreateController(db).AssignResource(1);
-
-        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
-    }
-
-    /// <summary>
     /// An assigned resource is released, and the assignment is kept as history.
     /// </summary>
     [Test]
@@ -173,35 +95,6 @@ public class PublicActorControllerTests
         AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
 
         var result = await CreateController(db).ReleaseResource(1);
-
-        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
-    }
-
-    /// <summary>
-    /// A requested resource is rejected.
-    /// </summary>
-    [Test]
-    public async Task AvslaRessurs_Requested_RejectsResource()
-    {
-        using var db = CreateDb();
-        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
-
-        var result = await CreateController(db).DeclineResource(1);
-
-        Assert.That(result, Is.TypeOf<LocalRedirectResult>());
-        Assert.That(db.ResourceAssignments.Single().Status, Is.EqualTo(AssignmentStatus.Rejected));
-    }
-
-    /// <summary>
-    /// A resource that is already assigned cannot be rejected.
-    /// </summary>
-    [Test]
-    public async Task AvslaRessurs_AlreadyAssigned_ReturnsBadRequest()
-    {
-        using var db = CreateDb();
-        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Assigned);
-
-        var result = await CreateController(db).DeclineResource(1);
 
         Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
     }

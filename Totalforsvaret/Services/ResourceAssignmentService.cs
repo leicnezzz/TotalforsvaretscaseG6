@@ -16,8 +16,7 @@ public enum AssignmentActionResult
 
 public sealed class ResourceAssignmentService(IResourceAssignmentRepository assignments)
 {
-    public async Task<AssignmentActionResult> AcceptAsync(
-        ResourceAssignment? assignment, bool useLoadedDetails = false)
+    public async Task<AssignmentActionResult> AcceptAsync(ResourceAssignment? assignment)
     {
         if (assignment is null)
             return AssignmentActionResult.NotFound;
@@ -25,17 +24,13 @@ public sealed class ResourceAssignmentService(IResourceAssignmentRepository assi
         if (assignment.Status != AssignmentStatus.Requested)
             return AssignmentActionResult.NotRequested;
 
-        var activeNeed = useLoadedDetails
-            ? assignment.Need.Status is NeedStatus.Open or NeedStatus.InProgress
-            : await assignments.HasActiveNeedAsync(assignment.NeedId);
+        var activeNeed = assignment.Need.Status is NeedStatus.Open or NeedStatus.InProgress;
         if (!activeNeed)
             return AssignmentActionResult.InactiveNeed;
 
-        var available = useLoadedDetails
-            ? assignment.Resource.Available &&
-                (assignment.Resource.TilgjengeligFra == null ||
-                 assignment.Resource.TilgjengeligFra <= DateTime.Now)
-            : await assignments.HasAvailableResourceAsync(assignment.ResourceId);
+        var available = assignment.Resource.Available &&
+            (assignment.Resource.TilgjengeligFra == null ||
+             assignment.Resource.TilgjengeligFra <= DateTime.Now);
         if (!available)
             return AssignmentActionResult.UnavailableResource;
 

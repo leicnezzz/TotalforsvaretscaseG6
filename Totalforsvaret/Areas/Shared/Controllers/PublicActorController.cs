@@ -200,37 +200,6 @@ public class PublicActorController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [ActionName("TildelRessurs")]
-    public async Task<IActionResult> AssignResource(int assignmentId)
-    {
-        var assignment = await _assignments.FindAsync(assignmentId);
-        var result = await _assignmentService.AcceptAsync(assignment);
-
-        switch (result)
-        {
-            case AssignmentActionResult.NotFound:
-                return NotFound("Ressursvurderingen finnes ikke.");
-            case AssignmentActionResult.NotRequested:
-                return BadRequest("Ressursen er ikke til vurdering.");
-            case AssignmentActionResult.InactiveNeed:
-                return BadRequest("Behovet er ikke lenger aktivt.");
-            case AssignmentActionResult.UnavailableResource:
-                return BadRequest("Ressursen er ikke tilgjengelig.");
-            case AssignmentActionResult.BusyResource:
-                return BadRequest("Ressursen er allerede opptatt.");
-            case AssignmentActionResult.Succeeded:
-                break;
-            default:
-                throw new InvalidOperationException($"Unexpected assignment result: {result}.");
-        }
-
-        TempData["SuccessMessage"] = "Ressursen er tildelt.";
-
-        return LocalRedirect(this.OverviewUrl());
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
     [ActionName("FrigiRessurs")]
     public async Task<IActionResult> ReleaseResource(int assignmentId)
     {
@@ -247,23 +216,6 @@ public class PublicActorController : Controller
         return LocalRedirect(this.OverviewUrl());
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [ActionName("AvslaRessurs")]
-    public async Task<IActionResult> DeclineResource(int assignmentId)
-    {
-        var assignment = await _assignments.FindAsync(assignmentId);
-        var result = await _assignmentService.DeclineAsync(assignment);
-        if (result == AssignmentActionResult.NotFound)
-            return NotFound("Ressursvurderingen finnes ikke.");
-
-        if (result == AssignmentActionResult.NotRequested)
-            return BadRequest("Ressursen er ikke til vurdering.");
-
-        TempData["SuccessMessage"] = "Ressursforslaget er avslått.";
-
-        return LocalRedirect(this.OverviewUrl());
-    }
     private bool TryGetUserId(out int userId)
     {
         var tekst = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;

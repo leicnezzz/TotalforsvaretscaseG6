@@ -103,7 +103,7 @@ public sealed class InboxService(IResourceAssignmentRepository repository, Resou
     public async Task<InboxResult> AcceptAsync(int userId, int assignmentId)
     {
         var assignment = await repository.FindOwnedAsync(assignmentId, userId);
-        var result = await assignments.AcceptAsync(assignment, useLoadedDetails: true);
+        var result = await assignments.AcceptAsync(assignment);
 
         return result switch
         {

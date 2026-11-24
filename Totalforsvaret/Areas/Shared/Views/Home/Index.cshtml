@@ -25,7 +25,7 @@
     <main>
         <div class="paratus-first-screen">
             <header class="public-header">
-                <partial name="/Areas/Homepage/Views/Shared/_PublicNav.cshtml" />
+                <partial name="/Areas/Shared/Views/Shared/_PublicNav.cshtml" />
                 <div class="public-section-bar">
                     <span>Sammen om beredskapen</span>
                     <span>Felles trygghet</span>
@@ -84,7 +84,7 @@
                     <h2 id="registration-title">Registrer en ressurs til disposisjon</h2>
                     <p>Har du utstyr, kjøretøy eller andre ressurser du kan stille til rådighet?</p>
                 </div>
-                <partial name="/Areas/Homepage/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" />
+                <partial name="/Areas/Shared/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" />
             </section>
         </div>
     </main>
@@ -109,6 +109,6 @@
     <script src="~/js/resource-fields.js" asp-append-version="true"></script>
     <script src="~/js/resource-address.js" asp-append-version="true"></script>
     <script src="~/js/resource-wizard.js" asp-append-version="true"></script>
-    <partial name="/Areas/Homepage/Views/Shared/_ResourceApi.cshtml" />
+    <partial name="/Areas/Shared/Views/Shared/_ResourceApi.cshtml" />
 </body>
 </html>

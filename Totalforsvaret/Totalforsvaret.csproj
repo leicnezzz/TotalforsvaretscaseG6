@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Homepage\" />
+    <Folder Include="Areas\Shared\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,28 +63,28 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="Areas\Homepage\Views\Account\AccessDenied.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Account\ForgotPassword.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Account\Login.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Account\Register.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Home\Index.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Home\Map.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Home\Privacy.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\OffentligAktor\Index.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\OffentligAktor\MineRessurser.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\OffentligAktor\NyRessurs.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Shared\Error.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Shared\_AccountLayout.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Shared\_IncidentAlert.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Shared\_Layout.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Shared\_PrivateBreadcrumb.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Shared\_PrivatePageAction.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Shared\_ResourceApi.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Shared\_ResourceWizard.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Shared\_ValidationScriptsPartial.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Shared\_WaveBackground.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\_ViewImports.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\_ViewStart.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Account\AccessDenied.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Account\ForgotPassword.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Account\Login.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Account\Register.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Home\Index.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Home\Map.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Home\Privacy.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\OffentligAktor\Index.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\OffentligAktor\MineRessurser.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\OffentligAktor\NyRessurs.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Shared\Error.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Shared\_AccountLayout.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Shared\_IncidentAlert.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Shared\_Layout.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Shared\_PrivateBreadcrumb.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Shared\_PrivatePageAction.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Shared\_ResourceApi.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Shared\_ResourceWizard.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\Shared\_WaveBackground.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\_ViewImports.cshtml" />
+    <AdditionalFiles Include="Areas\Shared\Views\_ViewStart.cshtml" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Offentlig.ViewModels;
+using Totalforsvaret.Models;
 using Totalforsvaret.Models.resourcemodels;
 
 namespace Totalforsvaret.Services;
@@ -29,6 +30,8 @@ public sealed class ResourceMatchingService
             if (category == null)
                 continue;
 
+            var hasNeedLocation = Coordinate.TryCreate(need.Latitude, need.Longitude, out var needLocation);
+
             foreach (var resource in candidates.Where(resource => resource.Category.Name == category))
             {
                 suggestions.Add(new MatchSuggestionViewModel
@@ -37,7 +40,9 @@ public sealed class ResourceMatchingService
                     NeedName = need.Name,
                     ResourceId = resource.ResourceId,
                     ResourceName = resource.Object,
-                    DistanceKm = BeregnAvstandKm(need.Latitude, need.Longitude, resource.Latitude, resource.Longitude)
+                    DistanceKm = hasNeedLocation && Coordinate.TryCreate(resource.Latitude, resource.Longitude, out var resourceLocation)
+                        ? CalculateDistanceKm(needLocation, resourceLocation)
+                        : null
                 });
             }
         }
@@ -56,26 +61,12 @@ public sealed class ResourceMatchingService
             .ToList();
     }
 
-    private static double? BeregnAvstandKm(
-        decimal? behovLatitude,
-        decimal? behovLongitude,
-        decimal ressursLatitude,
-        decimal ressursLongitude)
+    private static double CalculateDistanceKm(Coordinate from, Coordinate to)
     {
-        if (!behovLatitude.HasValue || !behovLongitude.HasValue)
-            return null;
-        
-        var lat1 = (double)behovLatitude.Value;
-        var lon1 = (double)behovLongitude.Value;
-        var lat2 = (double)ressursLatitude;
-        var lon2 = (double)ressursLongitude;
-
-        if (!double.IsFinite(lat1) || !double.IsFinite(lon1) ||
-            lat1 < -90 || lat1 > 90 ||
-            lon1 < -180 || lon1 > 180 ||
-            lat2 < -90 || lat2 > 90 ||
-            lon2 < -180 || lon2 > 180)
-            return null;
+        var lat1 = (double)from.Latitude;
+        var lon1 = (double)from.Longitude;
+        var lat2 = (double)to.Latitude;
+        var lon2 = (double)to.Longitude;
 
         const double jordradiusKm = 6371;
         const double radianer = Math.PI / 180;

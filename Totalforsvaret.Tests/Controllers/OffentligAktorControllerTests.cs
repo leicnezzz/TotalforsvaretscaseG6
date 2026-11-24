@@ -1,3 +1,4 @@
+using Totalforsvaret.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Moq;
@@ -49,7 +50,10 @@ public class OffentligAktorControllerTests
     private static OffentligAktorController CreateController(AppDbContext db, int? userId = 1)
     {
         // Use the same repositories as the application.
-        return WithUser(new OffentligAktorController(new ResourceRepository(db), new ResourceAssignmentRepository(db), new PublicOverviewRepository(db)), userId);
+        var assignments = new ResourceAssignmentRepository(db);
+        return WithUser(new OffentligAktorController(
+            new ResourceRepository(db), assignments, new PublicOverviewRepository(db),
+            new ResourceMatchingService(), new ResourceAssignmentService(assignments)), userId);
     }
 
     /// <summary>

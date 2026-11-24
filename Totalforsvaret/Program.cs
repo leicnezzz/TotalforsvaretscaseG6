@@ -98,6 +98,8 @@ builder.Services.AddScoped<ICrisisRepository, CrisisRepository>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddScoped<IInboxService, InboxService>();
+builder.Services.AddSingleton<ResourceMatchingService>();
+builder.Services.AddScoped<ResourceAssignmentService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, new MariaDbServerVersion(new Version(11, 4, 0))));

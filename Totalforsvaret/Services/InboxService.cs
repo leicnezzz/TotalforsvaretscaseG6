@@ -5,7 +5,7 @@ using Totalforsvaret.Models.Inbox;
 
 namespace Totalforsvaret.Services;
 
-public sealed class InboxService(AppDbContext db) : IInboxService
+public sealed class InboxService(AppDbContext db, ResourceAssignmentService assignments) : IInboxService
 {
     public async Task<InboxViewModel> GetInboxAsync(
         int userId,
@@ -127,101 +127,49 @@ public sealed class InboxService(AppDbContext db) : IInboxService
         return InboxResult.Ok(successMessage);
     }
 
-    public async Task<InboxResult> AcceptAsync(
-        int userId,
-        int assignmentId)
+    public async Task<InboxResult> AcceptAsync(int userId, int assignmentId)
     {
         var assignment = await FindOwnedAssignmentAsync(userId, assignmentId);
+        var result = await assignments.AcceptAsync(assignment, useLoadedDetails: true);
 
-        if (assignment is null)
-            return InboxResult.Missing();
-
-        if (assignment.Status != AssignmentStatus.Requested)
+        return result switch
         {
-            return InboxResult.Fail(
-                "Forespørselen venter ikke lenger på svar.");
-        }
-
-        if (assignment.Need.Status is not (NeedStatus.Open or NeedStatus.InProgress))
-        {
-            return InboxResult.Fail("Behovet er ikke lenger aktivt.");
-        }
-
-        // Keep the existing local-time comparison for now.
-        // Confirm the stored time convention before changing this.
-        var available = assignment.Resource.Available &&
-            (assignment.Resource.TilgjengeligFra == null ||
-             assignment.Resource.TilgjengeligFra <= DateTime.Now);
-
-        if (!available)
-        {
-            return InboxResult.Fail(
-                "Ressursen er ikke lenger tilgjengelig.");
-        }
-
-        var alreadyInUse = await db.ResourceAssignments.AnyAsync(other =>
-            other.Id != assignment.Id &&
-            other.ResourceId == assignment.ResourceId &&
-            (other.Status == AssignmentStatus.Requested ||
-             other.Status == AssignmentStatus.Assigned));
-
-        if (alreadyInUse)
-        {
-            return InboxResult.Fail(
-                "Ressursen er allerede under vurdering eller tildelt.");
-        }
-
-        assignment.Status = AssignmentStatus.Assigned;
-        assignment.AssignedAtUtc = DateTime.UtcNow;
-
-        await db.SaveChangesAsync();
-
-        return InboxResult.Ok("Forespørselen er godtatt.");
+            AssignmentActionResult.Succeeded => InboxResult.Ok("Forespørselen er godtatt."),
+            AssignmentActionResult.NotFound => InboxResult.Missing(),
+            AssignmentActionResult.NotRequested => InboxResult.Fail("Forespørselen venter ikke lenger på svar."),
+            AssignmentActionResult.InactiveNeed => InboxResult.Fail("Behovet er ikke lenger aktivt."),
+            AssignmentActionResult.UnavailableResource => InboxResult.Fail("Ressursen er ikke lenger tilgjengelig."),
+            AssignmentActionResult.BusyResource => InboxResult.Fail("Ressursen er allerede under vurdering eller tildelt."),
+            _ => throw new InvalidOperationException($"Unexpected assignment result: {result}.")
+        };
     }
 
-    public async Task<InboxResult> DeclineAsync(
-        int userId,
-        int assignmentId)
+    public async Task<InboxResult> DeclineAsync(int userId, int assignmentId)
     {
         var assignment = await FindOwnedAssignmentAsync(userId, assignmentId);
+        var result = await assignments.DeclineAsync(assignment);
 
-        if (assignment is null)
-            return InboxResult.Missing();
-
-        if (assignment.Status != AssignmentStatus.Requested)
+        return result switch
         {
-            return InboxResult.Fail(
-                "Forespørselen venter ikke lenger på svar.");
-        }
-
-        assignment.Status = AssignmentStatus.Rejected;
-        assignment.ClosedAtUtc = DateTime.UtcNow;
-
-        await db.SaveChangesAsync();
-
-        return InboxResult.Ok("Forespørselen er avslått.");
+            AssignmentActionResult.Succeeded => InboxResult.Ok("Forespørselen er avslått."),
+            AssignmentActionResult.NotFound => InboxResult.Missing(),
+            AssignmentActionResult.NotRequested => InboxResult.Fail("Forespørselen venter ikke lenger på svar."),
+            _ => throw new InvalidOperationException($"Unexpected assignment result: {result}.")
+        };
     }
 
-    public async Task<InboxResult> ReleaseAsync(
-        int userId,
-        int assignmentId)
+    public async Task<InboxResult> ReleaseAsync(int userId, int assignmentId)
     {
         var assignment = await FindOwnedAssignmentAsync(userId, assignmentId);
+        var result = await assignments.ReleaseAsync(assignment);
 
-        if (assignment is null)
-            return InboxResult.Missing();
-
-        if (assignment.Status != AssignmentStatus.Assigned)
+        return result switch
         {
-            return InboxResult.Fail("Ressursen er ikke tildelt.");
-        }
-
-        assignment.Status = AssignmentStatus.Released;
-        assignment.ClosedAtUtc = DateTime.UtcNow;
-
-        await db.SaveChangesAsync();
-
-        return InboxResult.Ok("Ressursen er frigitt.");
+            AssignmentActionResult.Succeeded => InboxResult.Ok("Ressursen er frigitt."),
+            AssignmentActionResult.NotFound => InboxResult.Missing(),
+            AssignmentActionResult.NotAssigned => InboxResult.Fail("Ressursen er ikke tildelt."),
+            _ => throw new InvalidOperationException($"Unexpected assignment result: {result}.")
+        };
     }
 
     private Task<ResourceAssignment?> FindOwnedAssignmentAsync(

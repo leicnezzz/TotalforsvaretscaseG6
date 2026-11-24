@@ -511,16 +511,16 @@ public class OffentligAktorController : Controller
     }
     
     private static double? BeregnAvstandKm(
-        double? behovLatitude,
-        double? behovLongitude,
+        decimal? behovLatitude,
+        decimal? behovLongitude,
         decimal ressursLatitude,
         decimal ressursLongitude)
     {
         if (!behovLatitude.HasValue || !behovLongitude.HasValue)
             return null;
         
-        var lat1 = behovLatitude.Value;
-        var lon1 = behovLongitude.Value;
+        var lat1 = (double)behovLatitude.Value;
+        var lon1 = (double)behovLongitude.Value;
         var lat2 = (double)ressursLatitude;
         var lon2 = (double)ressursLongitude;
 

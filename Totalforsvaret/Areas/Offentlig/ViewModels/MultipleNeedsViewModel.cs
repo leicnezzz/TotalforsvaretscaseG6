@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Totalforsvaret.Areas.Offentlig.ViewModels;
 
-public record CrisisMapPoint(int Id, string Name, double Latitude, double Longitude);
+public record CrisisMapPoint(int Id, string Name, decimal Latitude, decimal Longitude);
 
 public class MultipleNeedsViewModel
 {
@@ -16,11 +16,11 @@ public class MultipleNeedsViewModel
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
     [Range(-90d, 90d, ErrorMessage = "Ugyldig breddegrad.")]
-    public double? Latitude { get; set; }
+    public decimal? Latitude { get; set; }
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
     [Range(-180d, 180d, ErrorMessage = "Ugyldig lengdegrad.")]
-    public double? Longitude { get; set; }
+    public decimal? Longitude { get; set; }
 
     [Required]
     [MinLength(1, ErrorMessage = "Legg til minst ett behov.")]

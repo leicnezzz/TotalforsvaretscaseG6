@@ -47,7 +47,7 @@ public class InboxController(
                 NeedName = assignment.Need.Name,
                 NeedType = assignment.Need.Type,
                 NeedPriority = assignment.Need.Priority,
-                NeedStatus = assignment.Need.Status,
+                NeedStatus = assignment.Need.Status.ToNorwegianText(),
                 NeedDescription = assignment.Need.Description,
                 NeedContactPerson = assignment.Need.Kontaktperson,
                 NeedContactPoint = assignment.Need.Kontaktpunkt,
@@ -138,7 +138,7 @@ public class InboxController(
             return VisHandlingsfeil(assignmentId, "Forespørselen venter ikke lenger på svar.");
 
         var activeNeed =
-            assignment.Need.Status is "Åpen" or "Under behandling";
+            assignment.Need.Status is NeedStatus.Open or NeedStatus.InProgress;
 
         if (!activeNeed)
             return VisHandlingsfeil(assignmentId, "Behovet er ikke lenger aktivt.");

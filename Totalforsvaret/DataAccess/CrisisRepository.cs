@@ -25,7 +25,7 @@ public sealed class CrisisRepository(AppDbContext db) : ICrisisRepository
 
     public Task<Crisis?> FindLatestAlertAsync(CancellationToken cancellationToken) =>
         db.Crises.AsNoTracking()
-            .Where(crisis => (crisis.Status == "Aktiv" || crisis.Status == "Under kontroll") &&
+            .Where(crisis => (crisis.Status == CrisisStatus.Active || crisis.Status == CrisisStatus.UnderControl) &&
                 (crisis.Severity == "Kritisk" || crisis.Severity == "Høy"))
             .OrderByDescending(crisis => crisis.Id)
             .FirstOrDefaultAsync(cancellationToken);
@@ -52,8 +52,8 @@ public sealed class CrisisRepository(AppDbContext db) : ICrisisRepository
     }
 
     public Task CloseIfActiveAsync(int id) => db.Crises
-        .Where(crisis => crisis.Id == id && crisis.Status == "Aktiv")
-        .ExecuteUpdateAsync(update => update.SetProperty(crisis => crisis.Status, "Avsluttet"));
+        .Where(crisis => crisis.Id == id && crisis.Status == CrisisStatus.Active)
+        .ExecuteUpdateAsync(update => update.SetProperty(crisis => crisis.Status, CrisisStatus.Closed));
 
     public Task SaveChangesAsync() => db.SaveChangesAsync();
 

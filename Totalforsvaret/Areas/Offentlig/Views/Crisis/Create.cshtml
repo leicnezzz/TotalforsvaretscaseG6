@@ -1,3 +1,4 @@
+@using Totalforsvaret.Models
 
 @using Totalforsvaret.Controllers
 @model Totalforsvaret.Areas.Offentlig.ViewModels.CrisisInput
@@ -92,9 +93,10 @@
                         <label asp-for="Status" class="form-label">Status *</label>
                         <select asp-for="Status" class="form-select" required>
                             <option value="">Velg status</option>
-                            <option value="Aktiv">Aktiv</option>
-                            <option value="Under kontroll">Under kontroll</option>
-                            <option value="Avsluttet">Avsluttet</option>
+                            @foreach (var status in new[] { CrisisStatus.Active, CrisisStatus.UnderControl, CrisisStatus.Closed })
+                            {
+                                <option value="@((int)status)">@status.ToNorwegianText()</option>
+                            }
                         </select>
                         <span asp-validation-for="Status" class="text-danger"></span>
                     </div>

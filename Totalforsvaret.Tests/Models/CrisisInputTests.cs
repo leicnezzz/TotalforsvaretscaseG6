@@ -1,3 +1,4 @@
+using Totalforsvaret.Models;
 using System.ComponentModel.DataAnnotations;
 using NUnit.Framework;
 using Totalforsvaret.Areas.Offentlig.ViewModels;
@@ -31,13 +32,33 @@ public class CrisisInputTests
         Assert.That(InvalidFields(input), Is.EqualTo(new[] { field }));
     }
 
+    [TestCase(CrisisStatus.Active, "Aktiv")]
+    [TestCase(CrisisStatus.UnderControl, "Under kontroll")]
+    [TestCase(CrisisStatus.Closed, "Avsluttet")]
+    [TestCase(CrisisStatus.Unspecified, "")]
+    public void StatusPreservesExistingStoredValues(CrisisStatus status, string storedValue)
+    {
+        Assert.That(status.ToNorwegianText(), Is.EqualTo(storedValue));
+        Assert.That(CrisisStatusText.FromStoredValue(storedValue), Is.EqualTo(status));
+    }
+
+    [TestCase(CrisisStatus.Unspecified)]
+    [TestCase((CrisisStatus)99)]
+    public void UnknownOrUnspecifiedStatusCannotBeSubmitted(CrisisStatus status)
+    {
+        var input = Fill(new CrisisInput());
+        input.Status = status;
+
+        Assert.That(InvalidFields(input), Is.EqualTo(new[] { nameof(input.Status) }));
+    }
+
     private static CrisisInput Fill(CrisisInput input)
     {
         input.Name = " Hendelse ";
         input.Description = " Beskrivelse ";
         input.Type = " Flom ";
         input.Severity = "Høy";
-        input.Status = "Aktiv";
+        input.Status = CrisisStatus.Active;
         input.StartTime = new DateTime(2026, 1, 1);
         return input;
     }

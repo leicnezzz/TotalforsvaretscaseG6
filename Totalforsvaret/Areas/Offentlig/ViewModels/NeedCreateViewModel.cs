@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using Totalforsvaret.Areas.Offentlig.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.ViewModels;
 
@@ -20,7 +21,8 @@ public class NeedCreateViewModel
     public string Priority { get; set; } = "";
 
     [Required(ErrorMessage = "Velg status.")]
-    public string Status { get; set; } = "";
+    [AllowedValues(NeedStatus.Open, NeedStatus.InProgress, NeedStatus.Resolved, ErrorMessage = "Velg en gyldig status.")]
+    public NeedStatus? Status { get; set; }
 
     [Required(ErrorMessage = "Velg en krise.")]
     public int? CrisisId { get; set; }

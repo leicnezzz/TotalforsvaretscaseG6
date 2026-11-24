@@ -37,7 +37,7 @@
         navn = behov.Name,
         type = behov.Type,
         prioritet = behov.Priority,
-        status = behov.Status,
+        status = behov.Status.ToNorwegianText(),
         beskrivelse = behov.Description,
         latitude = behov.Latitude,
         longitude = behov.Longitude
@@ -565,7 +565,7 @@
                     <td>@b.Name</td>
                     <td>@b.Type</td>
                     <td>@b.Priority</td>
-                    <td>@b.Status</td>
+                    <td>@b.Status.ToNorwegianText()</td>
                 </tr>
             }
             </tbody>

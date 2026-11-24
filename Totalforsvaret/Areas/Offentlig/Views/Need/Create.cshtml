@@ -1,3 +1,4 @@
+@using Totalforsvaret.Areas.Offentlig.Models
 
 @using Totalforsvaret.Controllers
 @model Totalforsvaret.Areas.Offentlig.ViewModels.NeedCreateViewModel
@@ -79,12 +80,12 @@
                         <label asp-for="Status" class="form-label">Status</label>
                         <select asp-for="Status" class="form-select">
                             <option value="">Velg status</option>
-                            @if (ViewData["EditId"] != null && Model.Status == "Åpen")
+                            @if (ViewData["EditId"] != null && Model.Status == NeedStatus.Open)
                             {
-                                <option value="Åpen">Åpen (eksisterende status)</option>
+                                <option value="@((int)NeedStatus.Open)">@NeedStatus.Open.ToNorwegianText() (eksisterende status)</option>
                             }
-                            <option value="Under behandling">Under behandling</option>
-                            <option value="Løst">Løst</option>
+                            <option value="@((int)NeedStatus.InProgress)">@NeedStatus.InProgress.ToNorwegianText()</option>
+                            <option value="@((int)NeedStatus.Resolved)">@NeedStatus.Resolved.ToNorwegianText()</option>
                         </select>
                         <span asp-validation-for="Status" class="text-danger"></span>
                     </div>

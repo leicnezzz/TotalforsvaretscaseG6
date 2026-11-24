@@ -42,7 +42,7 @@ public class NeedController : Controller
             CrisisLocations = await _crises.ListMapPointsAsync(apneHendelser),
             CrisisId = apneHendelser.Count == 1 ? apneHendelser[0] :
                 apneHendelser.Count == 0 ? crisisId : null,
-            Status = "Under behandling"
+            Status = NeedStatus.InProgress
         };
 
         return View(viewModel);
@@ -82,7 +82,7 @@ public class NeedController : Controller
             Type = viewModel.Type.Trim(),
             Description = viewModel.Description.Trim(),
             Priority = viewModel.Priority,
-            Status = viewModel.Status,
+            Status = viewModel.Status!.Value,
             Latitude = viewModel.Latitude!.Value,
             Longitude = viewModel.Longitude!.Value,
             CrisisId = viewModel.CrisisId,
@@ -123,7 +123,7 @@ public class NeedController : Controller
             Type = need.Type,
             Description = need.Description,
             Priority = need.Priority,
-            Status = need.Status,
+            Status = need.Status == NeedStatus.Unspecified ? null : need.Status,
             CrisisId = need.CrisisId,
             Latitude = need.Latitude,
             Longitude = need.Longitude,
@@ -183,7 +183,7 @@ public class NeedController : Controller
         need.Type = viewModel.Type.Trim();
         need.Description = viewModel.Description.Trim();
         need.Priority = viewModel.Priority;
-        need.Status = viewModel.Status;
+        need.Status = viewModel.Status!.Value;
         need.CrisisId = viewModel.CrisisId;
         need.Latitude = viewModel.Latitude;
         need.Longitude = viewModel.Longitude;

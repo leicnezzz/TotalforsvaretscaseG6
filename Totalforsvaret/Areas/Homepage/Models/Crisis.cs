@@ -33,7 +33,7 @@ public class Crisis
     [Column("Dato")]
     public DateTime StartTime { get; set; }
 
-    public string Status { get; set; } = "";
+    public CrisisStatus Status { get; set; }
 
     // Ny informasjon som må legges til i databasen
     public string Type { get; set; } = "";

@@ -20,8 +20,8 @@ public interface IPublicOverviewRepository
 
 public record OverviewCrisis(
     int Id, string Name, string Type, string Area, string Severity,
-    DateTime StartTime, string Status, string Description, double? Latitude, double? Longitude);
+    DateTime StartTime, CrisisStatus Status, string Description, double? Latitude, double? Longitude);
 
 public record OverviewNeed(
-    int Id, string Name, string Type, string Priority, string Status,
+    int Id, string Name, string Type, string Priority, NeedStatus Status,
     int? CrisisId, string CrisisName, double? Latitude, double? Longitude);

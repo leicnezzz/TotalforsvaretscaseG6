@@ -105,6 +105,11 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
             .HasValue<Offentligaktør>("Offentlig");
 
         builder.Entity<Need>()
+            .Property(need => need.Status)
+            .HasConversion(status => status.ToNorwegianText(), value => NeedStatusText.FromStoredValue(value))
+            .HasColumnType("longtext");
+
+        builder.Entity<Need>()
             .HasOne(n => n.Crisis)
             .WithMany(c => c.Needs)
             .HasForeignKey(n => n.CrisisId)
@@ -117,6 +122,11 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
             .HasForeignKey(n => n.OffentligAktorId)
             .OnDelete(DeleteBehavior.SetNull);
         
+
+        builder.Entity<Crisis>()
+            .Property(crisis => crisis.Status)
+            .HasConversion(status => status.ToNorwegianText(), value => CrisisStatusText.FromStoredValue(value))
+            .HasColumnType("longtext");
 
         builder.Entity<Crisis>()
             .HasOne(c => c.OffentligAktor)

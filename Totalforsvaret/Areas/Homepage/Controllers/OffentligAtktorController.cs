@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Totalforsvaret.DataAccess;
+using Totalforsvaret.Models;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Offentlig.ViewModels;
 namespace Totalforsvaret.Controllers;
@@ -52,7 +53,7 @@ public class OffentligAktorController : Controller
                 navn = c.Name,
                 type = c.Type,
                 alvorlighetsgrad = c.Severity,
-                status = c.Status,
+                status = c.Status.ToNorwegianText(),
                 beskrivelse = c.Description,
                 latitude = c.Latitude,
                 longitude = c.Longitude
@@ -66,7 +67,7 @@ public class OffentligAktorController : Controller
                 navn = n.Name,
                 type = n.Type,
                 prioritet = n.Priority,
-                status = n.Status,
+                status = n.Status.ToNorwegianText(),
                 kriseId = n.CrisisId,
                 krise = n.CrisisName,
                 latitude = n.Latitude,
@@ -153,7 +154,7 @@ public class OffentligAktorController : Controller
                 omrade = c.Area,
                 alvorlighetsgrad = c.Severity,
                 starttidspunkt = c.StartTime,
-                status = c.Status,
+                status = c.Status.ToNorwegianText(),
                 beskrivelse = c.Description,
                 latitude = c.Latitude,
                 longitude = c.Longitude

@@ -67,7 +67,7 @@ internal sealed class ResourceAssignmentRepository(AppDbContext db) : IResourceA
         await using var transaction = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
 
         var activeNeeds = await db.Needs.CountAsync(need =>
-            needIds.Contains(need.Id) && (need.Status == "Åpen" || need.Status == "Under behandling"));
+            needIds.Contains(need.Id) && (need.Status == NeedStatus.Open || need.Status == NeedStatus.InProgress));
         if (activeNeeds != needIds.Length)
             return RequestAssignmentResult.InactiveNeed;
 
@@ -100,7 +100,7 @@ internal sealed class ResourceAssignmentRepository(AppDbContext db) : IResourceA
         db.ResourceAssignments.FirstOrDefaultAsync(assignment => assignment.Id == assignmentId);
 
     public Task<bool> HasActiveNeedAsync(int needId) => db.Needs.AnyAsync(need =>
-        need.Id == needId && (need.Status == "Åpen" || need.Status == "Under behandling"));
+        need.Id == needId && (need.Status == NeedStatus.Open || need.Status == NeedStatus.InProgress));
 
     public Task<bool> HasAvailableResourceAsync(int resourceId) => db.Resources.AnyAsync(resource =>
         resource.ResourceId == resourceId && resource.Available &&

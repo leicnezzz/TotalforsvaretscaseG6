@@ -20,7 +20,7 @@ public class Need
     [Column("Prioritet")]
     public string Priority { get; set; } = "";
 
-    public string Status { get; set; } = "";
+    public NeedStatus Status { get; set; }
 
     // Kontaktinformasjon
     public string? Kontaktpunkt { get; set; }

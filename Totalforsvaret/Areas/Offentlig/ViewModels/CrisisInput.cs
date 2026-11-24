@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.ViewModels;
 
@@ -24,8 +25,8 @@ public class CrisisInput : IValidatableObject
     public string Severity { get => field; set => field = value?.Trim() ?? ""; } = "";
 
     [Required(ErrorMessage = "Velg en gyldig status.")]
-    [AllowedValues("Aktiv", "Under kontroll", "Avsluttet", ErrorMessage = "Velg en gyldig status.")]
-    public string Status { get => field; set => field = value?.Trim() ?? ""; } = "";
+    [AllowedValues(CrisisStatus.Active, CrisisStatus.UnderControl, CrisisStatus.Closed, ErrorMessage = "Velg en gyldig status.")]
+    public CrisisStatus? Status { get; set; }
 
     [Required(ErrorMessage = "Velg et starttidspunkt.")]
     public DateTime? StartTime { get; set; }

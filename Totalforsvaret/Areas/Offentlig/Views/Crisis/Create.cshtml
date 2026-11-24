@@ -1,6 +1,6 @@
 
 @using Totalforsvaret.Controllers
-@model Totalforsvaret.Models.Crisis
+@model Totalforsvaret.Areas.Offentlig.ViewModels.CrisisInput
 
 @{
     ViewData["Title"] = ViewData["EditId"] != null
@@ -123,7 +123,7 @@
                 <input asp-for="Longitude" type="hidden" />
                 <span asp-validation-for="Latitude" class="text-danger"></span>
                 <span asp-validation-for="Longitude" class="text-danger"></span>
-                <p id="coordinates" class="text-muted mt-2" data-need-location data-marker-color="#a64232" data-fill-area role="status">Ingen plassering valgt.</p>
+                <p id="coordinates" class="text-muted mt-2" data-need-location data-marker-color="#a64232" data-fill-area data-location-optional="@(ViewData["EditId"] != null ? "true" : "false")" role="status">Ingen plassering valgt.</p>
             </section>
 
             <section data-need-step hidden>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Totalforsvaret.Areas.Offentlig.Models;
+using Totalforsvaret.Areas.Offentlig.ViewModels;
 using Totalforsvaret.DataAccess;
 using Totalforsvaret.Models;
 
@@ -39,7 +40,7 @@ public class CrisisController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new Crisis
+        return View(new CreateCrisisInput
         {
             StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(
                 DateTime.UtcNow,
@@ -50,9 +51,7 @@ public class CrisisController : Controller
     // Kontrollerer og lagrer krisen.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(
-        [Bind("Name,Description,Area,Type,Severity,StartTime,Status,Latitude,Longitude")]
-        Crisis crisis)
+    public async Task<IActionResult> Create(CreateCrisisInput input)
     {
         if (await _userManager.GetUserAsync(User)
             is not Offentligaktør offentligAktor)
@@ -60,71 +59,11 @@ public class CrisisController : Controller
             return Forbid();
         }
 
-        // Fjerner mellomrom før og etter teksten.
-        NormalizeCrisis(crisis);
-
-        if (string.IsNullOrWhiteSpace(crisis.Name) ||
-            crisis.Name.Length > 100)
-            ModelState.AddModelError(
-                nameof(crisis.Name),
-                "Navnet må fylles ut og kan ha maksimalt 100 tegn.");
-
-        if (string.IsNullOrWhiteSpace(crisis.Description) ||
-            crisis.Description.Length > 1500)
-            ModelState.AddModelError(
-                nameof(crisis.Description),
-                "Beskrivelsen må fylles ut og kan ha maksimalt 1500 tegn.");
-
-        if (crisis.Area.Length > 100)
-            ModelState.AddModelError(
-                nameof(crisis.Area),
-                "Områdedetaljene kan ha maksimalt 100 tegn.");
-
-        var gyldigeTyper = new[]
-        {
-            "Flom", "Brann", "Strømbrudd", "Ekstremvær", "Annet"
-        };
-
-        if (!gyldigeTyper.Contains(crisis.Type))
-            ModelState.AddModelError(
-                nameof(crisis.Type), "Velg en gyldig krisetype.");
-
-        var gyldigeAlvorlighetsgrader = new[]
-        {
-            "Lav", "Middels", "Høy", "Kritisk"
-        };
-
-        if (!gyldigeAlvorlighetsgrader.Contains(crisis.Severity))
-            ModelState.AddModelError(
-                nameof(crisis.Severity),
-                "Velg en gyldig alvorlighetsgrad.");
-
-        if (crisis.StartTime == default)
-            ModelState.AddModelError(
-                nameof(crisis.StartTime),
-                "Velg et starttidspunkt.");
-        if (crisis.Latitude is not double latitude || !double.IsFinite(latitude) || Math.Abs(latitude) > 90 ||
-            crisis.Longitude is not double longitude || !double.IsFinite(longitude) || Math.Abs(longitude) > 180)
-        {
-            ModelState.AddModelError(nameof(crisis.Latitude), "Velg en gyldig plassering på kartet.");
-        }
-
-        var gyldigeStatuser = new[]
-        {
-            "Aktiv", "Under kontroll", "Avsluttet"
-        };
-
-        if (!gyldigeStatuser.Contains(crisis.Status))
-            ModelState.AddModelError(
-                nameof(crisis.Status), "Velg en gyldig status.");
-
-        // Viser skjemaet igjen hvis noe er ugyldig.
         if (!ModelState.IsValid)
-            return View(crisis);
+            return View(input);
 
-        // Kobler krisen til aktøren som er logget inn.
-        crisis.OffentligAktorId = offentligAktor.Id;
-
+        var crisis = new Crisis { OffentligAktorId = offentligAktor.Id };
+        ApplyInput(crisis, input);
         await _crises.AddAsync(crisis);
 
         return LocalRedirect(this.OversiktUrl(openCrisisId: crisis.Id));
@@ -139,125 +78,38 @@ public async Task<IActionResult> Edit(int id)
 
     ViewData["EditId"] = id;
 
-    return View("Create", crisis);
+    return View("Create", new CrisisInput
+    {
+        Name = crisis.Name,
+        Description = crisis.Description,
+        Area = crisis.Area,
+        Type = crisis.Type,
+        Severity = crisis.Severity,
+        StartTime = crisis.StartTime,
+        Status = crisis.Status,
+        Latitude = crisis.Latitude,
+        Longitude = crisis.Longitude
+    });
 }
 
 [HttpPost]
 [ValidateAntiForgeryToken]
 public async Task<IActionResult> Edit(
     int id,
-    [Bind("Name,Description,Area,Type,Severity,StartTime,Status,Latitude,Longitude")]
-    Crisis crisis)
+    CrisisInput input)
 {
     var existing = await _crises.FindAsync(id, trackChanges: true);
 
     if (existing == null)
         return NotFound();
 
-    NormalizeCrisis(crisis);
-
-    if (string.IsNullOrWhiteSpace(crisis.Name) ||
-        crisis.Name.Length > 100)
-    {
-        ModelState.AddModelError(
-            nameof(crisis.Name),
-            "Navnet må fylles ut og kan ha maksimalt 100 tegn.");
-    }
-
-    if (string.IsNullOrWhiteSpace(crisis.Description) ||
-        crisis.Description.Length > 1500)
-    {
-        ModelState.AddModelError(
-            nameof(crisis.Description),
-            "Beskrivelsen må fylles ut og kan ha maksimalt 1500 tegn.");
-    }
-
-    if (crisis.Area.Length > 100)
-    {
-        ModelState.AddModelError(
-            nameof(crisis.Area),
-            "Områdedetaljene kan ha maksimalt 100 tegn.");
-    }
-
-    var gyldigeTyper = new[]
-    {
-        "Flom", "Brann", "Strømbrudd", "Ekstremvær", "Annet"
-    };
-
-    if (!gyldigeTyper.Contains(crisis.Type))
-    {
-        ModelState.AddModelError(
-            nameof(crisis.Type),
-            "Velg en gyldig krisetype.");
-    }
-
-    var gyldigeAlvorlighetsgrader = new[]
-    {
-        "Lav", "Middels", "Høy", "Kritisk"
-    };
-
-    if (!gyldigeAlvorlighetsgrader.Contains(crisis.Severity))
-    {
-        ModelState.AddModelError(
-            nameof(crisis.Severity),
-            "Velg en gyldig alvorlighetsgrad.");
-    }
-
-    var gyldigeStatuser = new[]
-    {
-        "Aktiv", "Under kontroll", "Avsluttet"
-    };
-
-    if (!gyldigeStatuser.Contains(crisis.Status))
-    {
-        ModelState.AddModelError(
-            nameof(crisis.Status),
-            "Velg en gyldig status.");
-    }
-
-    if (crisis.StartTime == default)
-    {
-        ModelState.AddModelError(
-            nameof(crisis.StartTime),
-            "Velg et starttidspunkt.");
-    }
-
-    if (crisis.Latitude.HasValue &&
-        (double.IsNaN(crisis.Latitude.Value) ||
-         crisis.Latitude < -90 ||
-         crisis.Latitude > 90))
-    {
-        ModelState.AddModelError(
-            nameof(crisis.Latitude),
-            "Ugyldig breddegrad.");
-    }
-
-    if (crisis.Longitude.HasValue &&
-        (double.IsNaN(crisis.Longitude.Value) ||
-         crisis.Longitude < -180 ||
-         crisis.Longitude > 180))
-    {
-        ModelState.AddModelError(
-            nameof(crisis.Longitude),
-            "Ugyldig lengdegrad.");
-    }
-
     if (!ModelState.IsValid)
     {
         ViewData["EditId"] = id;
-        return View("Create", crisis);
+        return View("Create", input);
     }
 
-    existing.Name = crisis.Name;
-    existing.Description = crisis.Description;
-    existing.Area = crisis.Area;
-    existing.Type = crisis.Type;
-    existing.Severity = crisis.Severity;
-    existing.StartTime = crisis.StartTime;
-    existing.Status = crisis.Status;
-    existing.Latitude = crisis.Latitude;
-    existing.Longitude = crisis.Longitude;
-
+    ApplyInput(existing, input);
     await _crises.SaveChangesAsync();
 
     return LocalRedirect(this.OversiktUrl());
@@ -290,13 +142,16 @@ public async Task<IActionResult> Avslutt(int id)
     return LocalRedirect(this.OversiktUrl());
 }
 
-    private static void NormalizeCrisis(Crisis crisis)
+    private static void ApplyInput(Crisis crisis, CrisisInput input)
     {
-        crisis.Name = crisis.Name?.Trim() ?? "";
-        crisis.Description = crisis.Description?.Trim() ?? "";
-        crisis.Area = crisis.Area?.Trim() ?? "";
-        crisis.Type = crisis.Type?.Trim() ?? "";
-        crisis.Severity = crisis.Severity?.Trim() ?? "";
-        crisis.Status = crisis.Status?.Trim() ?? "";
+        crisis.Name = input.Name;
+        crisis.Description = input.Description;
+        crisis.Area = input.Area ?? "";
+        crisis.Type = input.Type;
+        crisis.Severity = input.Severity;
+        crisis.StartTime = input.StartTime!.Value;
+        crisis.Status = input.Status;
+        crisis.Latitude = input.Latitude;
+        crisis.Longitude = input.Longitude;
     }
 }

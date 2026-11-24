@@ -149,6 +149,8 @@
             return false;
         }
         if (address.valid()) return true;
+        if (location.dataset.locationOptional === 'true' &&
+            !form.elements.Latitude.value && !form.elements.Longitude.value) return true;
         showStep(1);
         location.textContent = 'Velg en adresse fra forslagene eller klikk på kartet.';
         location.classList.add('text-danger');

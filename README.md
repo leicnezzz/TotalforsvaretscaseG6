@@ -1,4 +1,5 @@
-# **Gruppenummer og studentnavn:**
+# **Oppgave 2** #
+**Gruppenummer og studentnavn:**
 Gruppe 6
 
 Emma Moland Leiknes - emmaml@uia.no,
@@ -10,36 +11,28 @@ Marcia Kristine Olsen - marciako@uia.no,
 
 Kurskode og navn: IS-202-1 26H Programmeringsprosjekt
 
-Dato: HUSK OG ENDRE MEG
+Dato: 05.11.2026
 
 ## **Systemarkitektur, oppstart og testing** ##
 Paratus er en ASP.NET Core MVC-applikasjon. Applikasjonen er delt inn i Controllere som håndterer forespørsler, Razor-visninger som viser grensesnittet, og Entity Framework Core til å lagre data i MariaDB. ASP.NET Core Identity håndterer alt av konto og innlogging. Det er brukertypen som styrer tilgangen til applikasjonen, så private aktører kan administrere egne ressurser, og offentlige aktører har skjemaet for kriser og behov. Systemet bruker Leaflet som kartfunksjon.
 
-## Oppstart med Docker og Aspire
+## **Kjøring av systemet** ##
 
-Installer .NET 10 SDK, Docker Desktop og Visual Studio eller Rider med støtte for .NET 10 og Aspire.
+1. Hent prosjektet fra `main`: Hvis dette er første gang du åpner prosjektet, kloner du repoet og åpner `Totalforsvaret.slnx` fra rotmappen. Hvis du allerede har klonet repoet, åpner du prosjektet i Visual Studio, velger grenen `main` og velger **Git → Pull** for å hente den siste versjonen fra GitHub.
+2. Klargjør Docker, HTTPS-sertifikat og User Secrets: Installer .NET 10 SDK og start Docker Desktop med Linux-containere. Vent til Docker kjører. Bruk et lokalt HTTPS-utviklingssertifikat på `~/.aspnet/https/totalforsvaret.pfx`. Dette utviklingssertifikatet tillater webappen å ta imot HTTPS-trafikk lokalt. Angi `Parameters:mariadb-password` og `Parameters:https-password` i User Secrets for `Totalforsvaret.AppHost`. For mer informasjon, se på [oppstartsveiledningen](Oppstart.md).
+3. Start prosjektet i Visual Studio eller Rider: I Visual Studio velger du `Totalforsvaret.AppHost` som oppstartsprosjekt og `https` som oppstartsprofil. I Rider åpner du `Totalforsvaret.slnx` og velger `Totalforsvaret.AppHost: https` i nedtrekksmenyen øverst. Trykk på den grønne startknappen. Aspire starter da webappen og MariaDB 11.4 i hver sin Docker-container. Så lenge det navngitte Docker-volumet beholdes, bevares dataene selv om databasecontaineren gjenskapes.
+4. Kjør migrasjonene ved førstegangsoppsett: Etter at MariaDB-containeren har startet, setter du `ConnectionStrings__DefaultConnection` i terminalen slik at den peker til den lokale MariaDB-instansen. Kjør deretter kommandoen fra rotmappen i repoet. Migrasjonene oppretter eller oppdaterer tabellene som appen trenger.
 
-1. Klon repoet og åpne `Totalforsvaret.slnx`.
-2. Start Docker Desktop med Linux-containere.
-3. Gjennomfør [HTTPS-engangsoppsettet i Oppstart.md](Oppstart.md#2-klargjør-https-én-gang-per-maskin).
-4. Start `Totalforsvaret.AppHost` med profilen `https`. I Rider brukes en Aspire Host-kjørekonfigurasjon.
-5. Vent til MariaDB og webappen har startet. Åpne HTTPS-lenken for `totalforsvaret` i Aspire-dashboardet.
+   ```powershell
+   dotnet ef database update --project Totalforsvaret --startup-project Totalforsvaret
+   ```
 
-Databasepassord, tilkobling og opprettelse av tabeller håndteres automatisk. Docker-volumet bevarer data mellom stopp og oppstart.
-
-**Offentlig demokonto**
-
-- E-post `offentlig@example.com`
-- Passord `Passordet12345`
-
-Velg innlogging for offentlig aktør. Privat konto opprettes gjennom «Opprett bruker».
-
-Se [Oppstart.md](Oppstart.md) for alle kommandoer, Rider-oppsett, lagring og feilsøking.
+5. Åpne webappen: Når databasen er klar, finner du `totalforsvaret` i Aspire-dashboardet og klikker på HTTPS-lenken for å åpne webappen.
 
 ## **Bruk av applikasjonen** ##
 Som privat aktør kan du opprette en konto og logge inn. Gå til ressursskjemaet for å registrere en ressurs. Fyll inn opplysningene, velg et punkt på kartet og lagre. I ressursoversikten kan du finne, endre eller slette egne ressurser.
 
-Offentlige aktører har egne skjemaer og oversikter for kriser og behov via en egen innlogging.
+Offentlige aktører har egne skjemaer og oversikter for kriser og behov.
 
 ## **Gjennomførte tester** ##
 Gruppen valgte å teste validering av navn, kartplassering og tilgjengelighet. Testene bekrefter at registreringer uten navn og plassering blir avvist, og at "Nei" godtas som et gyldig valg for tilgjengelighet. En ressurs kan dermed registreres selv om den ikke er tilgjengelig, noe som gir grunnlag for videre arbeid med spesifikke tilgjengelighetstider.

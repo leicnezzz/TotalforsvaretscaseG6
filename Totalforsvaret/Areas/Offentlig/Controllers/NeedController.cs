@@ -152,24 +152,6 @@ public class NeedController : Controller
                 "Velg en gyldig krise.");
         }
 
-        if (viewModel.Latitude.HasValue &&
-            (viewModel.Latitude < -90 ||
-             viewModel.Latitude > 90))
-        {
-            ModelState.AddModelError(
-                nameof(viewModel.Latitude),
-                "Ugyldig breddegrad.");
-        }
-
-        if (viewModel.Longitude.HasValue &&
-            (viewModel.Longitude < -180 ||
-             viewModel.Longitude > 180))
-        {
-            ModelState.AddModelError(
-                nameof(viewModel.Longitude),
-                "Ugyldig lengdegrad.");
-        }
-
         if (!ModelState.IsValid)
         {
             ViewData["EditId"] = id;

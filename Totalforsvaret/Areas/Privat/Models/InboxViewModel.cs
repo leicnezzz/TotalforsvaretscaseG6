@@ -5,7 +5,7 @@ using Totalforsvaret.Areas.Offentlig.Models;
 public class InboxViewModel
 {
     public IReadOnlyList<InboxItemViewModel> Items { get; init; }
-        = Array.Empty<InboxItemViewModel>();
+        = [];
 
     public int? SelectedId { get; init; }
 
@@ -14,7 +14,7 @@ public class InboxViewModel
 
     // Meldinger for den valgte matchen.
     public IReadOnlyList<InboxMessageViewModel> Messages { get; init; }
-        = Array.Empty<InboxMessageViewModel>();
+        = [];
 }
 
 public class InboxItemViewModel

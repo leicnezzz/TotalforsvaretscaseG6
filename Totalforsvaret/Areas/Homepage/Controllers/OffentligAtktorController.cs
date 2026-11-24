@@ -21,7 +21,7 @@ public class OffentligAktorController : Controller
         _context = context;
     }
 
-    public IActionResult Index([FromQuery] int[]? hendelser = null)
+    public IActionResult Index()
     {
         // Henter tilgjengelige ressurser
         var ressurser = _resourceHandler.GetResources();

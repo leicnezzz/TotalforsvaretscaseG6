@@ -10,9 +10,9 @@ public class MultipleNeedsViewModel
     [Required(ErrorMessage = "Velg en krise.")]
     public int? CrisisId { get; set; }
 
-    public IEnumerable<SelectListItem> Crises { get; set; } = Array.Empty<SelectListItem>();
+    public IEnumerable<SelectListItem> Crises { get; set; } = [];
 
-    public IReadOnlyList<CrisisMapPoint> ActiveCrisesOnMap { get; set; } = Array.Empty<CrisisMapPoint>();
+    public IReadOnlyList<CrisisMapPoint> ActiveCrisesOnMap { get; set; } = [];
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
     [Range(-90d, 90d, ErrorMessage = "Ugyldig breddegrad.")]

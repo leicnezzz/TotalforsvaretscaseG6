@@ -1,5 +1,4 @@
 using Totalforsvaret.Models.resourcemodels;
-using System.Collections.Generic; 
 
 namespace Totalforsvaret.Areas.Offentlig.Models;
 

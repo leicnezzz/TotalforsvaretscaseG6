@@ -64,9 +64,6 @@ public class CrisisController : Controller
         [Bind("Name,Description,Area,Type,Severity,StartTime,Status,Latitude,Longitude")]
         Crisis crisis)
     {
-        // Henter den innloggede brukeren.
-        var bruker = await _userManager.GetUserAsync(User);
-
         if (await _userManager.GetUserAsync(User)
             is not Offentligaktør offentligAktor)
         {

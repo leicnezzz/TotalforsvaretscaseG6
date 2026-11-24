@@ -25,6 +25,6 @@ public class OffentligProfileViewModel
     public bool HasPhoto { get; set; }
 
     public string Initialer =>
-        $"{(Fornavn.FirstOrDefault() is char first ? char.ToUpperInvariant(first) : ' ')}" +
-        $"{(Etternavn.FirstOrDefault() is char last ? char.ToUpperInvariant(last) : ' ')}".Trim();
+        $"{char.ToUpperInvariant(Fornavn.FirstOrDefault())}" +
+        $"{char.ToUpperInvariant(Etternavn.FirstOrDefault())}".Trim();
 }

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Totalforsvaret.Services;
 using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Models;
@@ -20,9 +19,9 @@ builder.Services.AddControllersWithViews(options =>
 builder.Services.Configure<RazorViewEngineOptions>(options =>
 {
     options.ViewLocationFormats.Insert(
-        0, "/Areas/Homepage/Views/{1}/{0}.cshtml");
+        0, "/Areas/Shared/Views/{1}/{0}.cshtml");
     options.ViewLocationFormats.Insert(
-        1, "/Areas/Homepage/Views/Shared/{0}.cshtml");
+        1, "/Areas/Shared/Views/Shared/{0}.cshtml");
 });
 
 builder.Services.AddIdentityCore<Bruker>(options =>
@@ -97,6 +96,8 @@ builder.Services.AddScoped<ICrisisMapAnnotationRepository, CrisisMapAnnotationRe
 builder.Services.AddScoped<INeedRepository, NeedRepository>();
 builder.Services.AddScoped<ICrisisRepository, CrisisRepository>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddScoped<IInboxService, InboxService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, new MariaDbServerVersion(new Version(11, 4, 0))));

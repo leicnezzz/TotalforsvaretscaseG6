@@ -66,7 +66,7 @@ public sealed class CrisisRepository(AppDbContext db) : ICrisisRepository
             query = query.Where(crisis => ids.Contains(crisis.Id));
 
         return query.Select(crisis => new CrisisMapPoint(
-            crisis.Id, crisis.Name, crisis.Latitude!.Value, crisis.Longitude!.Value)).ToListAsync();
+            crisis.Id, crisis.Name, (double)crisis.Latitude!.Value, (double)crisis.Longitude!.Value)).ToListAsync();
     }
 
     public Task<List<CrisisOption>> ListOptionsAsync(IReadOnlyCollection<int>? ids)

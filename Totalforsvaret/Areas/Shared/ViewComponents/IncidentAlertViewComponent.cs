@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Totalforsvaret.DataAccess;
 
-namespace Totalforsvaret.Areas.Homepage.ViewComponents;
+namespace Totalforsvaret.Areas.Shared.ViewComponents;
 
 public class IncidentAlertViewComponent(ICrisisRepository crises) : ViewComponent
 {
@@ -11,6 +11,6 @@ public class IncidentAlertViewComponent(ICrisisRepository crises) : ViewComponen
 
         return crisis is null
             ? Content(string.Empty)
-            : View("~/Areas/Homepage/Views/Shared/_IncidentAlert.cshtml", crisis);
+            : View("~/Areas/Shared/Views/Shared/_IncidentAlert.cshtml", crisis);
     }
 }

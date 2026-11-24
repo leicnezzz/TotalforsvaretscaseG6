@@ -87,8 +87,8 @@ public async Task<IActionResult> Edit(int id)
         Severity = crisis.Severity,
         StartTime = crisis.StartTime,
         Status = crisis.Status == CrisisStatus.Unspecified ? null : crisis.Status,
-        Latitude = crisis.Latitude,
-        Longitude = crisis.Longitude
+        Latitude = (double?)crisis.Latitude,
+        Longitude = (double?)crisis.Longitude
     });
 }
 
@@ -151,7 +151,7 @@ public async Task<IActionResult> Avslutt(int id)
         crisis.Severity = input.Severity;
         crisis.StartTime = input.StartTime!.Value;
         crisis.Status = input.Status!.Value;
-        crisis.Latitude = input.Latitude;
-        crisis.Longitude = input.Longitude;
+        crisis.Latitude = (decimal?)input.Latitude;
+        crisis.Longitude = (decimal?)input.Longitude;
     }
 }

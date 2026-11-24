@@ -33,4 +33,7 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Totalforsvaret.Tests" />
+  </ItemGroup>
 </Project>

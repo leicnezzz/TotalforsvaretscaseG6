@@ -1,3 +1,4 @@
+using Totalforsvaret.Models.Inbox;
 using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Privat.Models;

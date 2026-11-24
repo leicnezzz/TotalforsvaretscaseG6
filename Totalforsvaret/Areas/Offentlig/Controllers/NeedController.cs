@@ -153,8 +153,7 @@ public class NeedController : Controller
         }
 
         if (viewModel.Latitude.HasValue &&
-            (double.IsNaN(viewModel.Latitude.Value) ||
-             viewModel.Latitude < -90 ||
+            (viewModel.Latitude < -90 ||
              viewModel.Latitude > 90))
         {
             ModelState.AddModelError(
@@ -163,8 +162,7 @@ public class NeedController : Controller
         }
 
         if (viewModel.Longitude.HasValue &&
-            (double.IsNaN(viewModel.Longitude.Value) ||
-             viewModel.Longitude < -180 ||
+            (viewModel.Longitude < -180 ||
              viewModel.Longitude > 180))
         {
             ModelState.AddModelError(

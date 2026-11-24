@@ -28,10 +28,10 @@ public class NeedCreateViewModel
     public int? CrisisId { get; set; }
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
-    public double? Latitude { get; set; }
+    public decimal? Latitude { get; set; }
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
-    public double? Longitude { get; set; }
+    public decimal? Longitude { get; set; }
 
     public IReadOnlyList<CrisisMapPoint> CrisisLocations { get; set; } = [];
 

@@ -52,7 +52,6 @@
     <_ContentIncludedByDefault Remove="Views\Shared\_AccountLayout.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_IncidentAlert.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Shared\_PrivateBreadcrumb.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_PrivatePageAction.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_ResourceApi.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\_ResourceWizard.cshtml" />
@@ -77,7 +76,6 @@
     <AdditionalFiles Include="Areas\Homepage\Views\Shared\_AccountLayout.cshtml" />
     <AdditionalFiles Include="Areas\Homepage\Views\Shared\_IncidentAlert.cshtml" />
     <AdditionalFiles Include="Areas\Homepage\Views\Shared\_Layout.cshtml" />
-    <AdditionalFiles Include="Areas\Homepage\Views\Shared\_PrivateBreadcrumb.cshtml" />
     <AdditionalFiles Include="Areas\Homepage\Views\Shared\_PrivatePageAction.cshtml" />
     <AdditionalFiles Include="Areas\Homepage\Views\Shared\_ResourceApi.cshtml" />
     <AdditionalFiles Include="Areas\Homepage\Views\Shared\_ResourceWizard.cshtml" />

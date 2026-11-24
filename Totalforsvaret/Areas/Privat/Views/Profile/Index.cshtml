@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Min profil";
-    ViewData["PrivateSection"] = "Min profil";
     Layout = null;
 }
 
@@ -28,10 +27,6 @@
 
 </head>
 <body class="profile-page">
-@{
-    ViewData["PrivateSection"] = "Brukeroversikt";
-}
-
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
 
     <main class="profile-main">

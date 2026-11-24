@@ -1,7 +1,6 @@
 @model Totalforsvaret.Areas.Privat.Models.FormDataModel
 @{
     Layout = null;
-    ViewData["PrivateSection"] = "Ressursregistrering";
     ViewData["PrivateBack"] = true;
     var navn = User.Identity?.Name ?? "Min konto";
     var initialer = string.Concat(navn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(del => char.ToUpperInvariant(del[0])));
@@ -25,10 +24,6 @@
     <script src="~/js/help-dismiss.js" asp-append-version="true" defer></script>
 </head>
 <body class="private-home resource-registration">
-@{
-    ViewData["PrivateSection"] = "Ressursregistrering";
-}
-
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
     <div class="resource-incident-row">
         <partial name="/Areas/Homepage/Views/Shared/_PrivatePageAction.cshtml" />

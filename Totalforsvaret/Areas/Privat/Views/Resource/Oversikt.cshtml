@@ -1,7 +1,6 @@
 @model IReadOnlyList<Totalforsvaret.Models.resourcemodels.Resource>
 @{
     Layout = null;
-    ViewData["PrivateSection"] = "Mine ressurser";
     ViewData["PrivateBack"] = true;
     var navn = User.Identity?.Name ?? "Min konto";
     var initialer = string.Concat(navn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(del => char.ToUpperInvariant(del[0])));
@@ -24,10 +23,6 @@
     <link rel="stylesheet" href="~/css/resource-overview.css" asp-append-version="true" />
 </head>
 <body class="private-home resource-overview">
-@{
-    ViewData["PrivateSection"] = "Oversikt over ressurser";
-}
-
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
     <div class="resource-incident-row">
         <partial name="/Areas/Homepage/Views/Shared/_PrivatePageAction.cshtml" />

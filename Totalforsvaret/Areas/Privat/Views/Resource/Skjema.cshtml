@@ -31,7 +31,7 @@
 
 <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
     <div class="resource-incident-row">
-        <partial name="/Areas/Homepage/Views/Shared/_PrivatePageAction.cshtml" />
+        <partial name="/Areas/Shared/Views/Shared/_PrivatePageAction.cshtml" />
         @await Component.InvokeAsync("IncidentAlert")
     </div>
     <main class="registration-main">
@@ -40,15 +40,15 @@
                 <h1 id="registration-title">Registrere en ressurs til disposisjon</h1>
                 <p>Registrer kjøretøy, utstyr eller andre ressurser som kan bidra i en beredskapssituasjon.</p>
             </section>
-            <div id="registrer-ressurs"><partial name="/Areas/Homepage/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" /></div>
+            <div id="registrer-ressurs"><partial name="/Areas/Shared/Views/Shared/_ResourceWizard.cshtml" model="Model.Categories" /></div>
         </div>
     </main>
-    <partial name="/Areas/Homepage/Views/Shared/_RegistrationFooter.cshtml" />
+    <partial name="/Areas/Shared/Views/Shared/_RegistrationFooter.cshtml" />
     <script src="~/lib/leaflet/leaflet.js"></script>
     <script src="~/js/map-zoom.js" asp-append-version="true"></script>
     <script src="~/js/resource-fields.js" asp-append-version="true"></script>
     <script src="~/js/resource-address.js" asp-append-version="true"></script>
     <script src="~/js/resource-wizard.js" asp-append-version="true"></script>
-    <partial name="/Areas/Homepage/Views/Shared/_ResourceApi.cshtml" />
+    <partial name="/Areas/Shared/Views/Shared/_ResourceApi.cshtml" />
 </body>
 </html>

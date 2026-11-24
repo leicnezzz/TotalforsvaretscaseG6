@@ -20,9 +20,9 @@ builder.Services.AddControllersWithViews(options =>
 builder.Services.Configure<RazorViewEngineOptions>(options =>
 {
     options.ViewLocationFormats.Insert(
-        0, "/Areas/Homepage/Views/{1}/{0}.cshtml");
+        0, "/Areas/Shared/Views/{1}/{0}.cshtml");
     options.ViewLocationFormats.Insert(
-        1, "/Areas/Homepage/Views/Shared/{0}.cshtml");
+        1, "/Areas/Shared/Views/Shared/{0}.cshtml");
 });
 
 builder.Services.AddIdentityCore<Bruker>(options =>

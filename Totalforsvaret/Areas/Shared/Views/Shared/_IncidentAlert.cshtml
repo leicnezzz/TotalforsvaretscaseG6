@@ -1,8 +1,9 @@
+@using Totalforsvaret.Models
 @model Totalforsvaret.Models.Crisis
 
-<aside class="incident-alert@(Model.Severity == "Høy" ? " incident-alert-high" : "")"
+<aside class="incident-alert@(Model.Severity == CrisisSeverity.High ? " incident-alert-high" : "")"
        aria-label="Hendelsesvarsel"
-       data-incident-key="krise-@Model.Id-@Model.Severity">
+       data-incident-key="krise-@Model.Id-@Model.Severity.ToNorwegianText()">
     <button class="incident-alert-close" type="button" data-incident-dismiss aria-label="Lukk hendelsesvarselet">
         <span aria-hidden="true">×</span>
     </button>
@@ -13,7 +14,7 @@
             <circle cx="20" cy="29" r="1" fill="currentColor" />
         </svg>
         <div>
-            <p class="incident-alert-label">@Model.Severity · @Model.Type · @Model.Status</p>
+            <p class="incident-alert-label">@Model.Severity.ToNorwegianText() · @Model.Type · @Model.Status.ToNorwegianText()</p>
             <h2>@Model.Name</h2>
         </div>
     </div>

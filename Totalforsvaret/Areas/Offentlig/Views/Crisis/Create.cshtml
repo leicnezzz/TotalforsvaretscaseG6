@@ -70,10 +70,10 @@
                         <label asp-for="Severity" class="form-label">Alvorlighetsgrad *</label>
                         <select asp-for="Severity" class="form-select" required>
                             <option value="">Velg alvorlighetsgrad</option>
-                            <option value="Lav">Lav</option>
-                            <option value="Middels">Middels</option>
-                            <option value="Høy">Høy</option>
-                            <option value="Kritisk">Kritisk</option>
+                            @foreach (var severity in new[] { CrisisSeverity.Low, CrisisSeverity.Medium, CrisisSeverity.High, CrisisSeverity.Critical })
+                            {
+                                <option value="@((int)severity)">@severity.ToNorwegianText()</option>
+                            }
                         </select>
                         <span asp-validation-for="Severity" class="text-danger"></span>
                     </div>

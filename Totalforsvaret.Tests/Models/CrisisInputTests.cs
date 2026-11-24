@@ -57,7 +57,7 @@ public class CrisisInputTests
         input.Name = " Hendelse ";
         input.Description = " Beskrivelse ";
         input.Type = " Flom ";
-        input.Severity = "Høy";
+        input.Severity = CrisisSeverity.High;
         input.Status = CrisisStatus.Active;
         input.StartTime = new DateTime(2026, 1, 1);
         return input;

@@ -9,10 +9,10 @@ public sealed class CrisisRepository(AppDbContext db) : ICrisisRepository
     public Task<List<Crisis>> ListOverviewAsync() => db.Crises
         .AsNoTracking()
         .OrderByDescending(crisis =>
-            crisis.Severity == "Kritisk" ? 4 :
-            crisis.Severity == "Høy" ? 3 :
-            crisis.Severity == "Middels" ? 2 :
-            crisis.Severity == "Lav" ? 1 : 0)
+            crisis.Severity == CrisisSeverity.Critical ? 4 :
+            crisis.Severity == CrisisSeverity.High ? 3 :
+            crisis.Severity == CrisisSeverity.Medium ? 2 :
+            crisis.Severity == CrisisSeverity.Low ? 1 : 0)
         .ThenByDescending(crisis => crisis.StartTime)
         .ThenByDescending(crisis => crisis.Id)
         .ToListAsync();
@@ -26,7 +26,7 @@ public sealed class CrisisRepository(AppDbContext db) : ICrisisRepository
     public Task<Crisis?> FindLatestAlertAsync(CancellationToken cancellationToken) =>
         db.Crises.AsNoTracking()
             .Where(crisis => (crisis.Status == CrisisStatus.Active || crisis.Status == CrisisStatus.UnderControl) &&
-                (crisis.Severity == "Kritisk" || crisis.Severity == "Høy"))
+                (crisis.Severity == CrisisSeverity.Critical || crisis.Severity == CrisisSeverity.High))
             .OrderByDescending(crisis => crisis.Id)
             .FirstOrDefaultAsync(cancellationToken);
 

@@ -31,7 +31,7 @@ public class Crisis
     
     // Informasjon om krisen
     [Column("Alvorlighetsgrad")]
-    public string Severity { get; set; } = "";
+    public CrisisSeverity Severity { get; set; }
 
     [Column("Dato")]
     public DateTime StartTime { get; set; }

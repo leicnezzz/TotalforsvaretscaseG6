@@ -21,8 +21,9 @@ public class CrisisInput : IValidatableObject
     public string Type { get => field; set => field = value?.Trim() ?? ""; } = "";
 
     [Required(ErrorMessage = "Velg en gyldig alvorlighetsgrad.")]
-    [AllowedValues("Lav", "Middels", "Høy", "Kritisk", ErrorMessage = "Velg en gyldig alvorlighetsgrad.")]
-    public string Severity { get => field; set => field = value?.Trim() ?? ""; } = "";
+    [AllowedValues(CrisisSeverity.Low, CrisisSeverity.Medium, CrisisSeverity.High, CrisisSeverity.Critical,
+        ErrorMessage = "Velg en gyldig alvorlighetsgrad.")]
+    public CrisisSeverity? Severity { get; set; }
 
     [Required(ErrorMessage = "Velg en gyldig status.")]
     [AllowedValues(CrisisStatus.Active, CrisisStatus.UnderControl, CrisisStatus.Closed, ErrorMessage = "Velg en gyldig status.")]

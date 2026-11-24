@@ -84,7 +84,7 @@ public async Task<IActionResult> Edit(int id)
         Description = crisis.Description,
         Area = crisis.Area,
         Type = crisis.Type,
-        Severity = crisis.Severity,
+        Severity = crisis.Severity == CrisisSeverity.Unspecified ? null : crisis.Severity,
         StartTime = crisis.StartTime,
         Status = crisis.Status == CrisisStatus.Unspecified ? null : crisis.Status,
         Latitude = (double?)crisis.Latitude,
@@ -148,7 +148,7 @@ public async Task<IActionResult> Avslutt(int id)
         crisis.Description = input.Description;
         crisis.Area = input.Area ?? "";
         crisis.Type = input.Type;
-        crisis.Severity = input.Severity;
+        crisis.Severity = input.Severity!.Value;
         crisis.StartTime = input.StartTime!.Value;
         crisis.Status = input.Status!.Value;
         crisis.Latitude = (decimal?)input.Latitude;

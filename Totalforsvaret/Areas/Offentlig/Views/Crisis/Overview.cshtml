@@ -64,7 +64,7 @@
                             <span class="crisis-card-name">
                                 <strong class="crisis-card-title">@crisis.Name</strong>
                                 <span>@crisis.Area</span>
-                                <strong class="@(crisis.Severity == "Kritisk" ? "crisis-critical" : "")">@crisis.Severity</strong>
+                                <strong class="@(crisis.Severity == CrisisSeverity.Critical ? "crisis-critical" : "")">@crisis.Severity.ToNorwegianText()</strong>
                             </span>
                             </button>
                             <div class="crisis-card-actions">

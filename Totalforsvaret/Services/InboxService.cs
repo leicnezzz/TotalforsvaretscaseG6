@@ -1,26 +1,21 @@
-using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.DataAccess;
 using Totalforsvaret.Models.Inbox;
 
 namespace Totalforsvaret.Services;
 
-public sealed class InboxService(AppDbContext db, ResourceAssignmentService assignments) : IInboxService
+public sealed class InboxService(IResourceAssignmentRepository repository, ResourceAssignmentService assignments) : IInboxService
 {
     public async Task<InboxViewModel> GetInboxAsync(
         int userId,
         InboxAudience audience,
         int? selectedId)
     {
-        var query = db.ResourceAssignments.AsNoTracking();
+        var visibleAssignments = audience == InboxAudience.Private
+            ? await repository.ListForResourceOwnerAsync(userId)
+            : await repository.ListForPublicInboxAsync();
 
-        if (audience == InboxAudience.Private)
-        {
-            query = query.Where(a => a.Resource.BrukerId == userId);
-        }
-
-        var items = await query
-            .OrderByDescending(a => a.RequestedAtUtc)
+        var items = visibleAssignments
             .Select(a => new InboxItemViewModel
             {
                 AssignmentId = a.Id,
@@ -48,25 +43,14 @@ public sealed class InboxService(AppDbContext db, ResourceAssignmentService assi
                 AssignedAtUtc = a.AssignedAtUtc,
                 ClosedAtUtc = a.ClosedAtUtc
             })
-            .ToListAsync();
+            .ToList();
 
         int? actualSelectedId = items.Any(i => i.AssignmentId == selectedId)
             ? selectedId
             : items.FirstOrDefault()?.AssignmentId;
 
         var messages = actualSelectedId.HasValue
-            ? await db.ResourceMessages
-                .AsNoTracking()
-                .Where(m => m.AssignmentId == actualSelectedId.Value)
-                .OrderBy(m => m.SentAtUtc)
-                .Select(m => new InboxMessageViewModel
-                {
-                    SenderName = m.Sender.Navn,
-                    Body = m.Body,
-                    SentAtUtc = m.SentAtUtc,
-                    IsOwnMessage = m.SenderUserId == userId
-                })
-                .ToListAsync()
+            ? await repository.ListMessagesAsync(actualSelectedId.Value, userId)
             : new List<InboxMessageViewModel>();
 
         return new InboxViewModel
@@ -92,33 +76,22 @@ public sealed class InboxService(AppDbContext db, ResourceAssignmentService assi
                 "Meldingen må inneholde mellom 1 og 2000 tegn.");
         }
 
-        var assignmentQuery = db.ResourceAssignments
-            .Where(a => a.Id == assignmentId);
-
-        // Private users may message only about resources they own.
-        // Public users may reply to any existing match.
-        if (audience == InboxAudience.Private)
-        {
-            assignmentQuery = assignmentQuery
-                .Where(a => a.Resource.BrukerId == userId);
-        }
-
-        var assignmentExists = await assignmentQuery.AnyAsync();
+        var assignmentExists = audience == InboxAudience.Private
+            ? await repository.ExistsForOwnerAsync(assignmentId, userId)
+            : await repository.ExistsAsync(assignmentId);
 
         if (!assignmentExists)
         {
             return InboxResult.Missing();
         }
 
-        db.ResourceMessages.Add(new ResourceMessage
+        await repository.AddMessageAsync(new ResourceMessage
         {
             AssignmentId = assignmentId,
             SenderUserId = userId,
             Body = body,
             SentAtUtc = DateTime.UtcNow
         });
-
-        await db.SaveChangesAsync();
 
         var successMessage = audience == InboxAudience.Public
             ? "Svaret er sendt."
@@ -129,7 +102,7 @@ public sealed class InboxService(AppDbContext db, ResourceAssignmentService assi
 
     public async Task<InboxResult> AcceptAsync(int userId, int assignmentId)
     {
-        var assignment = await FindOwnedAssignmentAsync(userId, assignmentId);
+        var assignment = await repository.FindOwnedAsync(assignmentId, userId);
         var result = await assignments.AcceptAsync(assignment, useLoadedDetails: true);
 
         return result switch
@@ -146,7 +119,7 @@ public sealed class InboxService(AppDbContext db, ResourceAssignmentService assi
 
     public async Task<InboxResult> DeclineAsync(int userId, int assignmentId)
     {
-        var assignment = await FindOwnedAssignmentAsync(userId, assignmentId);
+        var assignment = await repository.FindOwnedAsync(assignmentId, userId);
         var result = await assignments.DeclineAsync(assignment);
 
         return result switch
@@ -160,7 +133,7 @@ public sealed class InboxService(AppDbContext db, ResourceAssignmentService assi
 
     public async Task<InboxResult> ReleaseAsync(int userId, int assignmentId)
     {
-        var assignment = await FindOwnedAssignmentAsync(userId, assignmentId);
+        var assignment = await repository.FindOwnedAsync(assignmentId, userId);
         var result = await assignments.ReleaseAsync(assignment);
 
         return result switch
@@ -170,17 +143,5 @@ public sealed class InboxService(AppDbContext db, ResourceAssignmentService assi
             AssignmentActionResult.NotAssigned => InboxResult.Fail("Ressursen er ikke tildelt."),
             _ => throw new InvalidOperationException($"Unexpected assignment result: {result}.")
         };
-    }
-
-    private Task<ResourceAssignment?> FindOwnedAssignmentAsync(
-        int userId,
-        int assignmentId)
-    {
-        return db.ResourceAssignments
-            .Include(a => a.Resource)
-            .Include(a => a.Need)
-            .SingleOrDefaultAsync(a =>
-                a.Id == assignmentId &&
-                a.Resource.BrukerId == userId);
     }
 }

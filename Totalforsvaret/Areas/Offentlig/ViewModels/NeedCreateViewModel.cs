@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using Totalforsvaret.Areas.Offentlig.Models;
+using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.ViewModels;
 
@@ -29,11 +30,11 @@ public class NeedCreateViewModel
     public int? CrisisId { get; set; }
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
-    [Range(typeof(decimal), "-90", "90", ErrorMessage = "Ugyldig breddegrad.")]
+    [CoordinateRange(typeof(decimal), Coordinate.LatitudeLimit, ErrorMessage = "Ugyldig breddegrad.")]
     public decimal? Latitude { get; set; }
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
-    [Range(typeof(decimal), "-180", "180", ErrorMessage = "Ugyldig lengdegrad.")]
+    [CoordinateRange(typeof(decimal), Coordinate.LongitudeLimit, ErrorMessage = "Ugyldig lengdegrad.")]
     public decimal? Longitude { get; set; }
 
     public IReadOnlyList<CrisisMapPoint> CrisisLocations { get; set; } = [];

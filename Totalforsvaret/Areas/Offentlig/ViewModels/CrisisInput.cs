@@ -33,10 +33,10 @@ public class CrisisInput : IValidatableObject
     [Required(ErrorMessage = "Velg et starttidspunkt.")]
     public DateTime? StartTime { get; set; }
 
-    [Range(-90d, 90d, ErrorMessage = "Ugyldig breddegrad.")]
+    [Range(-Coordinate.LatitudeLimit * 1d, Coordinate.LatitudeLimit * 1d, ErrorMessage = "Ugyldig breddegrad.")]
     public virtual double? Latitude { get; set; }
 
-    [Range(-180d, 180d, ErrorMessage = "Ugyldig lengdegrad.")]
+    [Range(-Coordinate.LongitudeLimit * 1d, Coordinate.LongitudeLimit * 1d, ErrorMessage = "Ugyldig lengdegrad.")]
     public virtual double? Longitude { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

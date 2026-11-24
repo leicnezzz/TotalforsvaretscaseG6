@@ -7,7 +7,7 @@ namespace Totalforsvaret.DataAccess;
 internal sealed class PublicOverviewRepository(AppDbContext db) : IPublicOverviewRepository
 {
     private IQueryable<Need> ActiveNeeds => db.Needs.AsNoTracking()
-        .Where(need => need.Status == NeedStatus.Open || need.Status == NeedStatus.InProgress);
+        .Where(need => StatusFilters.ActiveNeedStatuses.Contains(need.Status));
 
     public int CountActiveNeeds() => ActiveNeeds.Count();
 
@@ -20,14 +20,13 @@ internal sealed class PublicOverviewRepository(AppDbContext db) : IPublicOvervie
         db.CrisisMapAnnotations.AsNoTracking().ToList();
 
     public List<ResourceAssignment> ListActiveAssignments() => db.ResourceAssignments.AsNoTracking()
-        .Where(assignment => assignment.Status == AssignmentStatus.Requested ||
-                             assignment.Status == AssignmentStatus.Assigned)
+        .Where(assignment => StatusFilters.BusyAssignmentStatuses.Contains(assignment.Status))
         .ToList();
 
     public List<ResourceAssignment> ListClosedReviewsForActiveNeeds() => db.ResourceAssignments.AsNoTracking()
         .Where(assignment => (assignment.Status == AssignmentStatus.Rejected ||
                               assignment.Status == AssignmentStatus.Released) &&
-                             (assignment.Need.Status == NeedStatus.Open || assignment.Need.Status == NeedStatus.InProgress))
+                             StatusFilters.ActiveNeedStatuses.Contains(assignment.Need.Status))
         .ToList();
 
     public List<OverviewCrisis> ListCrises() => db.Crises.AsNoTracking()
@@ -36,7 +35,7 @@ internal sealed class PublicOverviewRepository(AppDbContext db) : IPublicOvervie
         .ToList();
 
     public List<OverviewNeed> ListNeeds() => db.Needs.AsNoTracking()
-        .Where(need => need.Status == NeedStatus.Open || need.Status == NeedStatus.InProgress || need.Status == NeedStatus.Resolved)
+        .Where(need => StatusFilters.ActiveNeedStatuses.Contains(need.Status) || need.Status == NeedStatus.Resolved)
         .Select(need => new OverviewNeed(need.Id, need.Name, need.Type, need.Priority, need.Status,
             need.CrisisId, need.Crisis != null ? need.Crisis.Name : "", need.Latitude, need.Longitude))
         .ToList();

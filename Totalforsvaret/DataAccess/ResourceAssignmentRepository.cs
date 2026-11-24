@@ -19,8 +19,7 @@ internal sealed class ResourceAssignmentRepository(AppDbContext db) : IResourceA
         db.ResourceAssignments.AnyAsync(other =>
             other.Id != assignmentId &&
             other.ResourceId == resourceId &&
-            (other.Status == AssignmentStatus.Requested ||
-             other.Status == AssignmentStatus.Assigned));
+            StatusFilters.BusyAssignmentStatuses.Contains(other.Status));
 
     public Task<List<ResourceAssignment>> ListForResourceOwnerAsync(int ownerId) =>
         InboxAssignments()
@@ -68,7 +67,7 @@ internal sealed class ResourceAssignmentRepository(AppDbContext db) : IResourceA
         await using var transaction = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
 
         var activeNeeds = await db.Needs.CountAsync(need =>
-            needIds.Contains(need.Id) && (need.Status == NeedStatus.Open || need.Status == NeedStatus.InProgress));
+            needIds.Contains(need.Id) && StatusFilters.ActiveNeedStatuses.Contains(need.Status));
         if (activeNeeds != needIds.Length)
             return RequestAssignmentResult.InactiveNeed;
 
@@ -80,7 +79,7 @@ internal sealed class ResourceAssignmentRepository(AppDbContext db) : IResourceA
 
         var busy = await db.ResourceAssignments.AnyAsync(assignment =>
             resourceIds.Contains(assignment.ResourceId) &&
-            (assignment.Status == AssignmentStatus.Requested || assignment.Status == AssignmentStatus.Assigned));
+            StatusFilters.BusyAssignmentStatuses.Contains(assignment.Status));
         if (busy)
             return RequestAssignmentResult.BusyResource;
 

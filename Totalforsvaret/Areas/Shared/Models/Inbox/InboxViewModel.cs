@@ -1,9 +1,17 @@
-namespace Totalforsvaret.Areas.Privat.Models;
-
 using Totalforsvaret.Areas.Offentlig.Models;
+
+namespace Totalforsvaret.Models.Inbox;
+
+public enum InboxAudience
+{
+    Private,
+    Public
+}
 
 public class InboxViewModel
 {
+    public InboxAudience Audience { get; init; }
+
     public IReadOnlyList<InboxItemViewModel> Items { get; init; }
         = Array.Empty<InboxItemViewModel>();
 
@@ -12,7 +20,6 @@ public class InboxViewModel
     public InboxItemViewModel? SelectedItem =>
         Items.FirstOrDefault(item => item.AssignmentId == SelectedId);
 
-    // Meldinger for den valgte matchen.
     public IReadOnlyList<InboxMessageViewModel> Messages { get; init; }
         = Array.Empty<InboxMessageViewModel>();
 }
@@ -21,8 +28,6 @@ public class InboxItemViewModel
 {
     public int AssignmentId { get; init; }
     public int ResourceId { get; init; }
-
-    // Bare ressursens eier kan godta, avslå eller frigi den.
     public bool CanManageAssignment { get; init; }
 
     public string ResourceName { get; init; } = "";
@@ -40,12 +45,21 @@ public class InboxItemViewModel
     public string? NeedContactPerson { get; init; }
     public string? NeedContactPoint { get; init; }
     public string? NeedPhoneNumber { get; init; }
-    public string? NeedAddress { get; init; }
+    public DateTime? NeedDeadline { get; init; }
 
     public AssignmentStatus Status { get; init; }
     public DateTime RequestedAtUtc { get; init; }
     public DateTime? AssignedAtUtc { get; init; }
     public DateTime? ClosedAtUtc { get; init; }
+
+    public bool IsVehicle => CategoryName == "Vehicles";
+
+    public string CategoryLabel => IsVehicle ? "Kjøretøy" : "Utstyr";
+
+    public string ContactLine => string.Join(
+        " · ",
+        new[] { NeedContactPerson, NeedContactPoint, NeedPhoneNumber }
+            .Where(value => !string.IsNullOrWhiteSpace(value)));
 
     public string StatusLabel => Status switch
     {

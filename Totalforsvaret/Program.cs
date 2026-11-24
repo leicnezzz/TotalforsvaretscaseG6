@@ -6,6 +6,7 @@ using Totalforsvaret.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Totalforsvaret.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
@@ -89,6 +90,8 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddScoped<Totalforsvaret.Handlers.ResourceHandler>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddScoped<IInboxService, InboxService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, new MariaDbServerVersion(new Version(11, 4, 0))));

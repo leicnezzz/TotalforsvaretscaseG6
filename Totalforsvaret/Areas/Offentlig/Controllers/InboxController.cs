@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Areas.Offentlig.Models;
-using Totalforsvaret.Areas.Privat.Models;
+using Totalforsvaret.Models.Inbox;
 using Totalforsvaret.DataAccess;
 using Totalforsvaret.Models;
 

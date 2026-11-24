@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
@@ -21,10 +22,12 @@ public class Crisis
     public string Area { get; set; } = "";
 
     [Column("Breddegrad")]
-    public double? Latitude { get; set; }
+    [Precision(9, 6)]
+    public decimal? Latitude { get; set; }
 
     [Column("Lengdegrad")]
-    public double? Longitude { get; set; }
+    [Precision(9, 6)]
+    public decimal? Longitude { get; set; }
     
     // Informasjon om krisen
     [Column("Alvorlighetsgrad")]

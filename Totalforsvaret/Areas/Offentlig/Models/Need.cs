@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Totalforsvaret.Areas.Offentlig.Models;
@@ -29,14 +30,14 @@ public class Need
 
     public string? Telefonnummer { get; set; }
     
-    public DateTime? Frist { get; set; }
-    
     // Lokasjon
     [Column("Breddegrad")]
-    public double? Latitude { get; set; }
+    [Precision(9, 6)]
+    public decimal? Latitude { get; set; }
 
     [Column("Lengdegrad")]
-    public double? Longitude { get; set; }
+    [Precision(9, 6)]
+    public decimal? Longitude { get; set; }
 
     // Kobling til krise
     [Column("HendelseId")]

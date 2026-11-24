@@ -121,8 +121,8 @@ public class CrisisController : Controller
             ModelState.AddModelError(
                 nameof(crisis.StartTime),
                 "Velg et starttidspunkt.");
-        if (crisis.Latitude is not double latitude || !double.IsFinite(latitude) || Math.Abs(latitude) > 90 ||
-            crisis.Longitude is not double longitude || !double.IsFinite(longitude) || Math.Abs(longitude) > 180)
+        if (crisis.Latitude is not decimal latitude || Math.Abs(latitude) > 90 ||
+            crisis.Longitude is not decimal longitude || Math.Abs(longitude) > 180)
         {
             ModelState.AddModelError(nameof(crisis.Latitude), "Velg en gyldig plassering på kartet.");
         }
@@ -250,8 +250,7 @@ public async Task<IActionResult> Edit(
     }
 
     if (crisis.Latitude.HasValue &&
-        (double.IsNaN(crisis.Latitude.Value) ||
-         crisis.Latitude < -90 ||
+        (crisis.Latitude < -90 ||
          crisis.Latitude > 90))
     {
         ModelState.AddModelError(
@@ -260,8 +259,7 @@ public async Task<IActionResult> Edit(
     }
 
     if (crisis.Longitude.HasValue &&
-        (double.IsNaN(crisis.Longitude.Value) ||
-         crisis.Longitude < -180 ||
+        (crisis.Longitude < -180 ||
          crisis.Longitude > 180))
     {
         ModelState.AddModelError(

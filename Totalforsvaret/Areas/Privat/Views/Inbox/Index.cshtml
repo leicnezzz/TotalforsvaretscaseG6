@@ -164,13 +164,6 @@
                                     <div class="inbox-chips">
                                         <span class="inbox-chip">Prioritet: @item.NeedPriority</span>
                                         <span class="inbox-chip">Status: @item.NeedStatus</span>
-
-                                        @if (item.NeedDeadline.HasValue)
-                                        {
-                                            <span class="inbox-chip">
-                                                Frist: @(item.NeedDeadline.Value.ToString("dd.MM.yyyy HH:mm"))
-                                            </span>
-                                        }
                                     </div>
 
                                     @if (!string.IsNullOrWhiteSpace(

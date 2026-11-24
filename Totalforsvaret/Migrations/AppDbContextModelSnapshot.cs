@@ -103,21 +103,20 @@ namespace Totalforsvaret.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("Beskrivelse");
 
-                    b.Property<DateTime?>("Frist")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("Kontaktperson")
                         .HasColumnType("longtext");
 
                     b.Property<string>("Kontaktpunkt")
                         .HasColumnType("longtext");
 
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("double")
+                    b.Property<decimal?>("Latitude")
+                        .HasPrecision(9, 6)
+                        .HasColumnType("decimal(9,6)")
                         .HasColumnName("Breddegrad");
 
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("double")
+                    b.Property<decimal?>("Longitude")
+                        .HasPrecision(9, 6)
+                        .HasColumnType("decimal(9,6)")
                         .HasColumnName("Lengdegrad");
 
                     b.Property<string>("Name")
@@ -354,12 +353,14 @@ namespace Totalforsvaret.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("Beskrivelse");
 
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("double")
+                    b.Property<decimal?>("Latitude")
+                        .HasPrecision(9, 6)
+                        .HasColumnType("decimal(9,6)")
                         .HasColumnName("Breddegrad");
 
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("double")
+                    b.Property<decimal?>("Longitude")
+                        .HasPrecision(9, 6)
+                        .HasColumnType("decimal(9,6)")
                         .HasColumnName("Lengdegrad");
 
                     b.Property<string>("Name")

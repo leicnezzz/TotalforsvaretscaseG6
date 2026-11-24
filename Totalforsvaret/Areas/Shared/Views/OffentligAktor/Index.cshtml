@@ -2,7 +2,7 @@
 @using System.Text.Json
 @using Totalforsvaret.Controllers
 @using Totalforsvaret.Areas.Offentlig.Models
-@model List<Resource>
+@model Totalforsvaret.Models.PublicActorOverviewViewModel
 
 @{
     var isMatch = ViewContext.RouteData.Values["match"] is true;
@@ -12,7 +12,7 @@
     ViewData["HideFooter"] = !isMatch;
 
     var nå = DateTime.Now;
-    var kartRessurser = Model
+    var kartRessurser = Model.AvailableResources
         .Where(ressurs => ressurs.TilgjengeligFra == null || ressurs.TilgjengeligFra <= nå)
         .Select(ressurs => new
     {
@@ -26,11 +26,10 @@
         tilgjengeligFra = ressurs.TilgjengeligFra?.ToString("dd.MM.yyyy HH:mm"),
         latitude = ressurs.Latitude,
         longitude = ressurs.Longitude,
-        egen = ressurs.BrukerId == (int?)ViewBag.MinBrukerId
+        egen = ressurs.BrukerId == Model.CurrentUserId
     });
 
-    var kartBehov = (ViewBag.BehovPaKart as IEnumerable<Need>
-                     ?? Enumerable.Empty<Need>()).Select(behov => new
+    var kartBehov = Model.MapNeeds.Select(behov => new
     {
         id = behov.Id,
         kriseId = behov.CrisisId,
@@ -47,25 +46,57 @@
     {
         ressurser = kartRessurser,
         behov = kartBehov,
-        markeringer = (ViewBag.Kartmarkeringer as IEnumerable<Totalforsvaret.Models.CrisisMapAnnotation>
-            ?? Enumerable.Empty<Totalforsvaret.Models.CrisisMapAnnotation>()).Select(a => new
+        markeringer = Model.MapAnnotations.Select(a => new
             {
                 id = a.Id, crisisId = a.CrisisId, kind = a.Kind, name = a.Name,
                 description = a.Description, impact = a.Impact, risk = a.Risk,
                 coordinates = JsonSerializer.Deserialize<double[][]>(a.CoordinatesJson)
             }),
-        kriser = (object?)ViewBag.KriserPaKart ?? Array.Empty<object>()
+        kriser = Model.Crises.Select(crisis => new
+        {
+            id = crisis.Id,
+            navn = crisis.Name,
+            type = crisis.Type.ToNorwegianText(),
+            alvorlighetsgrad = crisis.Severity.ToNorwegianText(),
+            status = crisis.Status.ToNorwegianText(),
+            beskrivelse = crisis.Description,
+            latitude = crisis.Latitude,
+            longitude = crisis.Longitude
+        })
     });
 
-    var opptatteRessursIder = ViewBag.OpptatteRessursIder as HashSet<int> ?? new HashSet<int>();
+    var opptatteRessursIder = Model.BusyResourceIds;
     var listeRessurser = isMatch
-        ? Model.Where(r => !opptatteRessursIder.Contains(r.ResourceId) &&
+        ? Model.AvailableResources.Where(r => !opptatteRessursIder.Contains(r.ResourceId) &&
                            (r.TilgjengeligFra == null || r.TilgjengeligFra <= nå))
-        : Model;
+        : Model.AvailableResources;
     var oversiktJson = JsonSerializer.Serialize(new
     {
-        kriser = (object?)ViewBag.KriserTilLister ?? Array.Empty<object>(),
-        behov = (object?)ViewBag.BehovTilLister ?? Array.Empty<object>(),
+        kriser = Model.Crises.Select(crisis => new
+        {
+            id = crisis.Id,
+            navn = crisis.Name,
+            type = crisis.Type.ToNorwegianText(),
+            omrade = crisis.Area,
+            alvorlighetsgrad = crisis.Severity.ToNorwegianText(),
+            starttidspunkt = crisis.StartTime,
+            status = crisis.Status.ToNorwegianText(),
+            beskrivelse = crisis.Description,
+            latitude = crisis.Latitude,
+            longitude = crisis.Longitude
+        }),
+        behov = Model.Needs.Select(need => new
+        {
+            id = need.Id,
+            navn = need.Name,
+            type = need.Type.ToNorwegianText(),
+            prioritet = need.Priority.ToNorwegianText(),
+            status = need.Status.ToNorwegianText(),
+            kriseId = need.CrisisId,
+            krise = need.CrisisName,
+            latitude = need.Latitude,
+            longitude = need.Longitude
+        }),
         ressurser = listeRessurser.Select(r => new
         {
             id = r.ResourceId,
@@ -112,17 +143,17 @@
                     <button type="button" class="stat-kort krise-kort"
                             aria-haspopup="dialog" aria-controls="oversiktDialog" data-oversikt-liste="kriser">
                         <span>Hendelser</span>
-                        <span class="stat-tall">@((ViewBag.KriserTilLister as System.Collections.ICollection)?.Count ?? 0)</span>
+                        <span class="stat-tall">@Model.Crises.Count</span>
                     </button>
                     <button type="button" class="stat-kort behov-kort"
                             aria-haspopup="dialog" aria-controls="oversiktDialog" data-oversikt-liste="aktive">
                         <span>Aktive behov</span>
-                        <span class="stat-tall">@ViewBag.AktiveBehov</span>
+                        <span class="stat-tall">@Model.ActiveNeedCount</span>
                     </button>
                     <button type="button" class="stat-kort treff-kort"
                             aria-haspopup="dialog" aria-controls="oversiktDialog" data-oversikt-liste="treff">
                         <span>Foreslåtte treff</span>
-                        <span class="stat-tall">@ViewBag.ForeslatteTreff</span>
+                        <span class="stat-tall">@Model.MatchSuggestions.Count</span>
                     </button>
                 </div>
             </div>
@@ -343,17 +374,10 @@
 
 
             @{
-                var kategorier = Model.ToDictionary(r => r.ResourceId, r => r.Category?.Name);
-                var matchForslag = ViewBag.MatchForslag as
-                                       List<Totalforsvaret.Areas.Offentlig.ViewModels.MatchSuggestionViewModel>
-                                   ?? new();
-                    var aktiveTildelinger = ViewBag.AktiveTildelinger as
-        List<Totalforsvaret.Areas.Offentlig.Models.ResourceAssignment>
-        ?? new();
-
-    var treffStatuser = ViewBag.TreffStatuser as
-        Dictionary<(int, int), Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus>
-        ?? new();
+                var kategorier = Model.AvailableResources.ToDictionary(r => r.ResourceId, r => r.Category?.Name);
+                var matchForslag = Model.MatchSuggestions;
+                var aktiveTildelinger = Model.ActiveAssignments;
+                var treffStatuser = Model.MatchStatuses;
 
             }
 
@@ -531,7 +555,7 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var r in Model)
+            @foreach (var r in Model.AvailableResources)
             {
                 <tr>
                     <td>@r.Object</td>
@@ -559,7 +583,7 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var b in (ViewBag.BehovPaKart as IEnumerable<Need>) ?? Enumerable.Empty<Need>())
+            @foreach (var b in Model.MapNeeds)
             {
                 <tr>
                     <td>@b.Name</td>

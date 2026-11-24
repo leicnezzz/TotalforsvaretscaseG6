@@ -6,10 +6,7 @@ namespace Totalforsvaret.DataAccess;
 public interface IPublicOverviewRepository
 {
     int CountActiveNeeds();
-    int CountResolvedNeeds();
-    int CountActiveCrises();
     List<Need> ListActiveNeedsOnMap();
-    List<Need> ListLatestActiveNeeds();
     List<Need> ListActiveNeeds();
     List<CrisisMapAnnotation> ListAnnotations();
     List<ResourceAssignment> ListActiveAssignments();

@@ -10,14 +10,9 @@ internal sealed class PublicOverviewRepository(AppDbContext db) : IPublicOvervie
         .Where(need => need.Status == NeedStatus.Open || need.Status == NeedStatus.InProgress);
 
     public int CountActiveNeeds() => ActiveNeeds.Count();
-    public int CountResolvedNeeds() => db.Needs.Count(need => need.Status == NeedStatus.Resolved);
-    public int CountActiveCrises() => db.Crises.Count(crisis => crisis.Status == CrisisStatus.Active);
 
     public List<Need> ListActiveNeedsOnMap() =>
         ActiveNeeds.Where(need => need.Latitude != null && need.Longitude != null).ToList();
-
-    public List<Need> ListLatestActiveNeeds() =>
-        ActiveNeeds.OrderByDescending(need => need.Id).Take(5).ToList();
 
     public List<Need> ListActiveNeeds() => ActiveNeeds.ToList();
 

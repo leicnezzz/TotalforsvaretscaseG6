@@ -36,97 +36,33 @@ public class PublicActorController : Controller
 
     public IActionResult Index()
     {
-        // Henter tilgjengelige ressurser
-        var resources = _resources.GetResources();
-
-        var availableResources = resources
-            .Where(r => r.Available)
+        var availableResources = _resources.GetResources()
+            .Where(resource => resource.Available)
             .ToList();
-
-        // Henter antall aktive behov
-        ViewBag.AktiveBehov = _overview.CountActiveNeeds();
-
-        // Henter antall løste behov.
-        ViewBag.LosteBehov = _overview.CountResolvedNeeds();
-
-        // Henter aktive behov med gyldige kartkoordinater
-        ViewBag.BehovPaKart = _overview.ListActiveNeedsOnMap();
-
-        // Henter de fem nyeste aktive behovene
-        ViewBag.AktiveBehovListe = _overview.ListLatestActiveNeeds();
-
-        // Alle hendelser kan åpnes, også inaktive og hendelser uten eget kartpunkt.
-        ViewBag.Kartmarkeringer = _overview.ListAnnotations();
-        var crises = _overview.ListCrises();
-        ViewBag.KriserPaKart = crises.Select(c => new
-            {
-                id = c.Id,
-                navn = c.Name,
-                type = c.Type.ToNorwegianText(),
-                alvorlighetsgrad = c.Severity.ToNorwegianText(),
-                status = c.Status.ToNorwegianText(),
-                beskrivelse = c.Description,
-                latitude = c.Latitude,
-                longitude = c.Longitude
-            })
-            .ToList();
-
-        // Alle aktive og løste behov til kortenes lister.
-        ViewBag.BehovTilLister = _overview.ListNeeds().Select(n => new
-            {
-                id = n.Id,
-                navn = n.Name,
-                type = n.Type.ToNorwegianText(),
-                prioritet = n.Priority.ToNorwegianText(),
-                status = n.Status.ToNorwegianText(),
-                kriseId = n.CrisisId,
-                krise = n.CrisisName,
-                latitude = n.Latitude,
-                longitude = n.Longitude
-            })
-            .ToList();
-
-        // Teller kriser med status Aktiv.
-        ViewBag.AktiveKriser = _overview.CountActiveCrises();
         var activeAssignments = _overview.ListActiveAssignments();
+        var closedReviews = _overview.ListClosedReviewsForActiveNeeds();
 
-        ViewBag.AktiveTildelinger = activeAssignments;
+        var matchStatuses = activeAssignments
+            .OrderByDescending(assignment => assignment.Id)
+            .Concat(closedReviews.OrderByDescending(assignment => assignment.Id))
+            .GroupBy(assignment => (assignment.NeedId, assignment.ResourceId))
+            .ToDictionary(group => group.Key, group => group.First().Status);
 
-		var closedReviews = _overview.ListClosedReviewsForActiveNeeds();
-
-		var matchStatuses = activeAssignments
-			.OrderByDescending(a => a.Id)
-			.Concat(closedReviews.OrderByDescending(a => a.Id))
-			.GroupBy(a => (a.NeedId, a.ResourceId))
-			.ToDictionary(group => group.Key, group => group.First().Status);
-
-		ViewBag.TreffStatuser = matchStatuses;
-
-        var suggestions = _matching.FindSuggestions(_overview.ListActiveNeeds(), availableResources, matchStatuses);
-        ViewBag.MatchForslag = suggestions;
-        ViewBag.ForeslatteTreff = suggestions.Count;
-        ViewBag.OpptatteRessursIder = activeAssignments.Select(a => a.ResourceId).ToHashSet();
-
-        ViewBag.KriserTilLister = crises.Select(c => new
-            {
-                id = c.Id,
-                navn = c.Name,
-                type = c.Type.ToNorwegianText(),
-                omrade = c.Area,
-                alvorlighetsgrad = c.Severity.ToNorwegianText(),
-                starttidspunkt = c.StartTime,
-                status = c.Status.ToNorwegianText(),
-                beskrivelse = c.Description,
-                latitude = c.Latitude,
-                longitude = c.Longitude
-            })
-            .ToList();
-
-        // Brukes til å markere egne ressurser på kartet.
         TryGetUserId(out var currentUserId);
-        ViewBag.MinBrukerId = currentUserId;
-
-        return View(availableResources);
+        return View(new PublicActorOverviewViewModel
+        {
+            CurrentUserId = currentUserId,
+            ActiveNeedCount = _overview.CountActiveNeeds(),
+            AvailableResources = availableResources,
+            MapNeeds = _overview.ListActiveNeedsOnMap(),
+            MapAnnotations = _overview.ListAnnotations(),
+            Crises = _overview.ListCrises(),
+            Needs = _overview.ListNeeds(),
+            ActiveAssignments = activeAssignments,
+            BusyResourceIds = activeAssignments.Select(assignment => assignment.ResourceId).ToHashSet(),
+            MatchStatuses = matchStatuses,
+            MatchSuggestions = _matching.FindSuggestions(_overview.ListActiveNeeds(), availableResources, matchStatuses)
+        });
     }
     [HttpGet]
     [ActionName("MineRessurser")]

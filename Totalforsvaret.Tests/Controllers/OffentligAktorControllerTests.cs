@@ -202,4 +202,36 @@ public class OffentligAktorControllerTests
 
         Assert.That(result, Is.TypeOf<ChallengeResult>());
     }
+    
+    /// <summary>
+    /// A new resource is saved on the signed-in user.
+    /// </summary>
+    [Test]
+    public async Task NyRessurs_Valid_SavesOnSignedInUser()
+    {
+        using var db = CreateDb();
+        AddResource(db, 1); // makes sure category 1 exists
+
+        var result = await CreateController(db, userId: 7)
+            .NyRessurs("Truck", 1, null, "Duty officer", "Street 1", 59.9m, 10.7m, null, null);
+
+        Assert.That(result, Is.TypeOf<LocalRedirectResult>());
+        var created = db.Resources.Single(r => r.Object == "Truck");
+        Assert.That(created.BrukerId, Is.EqualTo(7));
+    }
+
+    /// <summary>
+    /// A resource with a category that does not exist is not saved.
+    /// </summary>
+    [Test]
+    public async Task NyRessurs_UnknownCategory_IsNotSaved()
+    {
+        using var db = CreateDb();
+
+        var result = await CreateController(db)
+            .NyRessurs("Truck", 42, null, "Duty officer", "Street 1", 59.9m, 10.7m, null, null);
+
+        Assert.That(result, Is.TypeOf<RedirectToActionResult>());
+        Assert.That(db.Resources, Is.Empty);
+    }
 }

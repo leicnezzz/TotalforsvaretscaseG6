@@ -2,7 +2,7 @@
 
 namespace Totalforsvaret.Areas.Offentlig.Models
 {
-    public class Offentligaktør : Bruker
+    public class PublicActor : Bruker
     {
         // Arves fra IdentityUser<int>:
         // Id, UserName, Email, PhoneNumber, PasswordHash

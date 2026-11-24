@@ -26,7 +26,7 @@
         </section>
 
         <form action="@(Url.Action(ViewData["EditId"] != null ? "Edit" : "Create", "Need",
-              new { area = "Offentlig", id = ViewData["EditId"] }) + Context.Request.HendelsesQuery())"
+              new { area = "Offentlig", id = ViewData["EditId"] }) + Context.Request.CrisisQuery())"
           asp-antiforgery="true" method="post" class="resource-wizard need-card" data-need-wizard>
 
             <div asp-validation-summary="All" class="text-danger"></div>
@@ -134,7 +134,7 @@
 
             <div class="need-actions">
                 <div>
-                    <a href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
+                    <a href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.CrisisQuery())"
                    class="public-button public-button-outline" data-need-cancel>Avbryt</a>
                     <button type="button" class="public-button public-button-outline" data-need-back hidden>← Tilbake</button>
                 </div>

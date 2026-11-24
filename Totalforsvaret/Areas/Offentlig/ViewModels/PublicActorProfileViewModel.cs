@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Totalforsvaret.Areas.Offentlig.ViewModels;
 
-public class OffentligProfileViewModel
+public class PublicActorProfileViewModel
 {
     [Required(ErrorMessage = "Skriv inn fornavn.")]
     [Display(Name = "Fornavn")]

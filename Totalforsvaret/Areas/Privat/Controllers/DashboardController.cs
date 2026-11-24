@@ -20,25 +20,25 @@ public class DashboardController(
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var bruker = await users.GetUserAsync(User);
+        var user = await users.GetUserAsync(User);
 
-        if (bruker == null)
+        if (user == null)
             return Challenge();
 
         return View(new PrivateHomeViewModel
         {
-			Navn = bruker.Navn,
-			HasPhoto = await photos.ExistsAsync(bruker.Id)
+			Navn = user.Navn,
+			HasPhoto = await photos.ExistsAsync(user.Id)
 		});
     }
 
     [HttpGet]
     public IActionResult ResourcePoints()
     {
-        if (!int.TryParse(users.GetUserId(User), out var brukerId))
+        if (!int.TryParse(users.GetUserId(User), out var userId))
             return Challenge();
 
-        var points = resources.GetResourcePointsForUser(brukerId);
+        var points = resources.GetResourcePointsForUser(userId);
 
         return Json(points);
     }

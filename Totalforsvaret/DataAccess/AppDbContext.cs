@@ -31,8 +31,8 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
     public DbSet<EquipmentDetails> EquipmentDetails =>
         Set<EquipmentDetails>();
     
-    public DbSet<EgenberedskapChecklistStatus> EgenberedskapChecklistStatuses =>
-        Set<EgenberedskapChecklistStatus>();
+    public DbSet<EmergencyChecklistStatus> EmergencyChecklistStatuses =>
+        Set<EmergencyChecklistStatus>();
 	public DbSet<ProfilePhoto> ProfilePhotos => Set<ProfilePhoto>();
     
     public DbSet<ResourceMessage> ResourceMessages
@@ -101,8 +101,8 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
 
 		builder.Entity<Bruker>()
             .HasDiscriminator<string>("BrukerType")
-            .HasValue<Privataktor>("Privat")
-            .HasValue<Offentligaktør>("Offentlig");
+            .HasValue<PrivateActor>("Privat")
+            .HasValue<PublicActor>("Offentlig");
 
         builder.Entity<Need>()
             .Property(need => need.Priority)
@@ -214,8 +214,9 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
                 Name = "Equipment"
             }
         );
-        builder.Entity<EgenberedskapChecklistStatus>(entity =>
+        builder.Entity<EmergencyChecklistStatus>(entity =>
         {
+            entity.ToTable("EgenberedskapChecklistStatuses");
             entity.HasKey(status => new { status.BrukerId, status.ItemId });
             entity.Property(status => status.ItemId).HasMaxLength(80);
 

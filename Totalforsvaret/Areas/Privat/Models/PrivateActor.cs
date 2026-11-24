@@ -2,7 +2,7 @@
 
 namespace Totalforsvaret.Areas.Privat.Models
 {
-    public class Privataktor : Bruker // Arver identity fra Bruker-klassen
+    public class PrivateActor : Bruker // Arver identity fra Bruker-klassen
     {
         // Automatisk arvet fra IdentityUser<int>:
         // Id (int) - BrukerID (og identifikator for Offentligaktor)

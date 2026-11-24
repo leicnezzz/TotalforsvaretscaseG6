@@ -5,10 +5,10 @@ namespace Totalforsvaret.Services;
 
 internal static class PrivateAccountRegistration
 {
-    public static Privataktor CreateUser(RegisterInput input)
+    public static PrivateActor CreateUser(RegisterInput input)
     {
         var email = input.Email.Trim();
-        return new Privataktor
+        return new PrivateActor
         {
             UserName = email,
             Email = email,

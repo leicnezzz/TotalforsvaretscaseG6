@@ -43,7 +43,7 @@ public class Crisis
 
     public int? OffentligAktorId { get; set; }
 
-    public Areas.Offentlig.Models.Offentligaktør? OffentligAktor { get; set; }
+    public Areas.Offentlig.Models.PublicActor? OffentligAktor { get; set; }
 
     // Behov knyttet til krisen
     public ICollection<Areas.Offentlig.Models.Need> Needs { get; set; }

@@ -35,13 +35,13 @@ public class NeedController : Controller
     [HttpGet]
     public async Task<IActionResult> Create(int? crisisId = null)
     {
-        var apneHendelser = HentApneHendelser();
+        var openCrisisIds = GetOpenCrisisIds();
         var viewModel = new NeedCreateViewModel
         {
-            Crises = await GetCrisesAsync(apneHendelser),
-            CrisisLocations = await _crises.ListMapPointsAsync(apneHendelser),
-            CrisisId = apneHendelser.Count == 1 ? apneHendelser[0] :
-                apneHendelser.Count == 0 ? crisisId : null,
+            Crises = await GetCrisesAsync(openCrisisIds),
+            CrisisLocations = await _crises.ListMapPointsAsync(openCrisisIds),
+            CrisisId = openCrisisIds.Count == 1 ? openCrisisIds[0] :
+                openCrisisIds.Count == 0 ? crisisId : null,
             Status = NeedStatus.InProgress
         };
 
@@ -55,12 +55,12 @@ public class NeedController : Controller
     {
         var user = await _userManager.GetUserAsync(User);
 
-        if (user is not Offentligaktør offentligAktor)
+        if (user is not PublicActor publicActor)
             return Forbid();
 
-        var apneHendelser = HentApneHendelser();
+        var openCrisisIds = GetOpenCrisisIds();
         if (viewModel.CrisisId is int crisisId &&
-            ((apneHendelser.Count > 0 && !apneHendelser.Contains(crisisId)) ||
+            ((openCrisisIds.Count > 0 && !openCrisisIds.Contains(crisisId)) ||
              !await _crises.ExistsAsync(crisisId)))
         {
             ModelState.AddModelError(
@@ -70,8 +70,8 @@ public class NeedController : Controller
 
         if (!ModelState.IsValid)
         {
-            viewModel.Crises = await GetCrisesAsync(apneHendelser);
-            viewModel.CrisisLocations = await _crises.ListMapPointsAsync(apneHendelser);
+            viewModel.Crises = await GetCrisesAsync(openCrisisIds);
+            viewModel.CrisisLocations = await _crises.ListMapPointsAsync(openCrisisIds);
             return View(viewModel);
         }
 
@@ -86,24 +86,24 @@ public class NeedController : Controller
             Latitude = viewModel.Latitude!.Value,
             Longitude = viewModel.Longitude!.Value,
             CrisisId = viewModel.CrisisId,
-            OffentligAktorId = offentligAktor.Id
+            OffentligAktorId = publicActor.Id
         };
 
         await _needs.AddAsync(need);
 
-        return LocalRedirect(this.OversiktUrl(viewModel.CrisisId));
+        return LocalRedirect(this.OverviewUrl(viewModel.CrisisId));
     }
 
     // Henter krisene som kan velges i skjemaet.
-    private List<int> HentApneHendelser() => Request.Query["hendelser"]
+    private List<int> GetOpenCrisisIds() => Request.Query["hendelser"]
         .Select(value => int.TryParse(value, out var id) ? id : 0)
         .Where(id => id > 0)
         .Distinct()
         .ToList();
 
-    private async Task<IEnumerable<SelectListItem>> GetCrisesAsync(List<int>? apneHendelser = null)
+    private async Task<IEnumerable<SelectListItem>> GetCrisesAsync(List<int>? openCrisisIds = null)
     {
-        var options = await _crises.ListOptionsAsync(apneHendelser);
+        var options = await _crises.ListOptionsAsync(openCrisisIds);
         return options.Select(option => new SelectListItem(option.Name, option.Id.ToString())).ToList();
     }
 
@@ -170,7 +170,7 @@ public class NeedController : Controller
 
         await _needs.SaveChangesAsync();
 
-        return LocalRedirect(this.OversiktUrl());
+        return LocalRedirect(this.OverviewUrl());
     }
 
     [HttpPost]
@@ -184,6 +184,6 @@ public class NeedController : Controller
 
         await _needs.DeleteAsync(need);
 
-        return LocalRedirect(this.OversiktUrl());
+        return LocalRedirect(this.OverviewUrl());
     }
 }

@@ -18,7 +18,8 @@ public class ResourceController(
 {
     [Authorize(Policy = "KunPrivat")]
     [HttpGet]
-    public IActionResult Skjema()
+    [ActionName("Skjema")]
+    public IActionResult Registration()
     {
         var model = new FormDataModel
         {
@@ -35,14 +36,15 @@ public class ResourceController(
 
     [Authorize(Policy = "KunPrivat")]
     [HttpGet]
-    public async Task<IActionResult> Oversikt()
+    [ActionName("Oversikt")]
+    public async Task<IActionResult> Overview()
     {
-        var bruker = await users.GetUserAsync(User);
+        var user = await users.GetUserAsync(User);
 
-        if (bruker is null)
+        if (user is null)
             return Challenge();
 
-        var ownedResources = await resources.ListOwnedAsync(bruker.Id);
+        var ownedResources = await resources.ListOwnedAsync(user.Id);
 
         return View(ownedResources);
     }
@@ -69,9 +71,9 @@ public class ResourceController(
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var bruker = await users.GetUserAsync(User);
+        var user = await users.GetUserAsync(User);
 
-        if (bruker is null)
+        if (user is null)
             return Challenge();
 
         var categoryExists = await resources.CategoryExistsAsync(input.CategoryId);
@@ -82,7 +84,7 @@ public class ResourceController(
         var resource = new Resource
         {
             Object = input.Object.Trim(),
-            BrukerId = bruker.Id
+            BrukerId = user.Id
         };
 
         ApplyInput(resource, input);
@@ -108,13 +110,13 @@ public class ResourceController(
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var bruker = await users.GetUserAsync(User);
+        var user = await users.GetUserAsync(User);
 
-        if (bruker is null)
+        if (user is null)
             return Challenge();
-		// Søker både ressurs-ID og bruker-ID.
+		// Søker både ressurs-ID og user-ID.
 		// Gjør at brukeren bare redigere sine egne ressurser.
-		var resource = await resources.FindOwnedAsync(id, bruker.Id, includeDetails: true);
+		var resource = await resources.FindOwnedAsync(id, user.Id, includeDetails: true);
 
         if (resource is null)
             return NotFound();
@@ -139,12 +141,12 @@ public class ResourceController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var bruker = await users.GetUserAsync(User);
+        var user = await users.GetUserAsync(User);
 
-        if (bruker is null)
+        if (user is null)
             return Challenge();
 
-        var resource = await resources.FindOwnedAsync(id, bruker.Id);
+        var resource = await resources.FindOwnedAsync(id, user.Id);
 
         if (resource is null)
             return NotFound();

@@ -2,13 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Totalforsvaret.Controllers;
 
-internal static class OffentligNavigationExtensions
+internal static class PublicActorNavigationExtensions
 {
-    public static QueryString HendelsesQuery(this HttpRequest request) =>
+    public static QueryString CrisisQuery(this HttpRequest request) =>
         QueryString.Create(request.Query["hendelser"]
             .Select(id => new KeyValuePair<string, string?>("hendelser", id)));
 
-    public static string OversiktUrl(this Controller controller, int? fallbackCrisisId = null, int? openCrisisId = null)
+    public static string OverviewUrl(this Controller controller, int? fallbackCrisisId = null, int? openCrisisId = null)
     {
         var url = controller.Url.Action("Index", "OffentligAktor", new { area = "" })!;
         var ids = controller.Request.Query["hendelser"]

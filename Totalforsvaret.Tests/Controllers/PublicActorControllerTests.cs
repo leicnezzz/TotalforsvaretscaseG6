@@ -15,16 +15,16 @@ using static Totalforsvaret.Tests.Helpers.PublicActorTestHelper;
 namespace Totalforsvaret.Tests.Controllers;
 
 /// <summary>
-/// Unit tests for OffentligAktorController.
+/// Unit tests for PublicActorController.
 /// </summary>
-public class OffentligAktorControllerTests
+public class PublicActorControllerTests
 {
     private static ResourceController CreateResourceController(AppDbContext db, int userId)
     {
         var users = new Mock<UserManager<Bruker>>(
             Mock.Of<IUserStore<Bruker>>(), null!, null!, null!, null!, null!, null!, null!, null!);
         users.Setup(manager => manager.GetUserAsync(It.IsAny<System.Security.Claims.ClaimsPrincipal>()))
-            .ReturnsAsync(new Offentligaktør { Id = userId });
+            .ReturnsAsync(new PublicActor { Id = userId });
         return WithUser(new ResourceController(new ResourceRepository(db), users.Object), userId);
     }
 
@@ -47,11 +47,11 @@ public class OffentligAktorControllerTests
     /// <summary>
     /// Creates the controller with a signed-in user.
     /// </summary>
-    private static OffentligAktorController CreateController(AppDbContext db, int? userId = 1)
+    private static PublicActorController CreateController(AppDbContext db, int? userId = 1)
     {
         // Use the same repositories as the application.
         var assignments = new ResourceAssignmentRepository(db);
-        return WithUser(new OffentligAktorController(
+        return WithUser(new PublicActorController(
             new ResourceRepository(db), assignments, new PublicOverviewRepository(db),
             new ResourceMatchingService(), new ResourceAssignmentService(assignments)), userId);
     }
@@ -62,7 +62,7 @@ public class OffentligAktorControllerTests
     [Test]
     public void Controller_RequiresKunOffentligPolicy()
     {
-        var attribute = typeof(OffentligAktorController)
+        var attribute = typeof(PublicActorController)
             .GetCustomAttributes(typeof(AuthorizeAttribute), true)
             .Cast<AuthorizeAttribute>()
             .Single();
@@ -81,7 +81,7 @@ public class OffentligAktorControllerTests
         AddResource(db, 1);
         AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
 
-        var result = await CreateController(db).TildelRessurs(1);
+        var result = await CreateController(db).AssignResource(1);
 
         Assert.That(result, Is.TypeOf<LocalRedirectResult>());
         Assert.That(((LocalRedirectResult)result).Url, Is.EqualTo(OverviewUrl));
@@ -95,7 +95,7 @@ public class OffentligAktorControllerTests
     {
         using var db = CreateDb();
 
-        var result = await CreateController(db).TildelRessurs(99);
+        var result = await CreateController(db).AssignResource(99);
 
         Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
     }
@@ -111,7 +111,7 @@ public class OffentligAktorControllerTests
         AddResource(db, 1);
         AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Assigned);
 
-        var result = await CreateController(db).TildelRessurs(1);
+        var result = await CreateController(db).AssignResource(1);
 
         Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
     }
@@ -127,7 +127,7 @@ public class OffentligAktorControllerTests
         AddResource(db, 1);
         AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
 
-        var result = await CreateController(db).TildelRessurs(1);
+        var result = await CreateController(db).AssignResource(1);
 
         Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
     }
@@ -143,7 +143,7 @@ public class OffentligAktorControllerTests
         AddResource(db, 1, available: false);
         AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
 
-        var result = await CreateController(db).TildelRessurs(1);
+        var result = await CreateController(db).AssignResource(1);
 
         Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
     }
@@ -157,7 +157,7 @@ public class OffentligAktorControllerTests
         using var db = CreateDb();
         AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Assigned);
 
-        var result = await CreateController(db).FrigiRessurs(1);
+        var result = await CreateController(db).ReleaseResource(1);
 
         Assert.That(result, Is.TypeOf<LocalRedirectResult>());
         Assert.That(db.ResourceAssignments.Single().Status, Is.EqualTo(AssignmentStatus.Released));
@@ -172,7 +172,7 @@ public class OffentligAktorControllerTests
         using var db = CreateDb();
         AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
 
-        var result = await CreateController(db).FrigiRessurs(1);
+        var result = await CreateController(db).ReleaseResource(1);
 
         Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
     }
@@ -186,7 +186,7 @@ public class OffentligAktorControllerTests
         using var db = CreateDb();
         AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
 
-        var result = await CreateController(db).AvslaRessurs(1);
+        var result = await CreateController(db).DeclineResource(1);
 
         Assert.That(result, Is.TypeOf<LocalRedirectResult>());
         Assert.That(db.ResourceAssignments.Single().Status, Is.EqualTo(AssignmentStatus.Rejected));
@@ -201,7 +201,7 @@ public class OffentligAktorControllerTests
         using var db = CreateDb();
         AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Assigned);
 
-        var result = await CreateController(db).AvslaRessurs(1);
+        var result = await CreateController(db).DeclineResource(1);
 
         Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
     }
@@ -216,7 +216,7 @@ public class OffentligAktorControllerTests
         AddResource(db, 1, userId: 1);
         AddResource(db, 2, userId: 2);
 
-        var result = await CreateController(db, userId: 1).MineRessurser();
+        var result = await CreateController(db, userId: 1).MyResources();
 
         Assert.That(result, Is.TypeOf<ViewResult>());
         var resources = (IEnumerable<Resource>)((ViewResult)result).Model!;
@@ -231,7 +231,7 @@ public class OffentligAktorControllerTests
     {
         using var db = CreateDb();
 
-        var result = await CreateController(db, userId: null).MineRessurser();
+        var result = await CreateController(db, userId: null).MyResources();
 
         Assert.That(result, Is.TypeOf<ChallengeResult>());
     }
@@ -275,7 +275,7 @@ public class OffentligAktorControllerTests
         using var db = CreateDb();
         AddResource(db, 1, userId: 1);
 
-        await CreateController(db, userId: 1).SlettRessurs(1);
+        await CreateController(db, userId: 1).DeleteResource(1);
 
         Assert.That(db.Resources, Is.Empty);
     }
@@ -289,7 +289,7 @@ public class OffentligAktorControllerTests
         using var db = CreateDb();
         AddResource(db, 1, userId: 2);
 
-        var result = await CreateController(db, userId: 1).SlettRessurs(1);
+        var result = await CreateController(db, userId: 1).DeleteResource(1);
 
         Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
         Assert.That(db.Resources.Count(), Is.EqualTo(1));
@@ -305,7 +305,7 @@ public class OffentligAktorControllerTests
         AddResource(db, 1, userId: 1);
         AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Released);
 
-        await CreateController(db, userId: 1).SlettRessurs(1);
+        await CreateController(db, userId: 1).DeleteResource(1);
 
         Assert.That(db.Resources.Count(), Is.EqualTo(1));
     }

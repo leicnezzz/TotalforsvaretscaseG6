@@ -40,7 +40,7 @@ builder.Services.AddIdentityCore<Bruker>(options =>
 })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddSignInManager()
-    .AddClaimsPrincipalFactory<BrukerClaimsFactory>();
+    .AddClaimsPrincipalFactory<ApplicationUserClaimsFactory>();
 
 builder.Services
     .AddAuthentication(IdentityConstants.ApplicationScheme)

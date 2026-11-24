@@ -33,7 +33,7 @@ public class AccountControllerTests
             Mock.Of<IServiceProvider>(),
             NullLogger<UserManager<Bruker>>.Instance);
 
-        // Disse testene bruker bare registrering, ikke SignInManager.
+        // Disse testene user bare registrering, ikke SignInManager.
         controller = new AccountController(users.Object, null!);
 
         controller.TempData = new TempDataDictionary(
@@ -63,14 +63,14 @@ public class AccountControllerTests
         // Act
         var resultat = await controller.Register(input);
 
-        // Assert: riktig brukertype og data sendes til Identity.
+        // Assert: riktig actorType og data sendes til Identity.
         users.Verify(
             manager => manager.CreateAsync(
-                It.Is<Bruker>(bruker =>
-                    bruker is Privataktor &&
-                    bruker.UserName == input.Email &&
-                    bruker.Email == input.Email &&
-                    bruker.Navn == "Lucas Test"),
+                It.Is<Bruker>(user =>
+                    user is PrivateActor &&
+                    user.UserName == input.Email &&
+                    user.Email == input.Email &&
+                    user.Navn == "Lucas Test"),
                 input.Password),
             Times.Once);
 

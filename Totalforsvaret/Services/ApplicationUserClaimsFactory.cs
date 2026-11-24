@@ -6,12 +6,12 @@ using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Services;
-// Utvider brukerens claims med en claim som heter "Brukertype", den angir brukertype med verdien "Privat" eller "Offentlig".
+// Utvider brukerens claims med en claim som heter "Brukertype", den angir actorType med verdien "Privat" eller "Offentlig".
 // Claimen brukes for å bestemme hvilken aktørtype som er logget inn, og hvilke funksjoner som er tilgjengelig for brukeren.
-// BrukerClaimsFactory registreres som en tjeneste i Program.cs
-public class BrukerClaimsFactory : UserClaimsPrincipalFactory<Bruker>
+// ApplicationUserClaimsFactory registreres som en tjeneste i Program.cs
+public class ApplicationUserClaimsFactory : UserClaimsPrincipalFactory<Bruker>
 {
-    public BrukerClaimsFactory(
+    public ApplicationUserClaimsFactory(
         UserManager<Bruker> users,
         IOptions<IdentityOptions> options)
         : base(users, options)
@@ -19,15 +19,15 @@ public class BrukerClaimsFactory : UserClaimsPrincipalFactory<Bruker>
     }
 
     protected override async Task<ClaimsIdentity> GenerateClaimsAsync(
-        Bruker bruker)
+        Bruker user)
     {
-        var identity = await base.GenerateClaimsAsync(bruker);
+        var identity = await base.GenerateClaimsAsync(user);
 
-        var brukertype = bruker switch
+        var actorType = user switch
         {
-            Privataktor => "Privat",
-            Offentligaktør => "Offentlig",
-            _ => throw new InvalidOperationException("Ukjent brukertype.")
+            PrivateActor => "Privat",
+            PublicActor => "Offentlig",
+            _ => throw new InvalidOperationException("Ukjent actorType.")
         };
 
         foreach (var claim in identity.FindAll("Brukertype").ToList())
@@ -35,7 +35,7 @@ public class BrukerClaimsFactory : UserClaimsPrincipalFactory<Bruker>
             identity.RemoveClaim(claim);
         }
 
-        identity.AddClaim(new Claim("Brukertype", brukertype));
+        identity.AddClaim(new Claim("Brukertype", actorType));
 
         return identity;
     }

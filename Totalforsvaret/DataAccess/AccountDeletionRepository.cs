@@ -9,9 +9,9 @@ namespace Totalforsvaret.DataAccess;
 internal sealed class AccountDeletionRepository(AppDbContext db, UserManager<Bruker> users)
     : IAccountDeletionRepository
 {
-    public Task<IdentityResult> DeleteAsync(Privataktor user) => DeleteAsync(user, isPublicActor: false);
+    public Task<IdentityResult> DeleteAsync(PrivateActor user) => DeleteAsync(user, isPublicActor: false);
 
-    public Task<IdentityResult> DeleteAsync(Offentligaktør user) => DeleteAsync(user, isPublicActor: true);
+    public Task<IdentityResult> DeleteAsync(PublicActor user) => DeleteAsync(user, isPublicActor: true);
 
     private async Task<IdentityResult> DeleteAsync(Bruker user, bool isPublicActor)
     {

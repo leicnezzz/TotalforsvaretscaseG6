@@ -68,7 +68,7 @@ public class ResourceSessionControllerTests
         Assert.Multiple(() =>
         {
             Assert.That(result, Is.TypeOf<OkObjectResult>());
-            Assert.That(created, Is.TypeOf<Privataktor>());
+            Assert.That(created, Is.TypeOf<PrivateActor>());
             Assert.That(created!.Email, Is.EqualTo("test@example.com"));
             Assert.That(created.UserName, Is.EqualTo(created.Email));
             Assert.That(created.Navn, Is.EqualTo("Test Bruker"));
@@ -124,7 +124,7 @@ public class ResourceSessionControllerTests
     public async Task Login_PublicAccountCannotEnterPrivateRegistrationFlow()
     {
         users.Setup(manager => manager.FindByEmailAsync("test@example.com"))
-            .ReturnsAsync(new Offentligaktør { Navn = "Offentlig testbruker" });
+            .ReturnsAsync(new PublicActor { Navn = "Offentlig testbruker" });
 
         var result = await controller.Login(LoginInput());
 
@@ -136,7 +136,7 @@ public class ResourceSessionControllerTests
     [TestCase(true)]
     public async Task Login_WrongPasswordOrLockedAccountIsRejected(bool lockedOut)
     {
-        var user = new Privataktor { Navn = "Privat testbruker" };
+        var user = new PrivateActor { Navn = "Privat testbruker" };
         var input = LoginInput();
         users.Setup(manager => manager.FindByEmailAsync("test@example.com"))
             .ReturnsAsync(user);
@@ -152,7 +152,7 @@ public class ResourceSessionControllerTests
     [Test]
     public async Task Login_ValidPrivateAccountUsesIdentityWithLockoutEnabled()
     {
-        var user = new Privataktor { Navn = "Privat testbruker" };
+        var user = new PrivateActor { Navn = "Privat testbruker" };
         var input = LoginInput();
         users.Setup(manager => manager.FindByEmailAsync("test@example.com"))
             .ReturnsAsync(user);

@@ -7,7 +7,7 @@ public interface IResourceRepository
 {
     IReadOnlyList<Category> GetCategories();
     List<Resource> GetResources();
-    IReadOnlyList<ResourceMapPoint> GetResourcePointsForUser(int brukerId);
+    IReadOnlyList<ResourceMapPoint> GetResourcePointsForUser(int userId);
     Task<List<Resource>> ListOwnedAsync(int ownerId);
     Task<bool> CategoryExistsAsync(int? categoryId);
     Task AddAsync(Resource resource);

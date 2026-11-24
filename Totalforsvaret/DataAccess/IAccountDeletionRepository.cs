@@ -6,6 +6,6 @@ namespace Totalforsvaret.DataAccess;
 
 public interface IAccountDeletionRepository
 {
-    Task<IdentityResult> DeleteAsync(Privataktor user);
-    Task<IdentityResult> DeleteAsync(Offentligaktør user);
+    Task<IdentityResult> DeleteAsync(PrivateActor user);
+    Task<IdentityResult> DeleteAsync(PublicActor user);
 }

@@ -54,7 +54,7 @@ public class CrisisController : Controller
     public async Task<IActionResult> Create(CreateCrisisInput input)
     {
         if (await _userManager.GetUserAsync(User)
-            is not Offentligaktør offentligAktor)
+            is not PublicActor publicActor)
         {
             return Forbid();
         }
@@ -62,11 +62,11 @@ public class CrisisController : Controller
         if (!ModelState.IsValid)
             return View(input);
 
-        var crisis = new Crisis { OffentligAktorId = offentligAktor.Id };
+        var crisis = new Crisis { OffentligAktorId = publicActor.Id };
         ApplyInput(crisis, input);
         await _crises.AddAsync(crisis);
 
-        return LocalRedirect(this.OversiktUrl(openCrisisId: crisis.Id));
+        return LocalRedirect(this.OverviewUrl(openCrisisId: crisis.Id));
     }
     [HttpGet]
 public async Task<IActionResult> Edit(int id)
@@ -112,7 +112,7 @@ public async Task<IActionResult> Edit(
     ApplyInput(existing, input);
     await _crises.SaveChangesAsync();
 
-    return LocalRedirect(this.OversiktUrl());
+    return LocalRedirect(this.OverviewUrl());
 }
 [HttpPost]
 [ValidateAntiForgeryToken]
@@ -125,11 +125,12 @@ public async Task<IActionResult> Delete(int id)
 
     await _crises.DeleteAsync(crisis);
 
-    return LocalRedirect(this.OversiktUrl());
+    return LocalRedirect(this.OverviewUrl());
 }
 [HttpPost]
 [ValidateAntiForgeryToken]
-public async Task<IActionResult> Avslutt(int id)
+[ActionName("Avslutt")]
+public async Task<IActionResult> Close(int id)
 {
     var finnes = await _crises.ExistsAsync(id);
 
@@ -139,7 +140,7 @@ public async Task<IActionResult> Avslutt(int id)
     // Endrer bare status og tåler gjentatte innsendinger.
     await _crises.CloseIfActiveAsync(id);
 
-    return LocalRedirect(this.OversiktUrl());
+    return LocalRedirect(this.OverviewUrl());
 }
 
     private static void ApplyInput(Crisis crisis, CrisisInput input)

@@ -103,7 +103,7 @@ public class ProfileController(
 	[RequestSizeLimit(MaxPhotoSize + 64 * 1024)]
 	public async Task<IActionResult> UploadPhoto(IFormFile? image)
 	{
-		if (await users.GetUserAsync(User) is not Privataktor user)
+		if (await users.GetUserAsync(User) is not PrivateActor user)
 			return Challenge();
 
 		if (image == null || image.Length == 0 || image.Length > MaxPhotoSize)
@@ -145,7 +145,7 @@ public class ProfileController(
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> DeleteAccount(string? password)
 	{
-		if (await users.GetUserAsync(User) is not Privataktor user)
+		if (await users.GetUserAsync(User) is not PrivateActor user)
 			return Challenge();
 
 		if (string.IsNullOrEmpty(password) ||

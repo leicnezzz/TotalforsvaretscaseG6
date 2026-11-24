@@ -11,7 +11,7 @@ using Totalforsvaret.Services;
 
 namespace Totalforsvaret.Tests;
 
-public class BrukerClaimsFactoryTests
+public class ApplicationUserClaimsFactoryTests
 {
     [TestCase(false, "Privat")]
     [TestCase(true, "Offentlig")]
@@ -20,12 +20,12 @@ public class BrukerClaimsFactoryTests
         string forventetType)
     {
         // Arrange
-        Bruker bruker = offentlig
-            ? new Offentligaktør()
-            : new Privataktor();
+        Bruker user = offentlig
+            ? new PublicActor()
+            : new PrivateActor();
 
-        bruker.Id = 42;
-        bruker.UserName = "bruker@example.test";
+        user.Id = 42;
+        user.UserName = "bruker@example.test";
 
         var options = Options.Create(new IdentityOptions());
 
@@ -42,24 +42,24 @@ public class BrukerClaimsFactoryTests
 
         using var manager = users.Object;
 
-        users.Setup(m => m.GetUserIdAsync(bruker))
+        users.Setup(m => m.GetUserIdAsync(user))
             .ReturnsAsync("42");
 
-        users.Setup(m => m.GetUserNameAsync(bruker))
-            .ReturnsAsync(bruker.UserName);
+        users.Setup(m => m.GetUserNameAsync(user))
+            .ReturnsAsync(user.UserName);
 
-        var factory = new BrukerClaimsFactory(manager, options);
+        var factory = new ApplicationUserClaimsFactory(manager, options);
 
         // Act
-        var principal = await factory.CreateAsync(bruker);
+        var principal = await factory.CreateAsync(user);
 
-        // Assert: riktig brukertype, uten duplikater.
+        // Assert: riktig actorType, uten duplikater.
         var typeClaims = principal.FindAll("Brukertype").ToList();
 
         Assert.That(typeClaims, Has.Count.EqualTo(1));
         Assert.That(typeClaims[0].Value, Is.EqualTo(forventetType));
 
-        // Identity sin bruker-ID skal fortsatt være med.
+        // Identity sin user-ID skal fortsatt være med.
         Assert.That(
             principal.FindFirst(ClaimTypes.NameIdentifier)?.Value,
             Is.EqualTo("42"));

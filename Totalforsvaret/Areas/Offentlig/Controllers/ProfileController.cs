@@ -27,7 +27,7 @@ public class ProfileController(
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var user = await GetCurrentOffentligUserAsync();
+        var user = await GetCurrentPublicActorAsync();
 
         if (user == null)
             return Challenge();
@@ -43,7 +43,7 @@ public class ProfileController(
             ? nameParts[^1]
             : "";
 
-        var model = new OffentligProfileViewModel
+        var model = new PublicActorProfileViewModel
         {
             Fornavn = fornavn,
             Etternavn = etternavn,
@@ -58,9 +58,9 @@ public class ProfileController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Index(OffentligProfileViewModel model)
+    public async Task<IActionResult> Index(PublicActorProfileViewModel model)
     {
-        var user = await GetCurrentOffentligUserAsync();
+        var user = await GetCurrentPublicActorAsync();
 
         if (user == null)
             return Challenge();
@@ -109,7 +109,7 @@ public class ProfileController(
     [RequestSizeLimit(MaxPhotoSize + 64 * 1024)]
     public async Task<IActionResult> UploadPhoto(IFormFile? image)
     {
-        var user = await GetCurrentOffentligUserAsync();
+        var user = await GetCurrentPublicActorAsync();
 
         if (user == null)
             return Challenge();
@@ -161,7 +161,7 @@ public class ProfileController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteAccount(string? password)
     {
-        var user = await GetCurrentOffentligUserAsync();
+        var user = await GetCurrentPublicActorAsync();
 
         if (user == null)
             return Challenge();
@@ -216,14 +216,14 @@ public class ProfileController(
             new { area = "" });
     }
 
-    private async Task<Offentligaktør?> GetCurrentOffentligUserAsync()
+    private async Task<PublicActor?> GetCurrentPublicActorAsync()
     {
         var user = await users.GetUserAsync(User);
-        return user as Offentligaktør;
+        return user as PublicActor;
     }
 
     private async Task<IActionResult> ProfileWithCurrentPhotoAsync(
-        OffentligProfileViewModel model,
+        PublicActorProfileViewModel model,
         int userId)
     {
         model.HasPhoto = await photos.ExistsAsync(userId);

@@ -285,7 +285,7 @@
         <p id="wizard-success-message"></p>
         @if (compact)
         {
-            <a class="public-button public-button-primary" href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())">Gå til oversikten</a>
+            <a class="public-button public-button-primary" href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.CrisisQuery())">Gå til oversikten</a>
         }
         else
         {

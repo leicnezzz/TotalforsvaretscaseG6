@@ -2,7 +2,7 @@
 
 <div class="private-page-actions offentlig-back-actions">
     <a class="private-page-action"
-       href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())">
+       href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.CrisisQuery())">
         ← Tilbake
     </a>
 </div>

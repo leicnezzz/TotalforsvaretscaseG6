@@ -1,6 +1,6 @@
 namespace Totalforsvaret.Areas.Privat.Models;
 
-public class EgenberedskapChecklistStatus
+public class EmergencyChecklistStatus
 {
     public int BrukerId { get; set; }
     public string ItemId { get; set; } = "";

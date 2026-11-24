@@ -49,5 +49,5 @@ public class Need
     [Column("OffentligAktørId")]
     public int? OffentligAktorId { get; set; }
 
-    public Offentligaktør? OffentligAktor { get; set; }
+    public PublicActor? OffentligAktor { get; set; }
 }

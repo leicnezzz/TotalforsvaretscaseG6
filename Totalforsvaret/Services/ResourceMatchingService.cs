@@ -68,18 +68,18 @@ public sealed class ResourceMatchingService
         var lat2 = (double)to.Latitude;
         var lon2 = (double)to.Longitude;
 
-        const double jordradiusKm = 6371;
-        const double radianer = Math.PI / 180;
+        const double earthRadiusKm = 6371;
+        const double radiansPerDegree = Math.PI / 180;
 
-        var deltaLat = (lat2 - lat1) * radianer;
-        var deltaLon = (lon2 - lon1) * radianer;
+        var deltaLat = (lat2 - lat1) * radiansPerDegree;
+        var deltaLon = (lon2 - lon1) * radiansPerDegree;
 
         var a = Math.Pow(Math.Sin(deltaLat / 2), 2) +
-                Math.Cos(lat1 * radianer) *
-                Math.Cos(lat2 * radianer) *
+                Math.Cos(lat1 * radiansPerDegree) *
+                Math.Cos(lat2 * radiansPerDegree) *
                 Math.Pow(Math.Sin(deltaLon / 2), 2);
 
-        return jordradiusKm * 2 *
+        return earthRadiusKm * 2 *
                Math.Asin(Math.Sqrt(Math.Clamp(a, 0, 1)));
     }
 }

@@ -6,23 +6,23 @@ namespace Totalforsvaret.DataAccess;
 internal sealed class ChecklistRepository(AppDbContext db) : IChecklistRepository
 {
     public Task<HashSet<string>> GetCompletedAsync(int userId) =>
-        db.EgenberedskapChecklistStatuses
+        db.EmergencyChecklistStatuses
             .Where(status => status.BrukerId == userId && status.IsComplete)
             .Select(status => status.ItemId)
             .ToHashSetAsync();
 
     public async Task SetStatusAsync(int userId, string itemId, bool isComplete)
     {
-        var status = await db.EgenberedskapChecklistStatuses.FindAsync(userId, itemId);
+        var status = await db.EmergencyChecklistStatuses.FindAsync(userId, itemId);
         if (status == null)
         {
-            status = new EgenberedskapChecklistStatus
+            status = new EmergencyChecklistStatus
             {
                 BrukerId = userId,
                 ItemId = itemId
             };
 
-            db.EgenberedskapChecklistStatuses.Add(status);
+            db.EmergencyChecklistStatuses.Add(status);
         }
 
         status.IsComplete = isComplete;

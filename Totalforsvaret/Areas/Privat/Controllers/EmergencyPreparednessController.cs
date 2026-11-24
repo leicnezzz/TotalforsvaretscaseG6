@@ -8,7 +8,8 @@ namespace Totalforsvaret.Areas.Privat.Controllers;
 
 [Area("Privat")]
 [Authorize(Policy = "KunPrivat")]
-public class EgenberedskapController(
+[Totalforsvaret.Controllers.MvcControllerName("Egenberedskap")]
+public class EmergencyPreparednessController(
     IChecklistRepository checklist,
     UserManager<Bruker> users) : Controller
 {

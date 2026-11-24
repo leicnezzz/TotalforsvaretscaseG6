@@ -127,9 +127,9 @@
                 </div>
             </div>
             <div class="oversikt-handlinger">
-                <a class="egen-ressurs-lenke" href="@(Url.RouteUrl("ressursregistrering") + Context.Request.HendelsesQuery())">Ny ressurs</a>
-                <a class="registrer-behov-knapp" href="@(Url.RouteUrl("behov") + Context.Request.HendelsesQuery())">+ Registrer behov</a>
-                <a class="opprett-krise-knapp" href="@(Url.Action("Create", "Crisis", new { area = "Offentlig" }) + Context.Request.HendelsesQuery())">+ Opprett hendelse</a>
+                <a class="egen-ressurs-lenke" href="@(Url.RouteUrl("ressursregistrering") + Context.Request.CrisisQuery())">Ny ressurs</a>
+                <a class="registrer-behov-knapp" href="@(Url.RouteUrl("behov") + Context.Request.CrisisQuery())">+ Registrer behov</a>
+                <a class="opprett-krise-knapp" href="@(Url.Action("Create", "Crisis", new { area = "Offentlig" }) + Context.Request.CrisisQuery())">+ Opprett hendelse</a>
             </div>
         </div>
     </details>
@@ -257,7 +257,7 @@
                         <a class="btn btn-outline-danger" data-lukk-hendelser hidden
                            asp-area="" asp-controller="OffentligAktor" asp-action="Index">Forlat krise</a>
                         <a class="skriv-ut-knapp"
-                           href="@(Url.Action("MineRessurser", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())">
+                           href="@(Url.Action("MineRessurser", "OffentligAktor", new { area = "" }) + Context.Request.CrisisQuery())">
                             Mine ressurser
                         </a>
                         <div class="dropdown">
@@ -449,7 +449,7 @@
                                  Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned)
                             {
 
-                                <form action="@(Url.Action("FrigiRessurs", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
+                                <form action="@(Url.Action("FrigiRessurs", "OffentligAktor", new { area = "" }) + Context.Request.CrisisQuery())"
                                       method="post">
 
                                     @Html.AntiForgeryToken()
@@ -469,7 +469,7 @@
 
                             @if (tildeling == null && !ressursOpptatt)
                             {
-                                <form action="@(Url.Action("VurderRessurs", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
+                                <form action="@(Url.Action("VurderRessurs", "OffentligAktor", new { area = "" }) + Context.Request.CrisisQuery())"
                                       method="post">
 
                                     @Html.AntiForgeryToken()
@@ -490,7 +490,7 @@
                             }
 
                             <a class="btn btn-sm btn-outline-primary treff-handlingsknapp"
-                               href="@(Url.Action("Edit", "Need", new { area = "Offentlig", id = treff.NeedId }) + Context.Request.HendelsesQuery())">
+                               href="@(Url.Action("Edit", "Need", new { area = "Offentlig", id = treff.NeedId }) + Context.Request.CrisisQuery())">
     Se og endre behov
 </a>
                         </div>

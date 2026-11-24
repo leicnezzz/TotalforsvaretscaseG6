@@ -8,7 +8,7 @@
 @inject IProfilePhotoRepository ProfilePhotos
 
 @{
-    var eventQuery = Context.Request.HendelsesQuery();
+    var eventQuery = Context.Request.CrisisQuery();
     var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 

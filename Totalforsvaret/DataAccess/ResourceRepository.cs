@@ -26,16 +26,16 @@ public sealed class ResourceRepository(AppDbContext db) : IResourceRepository
 
     // Henter kartpunktene til den innloggede brukeren.
     public IReadOnlyList<ResourceMapPoint> GetResourcePointsForUser(
-        int brukerId)
+        int userId)
     {
-        if (brukerId <= 0)
+        if (userId <= 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(brukerId));
+            throw new ArgumentOutOfRangeException(nameof(userId));
         }
 
         return db.Resources
             .AsNoTracking()
-            .Where(resource => resource.BrukerId == brukerId)
+            .Where(resource => resource.BrukerId == userId)
             .OrderBy(resource => resource.ResourceId)
             .Select(resource => new ResourceMapPoint(
                 resource.ResourceId,

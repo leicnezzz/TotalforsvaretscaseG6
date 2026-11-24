@@ -113,4 +113,62 @@ public class OffentligAktorControllerTests
 
         Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
     }
+    
+    /// <summary>
+    /// An assigned resource is released, and the assignment is kept as history.
+    /// </summary>
+    [Test]
+    public async Task FrigiRessurs_Assigned_ReleasesResource()
+    {
+        using var db = CreateDb();
+        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Assigned);
+
+        var result = await CreateController(db).FrigiRessurs(1);
+
+        Assert.That(result, Is.TypeOf<LocalRedirectResult>());
+        Assert.That(db.ResourceAssignments.Single().Status, Is.EqualTo(AssignmentStatus.Released));
+    }
+
+    /// <summary>
+    /// A resource that is only requested cannot be released.
+    /// </summary>
+    [Test]
+    public async Task FrigiRessurs_NotAssigned_ReturnsBadRequest()
+    {
+        using var db = CreateDb();
+        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
+
+        var result = await CreateController(db).FrigiRessurs(1);
+
+        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
+    }
+
+    /// <summary>
+    /// A requested resource is rejected.
+    /// </summary>
+    [Test]
+    public async Task AvslaRessurs_Requested_RejectsResource()
+    {
+        using var db = CreateDb();
+        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
+
+        var result = await CreateController(db).AvslaRessurs(1);
+
+        Assert.That(result, Is.TypeOf<LocalRedirectResult>());
+        Assert.That(db.ResourceAssignments.Single().Status, Is.EqualTo(AssignmentStatus.Rejected));
+    }
+
+    /// <summary>
+    /// A resource that is already assigned cannot be rejected.
+    /// </summary>
+    [Test]
+    public async Task AvslaRessurs_AlreadyAssigned_ReturnsBadRequest()
+    {
+        using var db = CreateDb();
+        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Assigned);
+
+        var result = await CreateController(db).AvslaRessurs(1);
+
+        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
+    }
 }

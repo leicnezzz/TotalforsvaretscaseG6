@@ -16,7 +16,8 @@ namespace Totalforsvaret.Areas.Privat.Controllers;
 public class ProfileController(
 	UserManager<Bruker> users,
 	SignInManager<Bruker> signIn,
-	AppDbContext db,
+	IAccountDeletionRepository accountDeletion,
+	IProfilePhotoRepository photos,
 	ILogger<ProfileController> logger) : Controller
 {
 	private const int MaxPhotoSize = 2 * 1024 * 1024;
@@ -46,7 +47,7 @@ public class ProfileController(
 			Etternavn = etternavn,
 			Email = user.Email,
 			PhoneNumber = user.PhoneNumber,
-			HasPhoto = await db.ProfilePhotos.AnyAsync(photo => photo.BrukerId == user.Id)
+			HasPhoto = await photos.ExistsAsync(user.Id)
 		};
 
 		return View("Index", model);
@@ -89,7 +90,7 @@ public class ProfileController(
 		if (!int.TryParse(users.GetUserId(User), out var userId))
 			return Challenge();
 
-		var photo = await db.ProfilePhotos.FindAsync(userId);
+		var photo = await photos.FindAsync(userId);
 		if (photo == null)
 			return NotFound();
 
@@ -122,19 +123,9 @@ public class ProfileController(
 			return RedirectToAction(nameof(Index));
 		}
 
-		var photo = await db.ProfilePhotos.FindAsync(user.Id);
-		if (photo == null)
-		{
-			photo = new ProfilePhoto { BrukerId = user.Id };
-			db.ProfilePhotos.Add(photo);
-		}
-
-		photo.Content = bytes;
-		photo.ContentType = contentType;
-
 		try
 		{
-			await db.SaveChangesAsync();
+			await photos.SaveAsync(user.Id, bytes, contentType);
 		}
 		catch (DbUpdateException error)
 		{
@@ -166,22 +157,12 @@ public class ProfileController(
 
 		try
 		{
-			await using var transaction = await db.Database.BeginTransactionAsync();
-
-			var resources = db.Resources.Where(resource => resource.BrukerId == user.Id);
-			await db.ResourceAssignments
-				.Where(assignment => resources.Any(resource => resource.ResourceId == assignment.ResourceId))
-				.ExecuteDeleteAsync();
-			await resources.ExecuteDeleteAsync();
-
-			var result = await users.DeleteAsync(user);
+			var result = await accountDeletion.DeleteAsync(user);
 			if (!result.Succeeded)
 			{
 				ModelState.AddModelError(string.Empty, "Kontoen kunne ikke slettes. Pr�v igjen.");
 				return View();
 			}
-
-			await transaction.CommitAsync();
 		}
 		catch (Exception error) when (error is DbUpdateException or DbException)
 		{
@@ -197,7 +178,7 @@ public class ProfileController(
 
 	private async Task<IActionResult> ProfileWithCurrentPhotoAsync(ProfileViewModel model, int userId)
 	{
-		model.HasPhoto = await db.ProfilePhotos.AnyAsync(photo => photo.BrukerId == userId);
+		model.HasPhoto = await photos.ExistsAsync(userId);
 		return View("Index", model);
 	}
 }

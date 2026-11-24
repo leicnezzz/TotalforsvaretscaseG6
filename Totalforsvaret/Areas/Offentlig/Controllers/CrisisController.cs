@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.DataAccess;
 using Totalforsvaret.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
@@ -16,30 +15,21 @@ namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
 public class CrisisController : Controller
 {
-    private readonly AppDbContext _context;
+    private readonly ICrisisRepository _crises;
     private readonly UserManager<Bruker> _userManager;
 
     public CrisisController(
-        AppDbContext context,
+        ICrisisRepository crises,
         UserManager<Bruker> userManager)
     {
-        _context = context;
+        _crises = crises;
         _userManager = userManager;
     }
 
     [HttpGet("/crisis/overview", Name = "crisis-overview")]
     public async Task<IActionResult> Overview()
     {
-        var crises = await _context.Crises
-            .AsNoTracking()
-            .OrderByDescending(crisis =>
-                crisis.Severity == "Kritisk" ? 4 :
-                crisis.Severity == "Høy" ? 3 :
-                crisis.Severity == "Middels" ? 2 :
-                crisis.Severity == "Lav" ? 1 : 0)
-            .ThenByDescending(crisis => crisis.StartTime)
-            .ThenByDescending(crisis => crisis.Id)
-            .ToListAsync();
+        var crises = await _crises.ListOverviewAsync();
 
         return View(crises);
     }
@@ -135,17 +125,14 @@ public class CrisisController : Controller
         // Kobler krisen til aktøren som er logget inn.
         crisis.OffentligAktorId = offentligAktor.Id;
 
-        _context.Crises.Add(crisis);
-        await _context.SaveChangesAsync();
+        await _crises.AddAsync(crisis);
 
         return LocalRedirect(this.OversiktUrl(openCrisisId: crisis.Id));
     }
     [HttpGet]
 public async Task<IActionResult> Edit(int id)
 {
-    var crisis = await _context.Crises
-        .AsNoTracking()
-        .SingleOrDefaultAsync(c => c.Id == id);
+    var crisis = await _crises.FindAsync(id);
 
     if (crisis == null)
         return NotFound();
@@ -162,8 +149,7 @@ public async Task<IActionResult> Edit(
     [Bind("Name,Description,Area,Type,Severity,StartTime,Status,Latitude,Longitude")]
     Crisis crisis)
 {
-    var existing = await _context.Crises
-        .SingleOrDefaultAsync(c => c.Id == id);
+    var existing = await _crises.FindAsync(id, trackChanges: true);
 
     if (existing == null)
         return NotFound();
@@ -272,7 +258,7 @@ public async Task<IActionResult> Edit(
     existing.Latitude = crisis.Latitude;
     existing.Longitude = crisis.Longitude;
 
-    await _context.SaveChangesAsync();
+    await _crises.SaveChangesAsync();
 
     return LocalRedirect(this.OversiktUrl());
 }
@@ -280,27 +266,12 @@ public async Task<IActionResult> Edit(
 [ValidateAntiForgeryToken]
 public async Task<IActionResult> Delete(int id)
 {
-    var crisis = await _context.Crises
-        .SingleOrDefaultAsync(c => c.Id == id);
+    var crisis = await _crises.FindAsync(id, trackChanges: true);
 
     if (crisis == null)
         return NotFound();
 
-    // Henter alle behov som tilhører krisen.
-    var needs = await _context.Needs
-        .Where(n => n.CrisisId == id)
-        .ToListAsync();
-
-    var assignments = await _context.ResourceAssignments
-        .Where(assignment => assignment.Need.CrisisId == id)
-        .ToListAsync();
-
-    _context.ResourceAssignments.RemoveRange(assignments);
-    _context.Needs.RemoveRange(needs);
-    _context.Crises.Remove(crisis);
-
-    // Én lagring gjør slettingen samlet i en transaksjon.
-    await _context.SaveChangesAsync();
+    await _crises.DeleteAsync(crisis);
 
     return LocalRedirect(this.OversiktUrl());
 }
@@ -308,17 +279,13 @@ public async Task<IActionResult> Delete(int id)
 [ValidateAntiForgeryToken]
 public async Task<IActionResult> Avslutt(int id)
 {
-    var finnes = await _context.Crises
-        .AnyAsync(c => c.Id == id);
+    var finnes = await _crises.ExistsAsync(id);
 
     if (!finnes)
         return NotFound();
 
     // Endrer bare status og tåler gjentatte innsendinger.
-    await _context.Crises
-        .Where(c => c.Id == id && c.Status == "Aktiv")
-        .ExecuteUpdateAsync(oppdatering => oppdatering
-            .SetProperty(c => c.Status, "Avsluttet"));
+    await _crises.CloseIfActiveAsync(id);
 
     return LocalRedirect(this.OversiktUrl());
 }

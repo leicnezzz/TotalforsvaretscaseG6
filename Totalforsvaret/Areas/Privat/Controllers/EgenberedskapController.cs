@@ -1,17 +1,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.Models;
-using Totalforsvaret.DataAccess; // Change this to the namespace of your DbContext
+using Totalforsvaret.DataAccess;
 
 namespace Totalforsvaret.Areas.Privat.Controllers;
 
 [Area("Privat")]
 [Authorize(Policy = "KunPrivat")]
 public class EgenberedskapController(
-    AppDbContext db,
+    IChecklistRepository checklist,
     UserManager<Bruker> users) : Controller
 {
     private static readonly HashSet<string> ValidItemIds =
@@ -44,10 +42,7 @@ public class EgenberedskapController(
         if (user == null)
             return Challenge();
 
-        ViewData["CompletedChecklistItems"] = await db.EgenberedskapChecklistStatuses
-            .Where(status => status.BrukerId == user.Id && status.IsComplete)
-            .Select(status => status.ItemId)
-            .ToHashSetAsync();
+        ViewData["CompletedChecklistItems"] = await checklist.GetCompletedAsync(user.Id);
 
         ViewData["ChecklistItemCount"] = ValidItemIds.Count;
         return View();
@@ -65,22 +60,7 @@ public class EgenberedskapController(
         if (!ValidItemIds.Contains(itemId))
             return BadRequest();
 
-        var status = await db.EgenberedskapChecklistStatuses
-            .FindAsync(user.Id, itemId);
-
-        if (status == null)
-        {
-            status = new EgenberedskapChecklistStatus
-            {
-                BrukerId = user.Id,
-                ItemId = itemId
-            };
-
-            db.EgenberedskapChecklistStatuses.Add(status);
-        }
-
-        status.IsComplete = isComplete;
-        await db.SaveChangesAsync();
+        await checklist.SetStatusAsync(user.Id, itemId, isComplete);
 
         return RedirectToAction(nameof(Index), controllerName: null, routeValues: null, fragment: "checklist");
     }

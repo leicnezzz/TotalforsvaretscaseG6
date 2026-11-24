@@ -1,10 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Totalforsvaret.DataAccess;
+﻿using Totalforsvaret.DataAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Totalforsvaret.Areas.Privat.Models;
-using Totalforsvaret.Handlers;
 using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Privat.Controllers;
@@ -16,8 +14,8 @@ namespace Totalforsvaret.Areas.Privat.Controllers;
     Location = ResponseCacheLocation.None)]
 public class DashboardController(
     UserManager<Bruker> users,
-		ResourceHandler resources,
-	AppDbContext db) : Controller
+		IResourceRepository resources,
+	IProfilePhotoRepository photos) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index()
@@ -30,7 +28,7 @@ public class DashboardController(
         return View(new PrivateHomeViewModel
         {
 			Navn = bruker.Navn,
-			HasPhoto = await db.ProfilePhotos.AnyAsync(photo => photo.BrukerId == bruker.Id)
+			HasPhoto = await photos.ExistsAsync(bruker.Id)
 		});
     }
 

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.DataAccess;
@@ -13,7 +12,7 @@ namespace Totalforsvaret.Areas.Privat.Controllers;
 [Authorize(Policy = "KunPrivat")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public class InboxController(
-    AppDbContext db,
+    IResourceAssignmentRepository assignmentRepository,
     UserManager<Bruker> users) : Controller
 {
     [HttpGet]
@@ -25,15 +24,7 @@ public class InboxController(
             return Challenge();
 
         // Privat bruker ser bare matcher knyttet til egne ressurser.
-        var assignments = await db.ResourceAssignments
-            .AsNoTracking()
-            .Where(assignment =>
-                assignment.Resource.BrukerId == bruker.Id)
-            .Include(assignment => assignment.Resource)
-                .ThenInclude(resource => resource.Category)
-            .Include(assignment => assignment.Need)
-            .OrderByDescending(assignment => assignment.RequestedAtUtc)
-            .ToListAsync();
+        var assignments = await assignmentRepository.ListForResourceOwnerAsync(bruker.Id);
 
         var items = assignments
             .Select(assignment => new InboxItemViewModel
@@ -73,19 +64,7 @@ public class InboxController(
             : items.FirstOrDefault()?.AssignmentId;
 
         var messages = valgtId.HasValue
-            ? await db.ResourceMessages
-                .AsNoTracking()
-                .Where(message =>
-                    message.AssignmentId == valgtId.Value)
-                .OrderBy(message => message.SentAtUtc)
-                .Select(message => new InboxMessageViewModel
-                {
-                    SenderName = message.Sender.Navn,
-                    Body = message.Body,
-                    SentAtUtc = message.SentAtUtc,
-                    IsOwnMessage = message.SenderUserId == bruker.Id
-                })
-                .ToListAsync()
+            ? await assignmentRepository.ListMessagesAsync(valgtId.Value, bruker.Id)
             : new List<InboxMessageViewModel>();
 
         var model = new InboxViewModel
@@ -123,24 +102,16 @@ public class InboxController(
         }
 
         // Kontroller at matchen gjelder en ressurs brukeren eier.
-        var assignment = await db.ResourceAssignments
-            .Include(item => item.Resource)
-            .SingleOrDefaultAsync(item =>
-                item.Id == assignmentId &&
-                item.Resource.BrukerId == bruker.Id);
-
-        if (assignment is null)
+        if (!await assignmentRepository.ExistsForOwnerAsync(assignmentId, bruker.Id))
             return NotFound();
 
-        db.ResourceMessages.Add(new ResourceMessage
+        await assignmentRepository.AddMessageAsync(new ResourceMessage
         {
-            AssignmentId = assignment.Id,
+            AssignmentId = assignmentId,
             SenderUserId = bruker.Id,
             Body = body,
             SentAtUtc = DateTime.UtcNow
         });
-
-        await db.SaveChangesAsync();
 
         TempData["InboxMessage"] = "Meldingen er sendt.";
 
@@ -175,11 +146,8 @@ public class InboxController(
         if (!resourceAvailable)
             return VisHandlingsfeil(assignmentId, "Ressursen er ikke lenger tilgjengelig.");
 
-        var alreadyInUse = await db.ResourceAssignments.AnyAsync(other =>
-            other.Id != assignment.Id &&
-            other.ResourceId == assignment.ResourceId &&
-            (other.Status == AssignmentStatus.Requested ||
-             other.Status == AssignmentStatus.Assigned));
+        var alreadyInUse = await assignmentRepository.HasOtherActiveAssignmentAsync(
+            assignment.Id, assignment.ResourceId);
 
         if (alreadyInUse)
         {
@@ -188,7 +156,7 @@ public class InboxController(
 
         assignment.MarkAssigned();
 
-        await db.SaveChangesAsync();
+        await assignmentRepository.SaveChangesAsync();
 
         TempData["InboxMessage"] = "Forespørselen er godtatt.";
 
@@ -212,7 +180,7 @@ public class InboxController(
 
         assignment.MarkRejected();
 
-        await db.SaveChangesAsync();
+        await assignmentRepository.SaveChangesAsync();
 
         TempData["InboxMessage"] = "Forespørselen er avslått.";
 
@@ -237,11 +205,6 @@ public class InboxController(
         if (bruker is null)
             return null;
 
-        return await db.ResourceAssignments
-            .Include(assignment => assignment.Resource)
-            .Include(assignment => assignment.Need)
-            .SingleOrDefaultAsync(assignment =>
-                assignment.Id == assignmentId &&
-                assignment.Resource.BrukerId == bruker.Id);
+        return await assignmentRepository.FindOwnedAsync(assignmentId, bruker.Id);
     }
 }

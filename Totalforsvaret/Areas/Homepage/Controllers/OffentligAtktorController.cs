@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Totalforsvaret.Handlers;
 using Totalforsvaret.DataAccess;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Offentlig.ViewModels;
@@ -10,55 +8,45 @@ namespace Totalforsvaret.Controllers;
 [Authorize(Policy = "KunOffentlig")]
 public class OffentligAktorController : Controller
 {
-    private readonly ResourceHandler _resourceHandler;
-    private readonly AppDbContext _context;
+    private readonly IResourceRepository _resources;
+    private readonly IResourceAssignmentRepository _assignments;
+    private readonly IPublicOverviewRepository _overview;
 
     public OffentligAktorController(
-        ResourceHandler resourceHandler,
-        AppDbContext context)
+        IResourceRepository resources,
+        IResourceAssignmentRepository assignments,
+        IPublicOverviewRepository overview)
     {
-        _resourceHandler = resourceHandler;
-        _context = context;
+        _resources = resources;
+        _assignments = assignments;
+        _overview = overview;
     }
 
     public IActionResult Index()
     {
         // Henter tilgjengelige ressurser
-        var ressurser = _resourceHandler.GetResources();
+        var ressurser = _resources.GetResources();
 
         var tilgjengeligeRessurser = ressurser
             .Where(r => r.Available)
             .ToList();
 
         // Henter antall aktive behov
-        ViewBag.AktiveBehov = _context?.Needs.Count(n =>
-            n.Status == "Åpen" ||
-            n.Status == "Under behandling") ?? 0;
+        ViewBag.AktiveBehov = _overview.CountActiveNeeds();
         
         // Henter antall løste behov.
-        ViewBag.LosteBehov = _context?.Needs.Count(n =>
-            n.Status == "Løst") ?? 0;
+        ViewBag.LosteBehov = _overview.CountResolvedNeeds();
 
         // Henter aktive behov med gyldige kartkoordinater
-        ViewBag.BehovPaKart = _context?.Needs
-            .Where(n =>
-                (n.Status == "Åpen" || n.Status == "Under behandling") &&
-                n.Latitude != null &&
-                n.Longitude != null)
-            .ToList();
+        ViewBag.BehovPaKart = _overview.ListActiveNeedsOnMap();
         
         // Henter de fem nyeste aktive behovene
-        ViewBag.AktiveBehovListe = _context?.Needs
-            .Where(n => n.Status == "Åpen" || n.Status == "Under behandling")
-            .OrderByDescending(n => n.Id)
-            .Take(5)
-            .ToList();
+        ViewBag.AktiveBehovListe = _overview.ListLatestActiveNeeds();
         
         // Alle hendelser kan åpnes, også inaktive og hendelser uten eget kartpunkt.
-        ViewBag.Kartmarkeringer = _context?.CrisisMapAnnotations.AsNoTracking().ToList()
-            ?? new List<Totalforsvaret.Models.CrisisMapAnnotation>();
-        ViewBag.KriserPaKart = _context?.Crises.AsNoTracking()
-            .Select(c => new
+        ViewBag.Kartmarkeringer = _overview.ListAnnotations();
+        var kriser = _overview.ListCrises();
+        ViewBag.KriserPaKart = kriser.Select(c => new
             {
                 id = c.Id,
                 navn = c.Name,
@@ -72,12 +60,7 @@ public class OffentligAktorController : Controller
             .ToList();
         
         // Alle aktive og løste behov til kortenes lister.
-        ViewBag.BehovTilLister = _context?.Needs
-            .AsNoTracking()
-            .Where(n => n.Status == "Åpen" ||
-                        n.Status == "Under behandling" ||
-                        n.Status == "Løst")
-            .Select(n => new
+        ViewBag.BehovTilLister = _overview.ListNeeds().Select(n => new
             {
                 id = n.Id,
                 navn = n.Name,
@@ -85,30 +68,20 @@ public class OffentligAktorController : Controller
                 prioritet = n.Priority,
                 status = n.Status,
                 kriseId = n.CrisisId,
-                krise = n.Crisis != null ? n.Crisis.Name : "",
+                krise = n.CrisisName,
                 latitude = n.Latitude,
                 longitude = n.Longitude
             })
             .ToList();
        
         // Teller kriser med status Aktiv.
-        ViewBag.AktiveKriser = _context?.Set<Totalforsvaret.Models.Crisis>()
-            .Count(k => k.Status == "Aktiv") ?? 0;
+        ViewBag.AktiveKriser = _overview.CountActiveCrises();
         var forslag = new List<MatchSuggestionViewModel>();
-        var aktiveTildelinger = _context?.ResourceAssignments
-            .AsNoTracking()
-            .Where(a => a.Status == AssignmentStatus.Requested ||
-                        a.Status == AssignmentStatus.Assigned)
-            .ToList() ?? new List<ResourceAssignment>();
+        var aktiveTildelinger = _overview.ListActiveAssignments();
 
         ViewBag.AktiveTildelinger = aktiveTildelinger;
 
-		var avsluttedeVurderinger = _context?.ResourceAssignments
-	.AsNoTracking()
-	.Where(a => (a.Status == AssignmentStatus.Rejected ||
-				 a.Status == AssignmentStatus.Released) &&
-				(a.Need.Status == "Åpen" || a.Need.Status == "Under behandling"))
-	.ToList() ?? new List<ResourceAssignment>();
+		var avsluttedeVurderinger = _overview.ListClosedReviewsForActiveNeeds();
 
 		var treffStatuser = aktiveTildelinger
 			.OrderByDescending(a => a.Id)
@@ -118,48 +91,41 @@ public class OffentligAktorController : Controller
 
 		ViewBag.TreffStatuser = treffStatuser;
 
-		if (_context != null)
+        var aktiveBehov = _overview.ListActiveNeeds();
+
+        var na = DateTime.Now;
+
+        var kandidater = tilgjengeligeRessurser
+            .Where(r => r.TilgjengeligFra == null || r.TilgjengeligFra <= na)
+            .ToList();
+
+        foreach (var behov in aktiveBehov)
         {
-            var aktiveBehov = _context.Needs
-                .AsNoTracking()
-                .Where(n => n.Status == "Åpen" ||
-                            n.Status == "Under behandling")
-                .ToList();
-
-            var na = DateTime.Now;
-
-            var kandidater = tilgjengeligeRessurser
-                .Where(r => r.TilgjengeligFra == null || r.TilgjengeligFra <= na)
-                .ToList();
-
-            foreach (var behov in aktiveBehov)
+            var kategori = behov.Type switch
             {
-                var kategori = behov.Type switch
-                {
-                    "Transport" => "Vehicles",
-                    "Utstyr" => "Equipment",
-                    _ => null
-                };
+                "Transport" => "Vehicles",
+                "Utstyr" => "Equipment",
+                _ => null
+            };
 
-                if (kategori == null)
-                    continue;
+            if (kategori == null)
+                continue;
 
-                foreach (var ressurs in kandidater.Where(
-                             r => r.Category.Name == kategori))
+            foreach (var ressurs in kandidater.Where(
+                         r => r.Category.Name == kategori))
+            {
+                forslag.Add(new MatchSuggestionViewModel
                 {
-                    forslag.Add(new MatchSuggestionViewModel
-                    {
-                        NeedId = behov.Id,
-                        NeedName = behov.Name,
-                        ResourceId = ressurs.ResourceId,
-                        ResourceName = ressurs.Object,
-                        DistanceKm = BeregnAvstandKm(
-                            behov.Latitude,
-                            behov.Longitude,
-                            ressurs.Latitude,
-                            ressurs.Longitude)
-                    });
-                }
+                    NeedId = behov.Id,
+                    NeedName = behov.Name,
+                    ResourceId = ressurs.ResourceId,
+                    ResourceName = ressurs.Object,
+                    DistanceKm = BeregnAvstandKm(
+                        behov.Latitude,
+                        behov.Longitude,
+                        ressurs.Latitude,
+                        ressurs.Longitude)
+                });
             }
         }
 
@@ -179,9 +145,7 @@ public class OffentligAktorController : Controller
 		ViewBag.ForeslatteTreff = forslag.Count;
         ViewBag.OpptatteRessursIder = aktiveTildelinger.Select(a => a.ResourceId).ToHashSet();
         
-        ViewBag.KriserTilLister = _context?.Crises
-            .AsNoTracking()
-            .Select(c => new
+        ViewBag.KriserTilLister = kriser.Select(c => new
             {
                 id = c.Id,
                 navn = c.Name,
@@ -200,42 +164,14 @@ public class OffentligAktorController : Controller
         TryHentBrukerId(out var minBrukerId);
         ViewBag.MinBrukerId = minBrukerId;
         
-        // Henter de fem siste tildelingene til Koordinering-boksen.
-        ViewBag.SisteTildelinger = _context?.ResourceAssignments
-            .AsNoTracking()
-            .OrderByDescending(a => a.RequestedAtUtc)
-            .Take(5)
-            .Select(a => new
-            {
-                behov = _context.Needs
-                    .Where(n => n.Id == a.NeedId)
-                    .Select(n => n.Name)
-                    .FirstOrDefault(),
-                ressurs = _context.Resources
-                    .Where(r => r.ResourceId == a.ResourceId)
-                    .Select(r => r.Object)
-                    .FirstOrDefault(),
-                status = a.Status,
-                tidspunkt = a.RequestedAtUtc
-            })
-            .ToList();
-      
         return View(tilgjengeligeRessurser);
     }
     [HttpGet]
     public async Task<IActionResult> MineRessurser()
     {
-        if (_context == null)
-            return StatusCode(500, "Databasen er ikke tilgjengelig.");
-
         if (!TryHentBrukerId(out var brukerId)) return Challenge();
 
-        var ressurser = await _context.Resources
-            .AsNoTracking()
-            .Include(r => r.Category)
-            .Where(r => r.BrukerId == brukerId)
-            .OrderByDescending(r => r.ResourceId)
-            .ToListAsync();
+        var ressurser = await _resources.ListOwnedWithCategoryAsync(brukerId);
 
         return View(ressurser);
     }
@@ -243,30 +179,20 @@ public class OffentligAktorController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SlettRessurs(int resourceId)
     {
-        if (_context == null)
-            return StatusCode(500, "Databasen er ikke tilgjengelig.");
-
         if (!TryHentBrukerId(out var brukerId)) return Challenge();
 
         // Bare egne ressurser kan slettes.
-        var ressurs = await _context.Resources.FirstOrDefaultAsync(r =>
-            r.ResourceId == resourceId && r.BrukerId == brukerId);
+        var ressurs = await _resources.FindOwnedAsync(resourceId, brukerId);
 
         if (ressurs == null)
             return NotFound("Ressursen finnes ikke.");
 
         // Ressurser som har vært i en tildeling beholdes på grunn av historikken.
-        var harTildeling = await _context.ResourceAssignments
-            .AnyAsync(a => a.ResourceId == resourceId);
-
-        if (harTildeling)
+        if (!await _resources.TryDeleteAsync(ressurs))
         {
             TempData["ErrorMessage"] = "Ressursen har vært brukt i en tildeling og kan ikke slettes.";
             return LocalRedirect(Url.Action(nameof(MineRessurser)) + Request.HendelsesQuery());
         }
-
-        _context.Resources.Remove(ressurs);
-        await _context.SaveChangesAsync();
 
         TempData["SuccessMessage"] = "Ressursen er slettet.";
 
@@ -276,49 +202,21 @@ public class OffentligAktorController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> VurderRessurs(int[] needId, int[] resourceId, bool fraMatch = false)
     {
-        if (_context == null)
-            return StatusCode(500, "Databasen er ikke tilgjengelig.");
-
         if (resourceId.Length == 0 || (needId.Length != 1 && needId.Length != resourceId.Length) ||
             resourceId.Distinct().Count() != resourceId.Length ||
             needId.Distinct().Count() != needId.Length)
             return VisMatchfeil("Velg ett behov eller ett behov per ressurs.", fraMatch);
 
-        await using var transaction = await _context.Database.BeginTransactionAsync(
-            System.Data.IsolationLevel.Serializable);
-
-        var aktiveBehov = await _context.Needs.CountAsync(n =>
-            Enumerable.Contains(needId, n.Id) &&
-            (n.Status == "Åpen" || n.Status == "Under behandling"));
-
-        if (aktiveBehov != needId.Length)
-            return VisMatchfeil("Et valgt behov finnes ikke eller er avsluttet.", fraMatch);
-
-        var tilgjengelige = await _context.Resources.CountAsync(r =>
-            Enumerable.Contains(resourceId, r.ResourceId) &&
-            r.Available &&
-            (r.TilgjengeligFra == null || r.TilgjengeligFra <= DateTime.Now));
-
-        if (tilgjengelige != resourceId.Length)
-            return VisMatchfeil("En valgt ressurs er ikke tilgjengelig.", fraMatch);
-
-        var opptatt = await _context.ResourceAssignments.AnyAsync(a =>
-            Enumerable.Contains(resourceId, a.ResourceId) &&
-            (a.Status == AssignmentStatus.Requested || a.Status == AssignmentStatus.Assigned));
-
-        if (opptatt)
-            return VisMatchfeil("En valgt ressurs er allerede under vurdering eller tildelt.", fraMatch);
-
-        var tidspunkt = DateTime.UtcNow;
-        _context.ResourceAssignments.AddRange(resourceId.Select((id, index) => new ResourceAssignment
+        var result = await _assignments.RequestAsync(needId, resourceId);
+        var errorMessage = result switch
         {
-            NeedId = needId.Length == 1 ? needId[0] : needId[index],
-            ResourceId = id,
-            Status = AssignmentStatus.Requested,
-            RequestedAtUtc = tidspunkt
-        }));
-        await _context.SaveChangesAsync();
-        await transaction.CommitAsync();
+            RequestAssignmentResult.InactiveNeed => "Et valgt behov finnes ikke eller er avsluttet.",
+            RequestAssignmentResult.UnavailableResource => "En valgt ressurs er ikke tilgjengelig.",
+            RequestAssignmentResult.BusyResource => "En valgt ressurs er allerede under vurdering eller tildelt.",
+            _ => null
+        };
+        if (errorMessage is not null)
+            return VisMatchfeil(errorMessage, fraMatch);
 
         TempData["SuccessMessage"] = resourceId.Length == 1
             ? "Ressursen er sendt til vurdering."
@@ -339,12 +237,8 @@ public class OffentligAktorController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> TildelRessurs(int assignmentId)
     {
-        if (_context == null)
-            return StatusCode(500, "Databasen er ikke tilgjengelig.");
-
         // Finn vurderingen som skal godkjennes.
-        var tildeling = await _context.ResourceAssignments
-            .FirstOrDefaultAsync(a => a.Id == assignmentId);
+        var tildeling = await _assignments.FindAsync(assignmentId);
 
         if (tildeling == null)
             return NotFound("Ressursvurderingen finnes ikke.");
@@ -354,37 +248,26 @@ public class OffentligAktorController : Controller
             return BadRequest("Ressursen er ikke til vurdering.");
 
         // Behovet må fortsatt være aktivt.
-        var aktivtBehov = await _context.Needs.AnyAsync(n =>
-            n.Id == tildeling.NeedId &&
-            (n.Status == "Åpen" || n.Status == "Under behandling"));
+        var aktivtBehov = await _assignments.HasActiveNeedAsync(tildeling.NeedId);
 
         if (!aktivtBehov)
             return BadRequest("Behovet er ikke lenger aktivt.");
 
         // Ressursen må fortsatt være tilgjengelig.
-        var tilgjengeligRessurs = await _context.Resources.AnyAsync(r =>
-            r.ResourceId == tildeling.ResourceId &&
-            r.Available &&
-            (r.TilgjengeligFra == null ||
-             r.TilgjengeligFra <= DateTime.Now));
+        var tilgjengeligRessurs = await _assignments.HasAvailableResourceAsync(tildeling.ResourceId);
 
         if (!tilgjengeligRessurs)
             return BadRequest("Ressursen er ikke tilgjengelig.");
 
         // Hindre tildeling dersom ressursen allerede er tildelt.
-        var alleredeTildelt = await _context.ResourceAssignments
-            .AnyAsync(a =>
-                a.ResourceId == tildeling.ResourceId &&
-                a.Id != tildeling.Id &&
-                (a.Status == AssignmentStatus.Requested ||
-                 a.Status == AssignmentStatus.Assigned));
+        var alleredeTildelt = await _assignments.HasOtherActiveAssignmentAsync(tildeling.Id, tildeling.ResourceId);
 
         if (alleredeTildelt)
             return BadRequest("Ressursen er allerede opptatt.");
 
         tildeling.MarkAssigned();
 
-        await _context.SaveChangesAsync();
+        await _assignments.SaveChangesAsync();
 
         TempData["SuccessMessage"] = "Ressursen er tildelt.";
 
@@ -395,12 +278,8 @@ public class OffentligAktorController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> FrigiRessurs(int assignmentId)
     {
-        if (_context == null)
-            return StatusCode(500, "Databasen er ikke tilgjengelig.");
-
         // Finn den eksisterende tildelingen.
-        var tildeling = await _context.ResourceAssignments
-            .FirstOrDefaultAsync(a => a.Id == assignmentId);
+        var tildeling = await _assignments.FindAsync(assignmentId);
 
         if (tildeling == null)
             return NotFound("Tildelingen finnes ikke.");
@@ -412,7 +291,7 @@ public class OffentligAktorController : Controller
         // Avslutt tildelingen og behold historikken.
         tildeling.MarkReleased();
 
-        await _context.SaveChangesAsync();
+        await _assignments.SaveChangesAsync();
 
         TempData["SuccessMessage"] = "Ressursen er frigitt.";
 
@@ -423,11 +302,7 @@ public class OffentligAktorController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AvslaRessurs(int assignmentId)
     {
-        if (_context == null)
-            return StatusCode(500, "Databasen er ikke tilgjengelig.");
-
-        var tildeling = await _context.ResourceAssignments
-            .FirstOrDefaultAsync(a => a.Id == assignmentId);
+        var tildeling = await _assignments.FindAsync(assignmentId);
 
         if (tildeling == null)
             return NotFound("Ressursvurderingen finnes ikke.");
@@ -439,7 +314,7 @@ public class OffentligAktorController : Controller
         // Avslutt vurderingen, men behold historikken.
         tildeling.MarkRejected();
 
-        await _context.SaveChangesAsync();
+        await _assignments.SaveChangesAsync();
 
         TempData["SuccessMessage"] = "Ressursforslaget er avslått.";
 

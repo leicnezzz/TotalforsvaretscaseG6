@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.DataAccess;
 using Totalforsvaret.Models;
 
@@ -11,7 +10,8 @@ namespace Totalforsvaret.Controllers;
 [ApiController]
 [Authorize(Policy = "KunOffentlig")]
 [Route("api/crises/{crisisId:int}/map-annotations")]
-public class CrisisMapAnnotationsController(AppDbContext db) : ControllerBase
+public class CrisisMapAnnotationsController(
+    ICrisisRepository crises, ICrisisMapAnnotationRepository annotations) : ControllerBase
 {
     public class AnnotationInput
     {
@@ -27,7 +27,7 @@ public class CrisisMapAnnotationsController(AppDbContext db) : ControllerBase
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(int crisisId, AnnotationInput input)
     {
-        if (crisisId <= 0 || !await db.Crises.AnyAsync(c => c.Id == crisisId))
+        if (crisisId <= 0 || !await crises.ExistsAsync(crisisId))
             return NotFound();
         if (input.Kind is not ("soner" or "veihindringer") ||
             string.IsNullOrWhiteSpace(input.Name) || input.Name.Length > 100 ||
@@ -59,8 +59,7 @@ public class CrisisMapAnnotationsController(AppDbContext db) : ControllerBase
             Risk = input.Kind == "soner" ? input.Risk : "",
             CoordinatesJson = JsonSerializer.Serialize(input.Coordinates)
         };
-        db.CrisisMapAnnotations.Add(annotation);
-        await db.SaveChangesAsync();
+        await annotations.AddAsync(annotation);
         return Ok(new { id = annotation.Id, crisisId });
     }
 
@@ -69,11 +68,8 @@ public class CrisisMapAnnotationsController(AppDbContext db) : ControllerBase
     public async Task<IActionResult> Delete(int crisisId, int id)
     {
         // Begge ID-er må stemme. En markering kan ikke slettes via en annen hendelse.
-        var annotation = await db.CrisisMapAnnotations
-            .SingleOrDefaultAsync(a => a.Id == id && a.CrisisId == crisisId);
-        if (annotation is null) return NotFound();
-        db.CrisisMapAnnotations.Remove(annotation);
-        await db.SaveChangesAsync();
+        if (!await annotations.DeleteAsync(crisisId, id))
+            return NotFound();
         return NoContent();
     }
 }

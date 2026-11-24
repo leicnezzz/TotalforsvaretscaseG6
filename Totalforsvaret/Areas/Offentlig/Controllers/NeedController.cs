@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Offentlig.ViewModels;
 using Totalforsvaret.DataAccess;
@@ -18,14 +17,17 @@ namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
 public class NeedController : Controller
 {
-    private readonly AppDbContext _context;
+    private readonly INeedRepository _needs;
+    private readonly ICrisisRepository _crises;
     private readonly UserManager<Bruker> _userManager;
 
     public NeedController(
-        AppDbContext context,
+        INeedRepository needs,
+        ICrisisRepository crises,
         UserManager<Bruker> userManager)
     {
-        _context = context;
+        _needs = needs;
+        _crises = crises;
         _userManager = userManager;
     }
 
@@ -37,7 +39,7 @@ public class NeedController : Controller
         var viewModel = new NeedCreateViewModel
         {
             Crises = await GetCrisesAsync(apneHendelser),
-            CrisisLocations = await GetCrisisLocationsAsync(apneHendelser),
+            CrisisLocations = await _crises.ListMapPointsAsync(apneHendelser),
             CrisisId = apneHendelser.Count == 1 ? apneHendelser[0] :
                 apneHendelser.Count == 0 ? crisisId : null,
             Status = "Under behandling"
@@ -59,7 +61,7 @@ public class NeedController : Controller
         var apneHendelser = HentApneHendelser();
         if (viewModel.CrisisId is int crisisId &&
             ((apneHendelser.Count > 0 && !apneHendelser.Contains(crisisId)) ||
-             !await _context.Crises.AnyAsync(c => c.Id == crisisId)))
+             !await _crises.ExistsAsync(crisisId)))
         {
             ModelState.AddModelError(
                 nameof(viewModel.CrisisId),
@@ -69,7 +71,7 @@ public class NeedController : Controller
         if (!ModelState.IsValid)
         {
             viewModel.Crises = await GetCrisesAsync(apneHendelser);
-            viewModel.CrisisLocations = await GetCrisisLocationsAsync(apneHendelser);
+            viewModel.CrisisLocations = await _crises.ListMapPointsAsync(apneHendelser);
             return View(viewModel);
         }
 
@@ -87,29 +89,11 @@ public class NeedController : Controller
             OffentligAktorId = offentligAktor.Id
         };
 
-        _context.Needs.Add(need);
-        await _context.SaveChangesAsync();
+        await _needs.AddAsync(need);
 
         return LocalRedirect(this.OversiktUrl(viewModel.CrisisId));
     }
 
-    private async Task<IReadOnlyList<CrisisMapPoint>> GetCrisisLocationsAsync(List<int> openIds)
-    {
-        var crises = CrisesWithCoordinates();
-        if (openIds.Count > 0)
-            crises = crises.Where(c => openIds.Contains(c.Id));
-
-        return await ProjectMapPoints(crises).ToListAsync();
-    }
-
-    private IQueryable<Crisis> CrisesWithCoordinates() => _context.Crises
-        .AsNoTracking()
-        .Where(c => c.Latitude >= -90 && c.Latitude <= 90 &&
-                    c.Longitude >= -180 && c.Longitude <= 180);
-
-    private static IQueryable<CrisisMapPoint> ProjectMapPoints(IQueryable<Crisis> crises) =>
-        crises.Select(c => new CrisisMapPoint(
-            c.Id, c.Name, c.Latitude!.Value, c.Longitude!.Value));
     // Henter krisene som kan velges i skjemaet.
     private List<int> HentApneHendelser() => Request.Query["hendelser"]
         .Select(value => int.TryParse(value, out var id) ? id : 0)
@@ -119,26 +103,14 @@ public class NeedController : Controller
 
     private async Task<IEnumerable<SelectListItem>> GetCrisesAsync(List<int>? apneHendelser = null)
     {
-        var crises = _context.Crises.AsQueryable();
-        if (apneHendelser is { Count: > 0 })
-            crises = crises.Where(c => apneHendelser.Contains(c.Id));
-
-        return await crises
-            .OrderBy(c => c.Name)
-            .Select(c => new SelectListItem
-            {
-                Value = c.Id.ToString(),
-                Text = c.Name
-            })
-            .ToListAsync();
+        var options = await _crises.ListOptionsAsync(apneHendelser);
+        return options.Select(option => new SelectListItem(option.Name, option.Id.ToString())).ToList();
     }
 
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var need = await _context.Needs
-            .AsNoTracking()
-            .SingleOrDefaultAsync(n => n.Id == id);
+        var need = await _needs.FindAsync(id);
 
         if (need == null)
             return NotFound();
@@ -167,14 +139,13 @@ public class NeedController : Controller
         int id,
         NeedCreateViewModel viewModel)
     {
-        var need = await _context.Needs
-            .SingleOrDefaultAsync(n => n.Id == id);
+        var need = await _needs.FindAsync(id, trackChanges: true);
 
         if (need == null)
             return NotFound();
 
         if (viewModel.CrisisId is int crisisId &&
-            !await _context.Crises.AnyAsync(c => c.Id == crisisId))
+            !await _crises.ExistsAsync(crisisId))
         {
             ModelState.AddModelError(
                 nameof(viewModel.CrisisId),
@@ -217,7 +188,7 @@ public class NeedController : Controller
         need.Latitude = viewModel.Latitude;
         need.Longitude = viewModel.Longitude;
 
-        await _context.SaveChangesAsync();
+        await _needs.SaveChangesAsync();
 
         return LocalRedirect(this.OversiktUrl());
     }
@@ -226,20 +197,12 @@ public class NeedController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var need = await _context.Needs
-            .SingleOrDefaultAsync(n => n.Id == id);
+        var need = await _needs.FindAsync(id, trackChanges: true);
 
         if (need == null)
             return NotFound();
 
-        var assignments = await _context.ResourceAssignments
-            .Where(assignment => assignment.NeedId == id)
-            .ToListAsync();
-
-        _context.ResourceAssignments.RemoveRange(assignments);
-
-        _context.Needs.Remove(need);
-        await _context.SaveChangesAsync();
+        await _needs.DeleteAsync(need);
 
         return LocalRedirect(this.OversiktUrl());
     }

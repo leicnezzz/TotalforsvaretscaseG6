@@ -18,7 +18,8 @@ namespace Totalforsvaret.Areas.Offentlig.Controllers;
 public class ProfileController(
     UserManager<Bruker> users,
     SignInManager<Bruker> signIn,
-    AppDbContext db,
+    IAccountDeletionRepository accountDeletion,
+    IProfilePhotoRepository photos,
     ILogger<ProfileController> logger) : Controller
 {
     private const int MaxPhotoSize = 2 * 1024 * 1024;
@@ -49,8 +50,7 @@ public class ProfileController(
             Avdeling = user.Avdeling,
             Email = user.Email,
             PhoneNumber = user.PhoneNumber,
-            HasPhoto = await db.ProfilePhotos
-                .AnyAsync(photo => photo.BrukerId == user.Id)
+            HasPhoto = await photos.ExistsAsync(user.Id)
         };
 
         return View("Index", model);
@@ -95,7 +95,7 @@ public class ProfileController(
         if (!int.TryParse(users.GetUserId(User), out var userId))
             return Challenge();
 
-        var photo = await db.ProfilePhotos.FindAsync(userId);
+        var photo = await photos.FindAsync(userId);
 
         if (photo == null)
             return NotFound();
@@ -132,20 +132,9 @@ public class ProfileController(
             return RedirectToAction(nameof(Index));
         }
 
-        var photo = await db.ProfilePhotos.FindAsync(user.Id);
-
-        if (photo == null)
-        {
-            photo = new ProfilePhoto { BrukerId = user.Id };
-            db.ProfilePhotos.Add(photo);
-        }
-
-        photo.Content = bytes;
-        photo.ContentType = contentType;
-
         try
         {
-            await db.SaveChangesAsync();
+            await photos.SaveAsync(user.Id, bytes, contentType);
         }
         catch (DbUpdateException error)
         {
@@ -192,44 +181,7 @@ public class ProfileController(
 
         try
         {
-            await using var transaction =
-                await db.Database.BeginTransactionAsync();
-
-            // Keep crises and needs, but detach them from this account.
-            await db.Crises
-                .Where(crisis => crisis.OffentligAktorId == user.Id)
-                .ExecuteUpdateAsync(update => update
-                    .SetProperty(
-                        crisis => crisis.OffentligAktorId,
-                        (int?)null));
-
-            await db.Needs
-                .Where(need => need.OffentligAktorId == user.Id)
-                .ExecuteUpdateAsync(update => update
-                    .SetProperty(
-                        need => need.OffentligAktorId,
-                        (int?)null));
-
-            // Remove assignments for this account's resources first.
-            var ownedResourceIds = db.Resources
-                .Where(resource => resource.BrukerId == user.Id)
-                .Select(resource => resource.ResourceId);
-
-            await db.ResourceAssignments
-                .Where(assignment =>
-                    ownedResourceIds.Contains(assignment.ResourceId))
-                .ExecuteDeleteAsync();
-
-            await db.Resources
-                .Where(resource => resource.BrukerId == user.Id)
-                .ExecuteDeleteAsync();
-
-            // Assignments owned by other users can still contain messages sent by this account.
-            await db.ResourceMessages
-                .Where(message => message.SenderUserId == user.Id)
-                .ExecuteDeleteAsync();
-
-            var result = await users.DeleteAsync(user);
+            var result = await accountDeletion.DeleteAsync(user);
 
             if (!result.Succeeded)
             {
@@ -238,8 +190,6 @@ public class ProfileController(
 
                 return View();
             }
-
-            await transaction.CommitAsync();
         }
         catch (Exception error) when (
             error is DbUpdateException or DbException)
@@ -276,8 +226,7 @@ public class ProfileController(
         OffentligProfileViewModel model,
         int userId)
     {
-        model.HasPhoto = await db.ProfilePhotos
-            .AnyAsync(photo => photo.BrukerId == userId);
+        model.HasPhoto = await photos.ExistsAsync(userId);
 
         return View("Index", model);
     }

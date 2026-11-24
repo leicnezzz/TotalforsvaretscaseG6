@@ -8,7 +8,6 @@ using NUnit.Framework;
 using Totalforsvaret.Areas.Privat.Controllers;
 using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.DataAccess;
-using Totalforsvaret.Handlers;
 using Totalforsvaret.Models;
 using Totalforsvaret.Models.resourcemodels;
 
@@ -33,7 +32,7 @@ public class ResourceControllerTests
         users = IdentityMocks.CreateUsers();
         users.Setup(manager => manager.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(owner);
-        controller = new ResourceController(db, new ResourceHandler(db), users.Object)
+        controller = new ResourceController(new ResourceRepository(db), users.Object)
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
         };

@@ -2,11 +2,10 @@
 @using System.Linq
 @using Totalforsvaret.Controllers
 @using Microsoft.AspNetCore.Identity
-@using Microsoft.EntityFrameworkCore
 @using Totalforsvaret.DataAccess
 @using Totalforsvaret.Models
 @inject UserManager<Bruker> UserManager
-@inject AppDbContext Db
+@inject IProfilePhotoRepository ProfilePhotos
 
 @{
     var eventQuery = Context.Request.HendelsesQuery();
@@ -34,7 +33,7 @@
         ?? "Offentlig aktør";
 
     var hasPhoto = account != null &&
-        await Db.ProfilePhotos.AnyAsync(photo => photo.BrukerId == account.Id);
+        await ProfilePhotos.ExistsAsync(account.Id);
 
     var initials = string.Concat(
         displayName

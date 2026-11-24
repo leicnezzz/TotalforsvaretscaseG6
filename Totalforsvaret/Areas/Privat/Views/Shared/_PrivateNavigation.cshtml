@@ -1,11 +1,10 @@
 @using System
 @using System.Linq
 @using Microsoft.AspNetCore.Identity
-@using Microsoft.EntityFrameworkCore
 @using Totalforsvaret.DataAccess
 @using Totalforsvaret.Models
 @inject UserManager<Bruker> UserManager
-@inject AppDbContext Db
+@inject IProfilePhotoRepository ProfilePhotos
 
 @{
     var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
@@ -48,7 +47,7 @@
     var displayName = account?.Navn ?? User.Identity?.Name ?? "Privat aktør";
 
     var hasPhoto = account != null &&
-        await Db.ProfilePhotos.AnyAsync(photo => photo.BrukerId == account.Id);
+        await ProfilePhotos.ExistsAsync(account.Id);
 
     var initials = string.Concat(
         displayName

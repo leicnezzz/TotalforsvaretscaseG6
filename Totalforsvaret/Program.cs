@@ -87,7 +87,15 @@ builder.Services.AddAuthorization(options =>
               .RequireClaim("Brukertype", "Offentlig"));
 });
 
-builder.Services.AddScoped<Totalforsvaret.Handlers.ResourceHandler>();
+builder.Services.AddScoped<IResourceAssignmentRepository, ResourceAssignmentRepository>();
+builder.Services.AddScoped<IChecklistRepository, ChecklistRepository>();
+builder.Services.AddScoped<IPublicOverviewRepository, PublicOverviewRepository>();
+builder.Services.AddScoped<IAccountDeletionRepository, AccountDeletionRepository>();
+builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
+builder.Services.AddScoped<IProfilePhotoRepository, ProfilePhotoRepository>();
+builder.Services.AddScoped<ICrisisMapAnnotationRepository, CrisisMapAnnotationRepository>();
+builder.Services.AddScoped<INeedRepository, NeedRepository>();
+builder.Services.AddScoped<ICrisisRepository, CrisisRepository>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>

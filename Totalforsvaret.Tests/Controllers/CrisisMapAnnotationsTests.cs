@@ -20,7 +20,7 @@ public class CrisisMapAnnotationsTests
             .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
         db.Crises.AddRange(new Crisis { Id = 1, Name = "Flom" }, new Crisis { Id = 2, Name = "Brann" });
         db.SaveChanges();
-        controller = new CrisisMapAnnotationsController(db);
+        controller = new CrisisMapAnnotationsController(new CrisisRepository(db), new CrisisMapAnnotationRepository(db));
     }
 
     [TearDown] public void TearDown() => db.Dispose();

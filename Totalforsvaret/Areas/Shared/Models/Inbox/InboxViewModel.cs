@@ -45,8 +45,7 @@ public class InboxItemViewModel
     public string? NeedContactPerson { get; init; }
     public string? NeedContactPoint { get; init; }
     public string? NeedPhoneNumber { get; init; }
-    public DateTime? NeedDeadline { get; init; }
-
+    
     public AssignmentStatus Status { get; init; }
     public DateTime RequestedAtUtc { get; init; }
     public DateTime? AssignedAtUtc { get; init; }

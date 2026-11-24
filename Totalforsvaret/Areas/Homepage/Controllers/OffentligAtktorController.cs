@@ -128,12 +128,8 @@ public class OffentligAktorController : Controller
 
             var na = DateTime.Now;
 
-            var kandidater = _context.Resources
-                .AsNoTracking()
-                .Include(r => r.Category)
-                .Where(r => r.Available &&
-                            (r.TilgjengeligFra == null ||
-                             r.TilgjengeligFra <= na))
+            var kandidater = tilgjengeligeRessurser
+                .Where(r => r.TilgjengeligFra == null || r.TilgjengeligFra <= na)
                 .ToList();
 
             foreach (var behov in aktiveBehov)
@@ -438,8 +434,7 @@ public class OffentligAktorController : Controller
         if (alleredeTildelt)
             return BadRequest("Ressursen er allerede opptatt.");
 
-        tildeling.Status = AssignmentStatus.Assigned;
-        tildeling.AssignedAtUtc = DateTime.UtcNow;
+        tildeling.MarkAssigned();
 
         await _context.SaveChangesAsync();
 
@@ -467,8 +462,7 @@ public class OffentligAktorController : Controller
             return BadRequest("Ressursen er ikke tildelt.");
 
         // Avslutt tildelingen og behold historikken.
-        tildeling.Status = AssignmentStatus.Released;
-        tildeling.ClosedAtUtc = DateTime.UtcNow;
+        tildeling.MarkReleased();
 
         await _context.SaveChangesAsync();
 
@@ -495,8 +489,7 @@ public class OffentligAktorController : Controller
             return BadRequest("Ressursen er ikke til vurdering.");
 
         // Avslutt vurderingen, men behold historikken.
-        tildeling.Status = AssignmentStatus.Rejected;
-        tildeling.ClosedAtUtc = DateTime.UtcNow;
+        tildeling.MarkRejected();
 
         await _context.SaveChangesAsync();
 

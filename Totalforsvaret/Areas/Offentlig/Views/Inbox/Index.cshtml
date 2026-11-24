@@ -171,74 +171,7 @@
                         </div>
 
                         <div class="inbox-content">
-                            <div class="inbox-summary">
-                                <section class="inbox-summary-card">
-                                    <p class="inbox-summary-label">BEHOV</p>
-                                    <p class="inbox-summary-title">@item.NeedName · @item.NeedType</p>
-
-                                    <div class="inbox-chips">
-                                        <span class="inbox-chip">Prioritet: @item.NeedPriority</span>
-                                        <span class="inbox-chip">Status: @item.NeedStatus</span>
-
-                                        @if (item.NeedDeadline.HasValue)
-                                        {
-                                            <span class="inbox-chip">
-                                                Frist: @(item.NeedDeadline.Value.ToString("dd.MM.yyyy HH:mm"))
-                                            </span>
-                                        }
-                                    </div>
-
-                                    @if (!string.IsNullOrWhiteSpace(
-                                             item.NeedDescription))
-                                    {
-                                        <p class="inbox-description">
-                                            @item.NeedDescription
-                                        </p>
-                                    }
-                                </section>
-
-                                <svg class="inbox-summary-arrow" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
-
-                                <section class="inbox-summary-card">
-                                    <p class="inbox-summary-label">RESSURS</p>
-                                    <p class="inbox-summary-title">
-                                        @(item.CategoryName == "Vehicles" ? "Kjøretøy" : "Utstyr")
-                                        · @(item.ResourceAvailable ? "Tilgjengelig" : "Ikke tilgjengelig")
-                                    </p>
-
-                                    <div class="inbox-chips">
-                                        @if (!string.IsNullOrWhiteSpace(
-                                                 item.ResourceCondition))
-                                        {
-                                            <span class="inbox-chip">Tilstand: @item.ResourceCondition</span>
-                                        }
-
-                                        @if (!string.IsNullOrWhiteSpace(
-                                                 item.ResourceAddress))
-                                        {
-                                            <span class="inbox-chip">@item.ResourceAddress</span>
-                                        }
-                                    </div>
-
-                                    @if (!string.IsNullOrWhiteSpace(
-                                             item.ResourceInformation))
-                                    {
-                                        <p class="inbox-description">
-                                            @item.ResourceInformation
-                                        </p>
-                                    }
-                                </section>
-                            </div>
-
-                            @if (!string.IsNullOrWhiteSpace(item.NeedContactPerson)
-                                 || !string.IsNullOrWhiteSpace(item.NeedContactPoint)
-                                 || !string.IsNullOrWhiteSpace(item.NeedPhoneNumber))
-                            {
-                                <p class="inbox-contact">
-                                    Kontakt:
-                                    <strong>@string.Join(" · ", new[] { item.NeedContactPerson, item.NeedContactPoint, item.NeedPhoneNumber }.Where(x => !string.IsNullOrWhiteSpace(x)))</strong>
-                                </p>
-                            }
+                            <partial name="/Areas/Homepage/Views/Shared/_InboxSummary.cshtml" model="item" />
 
                             <section class="inbox-conversation"
                                      aria-labelledby="inbox-conversation-title">
@@ -250,32 +183,7 @@
                                     </span>
                                 </div>
 
-                                <div class="inbox-conversation-body">
-                                    @if (Model.Messages.Count == 0)
-                                    {
-                                        <p class="inbox-conversation-empty">
-                                            Ingen meldinger ennå. Skriv første melding
-                                            for å avklare detaljer om matchen.
-                                        </p>
-                                    }
-                                    else
-                                    {
-                                        @foreach (var message in Model.Messages)
-                                        {
-                                            <article class="inbox-message @(message.IsOwnMessage ? "is-own" : "")">
-                                                <p class="inbox-message-meta">
-                                                    @message.SenderName ·
-                                                    <time datetime="@(message.SentAtUtc.ToString("O"))">
-                                                        @(message.SentAtUtc.ToLocalTime()
-                                                            .ToString("dd.MM.yyyy HH:mm"))
-                                                    </time>
-                                                </p>
-
-                                                <p class="inbox-message-text">@message.Body</p>
-                                            </article>
-                                        }
-                                    }
-                                </div>
+                                <partial name="/Areas/Homepage/Views/Shared/_InboxMessages.cshtml" model="Model" />
 
                                 <form class="inbox-message-form"
                                       asp-area="Offentlig"

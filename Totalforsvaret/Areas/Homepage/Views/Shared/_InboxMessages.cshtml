@@ -1,0 +1,28 @@
+@model Totalforsvaret.Areas.Privat.Models.InboxViewModel
+
+<div class="inbox-conversation-body">
+    @if (Model.Messages.Count == 0)
+    {
+        <p class="inbox-conversation-empty">
+            Ingen meldinger ennå. Skriv første melding
+            for å avklare detaljer om matchen.
+        </p>
+    }
+    else
+    {
+        @foreach (var message in Model.Messages)
+        {
+            <article class="inbox-message @(message.IsOwnMessage ? "is-own" : "")">
+                <p class="inbox-message-meta">
+                    @message.SenderName ·
+                    <time datetime="@(message.SentAtUtc.ToString("O"))">
+                        @(message.SentAtUtc.ToLocalTime()
+                            .ToString("dd.MM.yyyy HH:mm"))
+                    </time>
+                </p>
+
+                <p class="inbox-message-text">@message.Body</p>
+            </article>
+        }
+    }
+</div>

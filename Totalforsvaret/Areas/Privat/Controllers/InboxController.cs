@@ -186,8 +186,7 @@ public class InboxController(
             return VisHandlingsfeil(assignmentId, "Ressursen er allerede under vurdering eller tildelt.");
         }
 
-        assignment.Status = AssignmentStatus.Assigned;
-        assignment.AssignedAtUtc = DateTime.UtcNow;
+        assignment.MarkAssigned();
 
         await db.SaveChangesAsync();
 
@@ -211,8 +210,7 @@ public class InboxController(
         if (assignment.Status != AssignmentStatus.Requested)
             return VisHandlingsfeil(assignmentId, "Forespørselen venter ikke lenger på svar.");
 
-        assignment.Status = AssignmentStatus.Rejected;
-        assignment.ClosedAtUtc = DateTime.UtcNow;
+        assignment.MarkRejected();
 
         await db.SaveChangesAsync();
 

@@ -71,12 +71,7 @@ public class CrisisController : Controller
         }
 
         // Fjerner mellomrom før og etter teksten.
-        crisis.Name = crisis.Name?.Trim() ?? "";
-        crisis.Description = crisis.Description?.Trim() ?? "";
-        crisis.Area = crisis.Area?.Trim() ?? "";
-        crisis.Type = crisis.Type?.Trim() ?? "";
-        crisis.Severity = crisis.Severity?.Trim() ?? "";
-        crisis.Status = crisis.Status?.Trim() ?? "";
+        NormalizeCrisis(crisis);
 
         if (string.IsNullOrWhiteSpace(crisis.Name) ||
             crisis.Name.Length > 100)
@@ -173,12 +168,7 @@ public async Task<IActionResult> Edit(
     if (existing == null)
         return NotFound();
 
-    crisis.Name = crisis.Name?.Trim() ?? "";
-    crisis.Description = crisis.Description?.Trim() ?? "";
-    crisis.Area = crisis.Area?.Trim() ?? "";
-    crisis.Type = crisis.Type?.Trim() ?? "";
-    crisis.Severity = crisis.Severity?.Trim() ?? "";
-    crisis.Status = crisis.Status?.Trim() ?? "";
+    NormalizeCrisis(crisis);
 
     if (string.IsNullOrWhiteSpace(crisis.Name) ||
         crisis.Name.Length > 100)
@@ -332,4 +322,14 @@ public async Task<IActionResult> Avslutt(int id)
 
     return LocalRedirect(this.OversiktUrl());
 }
+
+    private static void NormalizeCrisis(Crisis crisis)
+    {
+        crisis.Name = crisis.Name?.Trim() ?? "";
+        crisis.Description = crisis.Description?.Trim() ?? "";
+        crisis.Area = crisis.Area?.Trim() ?? "";
+        crisis.Type = crisis.Type?.Trim() ?? "";
+        crisis.Severity = crisis.Severity?.Trim() ?? "";
+        crisis.Status = crisis.Status?.Trim() ?? "";
+    }
 }

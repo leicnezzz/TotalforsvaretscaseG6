@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.Models;
+using Totalforsvaret.Services;
 
 namespace Totalforsvaret.Home.Controllers;
 
@@ -67,14 +68,7 @@ public class ResourceSessionController(
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var email = input.Email.Trim();
-
-        var bruker = new Privataktor
-        {
-            UserName = email,
-            Email = email,
-            Navn = $"{input.FirstName.Trim()} {input.LastName.Trim()}"
-        };
+        var bruker = PrivateAccountRegistration.CreateUser(input);
 
         var result = await users.CreateAsync(
             bruker,

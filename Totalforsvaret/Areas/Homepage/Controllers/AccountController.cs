@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.Models;
+using Totalforsvaret.Services;
 
 namespace Totalforsvaret.Controllers;
 
@@ -32,16 +33,7 @@ public class AccountController(
             return View(input);
         }
 
-        var email = input.Email.Trim();
-
-		// Ved selvregistrrering får brukeren en privat konto.
-		// Kontotypen bestemmes på serveren.
-		var bruker = new Privataktor
-        {
-            UserName = email,
-            Email = email,
-            Navn = $"{input.FirstName.Trim()} {input.LastName.Trim()}"
-        };
+        var bruker = PrivateAccountRegistration.CreateUser(input);
 
         var resultat = await users.CreateAsync(
             bruker,

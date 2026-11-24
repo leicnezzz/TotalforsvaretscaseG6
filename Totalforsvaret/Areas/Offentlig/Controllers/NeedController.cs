@@ -146,31 +146,24 @@ public class NeedController : Controller
 
     private async Task<IReadOnlyList<CrisisMapPoint>> GetCrisisLocationsAsync(List<int> openIds)
     {
-        var crises = _context.Crises.AsNoTracking()
-            .Where(c => c.Latitude >= -90 && c.Latitude <= 90 &&
-                        c.Longitude >= -180 && c.Longitude <= 180);
+        var crises = CrisesWithCoordinates();
         if (openIds.Count > 0)
             crises = crises.Where(c => openIds.Contains(c.Id));
 
-        return await crises.Select(c => new CrisisMapPoint(
-            c.Id, c.Name, c.Latitude!.Value, c.Longitude!.Value)).ToListAsync();
+        return await ProjectMapPoints(crises).ToListAsync();
     }
 
-    private async Task<IReadOnlyList<CrisisMapPoint>> GetActiveCrisesOnMapAsync()
-    {
-        return await _context.Crises
-            .AsNoTracking()
-            .Where(c =>
-                c.Latitude.HasValue &&
-                c.Longitude.HasValue &&
-                c.Latitude >= -90 && c.Latitude <= 90 &&
-                c.Longitude >= -180 && c.Longitude <= 180)
-            .OrderBy(c => c.Name)
-            .Select(c => new CrisisMapPoint(
-                c.Id, c.Name, c.Latitude!.Value, c.Longitude!.Value))
-            .ToListAsync();
-    }
+    private async Task<IReadOnlyList<CrisisMapPoint>> GetActiveCrisesOnMapAsync() =>
+        await ProjectMapPoints(CrisesWithCoordinates().OrderBy(c => c.Name)).ToListAsync();
 
+    private IQueryable<Crisis> CrisesWithCoordinates() => _context.Crises
+        .AsNoTracking()
+        .Where(c => c.Latitude >= -90 && c.Latitude <= 90 &&
+                    c.Longitude >= -180 && c.Longitude <= 180);
+
+    private static IQueryable<CrisisMapPoint> ProjectMapPoints(IQueryable<Crisis> crises) =>
+        crises.Select(c => new CrisisMapPoint(
+            c.Id, c.Name, c.Latitude!.Value, c.Longitude!.Value));
     // Henter krisene som kan velges i skjemaet.
     private List<int> HentApneHendelser() => Request.Query["hendelser"]
         .Select(value => int.TryParse(value, out var id) ? id : 0)

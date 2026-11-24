@@ -1,0 +1,70 @@
+@model Totalforsvaret.Areas.Privat.Models.InboxItemViewModel
+
+<div class="inbox-summary">
+    <section class="inbox-summary-card">
+        <p class="inbox-summary-label">BEHOV</p>
+        <p class="inbox-summary-title">@Model.NeedName · @Model.NeedType</p>
+
+        <div class="inbox-chips">
+            <span class="inbox-chip">Prioritet: @Model.NeedPriority</span>
+            <span class="inbox-chip">Status: @Model.NeedStatus</span>
+
+            @if (Model.NeedDeadline.HasValue)
+            {
+                <span class="inbox-chip">
+                    Frist: @(Model.NeedDeadline.Value.ToString("dd.MM.yyyy HH:mm"))
+                </span>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(
+                 Model.NeedDescription))
+        {
+            <p class="inbox-description">
+                @Model.NeedDescription
+            </p>
+        }
+    </section>
+
+    <svg class="inbox-summary-arrow" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+
+    <section class="inbox-summary-card">
+        <p class="inbox-summary-label">RESSURS</p>
+        <p class="inbox-summary-title">
+            @(Model.CategoryName == "Vehicles" ? "Kjøretøy" : "Utstyr")
+            · @(Model.ResourceAvailable ? "Tilgjengelig" : "Ikke tilgjengelig")
+        </p>
+
+        <div class="inbox-chips">
+            @if (!string.IsNullOrWhiteSpace(
+                     Model.ResourceCondition))
+            {
+                <span class="inbox-chip">Tilstand: @Model.ResourceCondition</span>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(
+                     Model.ResourceAddress))
+            {
+                <span class="inbox-chip">@Model.ResourceAddress</span>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(
+                 Model.ResourceInformation))
+        {
+            <p class="inbox-description">
+                @Model.ResourceInformation
+            </p>
+        }
+    </section>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.NeedContactPerson)
+     || !string.IsNullOrWhiteSpace(Model.NeedContactPoint)
+     || !string.IsNullOrWhiteSpace(Model.NeedPhoneNumber))
+{
+    <p class="inbox-contact">
+        Kontakt:
+        <strong>@string.Join(" · ", new[] { Model.NeedContactPerson, Model.NeedContactPoint, Model.NeedPhoneNumber }.Where(x => !string.IsNullOrWhiteSpace(x)))</strong>
+    </p>
+}

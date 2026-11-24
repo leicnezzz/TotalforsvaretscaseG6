@@ -8,6 +8,7 @@ using Totalforsvaret.Areas.Offentlig.ViewModels;
 using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.DataAccess;
 using Totalforsvaret.Models;
+using Totalforsvaret.Services;
 
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
@@ -123,7 +124,7 @@ public class ProfileController(
         await image.CopyToAsync(buffer, HttpContext.RequestAborted);
 
         var bytes = buffer.ToArray();
-        var contentType = GetPhotoContentType(bytes);
+        var contentType = ProfilePhotoFormat.GetPhotoContentType(bytes);
 
         if (contentType == null)
         {
@@ -279,24 +280,5 @@ public class ProfileController(
             .AnyAsync(photo => photo.BrukerId == userId);
 
         return View("Index", model);
-    }
-
-    private static string? GetPhotoContentType(ReadOnlySpan<byte> bytes)
-    {
-        if (bytes.StartsWith(new byte[] { 0xFF, 0xD8, 0xFF }) &&
-            bytes.EndsWith(new byte[] { 0xFF, 0xD9 }))
-        {
-            return "image/jpeg";
-        }
-
-        if (bytes.StartsWith(
-                new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A }) &&
-            bytes.EndsWith(
-                new byte[] { 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82 }))
-        {
-            return "image/png";
-        }
-
-        return null;
     }
 }

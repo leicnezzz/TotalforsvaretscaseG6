@@ -23,8 +23,6 @@ public class Need
 
     public string Status { get; set; } = "";
 
-    public DateTime? Frist { get; set; }
-
     // Kontaktinformasjon
     public string? Kontaktpunkt { get; set; }
 

@@ -31,7 +31,7 @@ public sealed class InboxService(IResourceAssignmentRepository repository, Resou
 
                 NeedName = a.Need.Name,
                 NeedType = a.Need.Type.ToNorwegianText(),
-                NeedPriority = a.Need.Priority,
+                NeedPriority = a.Need.Priority.ToNorwegianText(),
                 NeedStatus = a.Need.Status.ToNorwegianText(),
                 NeedDescription = a.Need.Description,
                 NeedContactPerson = a.Need.Kontaktperson,

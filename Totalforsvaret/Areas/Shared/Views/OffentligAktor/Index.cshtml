@@ -36,7 +36,7 @@
         kriseId = behov.CrisisId,
         navn = behov.Name,
         type = behov.Type.ToNorwegianText(),
-        prioritet = behov.Priority,
+        prioritet = behov.Priority.ToNorwegianText(),
         status = behov.Status.ToNorwegianText(),
         beskrivelse = behov.Description,
         latitude = behov.Latitude,
@@ -564,7 +564,7 @@
                 <tr>
                     <td>@b.Name</td>
                     <td>@b.Type</td>
-                    <td>@b.Priority</td>
+                    <td>@b.Priority.ToNorwegianText()</td>
                     <td>@b.Status.ToNorwegianText()</td>
                 </tr>
             }

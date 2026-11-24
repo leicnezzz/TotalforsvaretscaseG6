@@ -17,7 +17,9 @@ public class NeedCreateViewModel
     public string Description { get; set; } = "";
 
     [Required(ErrorMessage = "Velg prioritet.")]
-    public string Priority { get; set; } = "";
+    [AllowedValues(NeedPriority.Low, NeedPriority.Medium, NeedPriority.High, NeedPriority.Critical,
+        ErrorMessage = "Velg en gyldig prioritet.")]
+    public NeedPriority? Priority { get; set; }
 
     [Required(ErrorMessage = "Velg status.")]
     [AllowedValues(NeedStatus.Open, NeedStatus.InProgress, NeedStatus.Resolved, ErrorMessage = "Velg en gyldig status.")]

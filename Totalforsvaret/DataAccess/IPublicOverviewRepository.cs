@@ -23,5 +23,5 @@ public record OverviewCrisis(
     DateTime StartTime, CrisisStatus Status, string Description, decimal? Latitude, decimal? Longitude);
 
 public record OverviewNeed(
-    int Id, string Name, NeedType Type, string Priority, NeedStatus Status,
+    int Id, string Name, NeedType Type, NeedPriority Priority, NeedStatus Status,
     int? CrisisId, string CrisisName, decimal? Latitude, decimal? Longitude);

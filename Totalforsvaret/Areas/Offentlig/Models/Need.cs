@@ -19,7 +19,7 @@ public class Need
 
     // Prioritet og status
     [Column("Prioritet")]
-    public string Priority { get; set; } = "";
+    public NeedPriority Priority { get; set; }
 
     public NeedStatus Status { get; set; }
 

@@ -68,10 +68,10 @@
                         <label asp-for="Priority" class="form-label">Prioritet</label>
                         <select asp-for="Priority" class="form-select">
                             <option value="">Velg prioritet</option>
-                            <option value="Lav">Lav</option>
-                            <option value="Middels">Middels</option>
-                            <option value="Høy">Høy</option>
-                            <option value="Kritisk">Kritisk</option>
+                            @foreach (var priority in new[] { NeedPriority.Low, NeedPriority.Medium, NeedPriority.High, NeedPriority.Critical })
+                            {
+                                <option value="@((int)priority)">@priority.ToNorwegianText()</option>
+                            }
                         </select>
                         <span asp-validation-for="Priority" class="text-danger"></span>
                     </div>

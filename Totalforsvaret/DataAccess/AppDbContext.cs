@@ -105,6 +105,11 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
             .HasValue<Offentligaktør>("Offentlig");
 
         builder.Entity<Need>()
+            .Property(need => need.Priority)
+            .HasConversion(priority => priority.ToNorwegianText(), value => NeedPriorityText.FromStoredValue(value))
+            .HasColumnType("longtext");
+
+        builder.Entity<Need>()
             .Property(need => need.Type)
             .HasConversion(type => type.ToNorwegianText(), value => NeedTypeText.FromStoredValue(value))
             .HasColumnType("longtext");

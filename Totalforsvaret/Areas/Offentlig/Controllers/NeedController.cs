@@ -81,7 +81,7 @@ public class NeedController : Controller
             Name = viewModel.Name.Trim(),
             Type = viewModel.Type!.Value,
             Description = viewModel.Description.Trim(),
-            Priority = viewModel.Priority,
+            Priority = viewModel.Priority!.Value,
             Status = viewModel.Status!.Value,
             Latitude = viewModel.Latitude!.Value,
             Longitude = viewModel.Longitude!.Value,
@@ -122,7 +122,7 @@ public class NeedController : Controller
             Name = need.Name,
             Type = need.Type == NeedType.Unspecified ? null : need.Type,
             Description = need.Description,
-            Priority = need.Priority,
+            Priority = need.Priority == NeedPriority.Unspecified ? null : need.Priority,
             Status = need.Status == NeedStatus.Unspecified ? null : need.Status,
             CrisisId = need.CrisisId,
             Latitude = need.Latitude,
@@ -162,7 +162,7 @@ public class NeedController : Controller
         need.Name = viewModel.Name.Trim();
         need.Type = viewModel.Type!.Value;
         need.Description = viewModel.Description.Trim();
-        need.Priority = viewModel.Priority;
+        need.Priority = viewModel.Priority!.Value;
         need.Status = viewModel.Status!.Value;
         need.CrisisId = viewModel.CrisisId;
         need.Latitude = viewModel.Latitude;

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Totalforsvaret.Services;
 using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Models;
@@ -6,7 +5,6 @@ using Totalforsvaret.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Totalforsvaret.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();

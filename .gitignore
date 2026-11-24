@@ -799,3 +799,9 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/csharp,aspnetcore,visualstudio,visualstudiocode,rider
 # Local registered accounts (never commit user data)
 **/App_Data/
+
+# Local environment secrets; keep example files
+.env
+.env.*
+!.env.example
+!.env.*.example

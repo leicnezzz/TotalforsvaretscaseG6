@@ -6,10 +6,19 @@ using Totalforsvaret.AppHost;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-// Passordet leses fra AppHost sine User Secrets.
+// Passordet leses fra AppHost sine User Secrets. og opretter nå nytt ved første oppstart.
 var password = builder.AddParameter(
     "mariadb-password",
-    secret: true);
+    new GenerateParameterDefault
+    {
+        MinLength = 32,
+        Lower = true,
+        Upper = true,
+        Numeric = true,
+        Special = false
+    },
+    secret: true,
+    persist: true);
 
 // Aspire starter MariaDB i Docker.
 var mariadb = builder

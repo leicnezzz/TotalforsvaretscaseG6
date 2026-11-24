@@ -21,6 +21,9 @@
     font-family: "Roboto", Arial, sans-serif;
 }
 
+body.offentlig-page > .container-fluid:has(.offentlig-dashboard) {
+    padding-inline: 0;
+}
 .offentlig-dashboard button,
 .offentlig-dashboard input,
 .offentlig-dashboard select,
@@ -2220,6 +2223,7 @@ body.offentlig-page {
 @media screen {
     html:has(.offentlig-dashboard #offentligKart) {
         overflow: hidden;
+        scrollbar-gutter: auto;
     }
 
     body:has(.offentlig-dashboard #offentligKart) {

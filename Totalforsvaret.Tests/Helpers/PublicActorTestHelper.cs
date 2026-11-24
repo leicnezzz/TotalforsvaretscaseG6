@@ -67,7 +67,7 @@ public static class PublicActorTestHelper
     /// </summary>
     public static Need AddNeed(AppDbContext db, int id, NeedStatus status = NeedStatus.Open)
     {
-        var need = new Need { Id = id, Name = $"Need {id}", Type = "Transport", Status = status };
+        var need = new Need { Id = id, Name = $"Need {id}", Type = NeedType.Transport, Status = status };
         db.Needs.Add(need);
         db.SaveChanges();
         return need;

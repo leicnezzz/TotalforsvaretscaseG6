@@ -58,8 +58,8 @@
                         <label asp-for="Type" class="form-label">Type behov</label>
                         <select asp-for="Type" class="form-select">
                             <option value="">Velg type</option>
-                            <option value="Utstyr">Utstyr</option>
-                            <option value="Transport">Kjøretøy</option>
+                            <option value="@((int)NeedType.Equipment)">Utstyr</option>
+                            <option value="@((int)NeedType.Transport)">Kjøretøy</option>
                         </select>
                         <span asp-validation-for="Type" class="text-danger"></span>
                     </div>

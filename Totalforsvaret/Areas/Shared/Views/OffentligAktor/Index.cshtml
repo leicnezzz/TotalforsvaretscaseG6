@@ -35,7 +35,7 @@
         id = behov.Id,
         kriseId = behov.CrisisId,
         navn = behov.Name,
-        type = behov.Type,
+        type = behov.Type.ToNorwegianText(),
         prioritet = behov.Priority,
         status = behov.Status.ToNorwegianText(),
         beskrivelse = behov.Description,

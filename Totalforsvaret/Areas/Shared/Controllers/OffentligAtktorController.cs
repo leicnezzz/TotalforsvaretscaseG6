@@ -75,7 +75,7 @@ public class OffentligAktorController : Controller
             {
                 id = n.Id,
                 navn = n.Name,
-                type = n.Type,
+                type = n.Type.ToNorwegianText(),
                 prioritet = n.Priority,
                 status = n.Status.ToNorwegianText(),
                 kriseId = n.CrisisId,

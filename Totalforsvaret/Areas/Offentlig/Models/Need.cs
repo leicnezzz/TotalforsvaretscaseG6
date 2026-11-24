@@ -12,7 +12,7 @@ public class Need
     [Column("Tittel")]
     public string Name { get; set; } = "";
 
-    public string Type { get; set; } = "";
+    public NeedType Type { get; set; }
 
     [Column("Beskrivelse")]
     public string Description { get; set; } = "";

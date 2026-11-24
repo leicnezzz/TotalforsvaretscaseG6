@@ -21,8 +21,8 @@ public sealed class ResourceMatchingService
         {
             var category = need.Type switch
             {
-                "Transport" => "Vehicles",
-                "Utstyr" => "Equipment",
+                NeedType.Transport => "Vehicles",
+                NeedType.Equipment => "Equipment",
                 _ => null
             };
 

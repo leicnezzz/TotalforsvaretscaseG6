@@ -79,7 +79,7 @@ public class NeedController : Controller
         var need = new Need
         {
             Name = viewModel.Name.Trim(),
-            Type = viewModel.Type.Trim(),
+            Type = viewModel.Type!.Value,
             Description = viewModel.Description.Trim(),
             Priority = viewModel.Priority,
             Status = viewModel.Status!.Value,
@@ -120,7 +120,7 @@ public class NeedController : Controller
         var viewModel = new NeedCreateViewModel
         {
             Name = need.Name,
-            Type = need.Type,
+            Type = need.Type == NeedType.Unspecified ? null : need.Type,
             Description = need.Description,
             Priority = need.Priority,
             Status = need.Status == NeedStatus.Unspecified ? null : need.Status,
@@ -160,7 +160,7 @@ public class NeedController : Controller
         }
 
         need.Name = viewModel.Name.Trim();
-        need.Type = viewModel.Type.Trim();
+        need.Type = viewModel.Type!.Value;
         need.Description = viewModel.Description.Trim();
         need.Priority = viewModel.Priority;
         need.Status = viewModel.Status!.Value;

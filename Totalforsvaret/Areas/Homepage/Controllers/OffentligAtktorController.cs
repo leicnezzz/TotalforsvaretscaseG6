@@ -11,11 +11,11 @@ namespace Totalforsvaret.Controllers;
 public class OffentligAktorController : Controller
 {
     private readonly ResourceHandler _resourceHandler;
-    private readonly AppDbContext? _context;
+    private readonly AppDbContext _context;
 
     public OffentligAktorController(
         ResourceHandler resourceHandler,
-        AppDbContext? context = null)
+        AppDbContext context)
     {
         _resourceHandler = resourceHandler;
         _context = context;

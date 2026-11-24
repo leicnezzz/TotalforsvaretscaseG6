@@ -58,7 +58,6 @@ public class InboxController(
                 NeedContactPerson = assignment.Need.Kontaktperson,
                 NeedContactPoint = assignment.Need.Kontaktpunkt,
                 NeedPhoneNumber = assignment.Need.Telefonnummer,
-                NeedDeadline = assignment.Need.Frist,
 
                 Status = assignment.Status,
                 RequestedAtUtc = assignment.RequestedAtUtc,

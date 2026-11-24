@@ -93,57 +93,6 @@ public class NeedController : Controller
         return LocalRedirect(this.OversiktUrl(viewModel.CrisisId));
     }
 
-    [HttpGet]
-    public IActionResult CreateMultiple() => RedirectToRoute("behov");
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateMultiple(
-        MultipleNeedsViewModel viewModel)
-    {
-        if (viewModel.CrisisId is int crisisId &&
-            !await _context.Crises.AnyAsync(c => c.Id == crisisId))
-        {
-            ModelState.AddModelError(nameof(viewModel.CrisisId), "Velg en gyldig krise.");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            viewModel.Crises = await GetCrisesAsync();
-            viewModel.ActiveCrisesOnMap = await GetActiveCrisesOnMapAsync();
-            return View(viewModel);
-        }
-
-        var needs = viewModel.Needs.Select(item => new Need
-        {
-            Name = item.Name.Trim(),
-            Type = item.Type.Trim(),
-            Description = item.Description.Trim(),
-            Priority = item.Priority,
-            Status = item.Status,
-            CrisisId = viewModel.CrisisId,
-            Latitude = viewModel.Latitude!.Value,
-            Longitude = viewModel.Longitude!.Value
-        }).ToList();
-
-        _context.Needs.AddRange(needs);
-        await _context.SaveChangesAsync();
-
-        TempData["NeedSuccessMessage"] = needs.Count == 1
-            ? "Behovet er registrert."
-            : $"{needs.Count} behov er registrert.";
-
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-        {
-            return Json(new
-            {
-                redirectUrl = this.OversiktUrl(viewModel.CrisisId)
-            });
-        }
-
-        return LocalRedirect(this.OversiktUrl());
-    }
-
     private async Task<IReadOnlyList<CrisisMapPoint>> GetCrisisLocationsAsync(List<int> openIds)
     {
         var crises = CrisesWithCoordinates();
@@ -152,9 +101,6 @@ public class NeedController : Controller
 
         return await ProjectMapPoints(crises).ToListAsync();
     }
-
-    private async Task<IReadOnlyList<CrisisMapPoint>> GetActiveCrisesOnMapAsync() =>
-        await ProjectMapPoints(CrisesWithCoordinates().OrderBy(c => c.Name)).ToListAsync();
 
     private IQueryable<Crisis> CrisesWithCoordinates() => _context.Crises
         .AsNoTracking()

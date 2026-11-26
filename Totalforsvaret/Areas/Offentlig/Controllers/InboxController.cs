@@ -11,8 +11,7 @@ namespace Totalforsvaret.Areas.Offentlig.Controllers;
 /// Shows all assignment threads to public actors and reserves inbox status changes for the
 /// resource owner.
 /// </summary>
-[Area("Offentlig")]
-[Authorize(Policy = "KunOffentlig")]
+[Area("Offentlig"), Authorize(Policy = "KunOffentlig")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public class InboxController(
     IInboxService inbox,
@@ -34,8 +33,7 @@ public class InboxController(
         return View(model);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public Task<IActionResult> Reply(int assignmentId, string? body) =>
         Run(assignmentId, userId =>
             inbox.SendMessageAsync(
@@ -44,20 +42,17 @@ public class InboxController(
                 assignmentId,
                 body));
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public Task<IActionResult> Accept(int assignmentId) =>
         Run(assignmentId, userId =>
             inbox.AcceptAsync(userId, assignmentId));
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public Task<IActionResult> Decline(int assignmentId) =>
         Run(assignmentId, userId =>
             inbox.DeclineAsync(userId, assignmentId));
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public Task<IActionResult> Release(int assignmentId) =>
         Run(assignmentId, userId =>
             inbox.ReleaseAsync(userId, assignmentId));

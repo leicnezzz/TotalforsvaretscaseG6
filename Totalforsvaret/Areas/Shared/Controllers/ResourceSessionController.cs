@@ -34,8 +34,7 @@ public class ResourceSessionController(
     /// <summary>
     /// Signs in a private actor through the wizard without creating a persistent session.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(
         [FromBody] LoginInput input)
     {
@@ -72,8 +71,7 @@ public class ResourceSessionController(
     /// <summary>
     /// Creates and signs in a private actor directly from the resource wizard.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(
         [FromBody] RegisterInput input)
     {

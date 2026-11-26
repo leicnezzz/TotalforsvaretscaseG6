@@ -26,8 +26,7 @@ public class AccountController(
     /// Creates a private account and redirects the user to sign in.
     /// </summary>
     [AllowAnonymous]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterInput input)
     {
         if (!ModelState.IsValid)
@@ -71,8 +70,7 @@ public class AccountController(
     /// Signs in through the selected actor type and enables lockout on failed attempts.
     /// </summary>
     [AllowAnonymous]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginInput input)
     {
         if (!ModelState.IsValid)
@@ -108,8 +106,7 @@ public class AccountController(
     }
 
     [Authorize]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await signIn.SignOutAsync();
@@ -156,8 +153,7 @@ public class AccountController(
     /// Signs in an existing public actor and enables lockout on failed attempts.
     /// </summary>
     [AllowAnonymous]
-    [HttpPost("/Account/Login/Offentlig")]
-    [ValidateAntiForgeryToken]
+    [HttpPost("/Account/Login/Offentlig"), ValidateAntiForgeryToken]
     [ActionName("LoginOffentlig")]
     public async Task<IActionResult> PublicLogin(LoginInput input)
     {

@@ -53,8 +53,7 @@ public class ResourceController(
     }
 
     [Authorize(Policy = "KunPrivat")]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public Task<IActionResult> Create(
         [FromBody] ResourceInput input)
     {
@@ -66,8 +65,7 @@ public class ResourceController(
     /// details.
     /// </summary>
     [Authorize(Policy = "KunOffentlig")]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public Task<IActionResult> CreateForPublicActor([FromBody] PublicResourceInput input)
     {
         return CreateResource(input, input);
@@ -111,8 +109,7 @@ public class ResourceController(
     /// Updates an owned resource while preserving its original category.
     /// </summary>
     [Authorize(Policy = "KunPrivat")]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(
         int id,
         [FromBody] ResourceInput input)
@@ -147,8 +144,7 @@ public class ResourceController(
     /// Deletes an owned resource if it has no assignment history.
     /// </summary>
     [Authorize(Policy = "KunPrivat")]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
         var user = await users.GetUserAsync(User);

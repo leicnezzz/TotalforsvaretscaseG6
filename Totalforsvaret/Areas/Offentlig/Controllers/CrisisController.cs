@@ -9,8 +9,7 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
-[Area("Offentlig")]
-[Authorize(Policy = "KunOffentlig")]
+[Area("Offentlig"), Authorize(Policy = "KunOffentlig")]
 
 
 
@@ -60,8 +59,7 @@ public class CrisisController : Controller
     /// Registers a crisis with a required map position and records the signed-in actor as its
     /// creator.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateCrisisInput input)
     {
         if (await _userManager.GetUserAsync(User)
@@ -107,8 +105,7 @@ public async Task<IActionResult> Edit(int id)
 /// Updates an existing crisis. Any public actor can edit it, and both coordinate fields may
 /// be left blank.
 /// </summary>
-[HttpPost]
-[ValidateAntiForgeryToken]
+[HttpPost, ValidateAntiForgeryToken]
 public async Task<IActionResult> Edit(
     int id,
     CrisisInput input)
@@ -132,8 +129,7 @@ public async Task<IActionResult> Edit(
 /// <summary>
 /// Deletes a crisis together with its associated needs and resource assignments.
 /// </summary>
-[HttpPost]
-[ValidateAntiForgeryToken]
+[HttpPost, ValidateAntiForgeryToken]
 public async Task<IActionResult> Delete(int id)
 {
     var crisis = await _crises.FindAsync(id, trackChanges: true);
@@ -148,8 +144,7 @@ public async Task<IActionResult> Delete(int id)
 /// <summary>
 /// Closes an active crisis and leaves an existing crisis with another status unchanged.
 /// </summary>
-[HttpPost]
-[ValidateAntiForgeryToken]
+[HttpPost, ValidateAntiForgeryToken]
 [ActionName("Avslutt")]
 public async Task<IActionResult> Close(int id)
 {

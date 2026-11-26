@@ -13,8 +13,7 @@ namespace Totalforsvaret.Areas.Privat.Controllers;
 /// <summary>
 /// Handles private account details, profile photos and account removal.
 /// </summary>
-[Area("Privat")]
-[Authorize(Policy = "KunPrivat")]
+[Area("Privat"), Authorize(Policy = "KunPrivat")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public class ProfileController(
 	UserManager<Bruker> users,
@@ -56,8 +55,7 @@ public class ProfileController(
 		return View("Index", model);
 	}
 
-	[HttpPost]
-	[ValidateAntiForgeryToken]
+	[HttpPost, ValidateAntiForgeryToken]
 	public async Task<IActionResult> Index(ProfileViewModel model)
 	{
 		var user = await users.GetUserAsync(User);
@@ -105,8 +103,7 @@ public class ProfileController(
 	/// <summary>
 	/// Checks image size and format before replacing the caller's profile photo.
 	/// </summary>
-	[HttpPost]
-	[ValidateAntiForgeryToken]
+	[HttpPost, ValidateAntiForgeryToken]
 	[RequestSizeLimit(MaxPhotoSize + 64 * 1024)]
 	public async Task<IActionResult> UploadPhoto(IFormFile? image)
 	{
@@ -151,8 +148,7 @@ public class ProfileController(
 	/// <summary>
 	/// Confirms the caller's password before removing the private account and its resources.
 	/// </summary>
-	[HttpPost]
-	[ValidateAntiForgeryToken]
+	[HttpPost, ValidateAntiForgeryToken]
 	public async Task<IActionResult> DeleteAccount(string? password)
 	{
 		if (await users.GetUserAsync(User) is not PrivateActor user)

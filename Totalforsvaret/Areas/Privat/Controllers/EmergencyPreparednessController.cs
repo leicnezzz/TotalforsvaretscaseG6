@@ -9,8 +9,7 @@ namespace Totalforsvaret.Areas.Privat.Controllers;
 /// <summary>
 /// Displays emergency preparedness guidance and saves checklist progress for private actors.
 /// </summary>
-[Area("Privat")]
-[Authorize(Policy = "KunPrivat")]
+[Area("Privat"), Authorize(Policy = "KunPrivat")]
 [Totalforsvaret.Controllers.MvcControllerName("Egenberedskap")]
 public class EmergencyPreparednessController(
     IChecklistRepository checklist,
@@ -55,8 +54,7 @@ public class EmergencyPreparednessController(
     /// <summary>
     /// Updates the caller's saved progress when the item ID belongs to the supported checklist.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> SetChecklistStatus(string itemId, bool isComplete)
     {
         var user = await users.GetUserAsync(User);

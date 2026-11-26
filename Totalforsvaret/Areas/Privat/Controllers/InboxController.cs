@@ -10,8 +10,7 @@ namespace Totalforsvaret.Areas.Privat.Controllers;
 /// <summary>
 /// Shows assignment threads for resources owned by the signed-in private actor.
 /// </summary>
-[Area("Privat")]
-[Authorize(Policy = "KunPrivat")]
+[Area("Privat"), Authorize(Policy = "KunPrivat")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public class InboxController(
     IInboxService inbox,
@@ -33,8 +32,7 @@ public class InboxController(
         return View(model);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public Task<IActionResult> SendMessage(int assignmentId, string? body) =>
         Run(assignmentId, userId =>
             inbox.SendMessageAsync(
@@ -43,14 +41,12 @@ public class InboxController(
                 assignmentId,
                 body));
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public Task<IActionResult> Accept(int assignmentId) =>
         Run(assignmentId, userId =>
             inbox.AcceptAsync(userId, assignmentId));
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public Task<IActionResult> Decline(int assignmentId) =>
         Run(assignmentId, userId =>
             inbox.DeclineAsync(userId, assignmentId));

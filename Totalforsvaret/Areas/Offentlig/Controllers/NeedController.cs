@@ -12,8 +12,7 @@ using Totalforsvaret.Models;
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
 
-[Area("Offentlig")]
-[Authorize(Policy = "KunOffentlig")]
+[Area("Offentlig"), Authorize(Policy = "KunOffentlig")]
 
 /// <summary>
 /// Manages needs used by the public actor workflows.
@@ -57,8 +56,7 @@ public class NeedController : Controller
     /// Registers a need for the signed-in public actor and checks the selected crisis against the
     /// form's options.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(NeedCreateViewModel viewModel)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -143,8 +141,7 @@ public class NeedController : Controller
     /// Updates a need after validating its coordinates and checking that the selected crisis
     /// exists.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(
         int id,
         NeedCreateViewModel viewModel)
@@ -186,8 +183,7 @@ public class NeedController : Controller
     /// <summary>
     /// Deletes a need and its resource assignments together.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
         var need = await _needs.FindAsync(id, trackChanges: true);

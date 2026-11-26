@@ -32,8 +32,7 @@ public class CrisisMapAnnotationsController(
     /// <summary>
     /// Adds a risk zone or road obstruction after checking its coordinates and shape.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(int crisisId, AnnotationInput input)
     {
         if (crisisId <= 0 || !await crises.ExistsAsync(crisisId))
@@ -75,8 +74,7 @@ public class CrisisMapAnnotationsController(
     /// <summary>
     /// Removes an annotation only when it belongs to the specified crisis.
     /// </summary>
-    [HttpDelete("{id:int}")]
-    [ValidateAntiForgeryToken]
+    [HttpDelete("{id:int}"), ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int crisisId, int id)
     {
         if (!await annotations.DeleteAsync(crisisId, id))

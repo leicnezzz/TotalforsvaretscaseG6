@@ -84,8 +84,7 @@ public class PublicActorController : Controller
     /// <summary>
     /// Deletes an owned resource if it has no assignment history.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     [ActionName("SlettRessurs")]
     public async Task<IActionResult> DeleteResource(int resourceId)
     {
@@ -110,8 +109,7 @@ public class PublicActorController : Controller
     /// Requests resources for one shared need or pairs each selected resource with a selected
     /// need.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     [ActionName("VurderRessurs")]
     public async Task<IActionResult> RequestAssignment(int[] needId, int[] resourceId, bool fraMatch = false)
     {
@@ -150,8 +148,7 @@ public class PublicActorController : Controller
     /// Lets the resource owner release an assigned resource from the overview and retains the closed
     /// assignment as history.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     [ActionName("FrigiRessurs")]
     public async Task<IActionResult> ReleaseResource(int assignmentId)
     {

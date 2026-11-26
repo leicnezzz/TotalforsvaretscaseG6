@@ -15,8 +15,7 @@ namespace Totalforsvaret.Areas.Offentlig.Controllers;
 /// <summary>
 /// Handles public actor account details, profile photos and account removal.
 /// </summary>
-[Area("Offentlig")]
-[Authorize(Policy = "KunOffentlig")]
+[Area("Offentlig"), Authorize(Policy = "KunOffentlig")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public class ProfileController(
     UserManager<Bruker> users,
@@ -59,8 +58,7 @@ public class ProfileController(
         return View("Index", model);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(PublicActorProfileViewModel model)
     {
         var user = await GetCurrentPublicActorAsync();
@@ -113,8 +111,7 @@ public class ProfileController(
     /// <summary>
     /// Checks image size and format before replacing the caller's profile photo.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     [RequestSizeLimit(MaxPhotoSize + 64 * 1024)]
     public async Task<IActionResult> UploadPhoto(IFormFile? image)
     {
@@ -170,8 +167,7 @@ public class ProfileController(
     /// Confirms the caller's password before deleting the public account and detaching its crises
     /// and needs.
     /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteAccount(string? password)
     {
         var user = await GetCurrentPublicActorAsync();

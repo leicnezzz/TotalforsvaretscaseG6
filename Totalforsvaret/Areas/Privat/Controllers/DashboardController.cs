@@ -7,8 +7,7 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Privat.Controllers;
 
-[Area("Privat")]
-[Authorize(Policy = "KunPrivat")]
+[Area("Privat"), Authorize(Policy = "KunPrivat")]
 [ResponseCache(
     NoStore = true,
     Location = ResponseCacheLocation.None)]

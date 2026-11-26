@@ -91,4 +91,4 @@ dotnet test Totalforsvaret.Tests/Totalforsvaret.Tests.csproj
 
 ## Verifisering
 
-Veiledningen er kontrollert mot prosjektets konfigurasjon. Oppstart fra en helt ny maskin og Mac/Rider må fortsatt verifiseres.
+Begge containere og innlogging er verifisert i en Windows- og Ryder versjon.

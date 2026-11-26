@@ -10,10 +10,11 @@ Marcia Kristine Olsen - marciako@uia.no,
 
 Kurskode og navn: IS-202-1 26H Programmeringsprosjekt
 
-Dato: HUSK OG ENDRE MEG
+## Systemarkitektur
 
-## **Systemarkitektur, oppstart og testing** ##
-Paratus er en ASP.NET Core MVC-applikasjon. Applikasjonen er delt inn i Controllere som håndterer forespørsler, Razor-visninger som viser grensesnittet, og Entity Framework Core til å lagre data i MariaDB. ASP.NET Core Identity håndterer alt av konto og innlogging. Det er brukertypen som styrer tilgangen til applikasjonen, så private aktører kan administrere egne ressurser, og offentlige aktører har skjemaet for kriser og behov. Systemet bruker Leaflet som kartfunksjon.
+Paratus bruker ASP.NET Core MVC. Kontrollerne håndterer forespørsler, Razor-visningene viser skjema og oversikter, og tjenestene håndterer blant annet ressursmatching og tildeling. Repository-laget i `DataAccess` bruker EF Core til å lese og lagre data i MariaDB. Leaflet viser kartet, og Bootstrap brukes i grensesnittet.
+
+ASP.NET Core Identity håndterer kontoer og innlogging. Rollepolicyer skiller private og offentlige aktører, og serveren sjekker eierskap ved handlinger på egne ressurser. POST-skjema beskyttes med antiforgery-token. EF Core og parameterisert SQL håndterer databaseverdier, og Razor og kartets tekstfelter viser brukerinnhold som tekst.
 
 ## Oppstart med Docker og Aspire
 
@@ -36,18 +37,22 @@ Velg innlogging for offentlig aktør. Privat konto opprettes gjennom «Opprett b
 
 Se [Oppstart.md](Oppstart.md) for alle kommandoer, Rider-oppsett, lagring og feilsøking.
 
-## **Bruk av applikasjonen** ##
-Som privat aktør kan du opprette en konto og logge inn. Gå til ressursskjemaet for å registrere en ressurs. Fyll inn opplysningene, velg et punkt på kartet og lagre. I ressursoversikten kan du finne, endre eller slette egne ressurser.
+## Bruk av applikasjonen
 
-Offentlige aktører har egne skjemaer og oversikter for kriser og behov via en egen innlogging.
+1. Opprett en privat konto. Registrer en tilgjengelig ressurs, velg plassering på kartet og lagre.
+2. Logg inn med offentlig demokonto. Opprett et behov med en type som matcher ressursen, for eksempel transport for et kjøretøy.
+3. Finn treffet i den offentlige oversikten og velg **Vurder ressurs** for å sende forespørselen.
+4. Logg inn som ressurseieren. Åpne innboksen og velg **Godta** eller **Avslå**. Sjekk oppdatert status i den offentlige oversikten.
 
-## **Gjennomførte tester** ##
-Gruppen valgte å teste validering av navn, kartplassering og tilgjengelighet. Testene bekrefter at registreringer uten navn og plassering blir avvist, og at "Nei" godtas som et gyldig valg for tilgjengelighet. En ressurs kan dermed registreres selv om den ikke er tilgjengelig, noe som gir grunnlag for videre arbeid med spesifikke tilgjengelighetstider.
+## Gjennomførte tester
 
-- **Enhetstesting.** Vi kjørte `dotnet test Totalforsvaret.slnx`. 51 tester bestod, og 0 feilet. Disse testene dekker blant annet registrering, innlogging, brukertype og ressursvalidering. I denne kjøringen hadde testprosjektet for offentlig aktør ingen kjørbare tester.
-- **Docker og database.** Docker-image ble bygget uten feil i Webbappen, og alle EF Core-migrasjonene ble kjørt mot en tom MariaDB 11.4-container. Oppstart.md viser også til at begge containere startet, pluss at innlogging fungerte i en tidligere Windows-kjøring.
-- **Sikkerhetsrelatert enhetstesting.** Testene har også dekket brukertype og innloggingsfunksjoner som ber Identity om å telle mislykkede forsøk for kontolåsing.
-- **Brukervennlighetstesting.** Vi har foreløpig ingen resultater fra brukervennlighetstesting.
+| Test | Mål og fremgangsmåte | Resultat |
+| --- | --- | --- |
+| Automatiserte tester | Kjør `dotnet test Totalforsvaret.Tests/Totalforsvaret.Tests.csproj` for å teste blant annet validering, innlogging, roller og tildelingsregler. GitHub Actions kjører også testprosjektet. | 124 bestod, 0 feilet. |
+| MariaDB 11.4 | Kjørte en integrasjonssjekk i en isolert Docker-container. Sjekket statusendringer fra separate databasekontekster og gjenbruk av en ressurs etter at et behov ble avsluttet. | Et sent avslag overskrev ikke godkjenningen. Ventende forespørsler ble avbrutt, og ressursen kunne forespørres på nytt. |
+| Docker-oppstart | Bygde webappens image, startet webapp og MariaDB og kjørte migrasjonene mot en tom database. | Begge containere startet, og innlogging fungerte i en tidligere Windows-kjøring. |
+
+Brukervennlighetstesting og oppstart på en ren maskin med Mac/Rider er foreløpig ikke verifisert.
 
 ## **Teknologistack** ##
 - .Net / ASP.NET core MVC som web rammeverk

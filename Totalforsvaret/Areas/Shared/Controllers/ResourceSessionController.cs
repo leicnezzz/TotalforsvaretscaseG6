@@ -9,9 +9,7 @@ using Totalforsvaret.Services;
 namespace Totalforsvaret.Home.Controllers;
 
 [AllowAnonymous]
-[ResponseCache(
-    NoStore = true,
-    Location = ResponseCacheLocation.None)]
+[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 /// <summary>
 /// Provides session endpoints for the resource registration wizard.
 /// </summary>

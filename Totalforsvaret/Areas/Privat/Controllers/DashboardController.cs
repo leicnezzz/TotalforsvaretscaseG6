@@ -8,9 +8,7 @@ using Totalforsvaret.Models;
 namespace Totalforsvaret.Areas.Privat.Controllers;
 
 [Area("Privat"), Authorize(Policy = "KunPrivat")]
-[ResponseCache(
-    NoStore = true,
-    Location = ResponseCacheLocation.None)]
+[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 /// <summary>
 /// Shows the private actor dashboard and the signed-in user's resource locations.
 /// </summary>

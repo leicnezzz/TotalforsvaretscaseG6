@@ -21,6 +21,37 @@ internal sealed class ResourceAssignmentRepository(AppDbContext db) : IResourceA
             other.ResourceId == resourceId &&
             StatusFilters.BusyAssignmentStatuses.Contains(other.Status));
 
+    public async Task<TResult> WithResourceLockAsync<TResult>(
+        ResourceAssignment assignment,
+        Func<ResourceAssignment?, Task<TResult>> action)
+    {
+        await using var transaction = await db.Database.BeginTransactionAsync(
+            System.Data.IsolationLevel.ReadCommitted);
+
+        var lockedResources = await db.Database.SqlQuery<int>($"""
+            SELECT `ResourceId`
+            FROM `Resources`
+            WHERE `ResourceId` = {assignment.ResourceId}
+            FOR UPDATE
+            """).ToListAsync();
+
+        if (lockedResources.Count == 0)
+            return await action(null);
+
+        var entry = db.Entry(assignment);
+        await entry.ReloadAsync();
+
+        if (entry.State == EntityState.Detached)
+            return await action(null);
+
+        await db.Entry(assignment.Resource).ReloadAsync();
+        await db.Entry(assignment.Need).ReloadAsync();
+
+        var result = await action(assignment);
+        await transaction.CommitAsync();
+        return result;
+    }
+
     public Task<List<ResourceAssignment>> ListForResourceOwnerAsync(int ownerId) =>
         InboxAssignments()
             .Where(assignment => assignment.Resource.BrukerId == ownerId)

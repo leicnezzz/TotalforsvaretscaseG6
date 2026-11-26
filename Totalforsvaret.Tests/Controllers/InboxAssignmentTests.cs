@@ -1,3 +1,4 @@
+using Moq;
 using NUnit.Framework;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.DataAccess;
@@ -57,6 +58,19 @@ public class InboxAssignmentTests
     private static InboxService CreateInbox(AppDbContext db)
     {
         var repository = new ResourceAssignmentRepository(db);
-        return new InboxService(repository, new ResourceAssignmentService(repository));
+        var assignmentStore = new Mock<IResourceAssignmentRepository>(MockBehavior.Strict);
+        assignmentStore
+            .Setup(store => store.WithResourceLockAsync(
+                It.IsAny<ResourceAssignment>(),
+                It.IsAny<Func<ResourceAssignment?, Task<AssignmentActionResult>>>()))
+            .Returns((ResourceAssignment assignment, Func<ResourceAssignment?, Task<AssignmentActionResult>> action) =>
+                action(assignment));
+        assignmentStore
+            .Setup(store => store.HasOtherActiveAssignmentAsync(It.IsAny<int>(), It.IsAny<int>()))
+            .Returns((int assignmentId, int resourceId) =>
+                repository.HasOtherActiveAssignmentAsync(assignmentId, resourceId));
+        assignmentStore.Setup(store => store.SaveChangesAsync()).Returns(() => repository.SaveChangesAsync());
+
+        return new InboxService(repository, new ResourceAssignmentService(assignmentStore.Object));
     }
 }

@@ -13,6 +13,7 @@ public interface IAccountDeletionRepository
     /// Deletes a private account after removing its resources and their assignments.
     /// </summary>
     Task<IdentityResult> DeleteAsync(PrivateActor user);
+
     /// <summary>
     /// Deletes a public account and retains its crises and needs without their creator link.
     /// </summary>

@@ -23,7 +23,12 @@ public sealed class ResourceAssignmentService(IResourceAssignmentRepository assi
     /// Assigns a requested resource when the need is active, the resource is available and no
     /// other active assignment uses it.
     /// </summary>
-    public async Task<AssignmentActionResult> AcceptAsync(ResourceAssignment? assignment)
+    public Task<AssignmentActionResult> AcceptAsync(ResourceAssignment? assignment) =>
+        assignment is null
+            ? Task.FromResult(AssignmentActionResult.NotFound)
+            : assignments.WithResourceLockAsync(assignment, AcceptLockedAsync);
+
+    private async Task<AssignmentActionResult> AcceptLockedAsync(ResourceAssignment? assignment)
     {
         if (assignment is null)
             return AssignmentActionResult.NotFound;

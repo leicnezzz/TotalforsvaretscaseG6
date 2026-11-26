@@ -459,7 +459,8 @@
 <td class="treff-handling">
     <div class="treff-knapper">
                             @if (tildeling?.Status ==
-                                 Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned)
+                                 Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned &&
+                                 tildeling.Resource?.BrukerId == Model.CurrentUserId)
                             {
 
                                 <form action="@(Url.Action("FrigiRessurs", "OffentligAktor", new { area = "" }) + Context.Request.CrisisQuery())"

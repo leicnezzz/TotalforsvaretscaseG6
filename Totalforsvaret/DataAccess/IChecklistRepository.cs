@@ -6,6 +6,7 @@ namespace Totalforsvaret.DataAccess;
 public interface IChecklistRepository
 {
     Task<HashSet<string>> GetCompletedAsync(int userId);
+
     /// <summary>
     /// Creates a progress record for the item or updates its completion status.
     /// </summary>

@@ -20,6 +20,7 @@ internal sealed class PublicOverviewRepository(AppDbContext db) : IPublicOvervie
         db.CrisisMapAnnotations.AsNoTracking().ToList();
 
     public List<ResourceAssignment> ListActiveAssignments() => db.ResourceAssignments.AsNoTracking()
+        .Include(assignment => assignment.Resource)
         .Where(assignment => StatusFilters.BusyAssignmentStatuses.Contains(assignment.Status))
         .ToList();
 

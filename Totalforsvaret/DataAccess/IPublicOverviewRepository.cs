@@ -9,12 +9,19 @@ namespace Totalforsvaret.DataAccess;
 public interface IPublicOverviewRepository
 {
     int CountActiveNeeds();
-    /// <summary>Returns active needs with both coordinates populated.</summary>
+
+    /// <summary>
+    /// Returns active needs with both coordinates populated.
+    /// </summary>
     List<Need> ListActiveNeedsOnMap();
     List<Need> ListActiveNeeds();
     List<CrisisMapAnnotation> ListAnnotations();
-    /// <summary>Returns requested and assigned matches that occupy resources on the overview.</summary>
+
+    /// <summary>
+    /// Returns requested and assigned matches that occupy resources on the overview.
+    /// </summary>
     List<ResourceAssignment> ListActiveAssignments();
+
     /// <summary>
     /// Lists rejected and released matches for needs that are still active.
     /// </summary>
@@ -23,12 +30,10 @@ public interface IPublicOverviewRepository
     List<OverviewNeed> ListNeeds();
 }
 
-/// <summary>Projects crisis data used by the public actor map and crisis list.</summary>
 public record OverviewCrisis(
     int Id, string Name, CrisisType Type, string Area, CrisisSeverity Severity,
     DateTime StartTime, CrisisStatus Status, string Description, decimal? Latitude, decimal? Longitude);
 
-/// <summary>Projects need data and its associated crisis name for the public actor lists.</summary>
 public record OverviewNeed(
     int Id, string Name, NeedType Type, NeedPriority Priority, NeedStatus Status,
     int? CrisisId, string CrisisName, decimal? Latitude, decimal? Longitude);

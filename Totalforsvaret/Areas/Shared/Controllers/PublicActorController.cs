@@ -147,7 +147,7 @@ public class PublicActorController : Controller
     }
 
     /// <summary>
-    /// Lets a public actor release an assigned resource from the overview and retains the closed
+    /// Lets the resource owner release an assigned resource from the overview and retains the closed
     /// assignment as history.
     /// </summary>
     [HttpPost]
@@ -155,7 +155,10 @@ public class PublicActorController : Controller
     [ActionName("FrigiRessurs")]
     public async Task<IActionResult> ReleaseResource(int assignmentId)
     {
-        var assignment = await _assignments.FindAsync(assignmentId);
+        if (!TryGetUserId(out var userId))
+            return Forbid();
+
+        var assignment = await _assignments.FindOwnedAsync(assignmentId, userId);
         var result = await _assignmentService.ReleaseAsync(assignment);
         if (result == AssignmentActionResult.NotFound)
             return NotFound("Tildelingen finnes ikke.");

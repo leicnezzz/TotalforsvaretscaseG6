@@ -77,6 +77,8 @@ public class PublicActorControllerTests
     public async Task FrigiRessurs_Assigned_ReleasesResource()
     {
         using var db = CreateDb();
+        AddNeed(db, 1);
+        AddResource(db, 1, userId: 1);
         AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Assigned);
 
         var result = await CreateController(db).ReleaseResource(1);
@@ -92,11 +94,27 @@ public class PublicActorControllerTests
     public async Task FrigiRessurs_NotAssigned_ReturnsBadRequest()
     {
         using var db = CreateDb();
+        AddNeed(db, 1);
+        AddResource(db, 1, userId: 1);
         AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
 
         var result = await CreateController(db).ReleaseResource(1);
 
         Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
+    }
+
+    [Test]
+    public async Task FrigiRessurs_NotOwned_LeavesAssignmentUnchanged()
+    {
+        using var db = CreateDb();
+        AddNeed(db, 1);
+        AddResource(db, 1, userId: 2);
+        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Assigned);
+
+        var result = await CreateController(db, userId: 1).ReleaseResource(1);
+
+        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
+        Assert.That(db.ResourceAssignments.Single().Status, Is.EqualTo(AssignmentStatus.Assigned));
     }
 
     /// <summary>

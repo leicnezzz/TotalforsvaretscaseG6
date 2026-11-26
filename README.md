@@ -47,11 +47,13 @@ Se [Oppstart.md](Oppstart.md) for alle kommandoer, Rider-oppsett, lagring og fei
 
 Ressurseieren bekrefter at ressursen er tilbake. En offentlig aktør kan følge statusen i den offentlige innboksen. Offentlig eide ressurser frigis også av eieren, fra offentlig innboks.
 
+Den offentlige innboksen er en felles arbeidsflate for beredskapskoordinering. Offentlige aktører kan lese og svare i alle tildelingstråder. Private aktører kan bare lese og svare i tråder knyttet til egne ressurser. Godkjenning, avslag og frigivelse krever eierskap til ressursen.
+
 ## Gjennomførte tester
 
 - **XSS-sjekk i ressursoversikten.** Vi registrerte en ressurs med navnet `<b>Karttest</b>`. Oversikten viste HTML-taggene som vanlig tekst.
 - **Lagring av spesialtegn.** Vi registrerte en ressurs med navnet `O'Brien transport` og bekreftet i ressursoversikten at apostrofen ble bevart. Sjekken bekrefter at lagringen håndterer apostrofer.
-- **Automatiserte tester.** Kjør `dotnet test Totalforsvaret.Tests/Totalforsvaret.Tests.csproj` for å teste blant annet validering, innlogging, roller og tildelingsregler. GitHub Actions kjører også testprosjektet. På commit `af8db0c` bestod alle 126 tester. Tjenestetestene sjekker blant annet at eieren kan frigi en tildelt ressurs, og at andre brukere avvises.
+- **Automatiserte tester.** Kjør `dotnet test Totalforsvaret.Tests/Totalforsvaret.Tests.csproj` for å teste blant annet validering, innlogging, roller og tildelingsregler. GitHub Actions kjører også testprosjektet. Siste lokale kjøring ga 127 beståtte tester. Tilgangstesten sjekker at offentlige aktører deler trådene, og at private aktører bare får tilgang til egne tråder. Tjenestetestene sjekker blant annet at eieren kan frigi en tildelt ressurs, og at andre brukere avvises.
 - **MariaDB 11.4.** Vi sjekket statusendringer fra separate databasekontekster i en isolert Docker-container. Et sent avslag overskrev ingen godkjenning. Da et behov ble avsluttet, ble ventende forespørsler avbrutt, og ressursen kunne forespørres på nytt.
 - **Docker-oppstart.** Vi bygde webappens image, startet webapp og MariaDB og kjørte migrasjonene mot en tom database. Begge containere startet, og innlogging fungerte i en tidligere Windows-kjøring.
 

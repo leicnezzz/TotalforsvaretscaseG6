@@ -22,7 +22,7 @@ Installer .NET 10 SDK, Docker Desktop og Visual Studio eller Rider med støtte f
 
 1. Klon repoet og åpne `Totalforsvaret.slnx`.
 2. Start Docker Desktop med Linux-containere.
-3. Gjennomfør [HTTPS-engangsoppsettet i Oppstart.md](Oppstart.md#2-klargjør-https-én-gang-per-maskin).
+3. Gjennomfør HTTPS-engangsoppsettet i [Oppstart.md](Oppstart.md).
 4. Start `Totalforsvaret.AppHost` med profilen `https`. I Rider brukes en Aspire Host-kjørekonfigurasjon.
 5. Vent til MariaDB og webappen har startet. Åpne HTTPS-lenken for `totalforsvaret` i Aspire-dashboardet.
 

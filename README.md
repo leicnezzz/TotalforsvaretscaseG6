@@ -57,6 +57,9 @@ Den offentlige innboksen er en felles arbeidsflate for beredskapskoordinering. O
 - **MariaDB 11.4.** Vi sjekket statusendringer fra separate databasekontekster i en isolert Docker-container. Et sent avslag overskrev ingen godkjenning. Da et behov ble avsluttet, ble ventende forespørsler avbrutt, og ressursen kunne forespørres på nytt.
 - **Docker-oppstart.** Vi bygde webappens image, startet webapp og MariaDB og kjørte migrasjonene mot en tom database. Begge containere startet, og innlogging fungerte i en tidligere Windows-kjøring.
 
+## Oppstartflyt fra tom database 
+Gruppen startet appen og MariaDB via Aspir og testet tildelingsflyten over HTTPS. I nettleseren bekreftet vi at den gamle tildelingen var frigitt, og at en ny forespøsel for samme ressurs sto som "Venter på svar."
+
 En samlet gjennomkjøring i nettleseren med begge rollene, fra registrering til frigivelse, er foreløpig ikke dokumentert. Brukervennlighetstesting og oppstart på en ren maskin med Mac/Rider er foreløpig ikke verifisert.
 
 ## **Teknologistack** ##

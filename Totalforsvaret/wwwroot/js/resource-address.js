@@ -72,10 +72,14 @@
         let selectedAddress = address.value;
         let pointLookup;
 
-        function valid() {
-            return Boolean((allowMapSelection || address.value.trim()) && latitude.value && longitude.value &&
+        function hasCoordinates() {
+            return Boolean(latitude.value && longitude.value &&
                 validCoordinates(Number(latitude.value.replace(',', '.')), Number(longitude.value.replace(',', '.'))));
-        } // Sjekker om adressefelt og koordinater er gyldige. 
+        }
+
+        function valid() {
+            return (allowMapSelection || Boolean(address.value.trim())) && hasCoordinates();
+        }
 
         function selectMapPoint(point, label = '') {
             if (!point || !validCoordinates(point.lat, point.lng)) return;
@@ -107,7 +111,7 @@
                 }
             }
             map.invalidateSize();
-            if (valid()) {
+            if (hasCoordinates()) {
                 const point = [Number(latitude.value.replace(',', '.')), Number(longitude.value.replace(',', '.'))];
                 const moved = !marker || !marker.getLatLng().equals(point);
                 if (!marker) marker = L.circleMarker(point, {

@@ -162,6 +162,14 @@ body:has(.need-page) > .registration-footer a {
     }
 }
 
+.public-resource-registration {
+    padding: clamp(12px, 2vw, 24px) clamp(16px, 4vw, 32px) 0;
+}
+
+.public-resource-registration .need-registration {
+    width: min(100%, 760px);
+}
+
 .public-resource-registration .resource-wizard {
     margin-top: 0;
     padding: clamp(16px, 3vw, 28px);

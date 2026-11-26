@@ -30,7 +30,8 @@
 
     const forespurteHendelser = new Set(new URLSearchParams(window.location.search).getAll('hendelser'));
     const hendelsesvisning = forespurteHendelser.size > 0;
-    const valgteHendelser = (data.kriser ?? []).filter(krise => forespurteHendelser.has(String(krise.id)));
+    const kriser = JSON.parse(document.getElementById('oversiktListeData').textContent).kriser;
+    const valgteHendelser = kriser.filter(krise => forespurteHendelser.has(String(krise.id)));
     const filterNokkel = 'totalforsvaret.offentligKart.filter.v1';
     let lagretFilter;
     try {
@@ -187,7 +188,6 @@
         return innhold;
     }
 
-    // Henter fargene fra systemets palett.
     const palett = getComputedStyle(
         document.querySelector('.offentlig-dashboard')
     );
@@ -825,7 +825,6 @@
 
     kart.on('zoomend', () => filtrer());
 
-    // Lager avkrysningsboksene.
     const felt = panel.querySelector('.kart-typer:not(.kart-bakgrunn)');
     const hendelsesbokser = new Map();
 
@@ -942,7 +941,6 @@
         }
     }
 
-// Forsøker Kartverket først.
     async function hentStedsforslag(tekst, signal) {
         try {
             const url = new URL(

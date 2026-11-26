@@ -7,12 +7,27 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Controllers;
 
+/// <summary>
+/// Handles map annotations attached to individual crises.
+/// </summary>
 [ApiController]
 [Authorize(Policy = "KunOffentlig")]
 [Route("api/crises/{crisisId:int}/map-annotations")]
-public class CrisisMapAnnotationsController(
-    ICrisisRepository crises, ICrisisMapAnnotationRepository annotations) : ControllerBase
-{
+public class CrisisMapAnnotationsController : ControllerBase {
+    private readonly ICrisisRepository _crises;
+    private readonly ICrisisMapAnnotationRepository _annotations;
+
+    public CrisisMapAnnotationsController(
+        ICrisisRepository crises,
+        ICrisisMapAnnotationRepository annotations)
+    {
+        _crises = crises;
+        _annotations = annotations;
+    }
+
+    /// <summary>
+    /// Carries the coordinates and descriptive fields used to register a crisis map annotation.
+    /// </summary>
     public class AnnotationInput
     {
         [Required, MaxLength(20)] public string Kind { get; set; } = "";
@@ -23,11 +38,13 @@ public class CrisisMapAnnotationsController(
         public double[][] Coordinates { get; set; } = [];
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    /// <summary>
+    /// Adds a risk zone or road obstruction after checking its coordinates and shape.
+    /// </summary>
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(int crisisId, AnnotationInput input)
     {
-        if (crisisId <= 0 || !await crises.ExistsAsync(crisisId))
+        if (crisisId <= 0 || !await _crises.ExistsAsync(crisisId))
             return NotFound();
         if (input.Kind is not ("soner" or "veihindringer") ||
             string.IsNullOrWhiteSpace(input.Name) || input.Name.Length > 100 ||
@@ -59,16 +76,17 @@ public class CrisisMapAnnotationsController(
             Risk = input.Kind == "soner" ? input.Risk : "",
             CoordinatesJson = JsonSerializer.Serialize(input.Coordinates)
         };
-        await annotations.AddAsync(annotation);
+        await _annotations.AddAsync(annotation);
         return Ok(new { id = annotation.Id, crisisId });
     }
 
-    [HttpDelete("{id:int}")]
-    [ValidateAntiForgeryToken]
+    /// <summary>
+    /// Removes an annotation only when it belongs to the specified crisis.
+    /// </summary>
+    [HttpDelete("{id:int}"), ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int crisisId, int id)
     {
-        // Begge ID-er må stemme. En markering kan ikke slettes via en annen hendelse.
-        if (!await annotations.DeleteAsync(crisisId, id))
+        if (!await _annotations.DeleteAsync(crisisId, id))
             return NotFound();
         return NoContent();
     }

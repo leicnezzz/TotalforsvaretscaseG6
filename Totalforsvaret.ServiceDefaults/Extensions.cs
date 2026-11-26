@@ -10,7 +10,6 @@ using OpenTelemetry.Trace;
 
 namespace Microsoft.Extensions.Hosting;
 
-// Adds common .NET Aspire services: service discovery, resilience, health checks, and OpenTelemetry.
 // This project should be referenced by each service project in your solution.
 // To learn more about using this project, see https://aka.ms/dotnet/aspire/service-defaults
 public static class Extensions
@@ -18,6 +17,9 @@ public static class Extensions
     private const string HealthEndpointPath = "/health";
     private const string AlivenessEndpointPath = "/alive";
 
+    /// <summary>
+    /// Applies the shared telemetry, health checks, service discovery and HTTP resilience defaults.
+    /// </summary>
     public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.ConfigureOpenTelemetry();
@@ -28,10 +30,8 @@ public static class Extensions
 
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
-            // Turn on resilience by default
             http.AddStandardResilienceHandler();
 
-            // Turn on service discovery by default
             http.AddServiceDiscovery();
         });
 
@@ -44,6 +44,9 @@ public static class Extensions
         return builder;
     }
 
+    /// <summary>
+    /// Configures telemetry, excludes health requests from tracing and enables OTLP export when configured.
+    /// </summary>
     public static TBuilder ConfigureOpenTelemetry<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.Logging.AddOpenTelemetry(logging =>
@@ -63,7 +66,6 @@ public static class Extensions
             {
                 tracing.AddSource(builder.Environment.ApplicationName)
                     .AddAspNetCoreInstrumentation(tracing =>
-                        // Exclude health check requests from tracing
                         tracing.Filter = context =>
                             !context.Request.Path.StartsWithSegments(HealthEndpointPath)
                             && !context.Request.Path.StartsWithSegments(AlivenessEndpointPath)
@@ -100,22 +102,22 @@ public static class Extensions
     public static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.Services.AddHealthChecks()
-            // Add a default liveness check to ensure app is responsive
             .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
 
         return builder;
     }
 
+    /// <summary>
+    /// Exposes readiness and liveness endpoints in development. Liveness runs only checks tagged as live.
+    /// </summary>
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
         // Adding health checks endpoints to applications in non-development environments has security implications.
         // See https://aka.ms/dotnet/aspire/healthchecks for details before enabling these endpoints in non-development environments.
         if (app.Environment.IsDevelopment())
         {
-            // All health checks must pass for app to be considered ready to accept traffic after starting
             app.MapHealthChecks(HealthEndpointPath);
 
-            // Only health checks tagged with the "live" tag must pass for app to be considered alive
             app.MapHealthChecks(AlivenessEndpointPath, new HealthCheckOptions
             {
                 Predicate = r => r.Tags.Contains("live")

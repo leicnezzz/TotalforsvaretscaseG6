@@ -3,23 +3,29 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.DataAccess;
 
-public sealed class CrisisMapAnnotationRepository(AppDbContext db) : ICrisisMapAnnotationRepository
-{
+public sealed class CrisisMapAnnotationRepository : ICrisisMapAnnotationRepository {
+    private readonly AppDbContext _db;
+
+    public CrisisMapAnnotationRepository(AppDbContext db)
+    {
+        _db = db;
+    }
+
     public async Task AddAsync(CrisisMapAnnotation annotation)
     {
-        db.CrisisMapAnnotations.Add(annotation);
-        await db.SaveChangesAsync();
+        _db.CrisisMapAnnotations.Add(annotation);
+        await _db.SaveChangesAsync();
     }
 
     public async Task<bool> DeleteAsync(int crisisId, int annotationId)
     {
-        var annotation = await db.CrisisMapAnnotations.SingleOrDefaultAsync(
+        var annotation = await _db.CrisisMapAnnotations.SingleOrDefaultAsync(
             item => item.Id == annotationId && item.CrisisId == crisisId);
         if (annotation is null)
             return false;
 
-        db.CrisisMapAnnotations.Remove(annotation);
-        await db.SaveChangesAsync();
+        _db.CrisisMapAnnotations.Remove(annotation);
+        await _db.SaveChangesAsync();
         return true;
     }
 }

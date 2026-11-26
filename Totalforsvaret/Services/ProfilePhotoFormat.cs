@@ -2,6 +2,9 @@ namespace Totalforsvaret.Services;
 
 internal static class ProfilePhotoFormat
 {
+    /// <summary>
+    /// Recognizes supported JPEG and PNG files using their beginning and ending bytes.
+    /// </summary>
     public static string? GetPhotoContentType(ReadOnlySpan<byte> bytes)
     {
         if (bytes.StartsWith(new byte[] { 0xFF, 0xD8, 0xFF }) &&

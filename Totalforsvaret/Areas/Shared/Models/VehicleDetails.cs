@@ -2,6 +2,9 @@
 
 namespace Totalforsvaret.Models.resourcemodels;
 
+/// <summary>
+/// Stores the registration number and licence requirements associated with a vehicle resource.
+/// </summary>
 public class VehicleDetails
 {
     public int ResourceId { get; set; }

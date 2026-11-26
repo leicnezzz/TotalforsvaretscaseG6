@@ -87,7 +87,7 @@ public class LoginControllerTests
         var redirect = (RedirectToActionResult)resultat;
 
         Assert.That(redirect.ActionName, Is.EqualTo("Index"));
-        Assert.That(redirect.ControllerName, Is.EqualTo(offentlig ? "Home" : "Dashboard"));
+        Assert.That(redirect.ControllerName, Is.EqualTo(offentlig ? "OffentligAktor" : "Dashboard"));
         if (!offentlig)
         {
             Assert.That(redirect.RouteValues!["area"], Is.EqualTo("Privat"));

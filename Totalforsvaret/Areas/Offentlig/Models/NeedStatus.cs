@@ -1,5 +1,8 @@
 namespace Totalforsvaret.Areas.Offentlig.Models;
 
+/// <summary>
+/// Represents the workflow state of a registered need.
+/// </summary>
 public enum NeedStatus
 {
     Unspecified = 0,
@@ -8,6 +11,9 @@ public enum NeedStatus
     Resolved = 3
 }
 
+/// <summary>
+/// Maps need statuses to the existing Norwegian values used for storage and display.
+/// </summary>
 public static class NeedStatusText
 {
     private const string Open = "Åpen";
@@ -23,6 +29,9 @@ public static class NeedStatusText
         _ => throw new ArgumentOutOfRangeException(nameof(status), status, "Unknown need status.")
     };
 
+    /// <summary>
+    /// Reads the existing Norwegian database value. Empty values map to Unspecified and unknown values are rejected.
+    /// </summary>
     public static NeedStatus FromStoredValue(string value) => value switch
     {
         "" => NeedStatus.Unspecified,

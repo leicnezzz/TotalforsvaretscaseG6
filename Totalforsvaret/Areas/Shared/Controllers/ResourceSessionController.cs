@@ -9,31 +9,47 @@ using Totalforsvaret.Services;
 namespace Totalforsvaret.Home.Controllers;
 
 [AllowAnonymous]
-[ResponseCache(
-    NoStore = true,
-    Location = ResponseCacheLocation.None)]
-public class ResourceSessionController(
-    UserManager<Bruker> users,
-    SignInManager<Bruker> signIn,
-    IAntiforgery antiforgery) : Controller
-{
+[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+/// <summary>
+/// Provides session endpoints for the resource registration wizard.
+/// </summary>
+public class ResourceSessionController : Controller {
+    private readonly UserManager<Bruker> _users;
+    private readonly SignInManager<Bruker> _signIn;
+    private readonly IAntiforgery _antiforgery;
+
+    public ResourceSessionController(
+        UserManager<Bruker> users,
+        SignInManager<Bruker> signIn,
+        IAntiforgery antiforgery)
+    {
+        _users = users;
+        _signIn = signIn;
+        _antiforgery = antiforgery;
+    }
+
+    /// <summary>
+    /// Issues the anti-forgery token used by the resource wizard.
+    /// </summary>
     [HttpGet]
     public IActionResult Token()
     {
-        var tokens = antiforgery.GetAndStoreTokens(HttpContext);
+        var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
 
         return Ok(new { token = tokens.RequestToken });
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    /// <summary>
+    /// Signs in a private actor through the wizard without creating a persistent session.
+    /// </summary>
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(
         [FromBody] LoginInput input)
     {
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var user = await users.FindByEmailAsync(input.Email.Trim());
+        var user = await _users.FindByEmailAsync(input.Email.Trim());
 
         if (user is not PrivateActor)
         {
@@ -43,7 +59,7 @@ public class ResourceSessionController(
             });
         }
 
-        var result = await signIn.PasswordSignInAsync(
+        var result = await _signIn.PasswordSignInAsync(
             user,
             input.Password,
             isPersistent: false,
@@ -60,8 +76,10 @@ public class ResourceSessionController(
         return Ok(new { success = true });
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    /// <summary>
+    /// Creates and signs in a private actor directly from the resource wizard.
+    /// </summary>
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(
         [FromBody] RegisterInput input)
     {
@@ -70,7 +88,7 @@ public class ResourceSessionController(
 
         var user = PrivateAccountRegistration.CreateUser(input);
 
-        var result = await users.CreateAsync(
+        var result = await _users.CreateAsync(
             user,
             input.Password);
 
@@ -84,7 +102,7 @@ public class ResourceSessionController(
             });
         }
 
-        await signIn.SignInAsync(
+        await _signIn.SignInAsync(
             user,
             isPersistent: false);
 

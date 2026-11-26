@@ -9,11 +9,13 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
-[Area("Offentlig")]
-[Authorize(Policy = "KunOffentlig")]
+[Area("Offentlig"), Authorize(Policy = "KunOffentlig")]
 
 
 
+/// <summary>
+/// Manages crisis registration, editing, closure and deletion for public actors.
+/// </summary>
 public class CrisisController : Controller
 {
     private readonly ICrisisRepository _crises;
@@ -27,6 +29,9 @@ public class CrisisController : Controller
         _userManager = userManager;
     }
 
+    /// <summary>
+    /// Shows crises by severity and then by most recent start time.
+    /// </summary>
     [HttpGet("/crisis/overview", Name = "crisis-overview")]
     public async Task<IActionResult> Overview()
     {
@@ -36,7 +41,9 @@ public class CrisisController : Controller
     }
 
 
-    // Åpner kriseskjemaet.
+    /// <summary>
+    /// Opens the form with the current local time in Norway as the default start time.
+    /// </summary>
     [HttpGet]
     public IActionResult Create()
     {
@@ -48,9 +55,11 @@ public class CrisisController : Controller
         });
     }
 
-    // Kontrollerer og lagrer krisen.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    /// <summary>
+    /// Registers a crisis with a required map position and records the signed-in actor as its
+    /// creator.
+    /// </summary>
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateCrisisInput input)
     {
         if (await _userManager.GetUserAsync(User)
@@ -92,8 +101,11 @@ public async Task<IActionResult> Edit(int id)
     });
 }
 
-[HttpPost]
-[ValidateAntiForgeryToken]
+/// <summary>
+/// Updates an existing crisis. Any public actor can edit it, and both coordinate fields may
+/// be left blank.
+/// </summary>
+[HttpPost, ValidateAntiForgeryToken]
 public async Task<IActionResult> Edit(
     int id,
     CrisisInput input)
@@ -114,8 +126,11 @@ public async Task<IActionResult> Edit(
 
     return LocalRedirect(this.OverviewUrl());
 }
-[HttpPost]
-[ValidateAntiForgeryToken]
+
+/// <summary>
+/// Deletes a crisis together with its associated needs and resource assignments.
+/// </summary>
+[HttpPost, ValidateAntiForgeryToken]
 public async Task<IActionResult> Delete(int id)
 {
     var crisis = await _crises.FindAsync(id, trackChanges: true);
@@ -127,8 +142,11 @@ public async Task<IActionResult> Delete(int id)
 
     return LocalRedirect(this.OverviewUrl());
 }
-[HttpPost]
-[ValidateAntiForgeryToken]
+
+/// <summary>
+/// Closes a crisis that is active or under control.
+/// </summary>
+[HttpPost, ValidateAntiForgeryToken]
 [ActionName("Avslutt")]
 public async Task<IActionResult> Close(int id)
 {
@@ -137,7 +155,6 @@ public async Task<IActionResult> Close(int id)
     if (!finnes)
         return NotFound();
 
-    // Endrer bare status og tåler gjentatte innsendinger.
     await _crises.CloseIfActiveAsync(id);
 
     return LocalRedirect(this.OverviewUrl());

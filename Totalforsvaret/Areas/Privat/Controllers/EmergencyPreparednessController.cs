@@ -6,13 +6,23 @@ using Totalforsvaret.DataAccess;
 
 namespace Totalforsvaret.Areas.Privat.Controllers;
 
-[Area("Privat")]
-[Authorize(Policy = "KunPrivat")]
+/// <summary>
+/// Displays emergency preparedness guidance and saves checklist progress for private actors.
+/// </summary>
+[Area("Privat"), Authorize(Policy = "KunPrivat")]
 [Totalforsvaret.Controllers.MvcControllerName("Egenberedskap")]
-public class EmergencyPreparednessController(
-    IChecklistRepository checklist,
-    UserManager<Bruker> users) : Controller
-{
+public class EmergencyPreparednessController : Controller {
+    private readonly IChecklistRepository _checklist;
+    private readonly UserManager<Bruker> _users;
+
+    public EmergencyPreparednessController(
+        IChecklistRepository checklist,
+        UserManager<Bruker> users)
+    {
+        _checklist = checklist;
+        _users = users;
+    }
+
     private static readonly HashSet<string> ValidItemIds =
     [
         "water",
@@ -38,22 +48,24 @@ public class EmergencyPreparednessController(
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var user = await users.GetUserAsync(User);
+        var user = await _users.GetUserAsync(User);
 
         if (user == null)
             return Challenge();
 
-        ViewData["CompletedChecklistItems"] = await checklist.GetCompletedAsync(user.Id);
+        ViewData["CompletedChecklistItems"] = await _checklist.GetCompletedAsync(user.Id);
 
         ViewData["ChecklistItemCount"] = ValidItemIds.Count;
         return View();
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    /// <summary>
+    /// Updates the caller's saved progress when the item ID belongs to the supported _checklist.
+    /// </summary>
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> SetChecklistStatus(string itemId, bool isComplete)
     {
-        var user = await users.GetUserAsync(User);
+        var user = await _users.GetUserAsync(User);
 
         if (user == null)
             return Challenge();
@@ -61,7 +73,7 @@ public class EmergencyPreparednessController(
         if (!ValidItemIds.Contains(itemId))
             return BadRequest();
 
-        await checklist.SetStatusAsync(user.Id, itemId, isComplete);
+        await _checklist.SetStatusAsync(user.Id, itemId, isComplete);
 
         return RedirectToAction(nameof(Index), controllerName: null, routeValues: null, fragment: "checklist");
     }

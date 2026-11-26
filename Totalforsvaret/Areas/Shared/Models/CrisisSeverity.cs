@@ -1,5 +1,8 @@
 namespace Totalforsvaret.Models;
 
+/// <summary>
+/// Represents the severity levels used to rank crises and select alerts.
+/// </summary>
 public enum CrisisSeverity
 {
     Unspecified = 0,
@@ -9,6 +12,9 @@ public enum CrisisSeverity
     Critical = 4
 }
 
+/// <summary>
+/// Maps crisis severity to the existing Norwegian values used for storage and display.
+/// </summary>
 public static class CrisisSeverityText
 {
     private const string Low = "Lav";
@@ -26,6 +32,9 @@ public static class CrisisSeverityText
         _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, "Unknown crisis severity.")
     };
 
+    /// <summary>
+    /// Reads the existing Norwegian database value. Empty values map to Unspecified and unknown values are rejected.
+    /// </summary>
     public static CrisisSeverity FromStoredValue(string value) => value switch
     {
         "" => CrisisSeverity.Unspecified,

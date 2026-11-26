@@ -3,15 +3,16 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.Models;
 
+/// <summary>
+/// Stores a message, its sender and its timestamp within a resource assignment thread.
+/// </summary>
 public class ResourceMessage
 {
     public int Id { get; set; }
 
-    // Matchen denne samtalen gjelder.
     public int AssignmentId { get; set; }
     public ResourceAssignment Assignment { get; set; } = null!;
 
-    // Brukeren som sendte akkurat denne meldingen.
     public int SenderUserId { get; set; }
     public Bruker Sender { get; set; } = null!;
 

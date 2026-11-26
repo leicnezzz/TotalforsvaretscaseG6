@@ -1,5 +1,8 @@
 namespace Totalforsvaret.Models;
 
+/// <summary>
+/// Classifies the kind of incident described by a crisis.
+/// </summary>
 public enum CrisisType
 {
     Unspecified = 0,
@@ -10,6 +13,9 @@ public enum CrisisType
     Other = 5
 }
 
+/// <summary>
+/// Maps crisis types to the existing Norwegian values used for storage and display.
+/// </summary>
 public static class CrisisTypeText
 {
     private const string Flood = "Flom";
@@ -29,6 +35,9 @@ public static class CrisisTypeText
         _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown crisis type.")
     };
 
+    /// <summary>
+    /// Reads the existing Norwegian database value. Empty values map to Unspecified and unknown values are rejected.
+    /// </summary>
     public static CrisisType FromStoredValue(string value) => value switch
     {
         "" => CrisisType.Unspecified,

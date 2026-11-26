@@ -3,11 +3,13 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Models.resourcemodels;
 
+/// <summary>
+/// Represents an actor-owned vehicle or equipment resource with a location and availability.
+/// </summary>
 public class Resource
 {
     public int ResourceId { get; set; }
 
-    // Fremmednøkkel til AspNetUsers.Id.
     public int BrukerId { get; set; }
 
     public Bruker Bruker { get; set; } = null!;
@@ -29,7 +31,6 @@ public class Resource
 
     public DateTime? TilgjengeligFra { get; set; }
     
-    // Når ressursen ble registrert. Settes automatisk når ressursen opprettes.
     public DateTime RegistrertDato { get; set; } = DateTime.UtcNow;
 
     [MaxLength(250)]

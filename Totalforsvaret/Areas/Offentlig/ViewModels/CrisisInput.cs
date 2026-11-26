@@ -3,6 +3,9 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.ViewModels;
 
+/// <summary>
+/// Validates crisis form fields and allows blank coordinates when editing.
+/// </summary>
 public class CrisisInput : IValidatableObject
 {
     [Required(ErrorMessage = "Navnet må fylles ut og kan ha maksimalt 100 tegn.")]
@@ -39,6 +42,9 @@ public class CrisisInput : IValidatableObject
     [Range(-Coordinate.LongitudeLimit * 1d, Coordinate.LongitudeLimit * 1d, ErrorMessage = "Ugyldig lengdegrad.")]
     public virtual double? Longitude { get; set; }
 
+    /// <summary>
+    /// Rejects the default date value as a crisis start time.
+    /// </summary>
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (StartTime == DateTime.MinValue)
@@ -46,6 +52,9 @@ public class CrisisInput : IValidatableObject
     }
 }
 
+/// <summary>
+/// Validates a new crisis and requires both coordinates.
+/// </summary>
 public sealed class CreateCrisisInput : CrisisInput
 {
     [Required(ErrorMessage = "Velg en gyldig plassering på kartet.")]

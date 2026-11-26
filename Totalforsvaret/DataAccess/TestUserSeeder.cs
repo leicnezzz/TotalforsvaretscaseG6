@@ -5,10 +5,11 @@ using Totalforsvaret.Models;
 namespace Totalforsvaret.DataAccess;
 
 
-// Fomålet med denne er KUN og tilatte offentlig bruker til demoen for å slippe
-// full administrasjons admin panel. 
 public static class TestUserSeeder
 {
+    /// <summary>
+    /// Creates the public demonstration account if it does not already exist.
+    /// </summary>
     public static async Task SeedAsync(IServiceProvider services)
     {
         var users = services.GetRequiredService<UserManager<Bruker>>();
@@ -38,7 +39,6 @@ public static class TestUserSeeder
         };
 
 
-        // JA vi vett at dette er VELDIG VELDIG VELDIG sårbart men for test versjonen funker det :)
         var resultat = await users.CreateAsync(
             user,
             "Passordet12345");

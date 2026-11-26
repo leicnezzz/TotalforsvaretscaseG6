@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.Razor;
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
-// identity framework
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
@@ -118,7 +117,6 @@ if (app.Environment.IsDevelopment())
 
 app.MapDefaultEndpoints();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");

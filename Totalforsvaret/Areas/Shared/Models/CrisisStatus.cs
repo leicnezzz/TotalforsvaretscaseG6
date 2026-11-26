@@ -1,5 +1,8 @@
 namespace Totalforsvaret.Models;
 
+/// <summary>
+/// Represents the operational state of a crisis.
+/// </summary>
 public enum CrisisStatus
 {
     Unspecified = 0,
@@ -8,6 +11,9 @@ public enum CrisisStatus
     Closed = 3
 }
 
+/// <summary>
+/// Maps crisis statuses to the existing Norwegian values used for storage and display.
+/// </summary>
 public static class CrisisStatusText
 {
     private const string Active = "Aktiv";
@@ -23,6 +29,9 @@ public static class CrisisStatusText
         _ => throw new ArgumentOutOfRangeException(nameof(status), status, "Unknown crisis status.")
     };
 
+    /// <summary>
+    /// Reads the existing Norwegian database value. Empty values map to Unspecified and unknown values are rejected.
+    /// </summary>
     public static CrisisStatus FromStoredValue(string value) => value switch
     {
         "" => CrisisStatus.Unspecified,

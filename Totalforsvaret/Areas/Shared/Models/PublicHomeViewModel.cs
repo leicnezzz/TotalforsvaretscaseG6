@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Totalforsvaret.Models;
-// Informasjon som vises på forsiden. Inneholder kategorier som vises i menyen. 
+
+/// <summary>
+/// Supplies resource categories to the registration wizard on public pages.
+/// </summary>
 public class PublicHomeViewModel
 {
     public IReadOnlyList<SelectListItem> Categories { get; init; }

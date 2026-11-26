@@ -3,16 +3,28 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.DataAccess;
 
+/// <summary>
+/// Provides read data for the public actor map, lists and matching workflow.
+/// </summary>
 public interface IPublicOverviewRepository
 {
     int CountActiveNeeds();
-    int CountResolvedNeeds();
-    int CountActiveCrises();
+
+    /// <summary>
+    /// Returns active needs with both coordinates populated.
+    /// </summary>
     List<Need> ListActiveNeedsOnMap();
-    List<Need> ListLatestActiveNeeds();
     List<Need> ListActiveNeeds();
     List<CrisisMapAnnotation> ListAnnotations();
+
+    /// <summary>
+    /// Returns requested and assigned matches that occupy resources on the overview.
+    /// </summary>
     List<ResourceAssignment> ListActiveAssignments();
+
+    /// <summary>
+    /// Lists rejected and released matches for needs that are still active.
+    /// </summary>
     List<ResourceAssignment> ListClosedReviewsForActiveNeeds();
     List<OverviewCrisis> ListCrises();
     List<OverviewNeed> ListNeeds();

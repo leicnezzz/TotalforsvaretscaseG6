@@ -5,6 +5,9 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.ViewModels;
 
+/// <summary>
+/// Validates a need and carries the crisis options and map points used by the form.
+/// </summary>
 public class NeedCreateViewModel
 {
     [Required(ErrorMessage = "Skriv inn navnet på behovet.")]

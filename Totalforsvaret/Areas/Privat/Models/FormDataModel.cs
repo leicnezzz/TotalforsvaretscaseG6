@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Totalforsvaret.Areas.Privat.Models;
 
+/// <summary>
+/// Carries the fields and category options used by the private resource registration form.
+/// </summary>
 public class FormDataModel : IValidatableObject
 {
     [Required(ErrorMessage = "Skriv inn navn."), StringLength(200)]
@@ -36,6 +39,9 @@ public class FormDataModel : IValidatableObject
     [Required(ErrorMessage = "Velg en posisjon i kartet.")]
     public string Longitude { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Validates the coordinate strings submitted by the private resource form.
+    /// </summary>
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (!ValidCoordinate(Latitude, 90))

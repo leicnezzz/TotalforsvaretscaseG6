@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Totalforsvaret.Areas.Offentlig.ViewModels;
 
+/// <summary>
+/// Carries the editable personal and organizational details shown on the public actor profile.
+/// </summary>
 public class PublicActorProfileViewModel
 {
     [Required(ErrorMessage = "Skriv inn fornavn.")]

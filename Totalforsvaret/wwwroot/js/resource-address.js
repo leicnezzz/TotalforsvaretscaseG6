@@ -72,19 +72,23 @@
         let selectedAddress = address.value;
         let pointLookup;
 
-        function valid() {
-            return Boolean((allowMapSelection || address.value.trim()) && latitude.value && longitude.value &&
+        function hasCoordinates() {
+            return Boolean(latitude.value && longitude.value &&
                 validCoordinates(Number(latitude.value.replace(',', '.')), Number(longitude.value.replace(',', '.'))));
-        } // Sjekker om adressefelt og koordinater er gyldige. 
+        }
+
+        function valid() {
+            return (allowMapSelection || Boolean(address.value.trim())) && hasCoordinates();
+        }
 
         function selectMapPoint(point, label = '') {
             if (!point || !validCoordinates(point.lat, point.lng)) return;
             latitude.value = point.lat.toFixed(6);
             longitude.value = point.lng.toFixed(6);
             selectedAddress = label;
-            address.value = allowMapSelection ? '' : 'Valgt plassering på kartet';
+            address.value = allowMapSelection ? '' : label;
             address.setCustomValidity('');
-            reset(Boolean(label));
+            reset(false);
             status.textContent = label || 'Plassering valgt på kartet.';
             onChange(label);
         }
@@ -107,7 +111,7 @@
                 }
             }
             map.invalidateSize();
-            if (valid()) {
+            if (hasCoordinates()) {
                 const point = [Number(latitude.value.replace(',', '.')), Number(longitude.value.replace(',', '.'))];
                 const moved = !marker || !marker.getLatLng().equals(point);
                 if (!marker) marker = L.circleMarker(point, {
@@ -137,11 +141,8 @@
         }
 
         async function lookupAddress(point) {
-            selectMapPoint(point);
-            if (!allowMapSelection) {
-                address.value = '';
-                onChange();
-            }
+            const fallback = allowMapSelection ? '' : `Kartpunkt: ${point.lat.toFixed(6)}, ${point.lng.toFixed(6)}`;
+            selectMapPoint(point, fallback);
             const current = new AbortController();
             request = current;
             pointLookup = current;
@@ -157,7 +158,7 @@
                 const result = (await response.json()).adresser?.[0];
                 if (request !== current) return;
                 if (!result?.adressetekst) {
-                    status.textContent = 'Ingen adresse i nærheten. Søk etter en adresse eller velg et annet punkt.';
+                    status.textContent = 'Ingen adresse i nærheten. Kartpunktet er valgt.';
                     return;
                 }
 
@@ -171,7 +172,7 @@
                 refresh(false);
                 onChange(selectedAddress);
             } catch {
-                if (request === current) status.textContent = 'Adresseoppslaget er utilgjengelig. Prøv adressesøk.';
+                if (request === current) status.textContent = 'Adresseoppslaget er utilgjengelig. Kartpunktet er valgt.';
             } finally {
                 clearTimeout(timeout);
                 if (request === current) request = null;
@@ -228,7 +229,8 @@
 
         address.addEventListener('input', () => {
             reset();
-            if (!allowMapSelection) {
+            const clearPoint = !allowMapSelection || address.name === 'Address';
+            if (clearPoint && address.value.trim()) {
                 latitude.value = '';
                 longitude.value = '';
                 selectedAddress = '';
@@ -237,7 +239,7 @@
             }
             status.textContent = address.value.trim().length < 3 ? 'Skriv minst tre tegn.' : 'Henter adresseforslag …';
             if (address.value.trim().length >= 3) timer = setTimeout(search, 600);
-            if (!allowMapSelection) onChange();
+            if (clearPoint) onChange();
         });
         address.addEventListener('keydown', event => {
             if (event.key === 'Enter') {

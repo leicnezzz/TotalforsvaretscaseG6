@@ -4,12 +4,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Totalforsvaret.Models;
 
+/// <summary>
+/// Represents an incident with a location, severity and status that can group related needs.
+/// </summary>
 [Table("Kriser")]
 public class Crisis
 {
     public int Id { get; set; }
 
-    // Grunnleggende informasjon
     [Column("Navn")]
     [MaxLength(100)]
     public string Name { get; set; } = "";
@@ -29,7 +31,6 @@ public class Crisis
     [Precision(9, 6)]
     public decimal? Longitude { get; set; }
     
-    // Informasjon om krisen
     [Column("Alvorlighetsgrad")]
     public CrisisSeverity Severity { get; set; }
 
@@ -38,14 +39,12 @@ public class Crisis
 
     public CrisisStatus Status { get; set; }
 
-    // Ny informasjon som må legges til i databasen
     public CrisisType Type { get; set; }
 
     public int? OffentligAktorId { get; set; }
 
     public Areas.Offentlig.Models.PublicActor? OffentligAktor { get; set; }
 
-    // Behov knyttet til krisen
     public ICollection<Areas.Offentlig.Models.Need> Needs { get; set; }
         = new List<Areas.Offentlig.Models.Need>();
 }

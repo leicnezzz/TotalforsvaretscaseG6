@@ -3,11 +3,20 @@ using Totalforsvaret.DataAccess;
 
 namespace Totalforsvaret.Areas.Shared.ViewComponents;
 
-public class IncidentAlertViewComponent(ICrisisRepository crises) : ViewComponent
-{
+/// <summary>
+/// Displays the latest high or critical crisis that is active or under control.
+/// </summary>
+public class IncidentAlertViewComponent : ViewComponent {
+    private readonly ICrisisRepository _crises;
+
+    public IncidentAlertViewComponent(ICrisisRepository crises)
+    {
+        _crises = crises;
+    }
+
     public async Task<IViewComponentResult> InvokeAsync()
     {
-        var crisis = await crises.FindLatestAlertAsync(HttpContext.RequestAborted);
+        var crisis = await _crises.FindLatestAlertAsync(HttpContext.RequestAborted);
 
         return crisis is null
             ? Content(string.Empty)

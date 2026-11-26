@@ -198,7 +198,7 @@
             localStatus.textContent = 'Du har ulagrede endringer.';
             if (pickingCard === card) setPickingCard(null);
             showPreview(card, form);
-        });
+        }, { allowMapSelection: true });
         const editor = { saved: snapshot(form), position: savedPosition(form), location, pickButton, busy: false };
         editors.set(card, editor);
         if (map) pickButton.hidden = false;

@@ -8,8 +8,8 @@ namespace Totalforsvaret.Controllers;
 
 [Authorize(Policy = "KunOffentlig")]
 
-/// <summary> 
-/// 
+/// <summary>
+/// Provides the public actor overview and resource coordination actions.
 /// </summary>
 [MvcControllerName("OffentligAktor")]
 public class PublicActorController : Controller
@@ -18,140 +18,82 @@ public class PublicActorController : Controller
     private readonly IResourceAssignmentRepository _assignments;
     private readonly IPublicOverviewRepository _overview;
     private readonly ResourceMatchingService _matching;
-    private readonly ResourceAssignmentService _assignmentService;
 
     public PublicActorController(
         IResourceRepository resources,
         IResourceAssignmentRepository assignments,
         IPublicOverviewRepository overview,
-        ResourceMatchingService matching,
-        ResourceAssignmentService assignmentService)
+        ResourceMatchingService matching)
     {
         _resources = resources;
         _assignments = assignments;
         _overview = overview;
         _matching = matching;
-        _assignmentService = assignmentService;
     }
 
+    /// <summary>
+    /// Builds match suggestions and the operational overview. Active assignments take precedence
+    /// over closed reviews when displaying match status.
+    /// </summary>
     public IActionResult Index()
     {
-        // Henter tilgjengelige ressurser
-        var resources = _resources.GetResources();
-
-        var availableResources = resources
-            .Where(r => r.Available)
+        var availableResources = _resources.GetResources()
+            .Where(resource => resource.Available)
             .ToList();
-
-        // Henter antall aktive behov
-        ViewBag.AktiveBehov = _overview.CountActiveNeeds();
-
-        // Henter antall løste behov.
-        ViewBag.LosteBehov = _overview.CountResolvedNeeds();
-
-        // Henter aktive behov med gyldige kartkoordinater
-        ViewBag.BehovPaKart = _overview.ListActiveNeedsOnMap();
-
-        // Henter de fem nyeste aktive behovene
-        ViewBag.AktiveBehovListe = _overview.ListLatestActiveNeeds();
-
-        // Alle hendelser kan åpnes, også inaktive og hendelser uten eget kartpunkt.
-        ViewBag.Kartmarkeringer = _overview.ListAnnotations();
-        var crises = _overview.ListCrises();
-        ViewBag.KriserPaKart = crises.Select(c => new
-            {
-                id = c.Id,
-                navn = c.Name,
-                type = c.Type.ToNorwegianText(),
-                alvorlighetsgrad = c.Severity.ToNorwegianText(),
-                status = c.Status.ToNorwegianText(),
-                beskrivelse = c.Description,
-                latitude = c.Latitude,
-                longitude = c.Longitude
-            })
-            .ToList();
-
-        // Alle aktive og løste behov til kortenes lister.
-        ViewBag.BehovTilLister = _overview.ListNeeds().Select(n => new
-            {
-                id = n.Id,
-                navn = n.Name,
-                type = n.Type.ToNorwegianText(),
-                prioritet = n.Priority.ToNorwegianText(),
-                status = n.Status.ToNorwegianText(),
-                kriseId = n.CrisisId,
-                krise = n.CrisisName,
-                latitude = n.Latitude,
-                longitude = n.Longitude
-            })
-            .ToList();
-
-        // Teller kriser med status Aktiv.
-        ViewBag.AktiveKriser = _overview.CountActiveCrises();
         var activeAssignments = _overview.ListActiveAssignments();
+        var closedReviews = _overview.ListClosedReviewsForActiveNeeds();
 
-        ViewBag.AktiveTildelinger = activeAssignments;
+        var matchStatuses = activeAssignments
+            .OrderByDescending(assignment => assignment.Id)
+            .Concat(closedReviews.OrderByDescending(assignment => assignment.Id))
+            .GroupBy(assignment => (assignment.NeedId, assignment.ResourceId))
+            .ToDictionary(group => group.Key, group => group.First().Status);
 
-		var closedReviews = _overview.ListClosedReviewsForActiveNeeds();
-
-		var matchStatuses = activeAssignments
-			.OrderByDescending(a => a.Id)
-			.Concat(closedReviews.OrderByDescending(a => a.Id))
-			.GroupBy(a => (a.NeedId, a.ResourceId))
-			.ToDictionary(group => group.Key, group => group.First().Status);
-
-		ViewBag.TreffStatuser = matchStatuses;
-
-        var suggestions = _matching.FindSuggestions(_overview.ListActiveNeeds(), availableResources, matchStatuses);
-        ViewBag.MatchForslag = suggestions;
-        ViewBag.ForeslatteTreff = suggestions.Count;
-        ViewBag.OpptatteRessursIder = activeAssignments.Select(a => a.ResourceId).ToHashSet();
-
-        ViewBag.KriserTilLister = crises.Select(c => new
-            {
-                id = c.Id,
-                navn = c.Name,
-                type = c.Type.ToNorwegianText(),
-                omrade = c.Area,
-                alvorlighetsgrad = c.Severity.ToNorwegianText(),
-                starttidspunkt = c.StartTime,
-                status = c.Status.ToNorwegianText(),
-                beskrivelse = c.Description,
-                latitude = c.Latitude,
-                longitude = c.Longitude
-            })
-            .ToList();
-
-        // Brukes til å markere egne ressurser på kartet.
         TryGetUserId(out var currentUserId);
-        ViewBag.MinBrukerId = currentUserId;
-
-        return View(availableResources);
+        return View(new PublicActorOverviewViewModel
+        {
+            CurrentUserId = currentUserId,
+            ActiveNeedCount = _overview.CountActiveNeeds(),
+            AvailableResources = availableResources,
+            MapNeeds = _overview.ListActiveNeedsOnMap(),
+            MapAnnotations = _overview.ListAnnotations(),
+            Crises = _overview.ListCrises(),
+            Needs = _overview.ListNeeds(),
+            ActiveAssignments = activeAssignments,
+            BusyResourceIds = activeAssignments.Select(assignment => assignment.ResourceId).ToHashSet(),
+            MatchStatuses = matchStatuses,
+            MatchSuggestions = _matching.FindSuggestions(_overview.ListActiveNeeds(), availableResources, matchStatuses)
+        });
     }
+
+    /// <summary>
+    /// Lists resources owned by the signed-in public actor.
+    /// </summary>
     [HttpGet]
     [ActionName("MineRessurser")]
     public async Task<IActionResult> MyResources()
     {
         if (!TryGetUserId(out var userId)) return Challenge();
 
-        var resources = await _resources.ListOwnedWithCategoryAsync(userId);
+        var resources = await _resources.ListOwnedAsync(userId);
 
         return View(resources);
     }
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+
+    /// <summary>
+    /// Deletes an owned resource if it has no assignment history.
+    /// </summary>
+    [HttpPost, ValidateAntiForgeryToken]
     [ActionName("SlettRessurs")]
     public async Task<IActionResult> DeleteResource(int resourceId)
     {
         if (!TryGetUserId(out var userId)) return Challenge();
 
-        // Bare egne ressurser kan slettes.
         var ressurs = await _resources.FindOwnedAsync(resourceId, userId);
 
         if (ressurs == null)
             return NotFound("Ressursen finnes ikke.");
 
-        // Ressurser som har vært i en tildeling beholdes på grunn av historikken.
         if (!await _resources.TryDeleteAsync(ressurs))
         {
             TempData["ErrorMessage"] = "Ressursen har vært brukt i en tildeling og kan ikke slettes.";
@@ -162,8 +104,12 @@ public class PublicActorController : Controller
 
         return LocalRedirect(Url.Action("MineRessurser") + Request.CrisisQuery());
     }
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+
+    /// <summary>
+    /// Requests resources for one shared need or pairs each selected resource with a selected
+    /// need.
+    /// </summary>
+    [HttpPost, ValidateAntiForgeryToken]
     [ActionName("VurderRessurs")]
     public async Task<IActionResult> RequestAssignment(int[] needId, int[] resourceId, bool fraMatch = false)
     {
@@ -198,72 +144,6 @@ public class PublicActorController : Controller
             : this.OverviewUrl());
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [ActionName("TildelRessurs")]
-    public async Task<IActionResult> AssignResource(int assignmentId)
-    {
-        var assignment = await _assignments.FindAsync(assignmentId);
-        var result = await _assignmentService.AcceptAsync(assignment);
-
-        switch (result)
-        {
-            case AssignmentActionResult.NotFound:
-                return NotFound("Ressursvurderingen finnes ikke.");
-            case AssignmentActionResult.NotRequested:
-                return BadRequest("Ressursen er ikke til vurdering.");
-            case AssignmentActionResult.InactiveNeed:
-                return BadRequest("Behovet er ikke lenger aktivt.");
-            case AssignmentActionResult.UnavailableResource:
-                return BadRequest("Ressursen er ikke tilgjengelig.");
-            case AssignmentActionResult.BusyResource:
-                return BadRequest("Ressursen er allerede opptatt.");
-            case AssignmentActionResult.Succeeded:
-                break;
-            default:
-                throw new InvalidOperationException($"Unexpected assignment result: {result}.");
-        }
-
-        TempData["SuccessMessage"] = "Ressursen er tildelt.";
-
-        return LocalRedirect(this.OverviewUrl());
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [ActionName("FrigiRessurs")]
-    public async Task<IActionResult> ReleaseResource(int assignmentId)
-    {
-        var assignment = await _assignments.FindAsync(assignmentId);
-        var result = await _assignmentService.ReleaseAsync(assignment);
-        if (result == AssignmentActionResult.NotFound)
-            return NotFound("Tildelingen finnes ikke.");
-
-        if (result == AssignmentActionResult.NotAssigned)
-            return BadRequest("Ressursen er ikke tildelt.");
-
-        TempData["SuccessMessage"] = "Ressursen er frigitt.";
-
-        return LocalRedirect(this.OverviewUrl());
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [ActionName("AvslaRessurs")]
-    public async Task<IActionResult> DeclineResource(int assignmentId)
-    {
-        var assignment = await _assignments.FindAsync(assignmentId);
-        var result = await _assignmentService.DeclineAsync(assignment);
-        if (result == AssignmentActionResult.NotFound)
-            return NotFound("Ressursvurderingen finnes ikke.");
-
-        if (result == AssignmentActionResult.NotRequested)
-            return BadRequest("Ressursen er ikke til vurdering.");
-
-        TempData["SuccessMessage"] = "Ressursforslaget er avslått.";
-
-        return LocalRedirect(this.OverviewUrl());
-    }
     private bool TryGetUserId(out int userId)
     {
         var tekst = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;

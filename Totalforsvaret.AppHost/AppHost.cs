@@ -20,7 +20,6 @@ var password = builder.AddParameter(
     secret: true,
     persist: true);
 
-// Aspire starter MariaDB i Docker.
 var mariadb = builder
     .AddContainer("mariadb", "mariadb", "11.4")
     .WithEnvironment("MARIADB_ROOT_PASSWORD", password)
@@ -34,7 +33,6 @@ var mariadb = builder
         "totalforsvaretscaseg6_mariadbdata",
         "/var/lib/mysql");
 
-// Kun en visningsressurs for den eksisterende databasen.
 builder.AddResource(
     new DatabaseDisplayResource(
         "totalforsvaret-db",
@@ -47,7 +45,6 @@ builder.AddResource(
 
 var endpoint = mariadb.GetEndpoint("tcp");
 
-// Aspire lager tilkoblingen til containerens publiserte adresse.
 var connectionString = ReferenceExpression.Create(
     $"Server={endpoint.Property(EndpointProperty.Host)};Port={endpoint.Property(EndpointProperty.Port)};Database=totalforsvaret;User=root;Password={password};");
 
@@ -95,8 +92,6 @@ builder.Services.AddHealthChecks()
 
 mariadb.WithHealthCheck("mariadb-ready");
 
-// Webappen får tilkoblingen gjennom en miljøvariabel.
-// Finner hjemmemappen automatisk på både Windows og Mac.
 
 var certificatePath = Path.Combine(
     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),

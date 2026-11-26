@@ -12,9 +12,11 @@ using Totalforsvaret.Models;
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
 
-[Area("Offentlig")]
-[Authorize(Policy = "KunOffentlig")]
+[Area("Offentlig"), Authorize(Policy = "KunOffentlig")]
 
+/// <summary>
+/// Manages needs used by the public actor workflows.
+/// </summary>
 public class NeedController : Controller
 {
     private readonly INeedRepository _needs;
@@ -31,7 +33,9 @@ public class NeedController : Controller
         _userManager = userManager;
     }
 
-    // Åpner skjemaet og henter eksisterende kriser.
+    /// <summary>
+    /// Opens the need form using the crises selected on the overview, if any.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Create(int? crisisId = null)
     {
@@ -48,9 +52,11 @@ public class NeedController : Controller
         return View(viewModel);
     }
 
-    // Kontrollerer og lagrer behovet.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    /// <summary>
+    /// Registers a need for the signed-in public actor and checks the selected crisis against the
+    /// form's options.
+    /// </summary>
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(NeedCreateViewModel viewModel)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -75,7 +81,6 @@ public class NeedController : Controller
             return View(viewModel);
         }
 
-        // Oppretter behovet med riktig aktørtilknytning.
         var need = new Need
         {
             Name = viewModel.Name.Trim(),
@@ -94,7 +99,6 @@ public class NeedController : Controller
         return LocalRedirect(this.OverviewUrl(viewModel.CrisisId));
     }
 
-    // Henter krisene som kan velges i skjemaet.
     private List<int> GetOpenCrisisIds() => Request.Query["hendelser"]
         .Select(value => int.TryParse(value, out var id) ? id : 0)
         .Where(id => id > 0)
@@ -133,8 +137,11 @@ public class NeedController : Controller
         return View("Create", viewModel);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    /// <summary>
+    /// Updates a need after validating its coordinates and checking that the selected crisis
+    /// exists.
+    /// </summary>
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(
         int id,
         NeedCreateViewModel viewModel)
@@ -168,13 +175,15 @@ public class NeedController : Controller
         need.Latitude = viewModel.Latitude;
         need.Longitude = viewModel.Longitude;
 
-        await _needs.SaveChangesAsync();
+        await _needs.UpdateAsync(need);
 
         return LocalRedirect(this.OverviewUrl());
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    /// <summary>
+    /// Deletes a need and its resource assignments together.
+    /// </summary>
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
         var need = await _needs.FindAsync(id, trackChanges: true);

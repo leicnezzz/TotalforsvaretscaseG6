@@ -195,12 +195,12 @@
         <legend class="wizard-sr-only">Plassering</legend>
         <div class="wizard-description">
             <h3 class="@(compact ? "need-step-title" : null)">Hvor finnes ressursen?</h3>
-            <p>Velg en adresse fra forslagene eller klikk på kartet der ressursen befinner seg.</p>
+            <p>Velg en adresse fra forslagene eller et punkt på kartet. Koordinater er nok.</p>
         </div>
         <div class="wizard-fields">
-            <label for="vehicle-address">Adresse *</label>
+            <label for="vehicle-address">Adresse (valgfritt)</label>
             <input id="vehicle-address" name="Address" maxlength="250" autocomplete="street-address"
-                   placeholder="Eks. Rådhusgata 18, Kristiansand" aria-controls="vehicle-address-results" aria-expanded="false" aria-describedby="vehicle-address-help vehicle-address-status" required />
+                   placeholder="Eks. Rådhusgata 18, Kristiansand" aria-controls="vehicle-address-results" aria-expanded="false" aria-describedby="vehicle-address-help vehicle-address-status" />
             <p id="vehicle-address-help" class="wizard-hint">Adressesøk sendes til Kartverket eller Photon/OpenStreetMap. Ved kartklikk brukes Kartverket til å finne nærmeste adresse.</p>
             <p id="vehicle-address-status" data-address-status class="wizard-hint" role="status"></p>
             <ul id="vehicle-address-results" data-address-results class="wizard-address-results" aria-label="Adresser som passer søket" hidden></ul>

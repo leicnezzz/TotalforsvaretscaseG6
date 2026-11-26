@@ -458,29 +458,6 @@
 </td>
 <td class="treff-handling">
     <div class="treff-knapper">
-                            @if (tildeling?.Status ==
-                                 Totalforsvaret.Areas.Offentlig.Models.AssignmentStatus.Assigned &&
-                                 tildeling.Resource?.BrukerId == Model.CurrentUserId)
-                            {
-
-                                <form action="@(Url.Action("FrigiRessurs", "OffentligAktor", new { area = "" }) + Context.Request.CrisisQuery())"
-                                      method="post">
-
-                                    @Html.AntiForgeryToken()
-
-                                    <input type="hidden"
-                                           name="assignmentId"
-                                           value="@tildeling.Id" />
-
-                                    <button type="submit"
-                                             class="btn btn-sm btn-outline-primary treff-handlingsknapp"
-                                             onclick="return confirm('Frigi denne ressursen?');">
-                                        Frigi ressurs
-                                    </button>
-                                </form>
-
-                            }
-
                             @if (tildeling == null && !ressursOpptatt)
                             {
                                 <form action="@(Url.Action("VurderRessurs", "OffentligAktor", new { area = "" }) + Context.Request.CrisisQuery())"

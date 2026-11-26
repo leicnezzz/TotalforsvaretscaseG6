@@ -53,7 +53,7 @@ public class PublicActorControllerTests
         var assignments = new ResourceAssignmentRepository(db);
         return WithUser(new PublicActorController(
             new ResourceRepository(db), assignments, new PublicOverviewRepository(db),
-            new ResourceMatchingService(), new ResourceAssignmentService(assignments)), userId);
+            new ResourceMatchingService()), userId);
     }
 
     /// <summary>
@@ -68,53 +68,6 @@ public class PublicActorControllerTests
             .Single();
 
         Assert.That(attribute.Policy, Is.EqualTo("KunOffentlig"));
-    }
-
-    /// <summary>
-    /// An assigned resource is released, and the assignment is kept as history.
-    /// </summary>
-    [Test]
-    public async Task FrigiRessurs_Assigned_ReleasesResource()
-    {
-        using var db = CreateDb();
-        AddNeed(db, 1);
-        AddResource(db, 1, userId: 1);
-        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Assigned);
-
-        var result = await CreateController(db).ReleaseResource(1);
-
-        Assert.That(result, Is.TypeOf<LocalRedirectResult>());
-        Assert.That(db.ResourceAssignments.Single().Status, Is.EqualTo(AssignmentStatus.Released));
-    }
-
-    /// <summary>
-    /// A resource that is only requested cannot be released.
-    /// </summary>
-    [Test]
-    public async Task FrigiRessurs_NotAssigned_ReturnsBadRequest()
-    {
-        using var db = CreateDb();
-        AddNeed(db, 1);
-        AddResource(db, 1, userId: 1);
-        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
-
-        var result = await CreateController(db).ReleaseResource(1);
-
-        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
-    }
-
-    [Test]
-    public async Task FrigiRessurs_NotOwned_LeavesAssignmentUnchanged()
-    {
-        using var db = CreateDb();
-        AddNeed(db, 1);
-        AddResource(db, 1, userId: 2);
-        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Assigned);
-
-        var result = await CreateController(db, userId: 1).ReleaseResource(1);
-
-        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
-        Assert.That(db.ResourceAssignments.Single().Status, Is.EqualTo(AssignmentStatus.Assigned));
     }
 
     /// <summary>

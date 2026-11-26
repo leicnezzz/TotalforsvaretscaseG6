@@ -134,8 +134,7 @@
                                 </form>
                             </div>
                         }
-                        else if (isPublic &&
-                                 item.CanManageAssignment &&
+                        else if (item.CanManageAssignment &&
                                  item.Status == AssignmentStatus.Assigned)
                         {
                             <div class="inbox-actions">
@@ -239,8 +238,7 @@
                                 Samtale om denne matchen
                             </h3>
                             <span>
-                                Forespurt @item.RequestedAtUtc.ToLocalTime()
-                                    .ToString("dd.MM.yyyy HH:mm")
+                                Forespurt @(item.RequestedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))
                             </span>
                         </div>
 
@@ -260,8 +258,7 @@
                                         <p class="inbox-message-meta">
                                             @message.SenderName ·
                                             <time datetime="@message.SentAtUtc.ToString("O")">
-                                                @message.SentAtUtc.ToLocalTime()
-                                                    .ToString("dd.MM.yyyy HH:mm")
+                                                @(message.SentAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))
                                             </time>
                                         </p>
 

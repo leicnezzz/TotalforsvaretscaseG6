@@ -30,7 +30,7 @@
         field('Confirmed').checked = false;
         render();
         saveDraft();
-    }, { lookupMapAddress: true });
+    }, { allowMapSelection: true, lookupMapAddress: true });
 // Gjenopprettet et lagret utkast som viser melding hvis det ikke kan åpnes.
     function setBusy(value) {
         busy = value;
@@ -112,7 +112,7 @@
         rows.push(['Tilleggsinformasjon', data.AdditionalInformation || 'Ingen'],
             ['Telefon', data.Kontaktpunkt], ['Tilgjengelig', data.Available ? 'Ja' : 'Ikke akkurat nå'],
             ['Tilgjengelig fra', data.TilgjengeligFra?.replace('T', ' ') || (data.Available ? 'Fra registreringstidspunktet' : 'Ikke oppgitt')],
-            ['Adresse', data.Address]);
+            ['Plassering', data.Address || `${data.Latitude.toFixed(6)}, ${data.Longitude.toFixed(6)}`]);
         const summary = document.getElementById('vehicle-summary');
         summary.replaceChildren();
         for (const [label, value] of rows) {

@@ -97,6 +97,23 @@ public class InboxAssignmentTests
         Assert.That(result, Is.EqualTo(isBusy));
     }
 
+    [TestCase(1, AssignmentStatus.Assigned, InboxOutcome.Success, AssignmentStatus.Released)]
+    [TestCase(1, AssignmentStatus.Requested, InboxOutcome.Rejected, AssignmentStatus.Requested)]
+    [TestCase(2, AssignmentStatus.Assigned, InboxOutcome.NotFound, AssignmentStatus.Assigned)]
+    public async Task ReleaseRequiresAnAssignedResourceOwnedByTheCaller(
+        int callerId, AssignmentStatus status, InboxOutcome outcome, AssignmentStatus finalStatus)
+    {
+        using var db = CreateDb();
+        AddNeed(db, 1);
+        AddResource(db, 1);
+        AddAssignment(db, 1, 1, 1, status);
+
+        var result = await CreateInbox(db).ReleaseAsync(callerId, 1);
+
+        Assert.That(result.Outcome, Is.EqualTo(outcome));
+        Assert.That(db.ResourceAssignments.Single().Status, Is.EqualTo(finalStatus));
+    }
+
     private static InboxService CreateInbox(AppDbContext db)
     {
         var repository = new ResourceAssignmentRepository(db);

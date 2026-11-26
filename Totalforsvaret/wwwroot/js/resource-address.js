@@ -229,7 +229,8 @@
 
         address.addEventListener('input', () => {
             reset();
-            if (!allowMapSelection) {
+            const clearPoint = !allowMapSelection || address.name === 'Address';
+            if (clearPoint && address.value.trim()) {
                 latitude.value = '';
                 longitude.value = '';
                 selectedAddress = '';
@@ -238,7 +239,7 @@
             }
             status.textContent = address.value.trim().length < 3 ? 'Skriv minst tre tegn.' : 'Henter adresseforslag …';
             if (address.value.trim().length >= 3) timer = setTimeout(search, 600);
-            if (!allowMapSelection) onChange();
+            if (clearPoint) onChange();
         });
         address.addEventListener('keydown', event => {
             if (event.key === 'Enter') {

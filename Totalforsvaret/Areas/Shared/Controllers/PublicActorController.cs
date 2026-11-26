@@ -18,20 +18,17 @@ public class PublicActorController : Controller
     private readonly IResourceAssignmentRepository _assignments;
     private readonly IPublicOverviewRepository _overview;
     private readonly ResourceMatchingService _matching;
-    private readonly ResourceAssignmentService _assignmentService;
 
     public PublicActorController(
         IResourceRepository resources,
         IResourceAssignmentRepository assignments,
         IPublicOverviewRepository overview,
-        ResourceMatchingService matching,
-        ResourceAssignmentService assignmentService)
+        ResourceMatchingService matching)
     {
         _resources = resources;
         _assignments = assignments;
         _overview = overview;
         _matching = matching;
-        _assignmentService = assignmentService;
     }
 
     /// <summary>
@@ -145,30 +142,6 @@ public class PublicActorController : Controller
         return LocalRedirect(fraMatch
             ? Url.RouteUrl("offentlig-match") + Request.CrisisQuery()
             : this.OverviewUrl());
-    }
-
-    /// <summary>
-    /// Lets the resource owner release an assigned resource from the overview and retains the closed
-    /// assignment as history.
-    /// </summary>
-    [HttpPost, ValidateAntiForgeryToken]
-    [ActionName("FrigiRessurs")]
-    public async Task<IActionResult> ReleaseResource(int assignmentId)
-    {
-        if (!TryGetUserId(out var userId))
-            return Forbid();
-
-        var assignment = await _assignments.FindOwnedAsync(assignmentId, userId);
-        var result = await _assignmentService.ReleaseAsync(assignment);
-        if (result == AssignmentActionResult.NotFound)
-            return NotFound("Tildelingen finnes ikke.");
-
-        if (result == AssignmentActionResult.NotAssigned)
-            return BadRequest("Ressursen er ikke tildelt.");
-
-        TempData["SuccessMessage"] = "Ressursen er frigitt.";
-
-        return LocalRedirect(this.OverviewUrl());
     }
 
     private bool TryGetUserId(out int userId)

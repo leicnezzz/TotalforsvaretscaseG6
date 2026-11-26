@@ -54,6 +54,16 @@ public class ResourceInputTests
         Assert.That(IsValid(input), Is.False);
     }
 
+    [TestCase(null)]
+    [TestCase("")]
+    public void CoordinatesWithoutAddress_AreValid(string? address)
+    {
+        var input = ValidVehicle();
+        input.Address = address;
+
+        Assert.That(IsValid(input), Is.True);
+    }
+
     [Test]
     public void MissingCoordinates_AreRejected()
     {

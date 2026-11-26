@@ -186,7 +186,7 @@ public class ResourceController : Controller {
         resource.Available = input.Available!.Value;
         resource.Kontaktpunkt = input.Kontaktpunkt.Trim();
         resource.TilgjengeligFra = input.TilgjengeligFra;
-        resource.Address = input.Address.Trim();
+        resource.Address = input.Address?.Trim() ?? "";
         resource.Latitude = input.Latitude!.Value;
         resource.Longitude = input.Longitude!.Value;
         resource.Condition = input.Condition.Trim();

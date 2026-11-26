@@ -21,8 +21,8 @@ public class ResourceInput : IValidatableObject
 
     public DateTime? TilgjengeligFra { get; set; }
 
-    [Required, MaxLength(250)]
-    public string Address { get; set; } = "";
+    [MaxLength(250)]
+    public string? Address { get; set; }
 
     [Required, Range(typeof(decimal), "-90", "90")]
     public decimal? Latitude { get; set; }

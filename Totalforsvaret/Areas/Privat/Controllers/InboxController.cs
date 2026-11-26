@@ -57,6 +57,11 @@ public class InboxController : Controller {
         Run(assignmentId, userId =>
             _inbox.DeclineAsync(userId, assignmentId));
 
+    [HttpPost, ValidateAntiForgeryToken]
+    public Task<IActionResult> Release(int assignmentId) =>
+        Run(assignmentId, userId =>
+            _inbox.ReleaseAsync(userId, assignmentId));
+
     private async Task<IActionResult> Run(
         int assignmentId,
         Func<int, Task<InboxResult>> operation)

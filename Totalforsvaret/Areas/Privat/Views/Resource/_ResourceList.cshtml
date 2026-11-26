@@ -92,9 +92,9 @@
                 </div>
             </div>
             <section data-resource-address class="resource-edit-address" aria-label="Ressursens plassering">
-                <label for="@(prefix)-address">Adresse *
+                <label for="@(prefix)-address">Adresse (valgfritt)
                     <input id="@(prefix)-address" name="Address" value="@resource.Address" maxlength="250"
-                           autocomplete="street-address" aria-expanded="false" aria-controls="@(prefix)-results" required />
+                           autocomplete="street-address" aria-expanded="false" aria-controls="@(prefix)-results" />
                 </label>
                 <input name="Latitude" type="hidden" value="@resource.Latitude.ToString(CultureInfo.InvariantCulture)" />
                 <input name="Longitude" type="hidden" value="@resource.Longitude.ToString(CultureInfo.InvariantCulture)" />

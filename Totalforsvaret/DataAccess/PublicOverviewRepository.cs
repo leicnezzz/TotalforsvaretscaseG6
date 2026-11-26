@@ -26,7 +26,6 @@ internal sealed class PublicOverviewRepository : IPublicOverviewRepository {
         _db.CrisisMapAnnotations.AsNoTracking().ToList();
 
     public List<ResourceAssignment> ListActiveAssignments() => _db.ResourceAssignments.AsNoTracking()
-        .Include(assignment => assignment.Resource)
         .WhereResourceIsBusy()
         .ToList();
 

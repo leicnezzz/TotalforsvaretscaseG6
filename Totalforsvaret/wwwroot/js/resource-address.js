@@ -86,9 +86,9 @@
             latitude.value = point.lat.toFixed(6);
             longitude.value = point.lng.toFixed(6);
             selectedAddress = label;
-            address.value = allowMapSelection ? '' : 'Valgt plassering på kartet';
+            address.value = allowMapSelection ? '' : label;
             address.setCustomValidity('');
-            reset(Boolean(label));
+            reset(false);
             status.textContent = label || 'Plassering valgt på kartet.';
             onChange(label);
         }
@@ -141,11 +141,8 @@
         }
 
         async function lookupAddress(point) {
-            selectMapPoint(point);
-            if (!allowMapSelection) {
-                address.value = '';
-                onChange();
-            }
+            const fallback = allowMapSelection ? '' : `Kartpunkt: ${point.lat.toFixed(6)}, ${point.lng.toFixed(6)}`;
+            selectMapPoint(point, fallback);
             const current = new AbortController();
             request = current;
             pointLookup = current;
@@ -161,7 +158,7 @@
                 const result = (await response.json()).adresser?.[0];
                 if (request !== current) return;
                 if (!result?.adressetekst) {
-                    status.textContent = 'Ingen adresse i nærheten. Søk etter en adresse eller velg et annet punkt.';
+                    status.textContent = 'Ingen adresse i nærheten. Kartpunktet er valgt.';
                     return;
                 }
 
@@ -175,7 +172,7 @@
                 refresh(false);
                 onChange(selectedAddress);
             } catch {
-                if (request === current) status.textContent = 'Adresseoppslaget er utilgjengelig. Prøv adressesøk.';
+                if (request === current) status.textContent = 'Adresseoppslaget er utilgjengelig. Kartpunktet er valgt.';
             } finally {
                 clearTimeout(timeout);
                 if (request === current) request = null;

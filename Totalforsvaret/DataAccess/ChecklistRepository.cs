@@ -1,31 +1,25 @@
 using Microsoft.EntityFrameworkCore;
-using Totalforsvaret.Areas.Privat.Models;
 
 namespace Totalforsvaret.DataAccess;
 
-internal sealed class ChecklistRepository(AppDbContext db) : IChecklistRepository
-{
+internal sealed class ChecklistRepository : IChecklistRepository {
+    private readonly AppDbContext _db;
+
+    public ChecklistRepository(AppDbContext db)
+    {
+        _db = db;
+    }
+
     public Task<HashSet<string>> GetCompletedAsync(int userId) =>
-        db.EmergencyChecklistStatuses
+        _db.EmergencyChecklistStatuses
             .Where(status => status.BrukerId == userId && status.IsComplete)
             .Select(status => status.ItemId)
             .ToHashSetAsync();
 
-    public async Task SetStatusAsync(int userId, string itemId, bool isComplete)
-    {
-        var status = await db.EmergencyChecklistStatuses.FindAsync(userId, itemId);
-        if (status == null)
-        {
-            status = new EmergencyChecklistStatus
-            {
-                BrukerId = userId,
-                ItemId = itemId
-            };
-
-            db.EmergencyChecklistStatuses.Add(status);
-        }
-
-        status.IsComplete = isComplete;
-        await db.SaveChangesAsync();
-    }
+    public Task SetStatusAsync(int userId, string itemId, bool isComplete) =>
+        _db.Database.ExecuteSqlInterpolatedAsync($"""
+            INSERT INTO `EgenberedskapChecklistStatuses` (`BrukerId`, `ItemId`, `IsComplete`)
+            VALUES ({userId}, {itemId}, {isComplete})
+            ON DUPLICATE KEY UPDATE `IsComplete` = VALUES(`IsComplete`)
+            """);
 }

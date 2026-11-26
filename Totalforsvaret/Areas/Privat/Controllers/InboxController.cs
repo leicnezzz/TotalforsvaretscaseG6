@@ -12,19 +12,25 @@ namespace Totalforsvaret.Areas.Privat.Controllers;
 /// </summary>
 [Area("Privat"), Authorize(Policy = "KunPrivat")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-public class InboxController(
-    IInboxService inbox,
-    UserManager<Bruker> users) : Controller
-{
+public class InboxController : Controller {
+    private readonly IInboxService _inbox;
+    private readonly UserManager<Bruker> _users;
+
+    public InboxController(IInboxService inbox, UserManager<Bruker> users)
+    {
+        _inbox = inbox;
+        _users = users;
+    }
+
     [HttpGet]
     public async Task<IActionResult> Index(int? selectedId)
     {
-        var user = await users.GetUserAsync(User);
+        var user = await _users.GetUserAsync(User);
 
         if (user is null)
             return Challenge();
 
-        var model = await inbox.GetInboxAsync(
+        var model = await _inbox.GetInboxAsync(
             user.Id,
             InboxAudience.Private,
             selectedId);
@@ -35,7 +41,7 @@ public class InboxController(
     [HttpPost, ValidateAntiForgeryToken]
     public Task<IActionResult> SendMessage(int assignmentId, string? body) =>
         Run(assignmentId, userId =>
-            inbox.SendMessageAsync(
+            _inbox.SendMessageAsync(
                 userId,
                 InboxAudience.Private,
                 assignmentId,
@@ -44,18 +50,18 @@ public class InboxController(
     [HttpPost, ValidateAntiForgeryToken]
     public Task<IActionResult> Accept(int assignmentId) =>
         Run(assignmentId, userId =>
-            inbox.AcceptAsync(userId, assignmentId));
+            _inbox.AcceptAsync(userId, assignmentId));
 
     [HttpPost, ValidateAntiForgeryToken]
     public Task<IActionResult> Decline(int assignmentId) =>
         Run(assignmentId, userId =>
-            inbox.DeclineAsync(userId, assignmentId));
+            _inbox.DeclineAsync(userId, assignmentId));
 
     private async Task<IActionResult> Run(
         int assignmentId,
         Func<int, Task<InboxResult>> operation)
     {
-        var user = await users.GetUserAsync(User);
+        var user = await _users.GetUserAsync(User);
 
         if (user is null)
             return Challenge();

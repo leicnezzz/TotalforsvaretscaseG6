@@ -8,6 +8,7 @@
     var hasNumber = !string.IsNullOrWhiteSpace(resource.Vehicle?.RegistrationNumber);
     var prefix = $"resource-{resource.ResourceId}";
     var equipmentType = resource.Equipment?.EquipmentType ?? "";
+    var phone = resource.Kontaktpunkt.Split(" · ", 2)[0];
 
     <details class="resource-item" data-resource-id="@resource.ResourceId"
              data-category-id="@resource.CategoryId" data-resource-kind="@kind">
@@ -78,7 +79,7 @@
                     <label>Ytterligere informasjon<textarea name="AdditionalInformation" maxlength="200" rows="4">@resource.AdditionalInformation</textarea></label>
                 </div>
                 <div>
-                    <label>Telefon *<input name="Kontaktpunkt" type="tel" inputmode="tel" maxlength="25" value="@resource.Kontaktpunkt" required /></label>
+                    <label>Telefon *<input name="Kontaktpunkt" type="tel" inputmode="tel" maxlength="25" value="@phone" required /></label>
                     <label>Tilgjengelighet *
                         <select name="Available" required>
                             <option value="true" selected="@resource.Available">Ja</option>

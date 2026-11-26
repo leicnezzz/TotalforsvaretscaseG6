@@ -17,7 +17,9 @@ public static class Extensions
     private const string HealthEndpointPath = "/health";
     private const string AlivenessEndpointPath = "/alive";
 
-    /// <summary>Applies the shared telemetry, health checks, service discovery and HTTP resilience defaults.</summary>
+    /// <summary>
+    /// Applies the shared telemetry, health checks, service discovery and HTTP resilience defaults.
+    /// </summary>
     public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.ConfigureOpenTelemetry();
@@ -42,7 +44,9 @@ public static class Extensions
         return builder;
     }
 
-    /// <summary>Configures telemetry, excludes health requests from tracing and enables OTLP export when configured.</summary>
+    /// <summary>
+    /// Configures telemetry, excludes health requests from tracing and enables OTLP export when configured.
+    /// </summary>
     public static TBuilder ConfigureOpenTelemetry<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.Logging.AddOpenTelemetry(logging =>
@@ -103,7 +107,9 @@ public static class Extensions
         return builder;
     }
 
-    /// <summary>Exposes readiness and liveness endpoints in development. Liveness runs only checks tagged as live.</summary>
+    /// <summary>
+    /// Exposes readiness and liveness endpoints in development. Liveness runs only checks tagged as live.
+    /// </summary>
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
         // Adding health checks endpoints to applications in non-development environments has security implications.

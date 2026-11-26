@@ -27,6 +27,4 @@ public interface IResourceRepository
     /// prevents deletion.
     /// </summary>
     Task<bool> TryDeleteAsync(Resource resource);
-
-    Task<List<Resource>> ListOwnedWithCategoryAsync(int ownerId);
 }

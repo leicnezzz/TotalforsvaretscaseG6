@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 namespace Totalforsvaret.Models;
+
 /// <summary>
 /// Validates the contact details and password supplied for private account registration.
 /// </summary>

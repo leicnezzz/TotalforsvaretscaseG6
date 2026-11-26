@@ -1,7 +1,9 @@
+@using Totalforsvaret.Controllers
 @model IReadOnlyList<Totalforsvaret.Models.resourcemodels.Resource>
 @{
     Layout = null;
-    ViewData["PrivateBack"] = true;
+    var publicOverview = ViewData["PublicResourceOverview"] is true;
+    ViewData["PrivateBack"] = !publicOverview;
 }
 <!DOCTYPE html>
 <html lang="nb">
@@ -21,11 +23,18 @@
     <link rel="stylesheet" href="~/css/resource-overview.css" asp-append-version="true" />
 </head>
 <body class="private-home resource-overview">
-<partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
+@if (publicOverview)
+{
+    <partial name="/Areas/Offentlig/Views/Shared/_OffentligTilbake.cshtml" />
+}
+else
+{
+    <partial name="/Areas/Privat/Views/Shared/_PrivateNavigation.cshtml" />
     <div class="resource-incident-row">
         <partial name="/Areas/Shared/Views/Shared/_PrivatePageAction.cshtml" />
         @await Component.InvokeAsync("IncidentAlert")
     </div>
+}
     <main class="overview-content">
         <h1>Liste over dine ressurser</h1>
         <div class="overview-resources">
@@ -36,7 +45,14 @@
                 </div>
                 <div>
                     <h3>Registrer ny ressurs</h3>
-                    <a class="overview-button" asp-area="Privat" asp-controller="Resource" asp-action="Skjema">Registreringen <span aria-hidden="true">→</span></a>
+                    @if (publicOverview)
+                    {
+                        <a class="overview-button" href="@(Url.RouteUrl("ressursregistrering") + Context.Request.CrisisQuery())">Registreringen <span aria-hidden="true">→</span></a>
+                    }
+                    else
+                    {
+                        <a class="overview-button" asp-area="Privat" asp-controller="Resource" asp-action="Skjema">Registreringen <span aria-hidden="true">→</span></a>
+                    }
                 </div>
             </section>
             <section class="overview-filters" aria-label="Filtrer ressurser">

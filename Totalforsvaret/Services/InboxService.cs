@@ -4,16 +4,26 @@ using Totalforsvaret.Models.Inbox;
 
 namespace Totalforsvaret.Services;
 
-public sealed class InboxService(IResourceAssignmentRepository repository, ResourceAssignmentService assignments) : IInboxService
-{
+public sealed class InboxService : IInboxService {
+    private readonly IResourceAssignmentRepository _repository;
+    private readonly ResourceAssignmentService _assignments;
+
+    public InboxService(
+        IResourceAssignmentRepository repository,
+        ResourceAssignmentService assignments)
+    {
+        _repository = repository;
+        _assignments = assignments;
+    }
+
     public async Task<InboxViewModel> GetInboxAsync(
         int userId,
         InboxAudience audience,
         int? selectedId)
     {
         var visibleAssignments = audience == InboxAudience.Private
-            ? await repository.ListForResourceOwnerAsync(userId)
-            : await repository.ListForPublicInboxAsync();
+            ? await _repository.ListForResourceOwnerAsync(userId)
+            : await _repository.ListForPublicInboxAsync();
 
         var items = visibleAssignments
             .Select(a => new InboxItemViewModel
@@ -50,7 +60,7 @@ public sealed class InboxService(IResourceAssignmentRepository repository, Resou
             : items.FirstOrDefault()?.AssignmentId;
 
         var messages = actualSelectedId.HasValue
-            ? await repository.ListMessagesAsync(actualSelectedId.Value, userId)
+            ? await _repository.ListMessagesAsync(actualSelectedId.Value, userId)
             : new List<InboxMessageViewModel>();
 
         return new InboxViewModel
@@ -77,15 +87,15 @@ public sealed class InboxService(IResourceAssignmentRepository repository, Resou
         }
 
         var assignmentExists = audience == InboxAudience.Private
-            ? await repository.ExistsForOwnerAsync(assignmentId, userId)
-            : await repository.ExistsAsync(assignmentId);
+            ? await _repository.ExistsForOwnerAsync(assignmentId, userId)
+            : await _repository.ExistsAsync(assignmentId);
 
         if (!assignmentExists)
         {
             return InboxResult.Missing();
         }
 
-        await repository.AddMessageAsync(new ResourceMessage
+        await _repository.AddMessageAsync(new ResourceMessage
         {
             AssignmentId = assignmentId,
             SenderUserId = userId,
@@ -102,8 +112,8 @@ public sealed class InboxService(IResourceAssignmentRepository repository, Resou
 
     public async Task<InboxResult> AcceptAsync(int userId, int assignmentId)
     {
-        var assignment = await repository.FindOwnedAsync(assignmentId, userId);
-        var result = await assignments.AcceptAsync(assignment);
+        var assignment = await _repository.FindOwnedAsync(assignmentId, userId);
+        var result = await _assignments.AcceptAsync(assignment);
 
         return result switch
         {
@@ -119,8 +129,8 @@ public sealed class InboxService(IResourceAssignmentRepository repository, Resou
 
     public async Task<InboxResult> DeclineAsync(int userId, int assignmentId)
     {
-        var assignment = await repository.FindOwnedAsync(assignmentId, userId);
-        var result = await assignments.DeclineAsync(assignment);
+        var assignment = await _repository.FindOwnedAsync(assignmentId, userId);
+        var result = await _assignments.DeclineAsync(assignment);
 
         return result switch
         {
@@ -133,8 +143,8 @@ public sealed class InboxService(IResourceAssignmentRepository repository, Resou
 
     public async Task<InboxResult> ReleaseAsync(int userId, int assignmentId)
     {
-        var assignment = await repository.FindOwnedAsync(assignmentId, userId);
-        var result = await assignments.ReleaseAsync(assignment);
+        var assignment = await _repository.FindOwnedAsync(assignmentId, userId);
+        var result = await _assignments.ReleaseAsync(assignment);
 
         return result switch
         {

@@ -30,11 +30,14 @@ public class InboxViewModel
         = [];
 }
 
-/// <summary>Combines assignment status with the resource and need details shown in an inbox thread.</summary>
+/// <summary>
+/// Combines assignment status with the resource and need details shown in an inbox thread.
+/// </summary>
 public class InboxItemViewModel
 {
     public int AssignmentId { get; init; }
     public int ResourceId { get; init; }
+
     /// <summary>
     /// Indicates whether the viewer owns the resource and can manage the assignment from the inbox.
     /// </summary>
@@ -81,7 +84,9 @@ public class InboxItemViewModel
     };
 }
 
-/// <summary>Carries the sender, text and timestamp displayed in an inbox conversation.</summary>
+/// <summary>
+/// Carries the sender, text and timestamp displayed in an inbox conversation.
+/// </summary>
 public class InboxMessageViewModel
 {
     public string SenderName { get; init; } = "";

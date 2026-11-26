@@ -11,7 +11,7 @@
     ViewData["RegistrationFooter"] = true;
     ViewData["HideFooter"] = !isMatch;
 
-    var nå = DateTime.Now;
+    var nå = Totalforsvaret.Models.ResourceAvailability.Now;
     var kartRessurser = Model.AvailableResources
         .Where(ressurs => ressurs.TilgjengeligFra == null || ressurs.TilgjengeligFra <= nå)
         .Select(ressurs => new

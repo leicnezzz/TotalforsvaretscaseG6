@@ -15,10 +15,16 @@ namespace Totalforsvaret.Areas.Privat.Controllers;
 /// </summary>
 [Area("Privat")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-public class ResourceController(
-    IResourceRepository resources,
-    UserManager<Bruker> users) : Controller
-{
+public class ResourceController : Controller {
+    private readonly IResourceRepository _resources;
+    private readonly UserManager<Bruker> _users;
+
+    public ResourceController(IResourceRepository resources, UserManager<Bruker> users)
+    {
+        _resources = resources;
+        _users = users;
+    }
+
     [Authorize(Policy = "KunPrivat")]
     [HttpGet]
     [ActionName("Skjema")]
@@ -26,7 +32,7 @@ public class ResourceController(
     {
         var model = new FormDataModel
         {
-            Categories = resources.GetCategories()
+            Categories = _resources.GetCategories()
                 .Select(category => new SelectListItem(
                     category.Name,
                     category.CategoryId.ToString(
@@ -42,12 +48,12 @@ public class ResourceController(
     [ActionName("Oversikt")]
     public async Task<IActionResult> Overview()
     {
-        var user = await users.GetUserAsync(User);
+        var user = await _users.GetUserAsync(User);
 
         if (user is null)
             return Challenge();
 
-        var ownedResources = await resources.ListOwnedAsync(user.Id);
+        var ownedResources = await _resources.ListOwnedAsync(user.Id);
 
         return View(ownedResources);
     }
@@ -76,12 +82,12 @@ public class ResourceController(
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var user = await users.GetUserAsync(User);
+        var user = await _users.GetUserAsync(User);
 
         if (user is null)
             return Challenge();
 
-        var categoryExists = await resources.CategoryExistsAsync(input.CategoryId);
+        var categoryExists = await _resources.CategoryExistsAsync(input.CategoryId);
 
         if (!categoryExists)
             return BadRequest(new { message = "Kategorien finnes ikke." });
@@ -100,7 +106,7 @@ public class ResourceController(
         }
 
 
-        await resources.AddAsync(resource);
+        await _resources.AddAsync(resource);
 
         return Ok(new { resourceId = resource.ResourceId });
     }
@@ -108,7 +114,7 @@ public class ResourceController(
     /// <summary>
     /// Updates an owned resource while preserving its original category.
     /// </summary>
-    [Authorize(Policy = "KunPrivat")]
+    [Authorize]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(
         int id,
@@ -117,11 +123,11 @@ public class ResourceController(
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var user = await users.GetUserAsync(User);
+        var user = await _users.GetUserAsync(User);
 
         if (user is null)
             return Challenge();
-		var resource = await resources.FindOwnedAsync(id, user.Id, includeDetails: true);
+		var resource = await _resources.FindOwnedAsync(id, user.Id, includeDetails: true);
 
         if (resource is null)
             return NotFound();
@@ -134,8 +140,14 @@ public class ResourceController(
             });
         }
 
+        var email = user is Totalforsvaret.Areas.Offentlig.Models.PublicActor
+            ? resource.Kontaktpunkt.Split(" · ", 2).ElementAtOrDefault(1)
+            : null;
         ApplyInput(resource, input);
-        await resources.SaveChangesAsync();
+        if (!string.IsNullOrEmpty(email))
+            resource.Kontaktpunkt = $"{resource.Kontaktpunkt} · {email}";
+
+        await _resources.SaveChangesAsync();
 
         return Ok(new { resourceId = resource.ResourceId });
     }
@@ -143,21 +155,21 @@ public class ResourceController(
     /// <summary>
     /// Deletes an owned resource if it has no assignment history.
     /// </summary>
-    [Authorize(Policy = "KunPrivat")]
+    [Authorize]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var user = await users.GetUserAsync(User);
+        var user = await _users.GetUserAsync(User);
 
         if (user is null)
             return Challenge();
 
-        var resource = await resources.FindOwnedAsync(id, user.Id);
+        var resource = await _resources.FindOwnedAsync(id, user.Id);
 
         if (resource is null)
             return NotFound();
 
-        if (!await resources.TryDeleteAsync(resource))
+        if (!await _resources.TryDeleteAsync(resource))
         {
             return Conflict(new { message = "Ressursen har vært brukt i en tildeling og kan ikke slettes." });
         }

@@ -39,7 +39,9 @@ public class FormDataModel : IValidatableObject
     [Required(ErrorMessage = "Velg en posisjon i kartet.")]
     public string Longitude { get; set; } = string.Empty;
 
-    /// <summary>Validates the coordinate strings submitted by the private resource form.</summary>
+    /// <summary>
+    /// Validates the coordinate strings submitted by the private resource form.
+    /// </summary>
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (!ValidCoordinate(Latitude, 90))

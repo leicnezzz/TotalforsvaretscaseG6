@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Totalforsvaret.Models;
+
 /// <summary>
 /// Supplies resource categories to the registration wizard on public pages.
 /// </summary>

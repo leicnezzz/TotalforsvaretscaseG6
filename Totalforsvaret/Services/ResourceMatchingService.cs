@@ -19,7 +19,7 @@ public sealed class ResourceMatchingService
         IEnumerable<Resource> availableResources,
         IReadOnlyDictionary<(int NeedId, int ResourceId), AssignmentStatus> statuses)
     {
-        var now = DateTime.Now;
+        var now = ResourceAvailability.Now;
         var candidates = availableResources
             .Where(resource => resource.TilgjengeligFra == null || resource.TilgjengeligFra <= now)
             .ToList();

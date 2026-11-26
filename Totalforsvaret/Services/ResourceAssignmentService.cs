@@ -1,5 +1,6 @@
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.DataAccess;
+using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Services;
 
@@ -17,8 +18,14 @@ public enum AssignmentActionResult
 /// <summary>
 /// Applies status rules to assignments that the caller is allowed to manage.
 /// </summary>
-public sealed class ResourceAssignmentService(IResourceAssignmentRepository assignments)
-{
+public sealed class ResourceAssignmentService {
+    private readonly IResourceAssignmentRepository _assignments;
+
+    public ResourceAssignmentService(IResourceAssignmentRepository assignments)
+    {
+        _assignments = assignments;
+    }
+
     /// <summary>
     /// Assigns a requested resource when the need is active, the resource is available and no
     /// other active assignment uses it.
@@ -26,7 +33,7 @@ public sealed class ResourceAssignmentService(IResourceAssignmentRepository assi
     public Task<AssignmentActionResult> AcceptAsync(ResourceAssignment? assignment) =>
         assignment is null
             ? Task.FromResult(AssignmentActionResult.NotFound)
-            : assignments.WithResourceLockAsync(assignment, AcceptLockedAsync);
+            : _assignments.WithResourceLockAsync(assignment, AcceptLockedAsync);
 
     private async Task<AssignmentActionResult> AcceptLockedAsync(ResourceAssignment? assignment)
     {
@@ -42,15 +49,15 @@ public sealed class ResourceAssignmentService(IResourceAssignmentRepository assi
 
         var available = assignment.Resource.Available &&
             (assignment.Resource.TilgjengeligFra == null ||
-             assignment.Resource.TilgjengeligFra <= DateTime.Now);
+             assignment.Resource.TilgjengeligFra <= ResourceAvailability.Now);
         if (!available)
             return AssignmentActionResult.UnavailableResource;
 
-        if (await assignments.HasOtherActiveAssignmentAsync(assignment.Id, assignment.ResourceId))
+        if (await _assignments.HasOtherActiveAssignmentAsync(assignment.Id, assignment.ResourceId))
             return AssignmentActionResult.BusyResource;
 
         assignment.MarkAssigned();
-        return await assignments.TrySaveStatusChangeAsync()
+        return await _assignments.TrySaveStatusChangeAsync()
             ? AssignmentActionResult.Succeeded
             : AssignmentActionResult.NotRequested;
     }
@@ -67,7 +74,7 @@ public sealed class ResourceAssignmentService(IResourceAssignmentRepository assi
             return AssignmentActionResult.NotRequested;
 
         assignment.MarkRejected();
-        return await assignments.TrySaveStatusChangeAsync()
+        return await _assignments.TrySaveStatusChangeAsync()
             ? AssignmentActionResult.Succeeded
             : AssignmentActionResult.NotRequested;
     }
@@ -84,7 +91,7 @@ public sealed class ResourceAssignmentService(IResourceAssignmentRepository assi
             return AssignmentActionResult.NotAssigned;
 
         assignment.MarkReleased();
-        return await assignments.TrySaveStatusChangeAsync()
+        return await _assignments.TrySaveStatusChangeAsync()
             ? AssignmentActionResult.Succeeded
             : AssignmentActionResult.NotAssigned;
     }

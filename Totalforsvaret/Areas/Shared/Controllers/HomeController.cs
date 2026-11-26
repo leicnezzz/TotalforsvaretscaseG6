@@ -48,7 +48,10 @@ public class HomeController : Controller
 	{
 		return View();
 	}
-    /// <summary>Shows the request identifier for correlating an error page with server logs.</summary>
+
+    /// <summary>
+    /// Shows the request identifier for correlating an error page with server logs.
+    /// </summary>
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

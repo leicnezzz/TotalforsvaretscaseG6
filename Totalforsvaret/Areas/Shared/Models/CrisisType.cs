@@ -35,7 +35,9 @@ public static class CrisisTypeText
         _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown crisis type.")
     };
 
-    /// <summary>Reads the existing Norwegian database value. Empty values map to Unspecified and unknown values are rejected.</summary>
+    /// <summary>
+    /// Reads the existing Norwegian database value. Empty values map to Unspecified and unknown values are rejected.
+    /// </summary>
     public static CrisisType FromStoredValue(string value) => value switch
     {
         "" => CrisisType.Unspecified,

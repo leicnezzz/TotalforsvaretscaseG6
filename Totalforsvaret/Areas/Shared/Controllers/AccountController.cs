@@ -11,10 +11,16 @@ namespace Totalforsvaret.Controllers;
 /// <summary>
 /// Handles registration and role-specific sign-in from the web forms.
 /// </summary>
-public class AccountController(
-    UserManager<Bruker> users,
-    SignInManager<Bruker> signIn) : Controller
-{
+public class AccountController : Controller {
+    private readonly UserManager<Bruker> _users;
+    private readonly SignInManager<Bruker> _signIn;
+
+    public AccountController(UserManager<Bruker> users, SignInManager<Bruker> signIn)
+    {
+        _users = users;
+        _signIn = signIn;
+    }
+
     [AllowAnonymous]
     [HttpGet]
     public IActionResult Register()
@@ -40,7 +46,7 @@ public class AccountController(
 
         var user = PrivateAccountRegistration.CreateUser(input);
 
-        var resultat = await users.CreateAsync(
+        var resultat = await _users.CreateAsync(
             user,
             input.Password);
 
@@ -78,7 +84,7 @@ public class AccountController(
             return ShowLoginError(input);
         }
 
-        var user = await users.FindByEmailAsync(
+        var user = await _users.FindByEmailAsync(
             input.Email.Trim());
 
         if (user == null)
@@ -86,7 +92,7 @@ public class AccountController(
             return ShowLoginError(input);
         }
 
-        var resultat = await signIn.PasswordSignInAsync(
+        var resultat = await _signIn.PasswordSignInAsync(
             user,
             input.Password,
             isPersistent: input.RememberMe,
@@ -102,19 +108,21 @@ public class AccountController(
             return RedirectToAction("Index", "Dashboard", new { area = "Privat" });
         }
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "OffentligAktor", new { area = "" });
     }
 
     [Authorize]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
-        await signIn.SignOutAsync();
+        await _signIn.SignOutAsync();
 
         return RedirectToAction(nameof(Login));
     }
 
-    /// <summary>Shows the password help page while self-service password reset is unavailable.</summary>
+    /// <summary>
+    /// Shows the password help page while self-service password reset is unavailable.
+    /// </summary>
     [AllowAnonymous]
     [HttpGet]
     public IActionResult ForgotPassword()
@@ -162,12 +170,12 @@ public class AccountController(
         if (!ModelState.IsValid)
             return ShowLoginError(input);
 
-        var user = await users.FindByEmailAsync(input.Email.Trim());
+        var user = await _users.FindByEmailAsync(input.Email.Trim());
 
         if (user is not PublicActor)
             return ShowLoginError(input);
 
-        var resultat = await signIn.PasswordSignInAsync(
+        var resultat = await _signIn.PasswordSignInAsync(
             user,
             input.Password,
             isPersistent: input.RememberMe,

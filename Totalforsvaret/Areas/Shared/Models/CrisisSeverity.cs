@@ -32,7 +32,9 @@ public static class CrisisSeverityText
         _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, "Unknown crisis severity.")
     };
 
-    /// <summary>Reads the existing Norwegian database value. Empty values map to Unspecified and unknown values are rejected.</summary>
+    /// <summary>
+    /// Reads the existing Norwegian database value. Empty values map to Unspecified and unknown values are rejected.
+    /// </summary>
     public static CrisisSeverity FromStoredValue(string value) => value switch
     {
         "" => CrisisSeverity.Unspecified,

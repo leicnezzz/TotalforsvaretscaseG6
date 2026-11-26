@@ -6,6 +6,7 @@ using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Services;
+
 /// <summary>
 /// Adds the actor type claim used by the application's authorization policies.
 /// </summary>
@@ -18,7 +19,9 @@ public class ApplicationUserClaimsFactory : UserClaimsPrincipalFactory<Bruker>
     {
     }
 
-    /// <summary>Adds the actor type claim based on the account subtype.</summary>
+    /// <summary>
+    /// Adds the actor type claim based on the account subtype.
+    /// </summary>
     protected override async Task<ClaimsIdentity> GenerateClaimsAsync(
         Bruker user)
     {

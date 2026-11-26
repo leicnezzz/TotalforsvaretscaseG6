@@ -126,6 +126,7 @@ public async Task<IActionResult> Edit(
 
     return LocalRedirect(this.OverviewUrl());
 }
+
 /// <summary>
 /// Deletes a crisis together with its associated needs and resource assignments.
 /// </summary>
@@ -141,8 +142,9 @@ public async Task<IActionResult> Delete(int id)
 
     return LocalRedirect(this.OverviewUrl());
 }
+
 /// <summary>
-/// Closes an active crisis and leaves an existing crisis with another status unchanged.
+/// Closes a crisis that is active or under control.
 /// </summary>
 [HttpPost, ValidateAntiForgeryToken]
 [ActionName("Avslutt")]

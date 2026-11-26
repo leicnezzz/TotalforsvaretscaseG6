@@ -26,7 +26,9 @@ public static class NeedTypeText
         _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown need type.")
     };
 
-    /// <summary>Reads the existing Norwegian database value. Empty values map to Unspecified and unknown values are rejected.</summary>
+    /// <summary>
+    /// Reads the existing Norwegian database value. Empty values map to Unspecified and unknown values are rejected.
+    /// </summary>
     public static NeedType FromStoredValue(string value) => value switch
     {
         "" => NeedType.Unspecified,

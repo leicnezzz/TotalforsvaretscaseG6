@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using NUnit.Framework;
 using Totalforsvaret.Areas.Offentlig.Controllers;
 using Totalforsvaret.Areas.Offentlig.Models;
@@ -35,21 +36,19 @@ public class NeedControllerTests
         Assert.That(result, Is.TypeOf<NotFoundResult>());
     }
 
-    /// <summary>
-    /// Deleting a need also removes the assignments that belong to it.
-    /// </summary>
     [Test]
-    public async Task Delete_ExistingNeed_DeletesNeedAndAssignments()
+    public async Task Delete_ExistingNeed_DelegatesDeletionAndRedirects()
     {
-        using var db = CreateDb();
-        AddNeed(db, 1);
-        AddAssignment(db, 1, needId: 1, resourceId: 1, AssignmentStatus.Requested);
+        var need = new Need { Id = 1 };
+        var needs = new Mock<INeedRepository>(MockBehavior.Strict);
+        needs.Setup(repository => repository.FindAsync(1, true)).ReturnsAsync(need);
+        needs.Setup(repository => repository.DeleteAsync(need)).Returns(Task.CompletedTask);
+        using var controller = WithUser(new NeedController(needs.Object, Mock.Of<ICrisisRepository>(), null!));
 
-        var result = await CreateController(db).Delete(1);
+        var result = await controller.Delete(1);
 
         Assert.That(result, Is.TypeOf<LocalRedirectResult>());
-        Assert.That(db.Needs, Is.Empty);
-        Assert.That(db.ResourceAssignments, Is.Empty);
+        needs.Verify(repository => repository.DeleteAsync(need), Times.Once);
     }
 
     /// <summary>

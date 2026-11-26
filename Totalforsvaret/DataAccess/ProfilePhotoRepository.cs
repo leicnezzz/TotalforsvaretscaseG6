@@ -3,13 +3,19 @@ using Totalforsvaret.Areas.Privat.Models;
 
 namespace Totalforsvaret.DataAccess;
 
-internal sealed class ProfilePhotoRepository(AppDbContext db) : IProfilePhotoRepository
-{
+internal sealed class ProfilePhotoRepository : IProfilePhotoRepository {
+    private readonly AppDbContext _db;
+
+    public ProfilePhotoRepository(AppDbContext db)
+    {
+        _db = db;
+    }
+
     public Task<bool> ExistsAsync(int userId) =>
-        db.ProfilePhotos.AnyAsync(photo => photo.BrukerId == userId);
+        _db.ProfilePhotos.AnyAsync(photo => photo.BrukerId == userId);
 
     public ValueTask<ProfilePhoto?> FindAsync(int userId) =>
-        db.ProfilePhotos.FindAsync(userId);
+        _db.ProfilePhotos.FindAsync(userId);
 
 
     public async Task SaveAsync(int userId, byte[] content, string contentType)
@@ -18,11 +24,11 @@ internal sealed class ProfilePhotoRepository(AppDbContext db) : IProfilePhotoRep
         if (photo == null)
         {
             photo = new ProfilePhoto { BrukerId = userId };
-            db.ProfilePhotos.Add(photo);
+            _db.ProfilePhotos.Add(photo);
         }
 
         photo.Content = content;
         photo.ContentType = contentType;
-        await db.SaveChangesAsync();
+        await _db.SaveChangesAsync();
     }
 }

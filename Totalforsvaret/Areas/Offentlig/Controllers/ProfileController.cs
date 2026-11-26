@@ -17,13 +17,27 @@ namespace Totalforsvaret.Areas.Offentlig.Controllers;
 /// </summary>
 [Area("Offentlig"), Authorize(Policy = "KunOffentlig")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-public class ProfileController(
-    UserManager<Bruker> users,
-    SignInManager<Bruker> signIn,
-    IAccountDeletionRepository accountDeletion,
-    IProfilePhotoRepository photos,
-    ILogger<ProfileController> logger) : Controller
-{
+public class ProfileController : Controller {
+    private readonly UserManager<Bruker> _users;
+    private readonly SignInManager<Bruker> _signIn;
+    private readonly IAccountDeletionRepository _accountDeletion;
+    private readonly IProfilePhotoRepository _photos;
+    private readonly ILogger<ProfileController> _logger;
+
+    public ProfileController(
+        UserManager<Bruker> users,
+        SignInManager<Bruker> signIn,
+        IAccountDeletionRepository accountDeletion,
+        IProfilePhotoRepository photos,
+        ILogger<ProfileController> logger)
+    {
+        _users = users;
+        _signIn = signIn;
+        _accountDeletion = accountDeletion;
+        _photos = photos;
+        _logger = logger;
+    }
+
     private const int MaxPhotoSize = 2 * 1024 * 1024;
 
     [HttpGet]
@@ -52,7 +66,7 @@ public class ProfileController(
             Avdeling = user.Avdeling,
             Email = user.Email,
             PhoneNumber = user.PhoneNumber,
-            HasPhoto = await photos.ExistsAsync(user.Id)
+            HasPhoto = await _photos.ExistsAsync(user.Id)
         };
 
         return View("Index", model);
@@ -76,7 +90,7 @@ public class ProfileController(
         user.Avdeling = model.Avdeling?.Trim();
         user.PhoneNumber = model.PhoneNumber?.Trim();
 
-        var result = await users.UpdateAsync(user);
+        var result = await _users.UpdateAsync(user);
 
         if (!result.Succeeded)
         {
@@ -96,10 +110,10 @@ public class ProfileController(
     [HttpGet]
     public async Task<IActionResult> Photo()
     {
-        if (!int.TryParse(users.GetUserId(User), out var userId))
+        if (!int.TryParse(_users.GetUserId(User), out var userId))
             return Challenge();
 
-        var photo = await photos.FindAsync(userId);
+        var photo = await _photos.FindAsync(userId);
 
         if (photo == null)
             return NotFound();
@@ -140,11 +154,11 @@ public class ProfileController(
 
         try
         {
-            await photos.SaveAsync(user.Id, bytes, contentType);
+            await _photos.SaveAsync(user.Id, bytes, contentType);
         }
         catch (DbUpdateException error)
         {
-            logger.LogWarning(
+            _logger.LogWarning(
                 error,
                 "Kunne ikke lagre profilbildet for bruker {UserId}.",
                 user.Id);
@@ -176,7 +190,7 @@ public class ProfileController(
             return Challenge();
 
         if (string.IsNullOrEmpty(password) ||
-            !(await signIn.CheckPasswordSignInAsync(
+            !(await _signIn.CheckPasswordSignInAsync(
                 user,
                 password,
                 lockoutOnFailure: true)).Succeeded)
@@ -190,7 +204,7 @@ public class ProfileController(
 
         try
         {
-            var result = await accountDeletion.DeleteAsync(user);
+            var result = await _accountDeletion.DeleteAsync(user);
 
             if (!result.Succeeded)
             {
@@ -203,7 +217,7 @@ public class ProfileController(
         catch (Exception error) when (
             error is DbUpdateException or DbException)
         {
-            logger.LogWarning(
+            _logger.LogWarning(
                 error,
                 "Kunne ikke slette bruker {UserId}.",
                 user.Id);
@@ -215,7 +229,7 @@ public class ProfileController(
             return View();
         }
 
-        await signIn.SignOutAsync();
+        await _signIn.SignOutAsync();
 
         TempData["AccountMessage"] = "Kontoen din er slettet.";
 
@@ -227,7 +241,7 @@ public class ProfileController(
 
     private async Task<PublicActor?> GetCurrentPublicActorAsync()
     {
-        var user = await users.GetUserAsync(User);
+        var user = await _users.GetUserAsync(User);
         return user as PublicActor;
     }
 
@@ -235,7 +249,7 @@ public class ProfileController(
         PublicActorProfileViewModel model,
         int userId)
     {
-        model.HasPhoto = await photos.ExistsAsync(userId);
+        model.HasPhoto = await _photos.ExistsAsync(userId);
 
         return View("Index", model);
     }

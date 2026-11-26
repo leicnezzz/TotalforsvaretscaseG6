@@ -4,11 +4,17 @@ using Totalforsvaret.Models.resourcemodels;
 
 namespace Totalforsvaret.DataAccess;
 
-public sealed class ResourceRepository(AppDbContext db) : IResourceRepository
-{
+public sealed class ResourceRepository : IResourceRepository {
+    private readonly AppDbContext _db;
+
+    public ResourceRepository(AppDbContext db)
+    {
+        _db = db;
+    }
+
     public IReadOnlyList<Category> GetCategories()
     {
-        return db.Categories
+        return _db.Categories
             .AsNoTracking()
             .OrderBy(category => category.CategoryId)
             .ToList();
@@ -16,7 +22,7 @@ public sealed class ResourceRepository(AppDbContext db) : IResourceRepository
 
     public List<Resource> GetResources()
     {
-        return db.Resources
+        return _db.Resources
 		.Include(r => r.Category)
 			.AsNoTracking()
             .ToList();
@@ -30,7 +36,7 @@ public sealed class ResourceRepository(AppDbContext db) : IResourceRepository
             throw new ArgumentOutOfRangeException(nameof(userId));
         }
 
-        return db.Resources
+        return _db.Resources
             .AsNoTracking()
             .Where(resource => resource.BrukerId == userId)
             .OrderBy(resource => resource.ResourceId)
@@ -42,7 +48,7 @@ public sealed class ResourceRepository(AppDbContext db) : IResourceRepository
             .ToList();
     }
 
-    public Task<List<Resource>> ListOwnedAsync(int ownerId) => db.Resources
+    public Task<List<Resource>> ListOwnedAsync(int ownerId) => _db.Resources
         .AsNoTracking()
         .Include(resource => resource.Category)
         .Include(resource => resource.Vehicle)
@@ -52,17 +58,17 @@ public sealed class ResourceRepository(AppDbContext db) : IResourceRepository
         .ToListAsync();
 
     public Task<bool> CategoryExistsAsync(int? categoryId) =>
-        db.Categories.AnyAsync(category => category.CategoryId == categoryId);
+        _db.Categories.AnyAsync(category => category.CategoryId == categoryId);
 
     public async Task AddAsync(Resource resource)
     {
-        db.Resources.Add(resource);
-        await db.SaveChangesAsync();
+        _db.Resources.Add(resource);
+        await _db.SaveChangesAsync();
     }
 
     public Task<Resource?> FindOwnedAsync(int id, int ownerId, bool includeDetails = false)
     {
-        IQueryable<Resource> query = db.Resources;
+        IQueryable<Resource> query = _db.Resources;
         if (includeDetails)
             query = query.Include(resource => resource.Vehicle).Include(resource => resource.Equipment);
 
@@ -70,17 +76,17 @@ public sealed class ResourceRepository(AppDbContext db) : IResourceRepository
             resource.ResourceId == id && resource.BrukerId == ownerId);
     }
 
-    public Task SaveChangesAsync() => db.SaveChangesAsync();
+    public Task SaveChangesAsync() => _db.SaveChangesAsync();
 
     public async Task<bool> TryDeleteAsync(Resource resource)
     {
         if (await HasAssignmentAsync(resource.ResourceId))
             return false;
 
-        db.Resources.Remove(resource);
+        _db.Resources.Remove(resource);
         try
         {
-            await db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
             return true;
         }
         catch (DbUpdateException)
@@ -93,12 +99,5 @@ public sealed class ResourceRepository(AppDbContext db) : IResourceRepository
     }
 
     private Task<bool> HasAssignmentAsync(int resourceId) =>
-        db.ResourceAssignments.AnyAsync(assignment => assignment.ResourceId == resourceId);
-
-    public Task<List<Resource>> ListOwnedWithCategoryAsync(int ownerId) => db.Resources
-        .AsNoTracking()
-        .Include(resource => resource.Category)
-        .Where(resource => resource.BrukerId == ownerId)
-        .OrderByDescending(resource => resource.ResourceId)
-        .ToListAsync();
+        _db.ResourceAssignments.AnyAsync(assignment => assignment.ResourceId == resourceId);
 }

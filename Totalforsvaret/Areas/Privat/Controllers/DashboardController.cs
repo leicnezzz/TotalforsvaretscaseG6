@@ -12,15 +12,25 @@ namespace Totalforsvaret.Areas.Privat.Controllers;
 /// <summary>
 /// Shows the private actor dashboard and the signed-in user's resource locations.
 /// </summary>
-public class DashboardController(
-    UserManager<Bruker> users,
-		IResourceRepository resources,
-	IProfilePhotoRepository photos) : Controller
-{
+public class DashboardController : Controller {
+    private readonly UserManager<Bruker> _users;
+    private readonly IResourceRepository _resources;
+    private readonly IProfilePhotoRepository _photos;
+
+    public DashboardController(
+        UserManager<Bruker> users,
+        IResourceRepository resources,
+        IProfilePhotoRepository photos)
+    {
+        _users = users;
+        _resources = resources;
+        _photos = photos;
+    }
+
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var user = await users.GetUserAsync(User);
+        var user = await _users.GetUserAsync(User);
 
         if (user == null)
             return Challenge();
@@ -28,7 +38,7 @@ public class DashboardController(
         return View(new PrivateHomeViewModel
         {
 			Navn = user.Navn,
-			HasPhoto = await photos.ExistsAsync(user.Id)
+			HasPhoto = await _photos.ExistsAsync(user.Id)
 		});
     }
 
@@ -38,10 +48,10 @@ public class DashboardController(
     [HttpGet]
     public IActionResult ResourcePoints()
     {
-        if (!int.TryParse(users.GetUserId(User), out var userId))
+        if (!int.TryParse(_users.GetUserId(User), out var userId))
             return Challenge();
 
-        var points = resources.GetResourcePointsForUser(userId);
+        var points = _resources.GetResourcePointsForUser(userId);
 
         return Json(points);
     }

@@ -68,6 +68,7 @@ public class PublicActorController : Controller
             MatchSuggestions = _matching.FindSuggestions(_overview.ListActiveNeeds(), availableResources, matchStatuses)
         });
     }
+
     /// <summary>
     /// Lists resources owned by the signed-in public actor.
     /// </summary>
@@ -77,10 +78,11 @@ public class PublicActorController : Controller
     {
         if (!TryGetUserId(out var userId)) return Challenge();
 
-        var resources = await _resources.ListOwnedWithCategoryAsync(userId);
+        var resources = await _resources.ListOwnedAsync(userId);
 
         return View(resources);
     }
+
     /// <summary>
     /// Deletes an owned resource if it has no assignment history.
     /// </summary>
@@ -105,6 +107,7 @@ public class PublicActorController : Controller
 
         return LocalRedirect(Url.Action("MineRessurser") + Request.CrisisQuery());
     }
+
     /// <summary>
     /// Requests resources for one shared need or pairs each selected resource with a selected
     /// need.

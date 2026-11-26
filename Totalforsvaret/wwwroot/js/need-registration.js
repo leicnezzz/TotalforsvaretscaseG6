@@ -44,21 +44,16 @@
 
         function applyCrisisLocation() {
             const point = selectedLocation();
-            useCrisisLocation.hidden = !point;
-            if (point) {
-                address.lookupAddress({ lat: point.Latitude, lng: point.Longitude });
-            } else {
-                form.elements.Latitude.value = '';
-                form.elements.Longitude.value = '';
-                selectedAddress = '';
-                address.reset();
-                location.textContent = locationText();
-            }
+            if (point) address.lookupAddress({ lat: point.Latitude, lng: point.Longitude });
         }
 
-        useCrisisLocation.hidden = !selectedLocation();
+        function updateCrisisLocationButton() {
+            useCrisisLocation.hidden = !selectedLocation();
+        }
+
+        updateCrisisLocationButton();
         useCrisisLocation.addEventListener('click', applyCrisisLocation);
-        crisis.addEventListener('change', applyCrisisLocation);
+        crisis.addEventListener('change', updateCrisisLocationButton);
         if (!address.valid() && selectedLocation()) applyCrisisLocation();
     }
     function locationText() {

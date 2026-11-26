@@ -10,7 +10,9 @@ public enum InboxOutcome
     NotFound
 }
 
-/// <summary>Carries an inbox action's outcome and the message to show the caller.</summary>
+/// <summary>
+/// Carries an inbox action's outcome and the message to show the caller.
+/// </summary>
 public sealed record InboxResult(InboxOutcome Outcome, string Message)
 {
     public static InboxResult Ok(string message) =>

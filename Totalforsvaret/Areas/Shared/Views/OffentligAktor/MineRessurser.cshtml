@@ -1,62 +1,7 @@
-@using Totalforsvaret.Controllers
-@model IEnumerable<Totalforsvaret.Models.resourcemodels.Resource>
+@model IReadOnlyList<Totalforsvaret.Models.resourcemodels.Resource>
 @{
-    ViewData["Title"] = "Mine ressurser";
-    ViewData["FullWidth"] = true;
+    Layout = null;
+    ViewData["PublicResourceOverview"] = true;
 }
 
-<link rel="stylesheet" href="~/css/offentlig-motion.css" asp-append-version="true" />
-<partial name="/Areas/Offentlig/Views/Shared/_OffentligTilbake.cshtml" />
-
-<div class="container pt-4 pb-5 mb-5" style="max-width: 900px;">
-    <h1>Mine ressurser</h1>
-    <p>Ressurser du har registrert selv.</p>
-    @if (TempData["SuccessMessage"] is string suksess)
-    {
-        <div class="alert alert-success">@suksess</div>
-    }
-    @if (TempData["ErrorMessage"] is string feil)
-    {
-        <div class="alert alert-danger">@feil</div>
-    }
-
-    @if (!Model.Any())
-    {
-        <p>Du har ikke registrert noen ressurser ennå.</p>
-    }
-    else
-    {
-        <table class="table align-middle">
-            <thead>
-            <tr>
-                <th>Ressurs</th>
-                <th>Registrert som</th>
-                <th>Adresse</th>
-                <th>Kontaktpunkt</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (var r in Model)
-            {
-                <tr>
-                    <td>@r.Object</td>
-                    <td>@r.Navn</td>
-                    <td>@r.Address</td>
-                    <td>@r.Kontaktpunkt</td>
-                    <td class="text-end">
-                        <form action="@(Url.Action("SlettRessurs") + Context.Request.CrisisQuery())"
-                              asp-antiforgery="true" method="post"
-                              onsubmit="return confirm('Vil du slette denne ressursen?');">
-                            <input type="hidden" name="resourceId" value="@r.ResourceId" />
-                            <button type="submit" class="btn btn-outline-danger btn-sm">Slett</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
-    }
-
-    <a class="btn btn-primary" href="@(Url.RouteUrl("ressursregistrering") + Context.Request.CrisisQuery())">Legg til ressurs</a>
-</div>
+<partial name="/Areas/Privat/Views/Resource/Oversikt.cshtml" model="Model" />

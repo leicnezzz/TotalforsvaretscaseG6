@@ -5,7 +5,9 @@ namespace Totalforsvaret.Services;
 
 internal static class PrivateAccountRegistration
 {
-    /// <summary>Builds a private Identity account from the trimmed registration details.</summary>
+    /// <summary>
+    /// Builds a private Identity account from the trimmed registration details.
+    /// </summary>
     public static PrivateActor CreateUser(RegisterInput input)
     {
         var email = input.Email.Trim();

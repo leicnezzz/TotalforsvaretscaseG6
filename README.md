@@ -42,17 +42,20 @@ Se [Oppstart.md](Oppstart.md) for alle kommandoer, Rider-oppsett, lagring og fei
 1. Opprett en privat konto. Registrer en tilgjengelig ressurs, velg plassering på kartet og lagre.
 2. Logg inn med offentlig demokonto. Opprett et behov med en type som matcher ressursen, for eksempel transport for et kjøretøy.
 3. Finn treffet i den offentlige oversikten og velg **Vurder ressurs** for å sende forespørselen.
-4. Logg inn som ressurseieren. Åpne innboksen og velg **Godta** eller **Avslå**. Sjekk oppdatert status i den offentlige oversikten.
+4. Logg inn som den private ressurseieren. Åpne forespørselen i **Innboks** og velg **Godta**. Sjekk at statusen blir **Tildelt**.
+5. Når ressursen er levert tilbake, åpner ressurseieren den samme samtalen i **Innboks** og velger **Frigi ressurs**. Tildelingen vises deretter som **Frigitt** i historikken.
+
+Ressurseieren bekrefter at ressursen er tilbake. En offentlig aktør kan følge statusen i den offentlige innboksen. Offentlig eide ressurser frigis også av eieren, fra offentlig innboks.
 
 ## Gjennomførte tester
 
-| Test | Mål og fremgangsmåte | Resultat |
-| --- | --- | --- |
-| Automatiserte tester | Kjør `dotnet test Totalforsvaret.Tests/Totalforsvaret.Tests.csproj` for å teste blant annet validering, innlogging, roller og tildelingsregler. GitHub Actions kjører også testprosjektet. | 124 bestod, 0 feilet. |
-| MariaDB 11.4 | Kjørte en integrasjonssjekk i en isolert Docker-container. Sjekket statusendringer fra separate databasekontekster og gjenbruk av en ressurs etter at et behov ble avsluttet. | Et sent avslag overskrev ikke godkjenningen. Ventende forespørsler ble avbrutt, og ressursen kunne forespørres på nytt. |
-| Docker-oppstart | Bygde webappens image, startet webapp og MariaDB og kjørte migrasjonene mot en tom database. | Begge containere startet, og innlogging fungerte i en tidligere Windows-kjøring. |
+- **XSS-sjekk i ressursoversikten.** Vi registrerte en ressurs med navnet `<b>Karttest</b>`. Oversikten viste HTML-taggene som vanlig tekst.
+- **Lagring av spesialtegn.** Vi registrerte en ressurs med navnet `O'Brien transport` og bekreftet i ressursoversikten at apostrofen ble bevart. Sjekken bekrefter at lagringen håndterer apostrofer.
+- **Automatiserte tester.** Kjør `dotnet test Totalforsvaret.Tests/Totalforsvaret.Tests.csproj` for å teste blant annet validering, innlogging, roller og tildelingsregler. GitHub Actions kjører også testprosjektet. På commit `af8db0c` bestod alle 126 tester. Tjenestetestene sjekker blant annet at eieren kan frigi en tildelt ressurs, og at andre brukere avvises.
+- **MariaDB 11.4.** Vi sjekket statusendringer fra separate databasekontekster i en isolert Docker-container. Et sent avslag overskrev ingen godkjenning. Da et behov ble avsluttet, ble ventende forespørsler avbrutt, og ressursen kunne forespørres på nytt.
+- **Docker-oppstart.** Vi bygde webappens image, startet webapp og MariaDB og kjørte migrasjonene mot en tom database. Begge containere startet, og innlogging fungerte i en tidligere Windows-kjøring.
 
-Brukervennlighetstesting og oppstart på en ren maskin med Mac/Rider er foreløpig ikke verifisert.
+En samlet gjennomkjøring i nettleseren med begge rollene, fra registrering til frigivelse, er foreløpig ikke dokumentert. Brukervennlighetstesting og oppstart på en ren maskin med Mac/Rider er foreløpig ikke verifisert.
 
 ## **Teknologistack** ##
 - .Net / ASP.NET core MVC som web rammeverk

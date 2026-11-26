@@ -3,7 +3,9 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Models.resourcemodels;
 
-/// <summary>Represents an actor-owned vehicle or equipment resource with a location and availability.</summary>
+/// <summary>
+/// Represents an actor-owned vehicle or equipment resource with a location and availability.
+/// </summary>
 public class Resource
 {
     public int ResourceId { get; set; }

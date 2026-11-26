@@ -42,7 +42,9 @@ public class CrisisInput : IValidatableObject
     [Range(-Coordinate.LongitudeLimit * 1d, Coordinate.LongitudeLimit * 1d, ErrorMessage = "Ugyldig lengdegrad.")]
     public virtual double? Longitude { get; set; }
 
-    /// <summary>Rejects the default date value as a crisis start time.</summary>
+    /// <summary>
+    /// Rejects the default date value as a crisis start time.
+    /// </summary>
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (StartTime == DateTime.MinValue)

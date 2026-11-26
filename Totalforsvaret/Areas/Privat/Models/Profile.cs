@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace Totalforsvaret.Areas.Privat.Models;
-/// <summary>Carries the editable personal details shown on the private actor profile.</summary>
+/// <summary>
+/// Carries the editable personal details shown on the private actor profile.
+/// </summary>
 public class ProfileViewModel
 {
     [Required(ErrorMessage = "Skriv inn fornavn.")]

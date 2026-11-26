@@ -1,6 +1,8 @@
 namespace Totalforsvaret.Areas.Offentlig.Models;
 
-/// <summary>Identifies whether a need calls for transport or equipment.</summary>
+/// <summary>
+/// Identifies whether a need calls for transport or equipment.
+/// </summary>
 public enum NeedType
 {
     Unspecified = 0,
@@ -8,7 +10,9 @@ public enum NeedType
     Equipment = 2
 }
 
-/// <summary>Maps need types to the existing Norwegian values used for storage and display.</summary>
+/// <summary>
+/// Maps need types to the existing Norwegian values used for storage and display.
+/// </summary>
 public static class NeedTypeText
 {
     private const string Transport = "Transport";

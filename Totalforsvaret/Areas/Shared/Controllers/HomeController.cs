@@ -15,7 +15,9 @@ public class HomeController : Controller
         return View(BuildResourceModel(resourceHandler));
     }
 
-    /// <summary>Opens the public resource registration wizard with its available categories.</summary>
+    /// <summary>
+    /// Opens the public resource registration wizard with its available categories.
+    /// </summary>
     [Authorize(Policy = "KunOffentlig")]
     [HttpGet("/OffentligAktor/RegistrerRessurs", Name = "ressursregistrering")]
     [HttpGet("/Ressurs")]

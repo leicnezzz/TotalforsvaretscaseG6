@@ -3,7 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Totalforsvaret.Areas.Offentlig.Models;
 
-/// <summary>Represents a resource requirement registered by a public actor, optionally linked to a crisis.</summary>
+/// <summary>
+/// Represents a resource requirement registered by a public actor, optionally linked to a crisis.
+/// </summary>
 [Table("Behov")]
 public class Need
 {

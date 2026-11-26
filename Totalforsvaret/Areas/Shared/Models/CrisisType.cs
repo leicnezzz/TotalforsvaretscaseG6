@@ -1,6 +1,8 @@
 namespace Totalforsvaret.Models;
 
-/// <summary>Classifies the kind of incident described by a crisis.</summary>
+/// <summary>
+/// Classifies the kind of incident described by a crisis.
+/// </summary>
 public enum CrisisType
 {
     Unspecified = 0,
@@ -11,7 +13,9 @@ public enum CrisisType
     Other = 5
 }
 
-/// <summary>Maps crisis types to the existing Norwegian values used for storage and display.</summary>
+/// <summary>
+/// Maps crisis types to the existing Norwegian values used for storage and display.
+/// </summary>
 public static class CrisisTypeText
 {
     private const string Flood = "Flom";

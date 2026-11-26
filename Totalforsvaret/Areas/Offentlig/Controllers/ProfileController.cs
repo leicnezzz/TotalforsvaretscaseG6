@@ -92,7 +92,9 @@ public class ProfileController(
         return RedirectToAction(nameof(Index));
     }
 
-    /// <summary>Serves the caller's own photo using its stored content type, or returns not found if no photo exists.</summary>
+    /// <summary>
+    /// Serves the caller's own photo using its stored content type, or returns not found if no photo exists.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Photo()
     {

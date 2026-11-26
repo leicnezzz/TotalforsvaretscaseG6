@@ -3,7 +3,9 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.Models;
 
-/// <summary>Stores a message, its sender and its timestamp within a resource assignment thread.</summary>
+/// <summary>
+/// Stores a message, its sender and its timestamp within a resource assignment thread.
+/// </summary>
 public class ResourceMessage
 {
     public int Id { get; set; }

@@ -1,6 +1,8 @@
 namespace Totalforsvaret.Areas.Offentlig.Models;
 
-/// <summary>Represents the urgency selected for a registered need.</summary>
+/// <summary>
+/// Represents the urgency selected for a registered need.
+/// </summary>
 public enum NeedPriority
 {
     Unspecified = 0,
@@ -10,7 +12,9 @@ public enum NeedPriority
     Critical = 4
 }
 
-/// <summary>Maps need priorities to the existing Norwegian values used for storage and display.</summary>
+/// <summary>
+/// Maps need priorities to the existing Norwegian values used for storage and display.
+/// </summary>
 public static class NeedPriorityText
 {
     private const string Low = "Lav";
@@ -28,7 +32,9 @@ public static class NeedPriorityText
         _ => throw new ArgumentOutOfRangeException(nameof(priority), priority, "Unknown need priority.")
     };
 
-    /// <summary>Reads the existing Norwegian database value. Empty values map to Unspecified and unknown values are rejected.</summary>
+    /// <summary>
+    /// Reads the existing Norwegian database value. Empty values map to Unspecified and unknown values are rejected.
+    /// </summary>
     public static NeedPriority FromStoredValue(string value) => value switch
     {
         "" => NeedPriority.Unspecified,

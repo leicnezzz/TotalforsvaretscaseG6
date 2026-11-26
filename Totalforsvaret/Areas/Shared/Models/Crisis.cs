@@ -4,7 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Totalforsvaret.Models;
 
-/// <summary>Represents an incident with a location, severity and status that can group related needs.</summary>
+/// <summary>
+/// Represents an incident with a location, severity and status that can group related needs.
+/// </summary>
 [Table("Kriser")]
 public class Crisis
 {

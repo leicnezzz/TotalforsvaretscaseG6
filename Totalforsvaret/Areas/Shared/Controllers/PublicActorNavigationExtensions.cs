@@ -4,7 +4,9 @@ namespace Totalforsvaret.Controllers;
 
 internal static class PublicActorNavigationExtensions
 {
-    /// <summary>Copies the selected crisis query values to another link.</summary>
+    /// <summary>
+    /// Copies the selected crisis query values to another link.
+    /// </summary>
     public static QueryString CrisisQuery(this HttpRequest request) =>
         QueryString.Create(request.Query["hendelser"]
             .Select(id => new KeyValuePair<string, string?>("hendelser", id)));

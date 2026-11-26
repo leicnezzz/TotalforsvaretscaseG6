@@ -2,7 +2,9 @@
 
 namespace Totalforsvaret.Models.resourcemodels
 {
-    /// <summary>Groups registered resources by category for registration and matching.</summary>
+    /// <summary>
+    /// Groups registered resources by category for registration and matching.
+    /// </summary>
     public class Category
     {
         public int CategoryId { get; set; } 

@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Totalforsvaret.Areas.Privat.Models;
 
-/// <summary>Carries the fields and category options used by the private resource registration form.</summary>
+/// <summary>
+/// Carries the fields and category options used by the private resource registration form.
+/// </summary>
 public class FormDataModel : IValidatableObject
 {
     [Required(ErrorMessage = "Skriv inn navn."), StringLength(200)]

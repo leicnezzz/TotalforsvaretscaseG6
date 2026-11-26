@@ -16,7 +16,9 @@ namespace Totalforsvaret.Controllers;
 public class CrisisMapAnnotationsController(
     ICrisisRepository crises, ICrisisMapAnnotationRepository annotations) : ControllerBase
 {
-    /// <summary>Carries the coordinates and descriptive fields used to register a crisis map annotation.</summary>
+    /// <summary>
+    /// Carries the coordinates and descriptive fields used to register a crisis map annotation.
+    /// </summary>
     public class AnnotationInput
     {
         [Required, MaxLength(20)] public string Kind { get; set; } = "";

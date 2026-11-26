@@ -5,6 +5,9 @@ using Totalforsvaret.Models.resourcemodels;
 
 namespace Totalforsvaret.Models;
 
+/// <summary>
+/// Contains the counters, map data and match suggestions used by the public actor overview.
+/// </summary>
 public sealed class PublicActorOverviewViewModel
 {
     public required int CurrentUserId { get; init; }

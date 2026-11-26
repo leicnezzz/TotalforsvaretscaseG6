@@ -3,6 +3,9 @@ using Totalforsvaret.DataAccess;
 
 namespace Totalforsvaret.Areas.Shared.ViewComponents;
 
+/// <summary>
+/// Displays the latest high or critical crisis that is active or under control.
+/// </summary>
 public class IncidentAlertViewComponent(ICrisisRepository crises) : ViewComponent
 {
     public async Task<IViewComponentResult> InvokeAsync()

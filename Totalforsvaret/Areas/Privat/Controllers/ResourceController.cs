@@ -10,6 +10,9 @@ using Totalforsvaret.Models.resourcemodels;
 
 namespace Totalforsvaret.Areas.Privat.Controllers;
 
+/// <summary>
+/// Handles resource registration and owner-managed changes.
+/// </summary>
 [Area("Privat")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public class ResourceController(
@@ -58,6 +61,10 @@ public class ResourceController(
         return CreateResource(input);
     }
 
+    /// <summary>
+    /// Registers a resource for the signed-in public actor and records the supplied contact
+    /// details.
+    /// </summary>
     [Authorize(Policy = "KunOffentlig")]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -100,6 +107,9 @@ public class ResourceController(
         return Ok(new { resourceId = resource.ResourceId });
     }
 
+    /// <summary>
+    /// Updates an owned resource while preserving its original category.
+    /// </summary>
     [Authorize(Policy = "KunPrivat")]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -114,14 +124,11 @@ public class ResourceController(
 
         if (user is null)
             return Challenge();
-		// Søker både ressurs-ID og user-ID.
-		// Gjør at brukeren bare redigere sine egne ressurser.
 		var resource = await resources.FindOwnedAsync(id, user.Id, includeDetails: true);
 
         if (resource is null)
             return NotFound();
 
-        // Redigering beholder ressursens opprinnelige kategori.
         if (resource.CategoryId != input.CategoryId)
         {
             return BadRequest(new
@@ -136,6 +143,9 @@ public class ResourceController(
         return Ok(new { resourceId = resource.ResourceId });
     }
 
+    /// <summary>
+    /// Deletes an owned resource if it has no assignment history.
+    /// </summary>
     [Authorize(Policy = "KunPrivat")]
     [HttpPost]
     [ValidateAntiForgeryToken]

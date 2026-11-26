@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Totalforsvaret.Models;
 
+/// <summary>
+/// Validates resource details and category-specific data from the resource wizard.
+/// </summary>
 public class ResourceInput : IValidatableObject
 {
     [Required, MaxLength(100)]
@@ -68,6 +71,9 @@ public class ResourceInput : IValidatableObject
     }
 }
 
+/// <summary>
+/// Adds contact details to public actor resource registration.
+/// </summary>
 public class PublicResourceInput : ResourceInput
 {
     [Required, MaxLength(99)]
@@ -81,6 +87,9 @@ public class PublicResourceInput : ResourceInput
     public string ContactEmail { get; set; } = "";
 }
 
+/// <summary>
+/// Holds the optional registration number and licence information for a vehicle.
+/// </summary>
 public class VehicleInput
 {
     [MaxLength(12)]
@@ -91,6 +100,9 @@ public class VehicleInput
     public string? RequiredLicense { get; set; } = "";
 }
 
+/// <summary>
+/// Holds the equipment type and quantity for an equipment registration.
+/// </summary>
 public class EquipmentInput
 {
     [Required]

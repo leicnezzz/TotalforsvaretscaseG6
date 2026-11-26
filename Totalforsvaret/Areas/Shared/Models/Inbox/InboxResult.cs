@@ -1,5 +1,8 @@
 namespace Totalforsvaret.Models.Inbox;
 
+/// <summary>
+/// Distinguishes successful inbox actions, rejected actions and assignments unavailable to the caller.
+/// </summary>
 public enum InboxOutcome
 {
     Success,
@@ -7,6 +10,7 @@ public enum InboxOutcome
     NotFound
 }
 
+/// <summary>Carries an inbox action's outcome and the message to show the caller.</summary>
 public sealed record InboxResult(InboxOutcome Outcome, string Message)
 {
     public static InboxResult Ok(string message) =>

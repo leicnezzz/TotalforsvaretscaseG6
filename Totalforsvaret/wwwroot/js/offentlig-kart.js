@@ -188,7 +188,6 @@
         return innhold;
     }
 
-    // Henter fargene fra systemets palett.
     const palett = getComputedStyle(
         document.querySelector('.offentlig-dashboard')
     );
@@ -826,7 +825,6 @@
 
     kart.on('zoomend', () => filtrer());
 
-    // Lager avkrysningsboksene.
     const felt = panel.querySelector('.kart-typer:not(.kart-bakgrunn)');
     const hendelsesbokser = new Map();
 
@@ -943,7 +941,6 @@
         }
     }
 
-// Forsøker Kartverket først.
     async function hentStedsforslag(tekst, signal) {
         try {
             const url = new URL(

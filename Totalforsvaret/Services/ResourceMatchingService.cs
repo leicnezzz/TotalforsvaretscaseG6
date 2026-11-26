@@ -5,8 +5,15 @@ using Totalforsvaret.Models.resourcemodels;
 
 namespace Totalforsvaret.Services;
 
+/// <summary>
+/// Builds and ranks resource suggestions for active needs.
+/// </summary>
 public sealed class ResourceMatchingService
 {
+    /// <summary>
+    /// Matches resources by category. Ranks unreviewed suggestions first, followed by requested
+    /// and other reviewed matches, then sorts by distance within each group.
+    /// </summary>
     public List<MatchSuggestionViewModel> FindSuggestions(
         IEnumerable<Need> needs,
         IEnumerable<Resource> availableResources,

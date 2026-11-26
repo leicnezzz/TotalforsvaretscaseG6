@@ -7,12 +7,16 @@ using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Controllers;
 
+/// <summary>
+/// Handles map annotations attached to individual crises.
+/// </summary>
 [ApiController]
 [Authorize(Policy = "KunOffentlig")]
 [Route("api/crises/{crisisId:int}/map-annotations")]
 public class CrisisMapAnnotationsController(
     ICrisisRepository crises, ICrisisMapAnnotationRepository annotations) : ControllerBase
 {
+    /// <summary>Carries the coordinates and descriptive fields used to register a crisis map annotation.</summary>
     public class AnnotationInput
     {
         [Required, MaxLength(20)] public string Kind { get; set; } = "";
@@ -23,6 +27,9 @@ public class CrisisMapAnnotationsController(
         public double[][] Coordinates { get; set; } = [];
     }
 
+    /// <summary>
+    /// Adds a risk zone or road obstruction after checking its coordinates and shape.
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(int crisisId, AnnotationInput input)
@@ -63,11 +70,13 @@ public class CrisisMapAnnotationsController(
         return Ok(new { id = annotation.Id, crisisId });
     }
 
+    /// <summary>
+    /// Removes an annotation only when it belongs to the specified crisis.
+    /// </summary>
     [HttpDelete("{id:int}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int crisisId, int id)
     {
-        // Begge ID-er må stemme. En markering kan ikke slettes via en annen hendelse.
         if (!await annotations.DeleteAsync(crisisId, id))
             return NotFound();
         return NoContent();

@@ -12,11 +12,17 @@ namespace Totalforsvaret.Home.Controllers;
 [ResponseCache(
     NoStore = true,
     Location = ResponseCacheLocation.None)]
+/// <summary>
+/// Provides session endpoints for the resource registration wizard.
+/// </summary>
 public class ResourceSessionController(
     UserManager<Bruker> users,
     SignInManager<Bruker> signIn,
     IAntiforgery antiforgery) : Controller
 {
+    /// <summary>
+    /// Issues the anti-forgery token used by the resource wizard.
+    /// </summary>
     [HttpGet]
     public IActionResult Token()
     {
@@ -25,6 +31,9 @@ public class ResourceSessionController(
         return Ok(new { token = tokens.RequestToken });
     }
 
+    /// <summary>
+    /// Signs in a private actor through the wizard without creating a persistent session.
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(
@@ -60,6 +69,9 @@ public class ResourceSessionController(
         return Ok(new { success = true });
     }
 
+    /// <summary>
+    /// Creates and signs in a private actor directly from the resource wizard.
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(

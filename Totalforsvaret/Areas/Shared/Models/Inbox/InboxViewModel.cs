@@ -2,12 +2,18 @@ using Totalforsvaret.Areas.Offentlig.Models;
 
 namespace Totalforsvaret.Models.Inbox;
 
+/// <summary>
+/// Identifies which inbox visibility rules apply to the viewer.
+/// </summary>
 public enum InboxAudience
 {
     Private,
     Public
 }
 
+/// <summary>
+/// Carries the visible assignments and the conversation for the selected thread.
+/// </summary>
 public class InboxViewModel
 {
     public InboxAudience Audience { get; init; }
@@ -24,10 +30,14 @@ public class InboxViewModel
         = [];
 }
 
+/// <summary>Combines assignment status with the resource and need details shown in an inbox thread.</summary>
 public class InboxItemViewModel
 {
     public int AssignmentId { get; init; }
     public int ResourceId { get; init; }
+    /// <summary>
+    /// Indicates whether the viewer owns the resource and can manage the assignment from the inbox.
+    /// </summary>
     public bool CanManageAssignment { get; init; }
 
     public string ResourceName { get; init; } = "";
@@ -71,6 +81,7 @@ public class InboxItemViewModel
     };
 }
 
+/// <summary>Carries the sender, text and timestamp displayed in an inbox conversation.</summary>
 public class InboxMessageViewModel
 {
     public string SenderName { get; init; } = "";

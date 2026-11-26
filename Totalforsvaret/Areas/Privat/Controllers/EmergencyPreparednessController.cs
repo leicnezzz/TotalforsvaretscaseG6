@@ -6,6 +6,9 @@ using Totalforsvaret.DataAccess;
 
 namespace Totalforsvaret.Areas.Privat.Controllers;
 
+/// <summary>
+/// Displays emergency preparedness guidance and saves checklist progress for private actors.
+/// </summary>
 [Area("Privat")]
 [Authorize(Policy = "KunPrivat")]
 [Totalforsvaret.Controllers.MvcControllerName("Egenberedskap")]
@@ -49,6 +52,9 @@ public class EmergencyPreparednessController(
         return View();
     }
 
+    /// <summary>
+    /// Updates the caller's saved progress when the item ID belongs to the supported checklist.
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SetChecklistStatus(string itemId, bool isComplete)

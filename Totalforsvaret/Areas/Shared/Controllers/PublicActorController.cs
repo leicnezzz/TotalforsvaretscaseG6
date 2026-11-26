@@ -8,8 +8,8 @@ namespace Totalforsvaret.Controllers;
 
 [Authorize(Policy = "KunOffentlig")]
 
-/// <summary> 
-/// 
+/// <summary>
+/// Provides the public actor overview and resource coordination actions.
 /// </summary>
 [MvcControllerName("OffentligAktor")]
 public class PublicActorController : Controller
@@ -34,6 +34,10 @@ public class PublicActorController : Controller
         _assignmentService = assignmentService;
     }
 
+    /// <summary>
+    /// Builds match suggestions and the operational overview. Active assignments take precedence
+    /// over closed reviews when displaying match status.
+    /// </summary>
     public IActionResult Index()
     {
         var availableResources = _resources.GetResources()
@@ -64,6 +68,9 @@ public class PublicActorController : Controller
             MatchSuggestions = _matching.FindSuggestions(_overview.ListActiveNeeds(), availableResources, matchStatuses)
         });
     }
+    /// <summary>
+    /// Lists resources owned by the signed-in public actor.
+    /// </summary>
     [HttpGet]
     [ActionName("MineRessurser")]
     public async Task<IActionResult> MyResources()
@@ -74,6 +81,9 @@ public class PublicActorController : Controller
 
         return View(resources);
     }
+    /// <summary>
+    /// Deletes an owned resource if it has no assignment history.
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     [ActionName("SlettRessurs")]
@@ -81,13 +91,11 @@ public class PublicActorController : Controller
     {
         if (!TryGetUserId(out var userId)) return Challenge();
 
-        // Bare egne ressurser kan slettes.
         var ressurs = await _resources.FindOwnedAsync(resourceId, userId);
 
         if (ressurs == null)
             return NotFound("Ressursen finnes ikke.");
 
-        // Ressurser som har vært i en tildeling beholdes på grunn av historikken.
         if (!await _resources.TryDeleteAsync(ressurs))
         {
             TempData["ErrorMessage"] = "Ressursen har vært brukt i en tildeling og kan ikke slettes.";
@@ -98,6 +106,10 @@ public class PublicActorController : Controller
 
         return LocalRedirect(Url.Action("MineRessurser") + Request.CrisisQuery());
     }
+    /// <summary>
+    /// Requests resources for one shared need or pairs each selected resource with a selected
+    /// need.
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     [ActionName("VurderRessurs")]
@@ -134,6 +146,10 @@ public class PublicActorController : Controller
             : this.OverviewUrl());
     }
 
+    /// <summary>
+    /// Lets a public actor release an assigned resource from the overview and retains the closed
+    /// assignment as history.
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     [ActionName("FrigiRessurs")]

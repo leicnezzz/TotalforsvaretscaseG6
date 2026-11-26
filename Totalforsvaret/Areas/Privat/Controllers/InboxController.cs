@@ -7,6 +7,9 @@ using Totalforsvaret.Services;
 
 namespace Totalforsvaret.Areas.Privat.Controllers;
 
+/// <summary>
+/// Shows assignment threads for resources owned by the signed-in private actor.
+/// </summary>
 [Area("Privat")]
 [Authorize(Policy = "KunPrivat")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]

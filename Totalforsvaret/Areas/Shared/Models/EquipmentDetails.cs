@@ -2,6 +2,7 @@
 
 namespace Totalforsvaret.Models.resourcemodels;
 
+/// <summary>Stores the type and quantity associated with an equipment resource.</summary>
 public class EquipmentDetails
 {
     public int ResourceId { get; set; }

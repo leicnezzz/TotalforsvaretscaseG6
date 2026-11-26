@@ -1,5 +1,8 @@
 namespace Totalforsvaret.Models;
 
+/// <summary>
+/// Represents latitude and longitude in decimal degrees.
+/// </summary>
 public readonly record struct Coordinate
 {
     public const int LatitudeLimit = 90;
@@ -14,6 +17,10 @@ public readonly record struct Coordinate
     public decimal Latitude { get; }
     public decimal Longitude { get; }
 
+    /// <summary>
+    /// Creates a coordinate only when both values are present and within their valid geographic
+    /// ranges.
+    /// </summary>
     public static bool TryCreate(decimal? latitude, decimal? longitude, out Coordinate coordinate)
     {
         if (latitude is >= -LatitudeLimit and <= LatitudeLimit && longitude is >= -LongitudeLimit and <= LongitudeLimit)

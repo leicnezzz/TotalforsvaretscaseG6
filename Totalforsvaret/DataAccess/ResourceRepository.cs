@@ -6,7 +6,6 @@ namespace Totalforsvaret.DataAccess;
 
 public sealed class ResourceRepository(AppDbContext db) : IResourceRepository
 {
-    // Henter kategoriene som migrasjonen opprettet i databasen.
     public IReadOnlyList<Category> GetCategories()
     {
         return db.Categories
@@ -15,7 +14,6 @@ public sealed class ResourceRepository(AppDbContext db) : IResourceRepository
             .ToList();
     }
 
-    // Henter alle registrerte ressurser til oversikten.
     public List<Resource> GetResources()
     {
         return db.Resources
@@ -24,7 +22,6 @@ public sealed class ResourceRepository(AppDbContext db) : IResourceRepository
             .ToList();
     }
 
-    // Henter kartpunktene til den innloggede brukeren.
     public IReadOnlyList<ResourceMapPoint> GetResourcePointsForUser(
         int userId)
     {

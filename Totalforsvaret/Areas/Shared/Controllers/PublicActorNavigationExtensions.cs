@@ -4,10 +4,15 @@ namespace Totalforsvaret.Controllers;
 
 internal static class PublicActorNavigationExtensions
 {
+    /// <summary>Copies the selected crisis query values to another link.</summary>
     public static QueryString CrisisQuery(this HttpRequest request) =>
         QueryString.Create(request.Query["hendelser"]
             .Select(id => new KeyValuePair<string, string?>("hendelser", id)));
 
+    /// <summary>
+    /// Builds an overview link that retains the selected crises and can add a newly opened
+    /// crisis.
+    /// </summary>
     public static string OverviewUrl(this Controller controller, int? fallbackCrisisId = null, int? openCrisisId = null)
     {
         var url = controller.Url.Action("Index", "OffentligAktor", new { area = "" })!;

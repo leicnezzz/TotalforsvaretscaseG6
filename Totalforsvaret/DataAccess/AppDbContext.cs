@@ -7,6 +7,9 @@ using Totalforsvaret.Models.resourcemodels;
 
 namespace Totalforsvaret.DataAccess;
 
+/// <summary>
+/// Maps application data and Identity accounts to the MariaDB schema.
+/// </summary>
 public class AppDbContext : IdentityUserContext<Bruker, int>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options)
@@ -125,7 +128,6 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
             .HasForeignKey(n => n.CrisisId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Kobling fra Behov til den offentlige aktøren som opprettet det
         builder.Entity<Need>()
             .HasOne(n => n.OffentligAktor)
             .WithMany()
@@ -168,7 +170,6 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
             entity.Property(resource => resource.RegistrertDato)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
-            // Knytter ressursen til den eksisterende Identity-brukeren.
             entity.HasOne(resource => resource.Bruker)
                 .WithMany()
                 .HasForeignKey(resource => resource.BrukerId)

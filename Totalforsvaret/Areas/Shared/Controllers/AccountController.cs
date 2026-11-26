@@ -8,6 +8,9 @@ using Totalforsvaret.Services;
 
 namespace Totalforsvaret.Controllers;
 
+/// <summary>
+/// Handles registration and role-specific sign-in from the web forms.
+/// </summary>
 public class AccountController(
     UserManager<Bruker> users,
     SignInManager<Bruker> signIn) : Controller
@@ -19,6 +22,9 @@ public class AccountController(
         return View();
     }
 
+    /// <summary>
+    /// Creates a private account and redirects the user to sign in.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -61,6 +67,9 @@ public class AccountController(
         return View();
     }
 
+    /// <summary>
+    /// Signs in through the selected actor type and enables lockout on failed attempts.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -74,8 +83,6 @@ public class AccountController(
         var user = await users.FindByEmailAsync(
             input.Email.Trim());
 
-        // Valget i skjemaet må samsvare med lagret brukertype.
-        // Brukertypen hentes fra kontoen i databasen.
         if (user == null)
         {
             return ShowLoginError(input);
@@ -110,6 +117,7 @@ public class AccountController(
         return RedirectToAction(nameof(Login));
     }
 
+    /// <summary>Shows the password help page while self-service password reset is unavailable.</summary>
     [AllowAnonymous]
     [HttpGet]
     public IActionResult ForgotPassword()
@@ -144,6 +152,9 @@ public class AccountController(
         return View("Login");
     }
 
+    /// <summary>
+    /// Signs in an existing public actor and enables lockout on failed attempts.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("/Account/Login/Offentlig")]
     [ValidateAntiForgeryToken]
@@ -157,7 +168,6 @@ public class AccountController(
 
         var user = await users.FindByEmailAsync(input.Email.Trim());
 
-        // Offentlig innlogging godtar bare en lagret offentlig user.
         if (user is not PublicActor)
             return ShowLoginError(input);
 

@@ -2,7 +2,7 @@
 
 namespace Totalforsvaret.Models.resourcemodels
 {
-    // Representerer en kategori som kan tilordnes ressurser i systemet.
+    /// <summary>Groups registered resources by category for registration and matching.</summary>
     public class Category
     {
         public int CategoryId { get; set; } 

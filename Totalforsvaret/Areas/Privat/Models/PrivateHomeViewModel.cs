@@ -1,5 +1,6 @@
 ﻿namespace Totalforsvaret.Areas.Privat.Models;
 
+/// <summary>Carries the signed-in actor's name and photo availability for the private dashboard.</summary>
 public class PrivateHomeViewModel
 {
 	public bool HasPhoto { get; init; }

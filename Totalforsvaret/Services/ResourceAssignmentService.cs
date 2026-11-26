@@ -14,8 +14,15 @@ public enum AssignmentActionResult
     BusyResource
 }
 
+/// <summary>
+/// Applies status rules to assignments that the caller is allowed to manage.
+/// </summary>
 public sealed class ResourceAssignmentService(IResourceAssignmentRepository assignments)
 {
+    /// <summary>
+    /// Assigns a requested resource when the need is active, the resource is available and no
+    /// other active assignment uses it.
+    /// </summary>
     public async Task<AssignmentActionResult> AcceptAsync(ResourceAssignment? assignment)
     {
         if (assignment is null)
@@ -42,6 +49,9 @@ public sealed class ResourceAssignmentService(IResourceAssignmentRepository assi
         return AssignmentActionResult.Succeeded;
     }
 
+    /// <summary>
+    /// Rejects a pending assignment and records when it was closed.
+    /// </summary>
     public async Task<AssignmentActionResult> DeclineAsync(ResourceAssignment? assignment)
     {
         if (assignment is null)
@@ -55,6 +65,9 @@ public sealed class ResourceAssignmentService(IResourceAssignmentRepository assi
         return AssignmentActionResult.Succeeded;
     }
 
+    /// <summary>
+    /// Releases an assigned resource and retains the closed assignment in the history.
+    /// </summary>
     public async Task<AssignmentActionResult> ReleaseAsync(ResourceAssignment? assignment)
     {
         if (assignment is null)

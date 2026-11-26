@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Totalforsvaret.Models;
 
 // Markeringer tilhører én hendelse. Koordinater er [breddegrad, lengdegrad].
+/// <summary>Stores a crisis map marking, such as a risk zone or road obstruction, with its coordinates.</summary>
 public class CrisisMapAnnotation
 {
     public int Id { get; set; }

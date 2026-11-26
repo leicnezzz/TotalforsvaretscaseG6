@@ -12,6 +12,9 @@ using Totalforsvaret.Services;
 
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
+/// <summary>
+/// Handles public actor account details, profile photos and account removal.
+/// </summary>
 [Area("Offentlig")]
 [Authorize(Policy = "KunOffentlig")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
@@ -89,6 +92,7 @@ public class ProfileController(
         return RedirectToAction(nameof(Index));
     }
 
+    /// <summary>Serves the caller's own photo using its stored content type, or returns not found if no photo exists.</summary>
     [HttpGet]
     public async Task<IActionResult> Photo()
     {
@@ -104,6 +108,9 @@ public class ProfileController(
         return File(photo.Content, photo.ContentType);
     }
 
+    /// <summary>
+    /// Checks image size and format before replacing the caller's profile photo.
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     [RequestSizeLimit(MaxPhotoSize + 64 * 1024)]
@@ -157,6 +164,10 @@ public class ProfileController(
         return View();
     }
 
+    /// <summary>
+    /// Confirms the caller's password before deleting the public account and detaching its crises
+    /// and needs.
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteAccount(string? password)

@@ -6,9 +6,9 @@ using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Services;
-// Utvider brukerens claims med en claim som heter "Brukertype", den angir actorType med verdien "Privat" eller "Offentlig".
-// Claimen brukes for å bestemme hvilken aktørtype som er logget inn, og hvilke funksjoner som er tilgjengelig for brukeren.
-// ApplicationUserClaimsFactory registreres som en tjeneste i Program.cs
+/// <summary>
+/// Adds the actor type claim used by the application's authorization policies.
+/// </summary>
 public class ApplicationUserClaimsFactory : UserClaimsPrincipalFactory<Bruker>
 {
     public ApplicationUserClaimsFactory(
@@ -18,6 +18,7 @@ public class ApplicationUserClaimsFactory : UserClaimsPrincipalFactory<Bruker>
     {
     }
 
+    /// <summary>Adds the actor type claim based on the account subtype.</summary>
     protected override async Task<ClaimsIdentity> GenerateClaimsAsync(
         Bruker user)
     {

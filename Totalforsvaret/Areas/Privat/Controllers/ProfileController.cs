@@ -10,6 +10,9 @@ using Totalforsvaret.Services;
 
 namespace Totalforsvaret.Areas.Privat.Controllers;
 
+/// <summary>
+/// Handles private account details, profile photos and account removal.
+/// </summary>
 [Area("Privat")]
 [Authorize(Policy = "KunPrivat")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
@@ -84,6 +87,7 @@ public class ProfileController(
 		return RedirectToAction(nameof(Index));
 	}
 
+	/// <summary>Serves the caller's own photo using its stored content type, or returns not found if no photo exists.</summary>
 	[HttpGet]
 	public async Task<IActionResult> Photo()
 	{
@@ -98,6 +102,9 @@ public class ProfileController(
 		return File(photo.Content, photo.ContentType);
 	}
 
+	/// <summary>
+	/// Checks image size and format before replacing the caller's profile photo.
+	/// </summary>
 	[HttpPost]
 	[ValidateAntiForgeryToken]
 	[RequestSizeLimit(MaxPhotoSize + 64 * 1024)]
@@ -141,6 +148,9 @@ public class ProfileController(
 	[HttpGet]
 	public IActionResult DeleteAccount() => View();
 
+	/// <summary>
+	/// Confirms the caller's password before removing the private account and its resources.
+	/// </summary>
 	[HttpPost]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> DeleteAccount(string? password)

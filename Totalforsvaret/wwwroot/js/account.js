@@ -27,4 +27,3 @@
             });
         });
 })();
-// Veksler mellom å vise og skjule passordfeltet når brukere klikker på knappen. 

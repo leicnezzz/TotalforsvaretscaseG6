@@ -7,6 +7,10 @@ using Totalforsvaret.Services;
 
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
+/// <summary>
+/// Shows all assignment threads to public actors and reserves inbox status changes for the
+/// resource owner.
+/// </summary>
 [Area("Offentlig")]
 [Authorize(Policy = "KunOffentlig")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]

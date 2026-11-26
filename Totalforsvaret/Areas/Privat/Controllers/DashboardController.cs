@@ -12,6 +12,9 @@ namespace Totalforsvaret.Areas.Privat.Controllers;
 [ResponseCache(
     NoStore = true,
     Location = ResponseCacheLocation.None)]
+/// <summary>
+/// Shows the private actor dashboard and the signed-in user's resource locations.
+/// </summary>
 public class DashboardController(
     UserManager<Bruker> users,
 		IResourceRepository resources,
@@ -32,6 +35,9 @@ public class DashboardController(
 		});
     }
 
+    /// <summary>
+    /// Returns map points for resources owned by the signed-in actor.
+    /// </summary>
     [HttpGet]
     public IActionResult ResourcePoints()
     {

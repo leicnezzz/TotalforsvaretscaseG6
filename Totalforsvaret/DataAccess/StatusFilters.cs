@@ -2,6 +2,10 @@ using Totalforsvaret.Areas.Offentlig.Models;
 
 namespace Totalforsvaret.DataAccess;
 
+/// <summary>
+/// Defines the statuses shared by overview and assignment queries for active needs and
+/// occupied resources.
+/// </summary>
 internal static class StatusFilters
 {
     public static IReadOnlyList<NeedStatus> ActiveNeedStatuses { get; } =

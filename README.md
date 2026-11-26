@@ -69,7 +69,9 @@ En samlet gjennomkjøring i nettleseren med begge rollene, fra registrering til 
 - .Net Aspire styrer flyten mellom applikasjonens tjenester i utvikling og kjøremiljø
 
 ## **Bruk av KI** ##
-Vi brukte KI i planleggingsfasen for å få en bedre forståelse av hvordan vi skulle gjennomføre prosjektet slik at det møtte alle kravene. Det ble ikke brukt som en erstatning av eget arbeid, men heller som et verktøy for å oppnå forståelse i hvordan man utfører de ulike arbeidskravene. Vi fikk også forslag til HTML, CSS og JavaScript koder. Under utviklingen av prosjektet jobbet vi i lag med KI for å få svar på hvordan koden fungerte og eventuelle feilmeldinger. Vi hadde flere tilfeller der koden ikke ville kjøre, om det var lokalt etter en oppdatering fra main, eller når vi jobbet med sammenslåing av grener. Videre har gruppen brukt KI til å debugge, eventuell konflikter mellom Rider og Visual Studio Code. Vi brukte Codex for å analysere problemene og komme med løsningsforslag, og ChatGPT for å finne feil i HTTPS-oppsetter i Docker. Det ble også brukt Codex som hjelpemiddel for å beskrive i detalj i README hvordan man kjører systemet med docker.
+Vi brukte KI som støtte i planleggingen for å forstå kravene og hvordan vi kunne oppfylle dem. Under utviklingen brukte vi KI til å få forslag til hvordan vi kunne skrive og strukturere deler av koden, forstå feilmeldinger og feilsøke problemer. Vi brukte også KI til å feilsøke HTTPS-oppsettet i Docker og til å formulere oppstartsveiledningen i README. Gruppen vurderte forslagene og hadde ansvar for arbeidet som ble levert.
 
 ## **Eksempel på KI prompt** ##
 "Jeg får ikke programmet til å kjøre lokalt etter jeg pullet og fetchet fra main. Hvordan skal jeg fikse dette?"
+"Kan du se gjennom systemet etter tydlige bugs og beskrive hva som er galt, og en mulig løsning?"
+"Ser denne kodeblokken korrekt ut?" 

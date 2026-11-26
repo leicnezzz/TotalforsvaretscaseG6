@@ -14,5 +14,5 @@ public interface INeedRepository
     /// Deletes the need and its resource assignments in one save.
     /// </summary>
     Task DeleteAsync(Need need);
-    Task SaveChangesAsync();
+    Task UpdateAsync(Need need);
 }

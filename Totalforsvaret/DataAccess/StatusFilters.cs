@@ -11,6 +11,9 @@ internal static class StatusFilters
     public static IReadOnlyList<NeedStatus> ActiveNeedStatuses { get; } =
         [NeedStatus.Open, NeedStatus.InProgress];
 
-    public static IReadOnlyList<AssignmentStatus> BusyAssignmentStatuses { get; } =
-        [AssignmentStatus.Requested, AssignmentStatus.Assigned];
+    public static IQueryable<ResourceAssignment> WhereResourceIsBusy(
+        this IQueryable<ResourceAssignment> assignments) =>
+        assignments.Where(assignment => assignment.Status == AssignmentStatus.Assigned ||
+            (assignment.Status == AssignmentStatus.Requested &&
+             ActiveNeedStatuses.Contains(assignment.Need.Status)));
 }

@@ -178,7 +178,7 @@ public class NeedController : Controller
         need.Latitude = viewModel.Latitude;
         need.Longitude = viewModel.Longitude;
 
-        await _needs.SaveChangesAsync();
+        await _needs.UpdateAsync(need);
 
         return LocalRedirect(this.OverviewUrl());
     }

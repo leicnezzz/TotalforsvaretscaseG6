@@ -16,10 +16,8 @@ internal sealed class ResourceAssignmentRepository(AppDbContext db) : IResourceA
                 assignment.Resource.BrukerId == ownerId);
 
     public Task<bool> HasOtherActiveAssignmentAsync(int assignmentId, int resourceId) =>
-        db.ResourceAssignments.AnyAsync(other =>
-            other.Id != assignmentId &&
-            other.ResourceId == resourceId &&
-            StatusFilters.BusyAssignmentStatuses.Contains(other.Status));
+        db.ResourceAssignments.WhereResourceIsBusy().AnyAsync(other =>
+            other.Id != assignmentId && other.ResourceId == resourceId);
 
     public async Task<TResult> WithResourceLockAsync<TResult>(
         ResourceAssignment assignment,
@@ -98,19 +96,18 @@ internal sealed class ResourceAssignmentRepository(AppDbContext db) : IResourceA
         await using var transaction = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
 
         var activeNeeds = await db.Needs.CountAsync(need =>
-            needIds.Contains(need.Id) && StatusFilters.ActiveNeedStatuses.Contains(need.Status));
+            Enumerable.Contains(needIds, need.Id) && StatusFilters.ActiveNeedStatuses.Contains(need.Status));
         if (activeNeeds != needIds.Length)
             return RequestAssignmentResult.InactiveNeed;
 
         var availableResources = await db.Resources.CountAsync(resource =>
-            resourceIds.Contains(resource.ResourceId) && resource.Available &&
+            Enumerable.Contains(resourceIds, resource.ResourceId) && resource.Available &&
             (resource.TilgjengeligFra == null || resource.TilgjengeligFra <= DateTime.Now));
         if (availableResources != resourceIds.Length)
             return RequestAssignmentResult.UnavailableResource;
 
-        var busy = await db.ResourceAssignments.AnyAsync(assignment =>
-            resourceIds.Contains(assignment.ResourceId) &&
-            StatusFilters.BusyAssignmentStatuses.Contains(assignment.Status));
+        var busy = await db.ResourceAssignments.WhereResourceIsBusy()
+            .AnyAsync(assignment => Enumerable.Contains(resourceIds, assignment.ResourceId));
         if (busy)
             return RequestAssignmentResult.BusyResource;
 
@@ -130,5 +127,16 @@ internal sealed class ResourceAssignmentRepository(AppDbContext db) : IResourceA
     public Task<ResourceAssignment?> FindAsync(int assignmentId) =>
         db.ResourceAssignments.FirstOrDefaultAsync(assignment => assignment.Id == assignmentId);
 
-    public Task SaveChangesAsync() => db.SaveChangesAsync();
+    public async Task<bool> TrySaveStatusChangeAsync()
+    {
+        try
+        {
+            await db.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return false;
+        }
+    }
 }

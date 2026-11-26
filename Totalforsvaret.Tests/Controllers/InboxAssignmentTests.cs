@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
 using Totalforsvaret.Areas.Offentlig.Models;
@@ -55,6 +56,47 @@ public class InboxAssignmentTests
         Assert.That(db.ResourceAssignments.Single().Status, Is.EqualTo(finalStatus));
     }
 
+    [Test]
+    public async Task DeclineDoesNotOverwriteApprovalSavedByAnotherRequest()
+    {
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+        using var db = new AppDbContext(options);
+        AddNeed(db, 1);
+        AddResource(db, 1);
+        AddAssignment(db, 1, 1, 1, AssignmentStatus.Requested);
+
+        var repository = new ResourceAssignmentRepository(db);
+        var staleAssignment = await repository.FindOwnedAsync(1, 1);
+        using (var approvalDb = new AppDbContext(options))
+        {
+            var approval = await approvalDb.ResourceAssignments.SingleAsync();
+            approval.MarkAssigned();
+            await approvalDb.SaveChangesAsync();
+        }
+
+        var result = await new ResourceAssignmentService(repository).DeclineAsync(staleAssignment);
+
+        Assert.That(result, Is.EqualTo(AssignmentActionResult.NotRequested));
+        Assert.That(await db.ResourceAssignments.AsNoTracking().Select(item => item.Status).SingleAsync(),
+            Is.EqualTo(AssignmentStatus.Assigned));
+    }
+
+    [TestCase(AssignmentStatus.Requested, false)]
+    [TestCase(AssignmentStatus.Assigned, true)]
+    public async Task OnlyAssignedResourcesStayBusyWhenNeedIsResolved(AssignmentStatus status, bool isBusy)
+    {
+        using var db = CreateDb();
+        AddNeed(db, 1, NeedStatus.Resolved);
+        AddResource(db, 1);
+        AddAssignment(db, 1, 1, 1, status);
+
+        var result = await new ResourceAssignmentRepository(db).HasOtherActiveAssignmentAsync(2, 1);
+
+        Assert.That(result, Is.EqualTo(isBusy));
+    }
+
     private static InboxService CreateInbox(AppDbContext db)
     {
         var repository = new ResourceAssignmentRepository(db);
@@ -69,7 +111,7 @@ public class InboxAssignmentTests
             .Setup(store => store.HasOtherActiveAssignmentAsync(It.IsAny<int>(), It.IsAny<int>()))
             .Returns((int assignmentId, int resourceId) =>
                 repository.HasOtherActiveAssignmentAsync(assignmentId, resourceId));
-        assignmentStore.Setup(store => store.SaveChangesAsync()).Returns(() => repository.SaveChangesAsync());
+        assignmentStore.Setup(store => store.TrySaveStatusChangeAsync()).Returns(() => repository.TrySaveStatusChangeAsync());
 
         return new InboxService(repository, new ResourceAssignmentService(assignmentStore.Object));
     }

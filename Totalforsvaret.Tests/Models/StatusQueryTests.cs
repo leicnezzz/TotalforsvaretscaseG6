@@ -17,9 +17,7 @@ public class StatusQueryTests
 
         var needsSql = db.Needs.Where(need =>
             StatusFilters.ActiveNeedStatuses.Contains(need.Status)).ToQueryString();
-        var assignmentsSql = db.ResourceAssignments.Where(assignment =>
-            StatusFilters.BusyAssignmentStatuses.Contains(assignment.Status) &&
-            StatusFilters.ActiveNeedStatuses.Contains(assignment.Need.Status)).ToQueryString();
+        var assignmentsSql = db.ResourceAssignments.WhereResourceIsBusy().ToQueryString();
 
         Assert.That(needsSql, Does.Contain("Under behandling"));
         Assert.That(assignmentsSql, Does.Contain("Under behandling"));

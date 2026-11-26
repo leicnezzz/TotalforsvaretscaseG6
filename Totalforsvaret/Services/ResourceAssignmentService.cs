@@ -50,8 +50,9 @@ public sealed class ResourceAssignmentService(IResourceAssignmentRepository assi
             return AssignmentActionResult.BusyResource;
 
         assignment.MarkAssigned();
-        await assignments.SaveChangesAsync();
-        return AssignmentActionResult.Succeeded;
+        return await assignments.TrySaveStatusChangeAsync()
+            ? AssignmentActionResult.Succeeded
+            : AssignmentActionResult.NotRequested;
     }
 
     /// <summary>
@@ -66,8 +67,9 @@ public sealed class ResourceAssignmentService(IResourceAssignmentRepository assi
             return AssignmentActionResult.NotRequested;
 
         assignment.MarkRejected();
-        await assignments.SaveChangesAsync();
-        return AssignmentActionResult.Succeeded;
+        return await assignments.TrySaveStatusChangeAsync()
+            ? AssignmentActionResult.Succeeded
+            : AssignmentActionResult.NotRequested;
     }
 
     /// <summary>
@@ -82,7 +84,8 @@ public sealed class ResourceAssignmentService(IResourceAssignmentRepository assi
             return AssignmentActionResult.NotAssigned;
 
         assignment.MarkReleased();
-        await assignments.SaveChangesAsync();
-        return AssignmentActionResult.Succeeded;
+        return await assignments.TrySaveStatusChangeAsync()
+            ? AssignmentActionResult.Succeeded
+            : AssignmentActionResult.NotAssigned;
     }
 }

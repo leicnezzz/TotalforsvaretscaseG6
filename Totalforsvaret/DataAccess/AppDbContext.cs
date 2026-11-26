@@ -61,6 +61,8 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
                 .HasForeignKey(a => a.ResourceId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            entity.Property(a => a.Status).IsConcurrencyToken();
+
             entity.HasIndex(a => new { a.ResourceId, a.Status });
             entity.HasIndex(a => new { a.NeedId, a.Status });
         });

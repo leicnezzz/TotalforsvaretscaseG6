@@ -21,7 +21,7 @@ internal sealed class PublicOverviewRepository(AppDbContext db) : IPublicOvervie
 
     public List<ResourceAssignment> ListActiveAssignments() => db.ResourceAssignments.AsNoTracking()
         .Include(assignment => assignment.Resource)
-        .Where(assignment => StatusFilters.BusyAssignmentStatuses.Contains(assignment.Status))
+        .WhereResourceIsBusy()
         .ToList();
 
     public List<ResourceAssignment> ListClosedReviewsForActiveNeeds() => db.ResourceAssignments.AsNoTracking()

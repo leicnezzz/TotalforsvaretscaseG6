@@ -13,7 +13,7 @@ public interface IResourceAssignmentRepository
     Task<ResourceAssignment?> FindOwnedAsync(int assignmentId, int ownerId);
 
     /// <summary>
-    /// Checks whether another requested or assigned match uses the resource.
+    /// Checks for another assignment or a pending request for an active need.
     /// </summary>
     Task<bool> HasOtherActiveAssignmentAsync(int assignmentId, int resourceId);
 
@@ -54,7 +54,7 @@ public interface IResourceAssignmentRepository
     /// Loads a tracked assignment by ID without filtering by owner or loading its related need and resource.
     /// </summary>
     Task<ResourceAssignment?> FindAsync(int assignmentId);
-    Task SaveChangesAsync();
+    Task<bool> TrySaveStatusChangeAsync();
 }
 
 public enum RequestAssignmentResult

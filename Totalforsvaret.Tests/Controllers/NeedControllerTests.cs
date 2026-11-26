@@ -19,7 +19,7 @@ public class NeedControllerTests
     private static NeedController CreateController(AppDbContext db)
     {
         // UserManager is only used by Create, which is not tested here.
-        return WithUser(new NeedController(db, null!));
+        return WithUser(new NeedController(new NeedRepository(db), new CrisisRepository(db), null!));
     }
 
     /// <summary>

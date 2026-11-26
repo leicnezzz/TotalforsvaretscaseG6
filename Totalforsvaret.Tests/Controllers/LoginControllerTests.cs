@@ -67,15 +67,15 @@ public class LoginControllerTests
         var input = LagInput(actor);
         input.RememberMe = true;
 
-        Bruker bruker = offentlig
-            ? new Offentligaktør()
-            : new Privataktor();
+        Bruker user = offentlig
+            ? new PublicActor()
+            : new PrivateActor();
 
         users.Setup(manager => manager.FindByEmailAsync(input.Email))
-            .ReturnsAsync(bruker);
+            .ReturnsAsync(user);
 
         signIn.Setup(manager => manager.PasswordSignInAsync(
-                bruker, input.Password, true, true))
+                user, input.Password, true, true))
             .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
         // Act
@@ -95,7 +95,7 @@ public class LoginControllerTests
 
         // Husk meg og kontolåsing videresendes til Identity.
         signIn.Verify(manager => manager.PasswordSignInAsync(
-                bruker, input.Password, true, true),
+                user, input.Password, true, true),
             Times.Once);
     }
 
@@ -104,17 +104,17 @@ public class LoginControllerTests
     public async Task Login_AvvistAvIdentity_ViserFeil(bool lockedOut)
     {
         var input = LagInput();
-        var bruker = new Privataktor();
+        var user = new PrivateActor();
 
         users.Setup(manager => manager.FindByEmailAsync(input.Email))
-            .ReturnsAsync(bruker);
+            .ReturnsAsync(user);
 
         var identityResult = lockedOut
             ? Microsoft.AspNetCore.Identity.SignInResult.LockedOut
             : Microsoft.AspNetCore.Identity.SignInResult.Failed;
 
         signIn.Setup(manager => manager.PasswordSignInAsync(
-                bruker, input.Password, false, true))
+                user, input.Password, false, true))
             .ReturnsAsync(identityResult);
 
         var resultat = await controller.Login(input);
@@ -129,11 +129,11 @@ public class LoginControllerTests
     {
         var input = LagInput(actor);
 
-        var bruker = new Privataktor();
+        var user = new PrivateActor();
         users.Setup(manager => manager.FindByEmailAsync(input.Email))
-            .ReturnsAsync(bruker);
+            .ReturnsAsync(user);
         signIn.Setup(manager => manager.PasswordSignInAsync(
-                bruker, input.Password, false, true))
+                user, input.Password, false, true))
             .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
         var resultat = await controller.Login(input);
@@ -143,7 +143,7 @@ public class LoginControllerTests
         Assert.That(redirect.ControllerName, Is.EqualTo("Dashboard"));
         Assert.That(redirect.RouteValues!["area"], Is.EqualTo("Privat"));
         signIn.Verify(manager => manager.PasswordSignInAsync(
-            bruker, input.Password, false, true), Times.Once);
+            user, input.Password, false, true), Times.Once);
     }
 
     [Test]

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Offentlig.ViewModels;
 using Totalforsvaret.DataAccess;
@@ -18,14 +17,17 @@ namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
 public class NeedController : Controller
 {
-    private readonly AppDbContext _context;
+    private readonly INeedRepository _needs;
+    private readonly ICrisisRepository _crises;
     private readonly UserManager<Bruker> _userManager;
 
     public NeedController(
-        AppDbContext context,
+        INeedRepository needs,
+        ICrisisRepository crises,
         UserManager<Bruker> userManager)
     {
-        _context = context;
+        _needs = needs;
+        _crises = crises;
         _userManager = userManager;
     }
 
@@ -33,14 +35,14 @@ public class NeedController : Controller
     [HttpGet]
     public async Task<IActionResult> Create(int? crisisId = null)
     {
-        var apneHendelser = HentApneHendelser();
+        var openCrisisIds = GetOpenCrisisIds();
         var viewModel = new NeedCreateViewModel
         {
-            Crises = await GetCrisesAsync(apneHendelser),
-            CrisisLocations = await GetCrisisLocationsAsync(apneHendelser),
-            CrisisId = apneHendelser.Count == 1 ? apneHendelser[0] :
-                apneHendelser.Count == 0 ? crisisId : null,
-            Status = "Under behandling"
+            Crises = await GetCrisesAsync(openCrisisIds),
+            CrisisLocations = await _crises.ListMapPointsAsync(openCrisisIds),
+            CrisisId = openCrisisIds.Count == 1 ? openCrisisIds[0] :
+                openCrisisIds.Count == 0 ? crisisId : null,
+            Status = NeedStatus.InProgress
         };
 
         return View(viewModel);
@@ -53,13 +55,13 @@ public class NeedController : Controller
     {
         var user = await _userManager.GetUserAsync(User);
 
-        if (user is not Offentligaktør offentligAktor)
+        if (user is not PublicActor publicActor)
             return Forbid();
 
-        var apneHendelser = HentApneHendelser();
+        var openCrisisIds = GetOpenCrisisIds();
         if (viewModel.CrisisId is int crisisId &&
-            ((apneHendelser.Count > 0 && !apneHendelser.Contains(crisisId)) ||
-             !await _context.Crises.AnyAsync(c => c.Id == crisisId)))
+            ((openCrisisIds.Count > 0 && !openCrisisIds.Contains(crisisId)) ||
+             !await _crises.ExistsAsync(crisisId)))
         {
             ModelState.AddModelError(
                 nameof(viewModel.CrisisId),
@@ -68,8 +70,8 @@ public class NeedController : Controller
 
         if (!ModelState.IsValid)
         {
-            viewModel.Crises = await GetCrisesAsync(apneHendelser);
-            viewModel.CrisisLocations = await GetCrisisLocationsAsync(apneHendelser);
+            viewModel.Crises = await GetCrisesAsync(openCrisisIds);
+            viewModel.CrisisLocations = await _crises.ListMapPointsAsync(openCrisisIds);
             return View(viewModel);
         }
 
@@ -77,129 +79,38 @@ public class NeedController : Controller
         var need = new Need
         {
             Name = viewModel.Name.Trim(),
-            Type = viewModel.Type.Trim(),
+            Type = viewModel.Type!.Value,
             Description = viewModel.Description.Trim(),
-            Priority = viewModel.Priority,
-            Status = viewModel.Status,
+            Priority = viewModel.Priority!.Value,
+            Status = viewModel.Status!.Value,
             Latitude = viewModel.Latitude!.Value,
             Longitude = viewModel.Longitude!.Value,
             CrisisId = viewModel.CrisisId,
-            OffentligAktorId = offentligAktor.Id
+            OffentligAktorId = publicActor.Id
         };
 
-        _context.Needs.Add(need);
-        await _context.SaveChangesAsync();
+        await _needs.AddAsync(need);
 
-        return LocalRedirect(this.OversiktUrl(viewModel.CrisisId));
-    }
-
-    [HttpGet]
-    public IActionResult CreateMultiple() => RedirectToRoute("behov");
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateMultiple(
-        MultipleNeedsViewModel viewModel)
-    {
-        if (viewModel.CrisisId is int crisisId &&
-            !await _context.Crises.AnyAsync(c => c.Id == crisisId))
-        {
-            ModelState.AddModelError(nameof(viewModel.CrisisId), "Velg en gyldig krise.");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            viewModel.Crises = await GetCrisesAsync();
-            viewModel.ActiveCrisesOnMap = await GetActiveCrisesOnMapAsync();
-            return View(viewModel);
-        }
-
-        var needs = viewModel.Needs.Select(item => new Need
-        {
-            Name = item.Name.Trim(),
-            Type = item.Type.Trim(),
-            Description = item.Description.Trim(),
-            Priority = item.Priority,
-            Status = item.Status,
-            CrisisId = viewModel.CrisisId,
-            Latitude = viewModel.Latitude!.Value,
-            Longitude = viewModel.Longitude!.Value
-        }).ToList();
-
-        _context.Needs.AddRange(needs);
-        await _context.SaveChangesAsync();
-
-        TempData["NeedSuccessMessage"] = needs.Count == 1
-            ? "Behovet er registrert."
-            : $"{needs.Count} behov er registrert.";
-
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-        {
-            return Json(new
-            {
-                redirectUrl = this.OversiktUrl(viewModel.CrisisId)
-            });
-        }
-
-        return LocalRedirect(this.OversiktUrl());
-    }
-
-    private async Task<IReadOnlyList<CrisisMapPoint>> GetCrisisLocationsAsync(List<int> openIds)
-    {
-        var crises = _context.Crises.AsNoTracking()
-            .Where(c => c.Latitude >= -90 && c.Latitude <= 90 &&
-                        c.Longitude >= -180 && c.Longitude <= 180);
-        if (openIds.Count > 0)
-            crises = crises.Where(c => openIds.Contains(c.Id));
-
-        return await crises.Select(c => new CrisisMapPoint(
-            c.Id, c.Name, c.Latitude!.Value, c.Longitude!.Value)).ToListAsync();
-    }
-
-    private async Task<IReadOnlyList<CrisisMapPoint>> GetActiveCrisesOnMapAsync()
-    {
-        return await _context.Crises
-            .AsNoTracking()
-            .Where(c =>
-                c.Latitude.HasValue &&
-                c.Longitude.HasValue &&
-                c.Latitude >= -90 && c.Latitude <= 90 &&
-                c.Longitude >= -180 && c.Longitude <= 180)
-            .OrderBy(c => c.Name)
-            .Select(c => new CrisisMapPoint(
-                c.Id, c.Name, c.Latitude!.Value, c.Longitude!.Value))
-            .ToListAsync();
+        return LocalRedirect(this.OverviewUrl(viewModel.CrisisId));
     }
 
     // Henter krisene som kan velges i skjemaet.
-    private List<int> HentApneHendelser() => Request.Query["hendelser"]
+    private List<int> GetOpenCrisisIds() => Request.Query["hendelser"]
         .Select(value => int.TryParse(value, out var id) ? id : 0)
         .Where(id => id > 0)
         .Distinct()
         .ToList();
 
-    private async Task<IEnumerable<SelectListItem>> GetCrisesAsync(List<int>? apneHendelser = null)
+    private async Task<IEnumerable<SelectListItem>> GetCrisesAsync(List<int>? openCrisisIds = null)
     {
-        var crises = _context.Crises.AsQueryable();
-        if (apneHendelser is { Count: > 0 })
-            crises = crises.Where(c => apneHendelser.Contains(c.Id));
-
-        return await crises
-            .OrderBy(c => c.Name)
-            .Select(c => new SelectListItem
-            {
-                Value = c.Id.ToString(),
-                Text = c.Name
-            })
-            .ToListAsync();
+        var options = await _crises.ListOptionsAsync(openCrisisIds);
+        return options.Select(option => new SelectListItem(option.Name, option.Id.ToString())).ToList();
     }
 
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var need = await _context.Needs
-            .AsNoTracking()
-            .SingleOrDefaultAsync(n => n.Id == id);
+        var need = await _needs.FindAsync(id);
 
         if (need == null)
             return NotFound();
@@ -209,10 +120,10 @@ public class NeedController : Controller
         var viewModel = new NeedCreateViewModel
         {
             Name = need.Name,
-            Type = need.Type,
+            Type = need.Type == NeedType.Unspecified ? null : need.Type,
             Description = need.Description,
-            Priority = need.Priority,
-            Status = need.Status,
+            Priority = need.Priority == NeedPriority.Unspecified ? null : need.Priority,
+            Status = need.Status == NeedStatus.Unspecified ? null : need.Status,
             CrisisId = need.CrisisId,
             Latitude = need.Latitude,
             Longitude = need.Longitude,
@@ -228,36 +139,17 @@ public class NeedController : Controller
         int id,
         NeedCreateViewModel viewModel)
     {
-        var need = await _context.Needs
-            .SingleOrDefaultAsync(n => n.Id == id);
+        var need = await _needs.FindAsync(id, trackChanges: true);
 
         if (need == null)
             return NotFound();
 
         if (viewModel.CrisisId is int crisisId &&
-            !await _context.Crises.AnyAsync(c => c.Id == crisisId))
+            !await _crises.ExistsAsync(crisisId))
         {
             ModelState.AddModelError(
                 nameof(viewModel.CrisisId),
                 "Velg en gyldig krise.");
-        }
-
-        if (viewModel.Latitude.HasValue &&
-            (viewModel.Latitude < -90 ||
-             viewModel.Latitude > 90))
-        {
-            ModelState.AddModelError(
-                nameof(viewModel.Latitude),
-                "Ugyldig breddegrad.");
-        }
-
-        if (viewModel.Longitude.HasValue &&
-            (viewModel.Longitude < -180 ||
-             viewModel.Longitude > 180))
-        {
-            ModelState.AddModelError(
-                nameof(viewModel.Longitude),
-                "Ugyldig lengdegrad.");
         }
 
         if (!ModelState.IsValid)
@@ -268,38 +160,30 @@ public class NeedController : Controller
         }
 
         need.Name = viewModel.Name.Trim();
-        need.Type = viewModel.Type.Trim();
+        need.Type = viewModel.Type!.Value;
         need.Description = viewModel.Description.Trim();
-        need.Priority = viewModel.Priority;
-        need.Status = viewModel.Status;
+        need.Priority = viewModel.Priority!.Value;
+        need.Status = viewModel.Status!.Value;
         need.CrisisId = viewModel.CrisisId;
         need.Latitude = viewModel.Latitude;
         need.Longitude = viewModel.Longitude;
 
-        await _context.SaveChangesAsync();
+        await _needs.SaveChangesAsync();
 
-        return LocalRedirect(this.OversiktUrl());
+        return LocalRedirect(this.OverviewUrl());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var need = await _context.Needs
-            .SingleOrDefaultAsync(n => n.Id == id);
+        var need = await _needs.FindAsync(id, trackChanges: true);
 
         if (need == null)
             return NotFound();
 
-        var assignments = await _context.ResourceAssignments
-            .Where(assignment => assignment.NeedId == id)
-            .ToListAsync();
+        await _needs.DeleteAsync(need);
 
-        _context.ResourceAssignments.RemoveRange(assignments);
-
-        _context.Needs.Remove(need);
-        await _context.SaveChangesAsync();
-
-        return LocalRedirect(this.OversiktUrl());
+        return LocalRedirect(this.OverviewUrl());
     }
 }

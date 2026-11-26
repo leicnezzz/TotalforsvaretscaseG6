@@ -1,6 +1,7 @@
+@using Totalforsvaret.Models
 
 @using Totalforsvaret.Controllers
-@model Totalforsvaret.Models.Crisis
+@model Totalforsvaret.Areas.Offentlig.ViewModels.CrisisInput
 
 @{
     ViewData["Title"] = ViewData["EditId"] != null
@@ -25,7 +26,7 @@
         </section>
 
         <form action="@(Url.Action(ViewData["EditId"] != null ? "Edit" : "Create", "Crisis",
-              new { area = "Offentlig", id = ViewData["EditId"] }) + Context.Request.HendelsesQuery())"
+              new { area = "Offentlig", id = ViewData["EditId"] }) + Context.Request.CrisisQuery())"
           asp-antiforgery="true" method="post" class="resource-wizard need-card" data-need-wizard>
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -48,11 +49,10 @@
                         <label asp-for="Type" class="form-label">Type hendelse *</label>
                         <select asp-for="Type" class="form-select" required>
                             <option value="">Velg type</option>
-                            <option value="Flom">Flom</option>
-                            <option value="Brann">Brann</option>
-                            <option value="Strømbrudd">Strømbrudd</option>
-                            <option value="Ekstremvær">Ekstremvær</option>
-                            <option value="Annet">Annet</option>
+                            @foreach (var type in new[] { CrisisType.Flood, CrisisType.Fire, CrisisType.PowerOutage, CrisisType.ExtremeWeather, CrisisType.Other })
+                            {
+                                <option value="@((int)type)">@type.ToNorwegianText()</option>
+                            }
                         </select>
                         <span asp-validation-for="Type" class="text-danger"></span>
                     </div>
@@ -69,10 +69,10 @@
                         <label asp-for="Severity" class="form-label">Alvorlighetsgrad *</label>
                         <select asp-for="Severity" class="form-select" required>
                             <option value="">Velg alvorlighetsgrad</option>
-                            <option value="Lav">Lav</option>
-                            <option value="Middels">Middels</option>
-                            <option value="Høy">Høy</option>
-                            <option value="Kritisk">Kritisk</option>
+                            @foreach (var severity in new[] { CrisisSeverity.Low, CrisisSeverity.Medium, CrisisSeverity.High, CrisisSeverity.Critical })
+                            {
+                                <option value="@((int)severity)">@severity.ToNorwegianText()</option>
+                            }
                         </select>
                         <span asp-validation-for="Severity" class="text-danger"></span>
                     </div>
@@ -92,9 +92,10 @@
                         <label asp-for="Status" class="form-label">Status *</label>
                         <select asp-for="Status" class="form-select" required>
                             <option value="">Velg status</option>
-                            <option value="Aktiv">Aktiv</option>
-                            <option value="Under kontroll">Under kontroll</option>
-                            <option value="Avsluttet">Avsluttet</option>
+                            @foreach (var status in new[] { CrisisStatus.Active, CrisisStatus.UnderControl, CrisisStatus.Closed })
+                            {
+                                <option value="@((int)status)">@status.ToNorwegianText()</option>
+                            }
                         </select>
                         <span asp-validation-for="Status" class="text-danger"></span>
                     </div>
@@ -123,7 +124,7 @@
                 <input asp-for="Longitude" type="hidden" />
                 <span asp-validation-for="Latitude" class="text-danger"></span>
                 <span asp-validation-for="Longitude" class="text-danger"></span>
-                <p id="coordinates" class="text-muted mt-2" data-need-location data-marker-color="#a64232" data-fill-area role="status">Ingen plassering valgt.</p>
+                <p id="coordinates" class="text-muted mt-2" data-need-location data-marker-color="#a64232" data-fill-area data-location-optional="@(ViewData["EditId"] != null ? "true" : "false")" role="status">Ingen plassering valgt.</p>
             </section>
 
             <section data-need-step hidden>
@@ -135,7 +136,7 @@
 
             <div class="need-actions">
                 <div>
-                    <a href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
+                    <a href="@(Url.Action("Index", "OffentligAktor", new { area = "" }) + Context.Request.CrisisQuery())"
                    class="public-button public-button-outline" data-need-cancel>Avbryt</a>
                     <button type="button" class="public-button public-button-outline" data-need-back hidden>← Tilbake</button>
                 </div>

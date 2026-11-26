@@ -1,3 +1,4 @@
+@using Totalforsvaret.Models
 @using Totalforsvaret.Controllers
 @model IReadOnlyList<Totalforsvaret.Models.Crisis>
 
@@ -7,8 +8,8 @@
     ViewData["RegistrationFooter"] = true;
     var groups = new[]
     {
-        new { Title = "Aktive hendelser", Key = "active", Items = Model.Where(crisis => crisis.Status is "Aktiv" or "Under kontroll").ToList() },
-        new { Title = "Inaktive hendelser", Key = "inactive", Items = Model.Where(crisis => crisis.Status is not ("Aktiv" or "Under kontroll")).ToList() }
+        new { Title = "Aktive hendelser", Key = "active", Items = Model.Where(crisis => crisis.Status is CrisisStatus.Active or CrisisStatus.UnderControl).ToList() },
+        new { Title = "Inaktive hendelser", Key = "inactive", Items = Model.Where(crisis => crisis.Status is not (CrisisStatus.Active or CrisisStatus.UnderControl)).ToList() }
     };
 }
 
@@ -27,7 +28,7 @@
     <section class="crisis-create">
         <h2>Opprett en ny hendelse</h2>
         <div class="crisis-create-action"><strong>Ny hendelse</strong>
-        <a class="crisis-button" href="@(Url.Action("Create", "Crisis", new { area = "Offentlig" }) + Context.Request.HendelsesQuery())">Registrer hendelse <span aria-hidden="true">→</span></a></div>
+        <a class="crisis-button" href="@(Url.Action("Create", "Crisis", new { area = "Offentlig" }) + Context.Request.CrisisQuery())">Registrer hendelse <span aria-hidden="true">→</span></a></div>
     </section>
 
     @foreach (var group in groups)
@@ -63,11 +64,11 @@
                             <span class="crisis-card-name">
                                 <strong class="crisis-card-title">@crisis.Name</strong>
                                 <span>@crisis.Area</span>
-                                <strong class="@(crisis.Severity == "Kritisk" ? "crisis-critical" : "")">@crisis.Severity</strong>
+                                <strong class="@(crisis.Severity == CrisisSeverity.Critical ? "crisis-critical" : "")">@crisis.Severity.ToNorwegianText()</strong>
                             </span>
                             </button>
                             <div class="crisis-card-actions">
-                                <span class="crisis-status" data-active="@(group.Key == "active" ? "true" : "false")">@crisis.Status</span>
+                                <span class="crisis-status" data-active="@(group.Key == "active" ? "true" : "false")">@crisis.Status.ToNorwegianText()</span>
                                 <a class="crisis-button" asp-area="Offentlig" asp-controller="Crisis" asp-action="Edit" asp-route-id="@crisis.Id" aria-label="Rediger @crisis.Name">Rediger <span aria-hidden="true">↓</span></a>
                             </div>
                         </div>

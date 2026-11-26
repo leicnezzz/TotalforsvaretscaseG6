@@ -19,7 +19,7 @@ public static class TestUserSeeder
 
         if (eksisterende != null)
         {
-            if (eksisterende is not Offentligaktør)
+            if (eksisterende is not PublicActor)
             {
                 throw new InvalidOperationException(
                     "Testkontoens e-post er allerede brukt av en privat konto.");
@@ -28,7 +28,7 @@ public static class TestUserSeeder
             return;
         }
 
-        var bruker = new Offentligaktør
+        var user = new PublicActor
         {
             UserName = email,
             Email = email,
@@ -40,7 +40,7 @@ public static class TestUserSeeder
 
         // JA vi vett at dette er VELDIG VELDIG VELDIG sårbart men for test versjonen funker det :)
         var resultat = await users.CreateAsync(
-            bruker,
+            user,
             "Passordet12345");
 
         if (!resultat.Succeeded)

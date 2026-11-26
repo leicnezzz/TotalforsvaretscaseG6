@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using Totalforsvaret.Areas.Offentlig.Models;
+using Totalforsvaret.Models;
 
 namespace Totalforsvaret.Areas.Offentlig.ViewModels;
 
@@ -9,26 +11,30 @@ public class NeedCreateViewModel
     public string Name { get; set; } = "";
 
     [Required(ErrorMessage = "Velg type behov.")]
-    [RegularExpression("^(Transport|Utstyr)$",
-        ErrorMessage = "Velg kjøretøy eller utstyr.")]
-    public string Type { get; set; } = "";
+    [AllowedValues(NeedType.Transport, NeedType.Equipment, ErrorMessage = "Velg kjøretøy eller utstyr.")]
+    public NeedType? Type { get; set; }
 
     [Required(ErrorMessage = "Beskriv behovet.")]
     public string Description { get; set; } = "";
 
     [Required(ErrorMessage = "Velg prioritet.")]
-    public string Priority { get; set; } = "";
+    [AllowedValues(NeedPriority.Low, NeedPriority.Medium, NeedPriority.High, NeedPriority.Critical,
+        ErrorMessage = "Velg en gyldig prioritet.")]
+    public NeedPriority? Priority { get; set; }
 
     [Required(ErrorMessage = "Velg status.")]
-    public string Status { get; set; } = "";
+    [AllowedValues(NeedStatus.Open, NeedStatus.InProgress, NeedStatus.Resolved, ErrorMessage = "Velg en gyldig status.")]
+    public NeedStatus? Status { get; set; }
 
     [Required(ErrorMessage = "Velg en krise.")]
     public int? CrisisId { get; set; }
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
+    [CoordinateRange(typeof(decimal), Coordinate.LatitudeLimit, ErrorMessage = "Ugyldig breddegrad.")]
     public decimal? Latitude { get; set; }
 
     [Required(ErrorMessage = "Velg en lokasjon på kartet.")]
+    [CoordinateRange(typeof(decimal), Coordinate.LongitudeLimit, ErrorMessage = "Ugyldig lengdegrad.")]
     public decimal? Longitude { get; set; }
 
     public IReadOnlyList<CrisisMapPoint> CrisisLocations { get; set; } = [];

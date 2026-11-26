@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.Models;
+using Totalforsvaret.Services;
 
 namespace Totalforsvaret.Home.Controllers;
 
@@ -32,9 +33,9 @@ public class ResourceSessionController(
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var bruker = await users.FindByEmailAsync(input.Email.Trim());
+        var user = await users.FindByEmailAsync(input.Email.Trim());
 
-        if (bruker is not Privataktor)
+        if (user is not PrivateActor)
         {
             return Unauthorized(new
             {
@@ -43,7 +44,7 @@ public class ResourceSessionController(
         }
 
         var result = await signIn.PasswordSignInAsync(
-            bruker,
+            user,
             input.Password,
             isPersistent: false,
             lockoutOnFailure: true);
@@ -67,17 +68,10 @@ public class ResourceSessionController(
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var email = input.Email.Trim();
-
-        var bruker = new Privataktor
-        {
-            UserName = email,
-            Email = email,
-            Navn = $"{input.FirstName.Trim()} {input.LastName.Trim()}"
-        };
+        var user = PrivateAccountRegistration.CreateUser(input);
 
         var result = await users.CreateAsync(
-            bruker,
+            user,
             input.Password);
 
         if (!result.Succeeded)
@@ -91,7 +85,7 @@ public class ResourceSessionController(
         }
 
         await signIn.SignInAsync(
-            bruker,
+            user,
             isPersistent: false);
 
         return Ok(new { success = true });

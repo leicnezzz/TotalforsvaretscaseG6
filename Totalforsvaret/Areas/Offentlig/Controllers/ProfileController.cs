@@ -8,6 +8,7 @@ using Totalforsvaret.Areas.Offentlig.ViewModels;
 using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.DataAccess;
 using Totalforsvaret.Models;
+using Totalforsvaret.Services;
 
 namespace Totalforsvaret.Areas.Offentlig.Controllers;
 
@@ -17,7 +18,8 @@ namespace Totalforsvaret.Areas.Offentlig.Controllers;
 public class ProfileController(
     UserManager<Bruker> users,
     SignInManager<Bruker> signIn,
-    AppDbContext db,
+    IAccountDeletionRepository accountDeletion,
+    IProfilePhotoRepository photos,
     ILogger<ProfileController> logger) : Controller
 {
     private const int MaxPhotoSize = 2 * 1024 * 1024;
@@ -25,7 +27,7 @@ public class ProfileController(
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var user = await GetCurrentOffentligUserAsync();
+        var user = await GetCurrentPublicActorAsync();
 
         if (user == null)
             return Challenge();
@@ -41,15 +43,14 @@ public class ProfileController(
             ? nameParts[^1]
             : "";
 
-        var model = new OffentligProfileViewModel
+        var model = new PublicActorProfileViewModel
         {
             Fornavn = fornavn,
             Etternavn = etternavn,
             Avdeling = user.Avdeling,
             Email = user.Email,
             PhoneNumber = user.PhoneNumber,
-            HasPhoto = await db.ProfilePhotos
-                .AnyAsync(photo => photo.BrukerId == user.Id)
+            HasPhoto = await photos.ExistsAsync(user.Id)
         };
 
         return View("Index", model);
@@ -57,9 +58,9 @@ public class ProfileController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Index(OffentligProfileViewModel model)
+    public async Task<IActionResult> Index(PublicActorProfileViewModel model)
     {
-        var user = await GetCurrentOffentligUserAsync();
+        var user = await GetCurrentPublicActorAsync();
 
         if (user == null)
             return Challenge();
@@ -94,7 +95,7 @@ public class ProfileController(
         if (!int.TryParse(users.GetUserId(User), out var userId))
             return Challenge();
 
-        var photo = await db.ProfilePhotos.FindAsync(userId);
+        var photo = await photos.FindAsync(userId);
 
         if (photo == null)
             return NotFound();
@@ -108,7 +109,7 @@ public class ProfileController(
     [RequestSizeLimit(MaxPhotoSize + 64 * 1024)]
     public async Task<IActionResult> UploadPhoto(IFormFile? image)
     {
-        var user = await GetCurrentOffentligUserAsync();
+        var user = await GetCurrentPublicActorAsync();
 
         if (user == null)
             return Challenge();
@@ -123,7 +124,7 @@ public class ProfileController(
         await image.CopyToAsync(buffer, HttpContext.RequestAborted);
 
         var bytes = buffer.ToArray();
-        var contentType = GetPhotoContentType(bytes);
+        var contentType = ProfilePhotoFormat.GetPhotoContentType(bytes);
 
         if (contentType == null)
         {
@@ -131,20 +132,9 @@ public class ProfileController(
             return RedirectToAction(nameof(Index));
         }
 
-        var photo = await db.ProfilePhotos.FindAsync(user.Id);
-
-        if (photo == null)
-        {
-            photo = new ProfilePhoto { BrukerId = user.Id };
-            db.ProfilePhotos.Add(photo);
-        }
-
-        photo.Content = bytes;
-        photo.ContentType = contentType;
-
         try
         {
-            await db.SaveChangesAsync();
+            await photos.SaveAsync(user.Id, bytes, contentType);
         }
         catch (DbUpdateException error)
         {
@@ -171,7 +161,7 @@ public class ProfileController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteAccount(string? password)
     {
-        var user = await GetCurrentOffentligUserAsync();
+        var user = await GetCurrentPublicActorAsync();
 
         if (user == null)
             return Challenge();
@@ -191,44 +181,7 @@ public class ProfileController(
 
         try
         {
-            await using var transaction =
-                await db.Database.BeginTransactionAsync();
-
-            // Keep crises and needs, but detach them from this account.
-            await db.Crises
-                .Where(crisis => crisis.OffentligAktorId == user.Id)
-                .ExecuteUpdateAsync(update => update
-                    .SetProperty(
-                        crisis => crisis.OffentligAktorId,
-                        (int?)null));
-
-            await db.Needs
-                .Where(need => need.OffentligAktorId == user.Id)
-                .ExecuteUpdateAsync(update => update
-                    .SetProperty(
-                        need => need.OffentligAktorId,
-                        (int?)null));
-
-            // Remove assignments for this account's resources first.
-            var ownedResourceIds = db.Resources
-                .Where(resource => resource.BrukerId == user.Id)
-                .Select(resource => resource.ResourceId);
-
-            await db.ResourceAssignments
-                .Where(assignment =>
-                    ownedResourceIds.Contains(assignment.ResourceId))
-                .ExecuteDeleteAsync();
-
-            await db.Resources
-                .Where(resource => resource.BrukerId == user.Id)
-                .ExecuteDeleteAsync();
-
-            // Assignments owned by other users can still contain messages sent by this account.
-            await db.ResourceMessages
-                .Where(message => message.SenderUserId == user.Id)
-                .ExecuteDeleteAsync();
-
-            var result = await users.DeleteAsync(user);
+            var result = await accountDeletion.DeleteAsync(user);
 
             if (!result.Succeeded)
             {
@@ -237,8 +190,6 @@ public class ProfileController(
 
                 return View();
             }
-
-            await transaction.CommitAsync();
         }
         catch (Exception error) when (
             error is DbUpdateException or DbException)
@@ -265,38 +216,18 @@ public class ProfileController(
             new { area = "" });
     }
 
-    private async Task<Offentligaktør?> GetCurrentOffentligUserAsync()
+    private async Task<PublicActor?> GetCurrentPublicActorAsync()
     {
         var user = await users.GetUserAsync(User);
-        return user as Offentligaktør;
+        return user as PublicActor;
     }
 
     private async Task<IActionResult> ProfileWithCurrentPhotoAsync(
-        OffentligProfileViewModel model,
+        PublicActorProfileViewModel model,
         int userId)
     {
-        model.HasPhoto = await db.ProfilePhotos
-            .AnyAsync(photo => photo.BrukerId == userId);
+        model.HasPhoto = await photos.ExistsAsync(userId);
 
         return View("Index", model);
-    }
-
-    private static string? GetPhotoContentType(ReadOnlySpan<byte> bytes)
-    {
-        if (bytes.StartsWith(new byte[] { 0xFF, 0xD8, 0xFF }) &&
-            bytes.EndsWith(new byte[] { 0xFF, 0xD9 }))
-        {
-            return "image/jpeg";
-        }
-
-        if (bytes.StartsWith(
-                new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A }) &&
-            bytes.EndsWith(
-                new byte[] { 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82 }))
-        {
-            return "image/png";
-        }
-
-        return null;
     }
 }

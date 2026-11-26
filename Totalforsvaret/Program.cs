@@ -40,7 +40,7 @@ builder.Services.AddIdentityCore<Bruker>(options =>
 })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddSignInManager()
-    .AddClaimsPrincipalFactory<BrukerClaimsFactory>();
+    .AddClaimsPrincipalFactory<ApplicationUserClaimsFactory>();
 
 builder.Services
     .AddAuthentication(IdentityConstants.ApplicationScheme)
@@ -86,10 +86,20 @@ builder.Services.AddAuthorization(options =>
               .RequireClaim("Brukertype", "Offentlig"));
 });
 
-builder.Services.AddScoped<Totalforsvaret.Handlers.ResourceHandler>();
+builder.Services.AddScoped<IResourceAssignmentRepository, ResourceAssignmentRepository>();
+builder.Services.AddScoped<IChecklistRepository, ChecklistRepository>();
+builder.Services.AddScoped<IPublicOverviewRepository, PublicOverviewRepository>();
+builder.Services.AddScoped<IAccountDeletionRepository, AccountDeletionRepository>();
+builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
+builder.Services.AddScoped<IProfilePhotoRepository, ProfilePhotoRepository>();
+builder.Services.AddScoped<ICrisisMapAnnotationRepository, CrisisMapAnnotationRepository>();
+builder.Services.AddScoped<INeedRepository, NeedRepository>();
+builder.Services.AddScoped<ICrisisRepository, CrisisRepository>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddScoped<IInboxService, InboxService>();
+builder.Services.AddSingleton<ResourceMatchingService>();
+builder.Services.AddScoped<ResourceAssignmentService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, new MariaDbServerVersion(new Version(11, 4, 0))));

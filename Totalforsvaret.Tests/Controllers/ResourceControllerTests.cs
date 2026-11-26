@@ -8,7 +8,6 @@ using NUnit.Framework;
 using Totalforsvaret.Areas.Privat.Controllers;
 using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.DataAccess;
-using Totalforsvaret.Handlers;
 using Totalforsvaret.Models;
 using Totalforsvaret.Models.resourcemodels;
 
@@ -19,7 +18,7 @@ public class ResourceControllerTests
     private AppDbContext db = null!;
     private ResourceController controller = null!;
     private Mock<UserManager<Bruker>> users = null!;
-    private readonly Bruker owner = new Privataktor { Id = 10, Navn = "Testbruker" };
+    private readonly Bruker owner = new PrivateActor { Id = 10, Navn = "Testbruker" };
 
     [SetUp]
     public void SetUp()
@@ -33,7 +32,7 @@ public class ResourceControllerTests
         users = IdentityMocks.CreateUsers();
         users.Setup(manager => manager.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(owner);
-        controller = new ResourceController(db, new ResourceHandler(db), users.Object)
+        controller = new ResourceController(new ResourceRepository(db), users.Object)
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
         };
@@ -165,7 +164,7 @@ public class ResourceControllerTests
             "Create" => await controller.Create(VehicleInput()),
             "Update" => await controller.Update(1, VehicleInput()),
             "Delete" => await controller.Delete(1),
-            _ => await controller.Oversikt()
+            _ => await controller.Overview()
         };
         Assert.That(result, Is.TypeOf<ChallengeResult>());
         Assert.That(await db.Resources.CountAsync(), Is.Zero);
@@ -177,7 +176,7 @@ public class ResourceControllerTests
         var first = await SeedVehicle(owner.Id, "Egen første");
         await SeedVehicle(20, "Annen brukers ressurs");
         var last = await SeedVehicle(owner.Id, "Egen siste");
-        var result = (ViewResult)await controller.Oversikt();
+        var result = (ViewResult)await controller.Overview();
         var resources = (IReadOnlyList<Resource>)result.Model!;
 
         Assert.That(resources.Select(resource => resource.ResourceId), Is.EqualTo(new[] { last, first }));

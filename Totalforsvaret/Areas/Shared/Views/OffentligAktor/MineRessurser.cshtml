@@ -45,7 +45,7 @@
                     <td>@r.Address</td>
                     <td>@r.Kontaktpunkt</td>
                     <td class="text-end">
-                        <form action="@(Url.Action("SlettRessurs") + Context.Request.HendelsesQuery())"
+                        <form action="@(Url.Action("SlettRessurs") + Context.Request.CrisisQuery())"
                               asp-antiforgery="true" method="post"
                               onsubmit="return confirm('Vil du slette denne ressursen?');">
                             <input type="hidden" name="resourceId" value="@r.ResourceId" />
@@ -58,5 +58,5 @@
         </table>
     }
 
-    <a class="btn btn-primary" href="@(Url.RouteUrl("ressursregistrering") + Context.Request.HendelsesQuery())">Legg til ressurs</a>
+    <a class="btn btn-primary" href="@(Url.RouteUrl("ressursregistrering") + Context.Request.CrisisQuery())">Legg til ressurs</a>
 </div>

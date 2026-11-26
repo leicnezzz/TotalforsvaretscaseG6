@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Totalforsvaret.Areas.Offentlig.Models;
 using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.Models;
+using Totalforsvaret.Services;
 
 namespace Totalforsvaret.Controllers;
 
@@ -32,19 +33,10 @@ public class AccountController(
             return View(input);
         }
 
-        var email = input.Email.Trim();
-
-		// Ved selvregistrrering får brukeren en privat konto.
-		// Kontotypen bestemmes på serveren.
-		var bruker = new Privataktor
-        {
-            UserName = email,
-            Email = email,
-            Navn = $"{input.FirstName.Trim()} {input.LastName.Trim()}"
-        };
+        var user = PrivateAccountRegistration.CreateUser(input);
 
         var resultat = await users.CreateAsync(
-            bruker,
+            user,
             input.Password);
 
         if (!resultat.Succeeded)
@@ -76,31 +68,31 @@ public class AccountController(
     {
         if (!ModelState.IsValid)
         {
-            return LoginFeil(input);
+            return ShowLoginError(input);
         }
 
-        var bruker = await users.FindByEmailAsync(
+        var user = await users.FindByEmailAsync(
             input.Email.Trim());
 
         // Valget i skjemaet må samsvare med lagret brukertype.
         // Brukertypen hentes fra kontoen i databasen.
-        if (bruker == null)
+        if (user == null)
         {
-            return LoginFeil(input);
+            return ShowLoginError(input);
         }
 
         var resultat = await signIn.PasswordSignInAsync(
-            bruker,
+            user,
             input.Password,
             isPersistent: input.RememberMe,
             lockoutOnFailure: true);
 
         if (!resultat.Succeeded)
         {
-            return LoginFeil(input);
+            return ShowLoginError(input);
         }
 
-        if (bruker is Privataktor)
+        if (user is PrivateActor)
         {
             return RedirectToAction("Index", "Dashboard", new { area = "Privat" });
         }
@@ -126,7 +118,7 @@ public class AccountController(
     }
 
 
-    private IActionResult LoginFeil(LoginInput input)
+    private IActionResult ShowLoginError(LoginInput input)
     {
         ViewData["FormError"] =
              "Innlogging mislyktes. Kontroller e-post og passord. " +
@@ -145,7 +137,8 @@ public class AccountController(
 
 [AllowAnonymous]
     [HttpGet("/Account/Login/Offentlig")]
-    public IActionResult LoginOffentlig()
+    [ActionName("LoginOffentlig")]
+    public IActionResult PublicLogin()
     {
         ViewData["OffentligLogin"] = true;
         return View("Login");
@@ -154,27 +147,28 @@ public class AccountController(
     [AllowAnonymous]
     [HttpPost("/Account/Login/Offentlig")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LoginOffentlig(LoginInput input)
+    [ActionName("LoginOffentlig")]
+    public async Task<IActionResult> PublicLogin(LoginInput input)
     {
         ViewData["OffentligLogin"] = true;
 
         if (!ModelState.IsValid)
-            return LoginFeil(input);
+            return ShowLoginError(input);
 
-        var bruker = await users.FindByEmailAsync(input.Email.Trim());
+        var user = await users.FindByEmailAsync(input.Email.Trim());
 
-        // Offentlig innlogging godtar bare en lagret offentlig bruker.
-        if (bruker is not Offentligaktør)
-            return LoginFeil(input);
+        // Offentlig innlogging godtar bare en lagret offentlig user.
+        if (user is not PublicActor)
+            return ShowLoginError(input);
 
         var resultat = await signIn.PasswordSignInAsync(
-            bruker,
+            user,
             input.Password,
             isPersistent: input.RememberMe,
             lockoutOnFailure: true);
 
         if (!resultat.Succeeded)
-            return LoginFeil(input);
+            return ShowLoginError(input);
 
         return RedirectToAction(
             "Index",

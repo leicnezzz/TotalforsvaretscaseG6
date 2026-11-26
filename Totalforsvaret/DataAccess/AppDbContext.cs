@@ -31,8 +31,8 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
     public DbSet<EquipmentDetails> EquipmentDetails =>
         Set<EquipmentDetails>();
     
-    public DbSet<EgenberedskapChecklistStatus> EgenberedskapChecklistStatuses =>
-        Set<EgenberedskapChecklistStatus>();
+    public DbSet<EmergencyChecklistStatus> EmergencyChecklistStatuses =>
+        Set<EmergencyChecklistStatus>();
 	public DbSet<ProfilePhoto> ProfilePhotos => Set<ProfilePhoto>();
     
     public DbSet<ResourceMessage> ResourceMessages
@@ -101,8 +101,23 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
 
 		builder.Entity<Bruker>()
             .HasDiscriminator<string>("BrukerType")
-            .HasValue<Privataktor>("Privat")
-            .HasValue<Offentligaktør>("Offentlig");
+            .HasValue<PrivateActor>("Privat")
+            .HasValue<PublicActor>("Offentlig");
+
+        builder.Entity<Need>()
+            .Property(need => need.Priority)
+            .HasConversion(priority => priority.ToNorwegianText(), value => NeedPriorityText.FromStoredValue(value))
+            .HasColumnType("longtext");
+
+        builder.Entity<Need>()
+            .Property(need => need.Type)
+            .HasConversion(type => type.ToNorwegianText(), value => NeedTypeText.FromStoredValue(value))
+            .HasColumnType("longtext");
+
+        builder.Entity<Need>()
+            .Property(need => need.Status)
+            .HasConversion(status => status.ToNorwegianText(), value => NeedStatusText.FromStoredValue(value))
+            .HasColumnType("longtext");
 
         builder.Entity<Need>()
             .HasOne(n => n.Crisis)
@@ -117,6 +132,21 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
             .HasForeignKey(n => n.OffentligAktorId)
             .OnDelete(DeleteBehavior.SetNull);
         
+
+        builder.Entity<Crisis>()
+            .Property(crisis => crisis.Type)
+            .HasConversion(type => type.ToNorwegianText(), value => CrisisTypeText.FromStoredValue(value))
+            .HasColumnType("longtext");
+
+        builder.Entity<Crisis>()
+            .Property(crisis => crisis.Severity)
+            .HasConversion(severity => severity.ToNorwegianText(), value => CrisisSeverityText.FromStoredValue(value))
+            .HasColumnType("longtext");
+
+        builder.Entity<Crisis>()
+            .Property(crisis => crisis.Status)
+            .HasConversion(status => status.ToNorwegianText(), value => CrisisStatusText.FromStoredValue(value))
+            .HasColumnType("longtext");
 
         builder.Entity<Crisis>()
             .HasOne(c => c.OffentligAktor)
@@ -184,8 +214,9 @@ public class AppDbContext : IdentityUserContext<Bruker, int>
                 Name = "Equipment"
             }
         );
-        builder.Entity<EgenberedskapChecklistStatus>(entity =>
+        builder.Entity<EmergencyChecklistStatus>(entity =>
         {
+            entity.ToTable("EgenberedskapChecklistStatuses");
             entity.HasKey(status => new { status.BrukerId, status.ItemId });
             entity.Property(status => status.ItemId).HasMaxLength(80);
 

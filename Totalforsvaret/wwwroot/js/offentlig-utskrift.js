@@ -12,10 +12,6 @@ if (utskrift === 'treff' || utskrift === 'oversiktsliste') {
 
     if (!tabell) return;
 
-    const tittel = erTreff
-        ? 'Foreslåtte treff'
-        : document.getElementById('oversiktListeTittel').textContent.trim();
-
     const kopi = tabell.cloneNode(true);
     kopi.removeAttribute('class');
     kopi.querySelectorAll('.oversikt-mobilfelt, caption.visually-hidden')

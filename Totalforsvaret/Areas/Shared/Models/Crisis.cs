@@ -31,19 +31,19 @@ public class Crisis
     
     // Informasjon om krisen
     [Column("Alvorlighetsgrad")]
-    public string Severity { get; set; } = "";
+    public CrisisSeverity Severity { get; set; }
 
     [Column("Dato")]
     public DateTime StartTime { get; set; }
 
-    public string Status { get; set; } = "";
+    public CrisisStatus Status { get; set; }
 
     // Ny informasjon som må legges til i databasen
-    public string Type { get; set; } = "";
+    public CrisisType Type { get; set; }
 
     public int? OffentligAktorId { get; set; }
 
-    public Areas.Offentlig.Models.Offentligaktør? OffentligAktor { get; set; }
+    public Areas.Offentlig.Models.PublicActor? OffentligAktor { get; set; }
 
     // Behov knyttet til krisen
     public ICollection<Areas.Offentlig.Models.Need> Needs { get; set; }

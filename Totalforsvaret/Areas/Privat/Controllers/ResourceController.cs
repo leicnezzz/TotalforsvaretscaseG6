@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Totalforsvaret.Areas.Privat.Models;
 using Totalforsvaret.DataAccess;
-using Totalforsvaret.Handlers;
 using Totalforsvaret.Models;
 using Totalforsvaret.Models.resourcemodels;
 
@@ -15,17 +13,17 @@ namespace Totalforsvaret.Areas.Privat.Controllers;
 [Area("Privat")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public class ResourceController(
-    AppDbContext db,
-    ResourceHandler resourceHandler,
+    IResourceRepository resources,
     UserManager<Bruker> users) : Controller
 {
     [Authorize(Policy = "KunPrivat")]
     [HttpGet]
-    public IActionResult Skjema()
+    [ActionName("Skjema")]
+    public IActionResult Registration()
     {
         var model = new FormDataModel
         {
-            Categories = resourceHandler.GetCategories()
+            Categories = resources.GetCategories()
                 .Select(category => new SelectListItem(
                     category.Name,
                     category.CategoryId.ToString(
@@ -38,23 +36,17 @@ public class ResourceController(
 
     [Authorize(Policy = "KunPrivat")]
     [HttpGet]
-    public async Task<IActionResult> Oversikt()
+    [ActionName("Oversikt")]
+    public async Task<IActionResult> Overview()
     {
-        var bruker = await users.GetUserAsync(User);
+        var user = await users.GetUserAsync(User);
 
-        if (bruker is null)
+        if (user is null)
             return Challenge();
 
-        var resources = await db.Resources
-            .AsNoTracking()
-            .Include(resource => resource.Category)
-            .Include(resource => resource.Vehicle)
-            .Include(resource => resource.Equipment)
-            .Where(resource => resource.BrukerId == bruker.Id)
-            .OrderByDescending(resource => resource.ResourceId)
-            .ToListAsync();
+        var ownedResources = await resources.ListOwnedAsync(user.Id);
 
-        return View(resources);
+        return View(ownedResources);
     }
 
     [Authorize(Policy = "KunPrivat")]
@@ -79,13 +71,12 @@ public class ResourceController(
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var bruker = await users.GetUserAsync(User);
+        var user = await users.GetUserAsync(User);
 
-        if (bruker is null)
+        if (user is null)
             return Challenge();
 
-        var categoryExists = await db.Categories
-            .AnyAsync(category => category.CategoryId == input.CategoryId);
+        var categoryExists = await resources.CategoryExistsAsync(input.CategoryId);
 
         if (!categoryExists)
             return BadRequest(new { message = "Kategorien finnes ikke." });
@@ -93,7 +84,7 @@ public class ResourceController(
         var resource = new Resource
         {
             Object = input.Object.Trim(),
-            BrukerId = bruker.Id
+            BrukerId = user.Id
         };
 
         ApplyInput(resource, input);
@@ -104,8 +95,7 @@ public class ResourceController(
         }
 
 
-        db.Resources.Add(resource);
-        await db.SaveChangesAsync();
+        await resources.AddAsync(resource);
 
         return Ok(new { resourceId = resource.ResourceId });
     }
@@ -120,18 +110,13 @@ public class ResourceController(
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var bruker = await users.GetUserAsync(User);
+        var user = await users.GetUserAsync(User);
 
-        if (bruker is null)
+        if (user is null)
             return Challenge();
-		// Søker både ressurs-ID og bruker-ID.
+		// Søker både ressurs-ID og user-ID.
 		// Gjør at brukeren bare redigere sine egne ressurser.
-		var resource = await db.Resources
-            .Include(resource => resource.Vehicle)
-            .Include(resource => resource.Equipment)
-            .SingleOrDefaultAsync(resource =>
-                resource.ResourceId == id &&
-                resource.BrukerId == bruker.Id);
+		var resource = await resources.FindOwnedAsync(id, user.Id, includeDetails: true);
 
         if (resource is null)
             return NotFound();
@@ -146,7 +131,7 @@ public class ResourceController(
         }
 
         ApplyInput(resource, input);
-        await db.SaveChangesAsync();
+        await resources.SaveChangesAsync();
 
         return Ok(new { resourceId = resource.ResourceId });
     }
@@ -156,34 +141,18 @@ public class ResourceController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var bruker = await users.GetUserAsync(User);
+        var user = await users.GetUserAsync(User);
 
-        if (bruker is null)
+        if (user is null)
             return Challenge();
 
-        var resource = await db.Resources
-            .SingleOrDefaultAsync(resource =>
-                resource.ResourceId == id &&
-                resource.BrukerId == bruker.Id);
+        var resource = await resources.FindOwnedAsync(id, user.Id);
 
         if (resource is null)
             return NotFound();
 
-        if (await db.ResourceAssignments.AnyAsync(assignment => assignment.ResourceId == id))
+        if (!await resources.TryDeleteAsync(resource))
         {
-            return Conflict(new { message = "Ressursen har vært brukt i en tildeling og kan ikke slettes." });
-        }
-
-        db.Resources.Remove(resource);
-        try
-        {
-            await db.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        {
-            if (!await db.ResourceAssignments.AnyAsync(assignment => assignment.ResourceId == id))
-                throw;
-
             return Conflict(new { message = "Ressursen har vært brukt i en tildeling og kan ikke slettes." });
         }
 

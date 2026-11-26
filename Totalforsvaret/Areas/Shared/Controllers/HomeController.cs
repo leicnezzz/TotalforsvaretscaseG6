@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using Totalforsvaret.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Totalforsvaret.Handlers;
+using Totalforsvaret.DataAccess;
 namespace Totalforsvaret.Controllers;
 
 public class HomeController : Controller
 {
     [AllowAnonymous]
     [HttpGet]
-    public IActionResult Index([FromServices] ResourceHandler resourceHandler)
+    public IActionResult Index([FromServices] IResourceRepository resourceHandler)
     {
         return View(BuildResourceModel(resourceHandler));
     }
@@ -18,12 +18,12 @@ public class HomeController : Controller
     [Authorize(Policy = "KunOffentlig")]
     [HttpGet("/OffentligAktor/RegistrerRessurs", Name = "ressursregistrering")]
     [HttpGet("/Ressurs")]
-    public IActionResult ResourceRegistration([FromServices] ResourceHandler resourceHandler)
+    public IActionResult ResourceRegistration([FromServices] IResourceRepository resourceHandler)
     {
         return View(BuildResourceModel(resourceHandler));
     }
 
-    private static PublicHomeViewModel BuildResourceModel(ResourceHandler resourceHandler)
+    private static PublicHomeViewModel BuildResourceModel(IResourceRepository resourceHandler)
     {
         return new PublicHomeViewModel
         {
@@ -45,11 +45,6 @@ public class HomeController : Controller
 	{
 		return View();
 	}
-	public IActionResult Map()
-    {
-        return View();
-    }
-
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

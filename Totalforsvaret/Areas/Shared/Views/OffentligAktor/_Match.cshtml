@@ -47,7 +47,7 @@
     </template>
 
     <form class="match-actions"
-          action="@(Url.Action("VurderRessurs", "OffentligAktor", new { area = "" }) + Context.Request.HendelsesQuery())"
+          action="@(Url.Action("VurderRessurs", "OffentligAktor", new { area = "" }) + Context.Request.CrisisQuery())"
           asp-antiforgery="true" method="post" data-match-form>
         <input type="hidden" name="fraMatch" value="true" />
         <div data-match-pairs></div>
@@ -66,12 +66,12 @@
         <section>
             <h2>Opprett et nytt behov</h2>
             <strong class="match-shortcut-label">Registrering</strong>
-            <a href="@(Url.RouteUrl("behov") + Context.Request.HendelsesQuery())" class="match-button">Nytt behov <span aria-hidden="true">→</span></a>
+            <a href="@(Url.RouteUrl("behov") + Context.Request.CrisisQuery())" class="match-button">Nytt behov <span aria-hidden="true">→</span></a>
         </section>
         <section>
             <h2>Registrer en ressurs</h2>
             <strong class="match-shortcut-label">Registrering</strong>
-            <a href="@(Url.RouteUrl("ressursregistrering") + Context.Request.HendelsesQuery())" class="match-button">Ny ressurs <span aria-hidden="true">→</span></a>
+            <a href="@(Url.RouteUrl("ressursregistrering") + Context.Request.CrisisQuery())" class="match-button">Ny ressurs <span aria-hidden="true">→</span></a>
         </section>
     </div>
 </section>

@@ -1,5 +1,4 @@
 using Totalforsvaret.Models.resourcemodels;
-using System.Collections.Generic; 
 
 namespace Totalforsvaret.Areas.Offentlig.Models;
 
@@ -36,4 +35,20 @@ public class ResourceAssignment
     
     public ICollection<ResourceMessage> Messages { get; set; }
         = new List<ResourceMessage>();
+
+    internal void MarkAssigned()
+    {
+        Status = AssignmentStatus.Assigned;
+        AssignedAtUtc = DateTime.UtcNow;
+    }
+
+    internal void MarkRejected() => Close(AssignmentStatus.Rejected);
+
+    internal void MarkReleased() => Close(AssignmentStatus.Released);
+
+    private void Close(AssignmentStatus status)
+    {
+        Status = status;
+        ClosedAtUtc = DateTime.UtcNow;
+    }
 }

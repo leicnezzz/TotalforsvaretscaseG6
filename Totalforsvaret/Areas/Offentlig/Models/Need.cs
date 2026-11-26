@@ -12,16 +12,16 @@ public class Need
     [Column("Tittel")]
     public string Name { get; set; } = "";
 
-    public string Type { get; set; } = "";
+    public NeedType Type { get; set; }
 
     [Column("Beskrivelse")]
     public string Description { get; set; } = "";
 
     // Prioritet og status
     [Column("Prioritet")]
-    public string Priority { get; set; } = "";
+    public NeedPriority Priority { get; set; }
 
-    public string Status { get; set; } = "";
+    public NeedStatus Status { get; set; }
 
     // Kontaktinformasjon
     public string? Kontaktpunkt { get; set; }
@@ -49,5 +49,5 @@ public class Need
     [Column("OffentligAktørId")]
     public int? OffentligAktorId { get; set; }
 
-    public Offentligaktør? OffentligAktor { get; set; }
+    public PublicActor? OffentligAktor { get; set; }
 }

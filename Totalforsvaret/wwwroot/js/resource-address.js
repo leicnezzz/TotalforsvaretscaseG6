@@ -53,6 +53,11 @@
             });
     } // henter adresseforslag, og returnerer liste med forslag: label, latitude og longitude.
 
+    function validCoordinates(latitude, longitude) {
+        return Number.isFinite(latitude) && Math.abs(latitude) <= 90 &&
+            Number.isFinite(longitude) && Math.abs(longitude) <= 180;
+    }
+
     function attach(container, onChange = () => {}, { allowMapSelection = false, lookupMapAddress = false, markerColor = '#2e6840' } = {}) {
         const address = container.querySelector('[data-address-input], [name="Address"]');
         const latitude = container.querySelector('[name="Latitude"]');
@@ -69,13 +74,11 @@
 
         function valid() {
             return Boolean((allowMapSelection || address.value.trim()) && latitude.value && longitude.value &&
-                Number.isFinite(Number(latitude.value.replace(',', '.'))) && Math.abs(Number(latitude.value.replace(',', '.'))) <= 90 &&
-                Number.isFinite(Number(longitude.value.replace(',', '.'))) && Math.abs(Number(longitude.value.replace(',', '.'))) <= 180);
+                validCoordinates(Number(latitude.value.replace(',', '.')), Number(longitude.value.replace(',', '.'))));
         } // Sjekker om adressefelt og koordinater er gyldige. 
 
         function selectMapPoint(point, label = '') {
-            if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lng) ||
-                Math.abs(point.lat) > 90 || Math.abs(point.lng) > 180) return;
+            if (!point || !validCoordinates(point.lat, point.lng)) return;
             latitude.value = point.lat.toFixed(6);
             longitude.value = point.lng.toFixed(6);
             selectedAddress = label;
@@ -189,8 +192,7 @@
                 results.replaceChildren();
                 const seen = new Set();
                 for (const match of addresses) {
-                    if (!Number.isFinite(match.latitude) || !Number.isFinite(match.longitude) ||
-                        Math.abs(match.latitude) > 90 || Math.abs(match.longitude) > 180 || seen.has(match.label)) continue;
+                    if (!validCoordinates(match.latitude, match.longitude) || seen.has(match.label)) continue;
                     seen.add(match.label);
                     const item = document.createElement('li');
                     const button = document.createElement('button');

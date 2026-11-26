@@ -9,13 +9,6 @@
     font-family: "Roboto", sans-serif;
 }
 
-.site-header:has(.private-breadcrumb) {
-    position: sticky;
-    top: calc(0px - var(--private-nav-height, 72px));
-    z-index: 1100;
-    flex-shrink: 0;
-}
-
 /* Hovedmenyer */
 .primary-nav,
 .public-nav {
@@ -274,20 +267,6 @@
     line-height: 1.4;
 }
 
-/* Brødsmule og sidehandlinger */
-.private-breadcrumb {
-    overflow-wrap: anywhere;
-}
-
-.private-breadcrumb a {
-    color: inherit;
-    text-decoration: none;
-}
-
-.private-breadcrumb a:hover {
-    text-decoration: underline;
-}
-
 .private-page-actions {
     display: flex;
     min-height: 80px;
@@ -314,44 +293,6 @@
     line-height: 1.5;
     text-decoration: none;
     cursor: pointer;
-}
-
-/* Til toppen-knapp */
-.private-home .private-back-to-top {
-    position: fixed;
-    right: max(20px, env(safe-area-inset-right));
-    bottom: max(20px, env(safe-area-inset-bottom));
-    z-index: 1200;
-    display: inline-flex;
-    min-height: 44px;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 18px;
-    border: 1px solid #eef2ee;
-    border-radius: 8px;
-    background: var(--header-green);
-    color: #fff;
-    font: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    box-shadow: 0 3px 12px rgb(0 0 0 / 18%);
-    cursor: pointer;
-}
-
-.private-home .private-back-to-top[hidden] {
-    display: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    .private-back-to-top {
-        transition: box-shadow 160ms ease, transform 160ms ease;
-    }
-
-    .private-back-to-top:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 16px rgb(0 0 0 / 22%);
-    }
 }
 
 /* Mobilvisning */

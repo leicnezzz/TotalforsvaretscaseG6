@@ -13,7 +13,7 @@ public class InboxViewModel
     public InboxAudience Audience { get; init; }
 
     public IReadOnlyList<InboxItemViewModel> Items { get; init; }
-        = Array.Empty<InboxItemViewModel>();
+        = [];
 
     public int? SelectedId { get; init; }
 
@@ -21,7 +21,7 @@ public class InboxViewModel
         Items.FirstOrDefault(item => item.AssignmentId == SelectedId);
 
     public IReadOnlyList<InboxMessageViewModel> Messages { get; init; }
-        = Array.Empty<InboxMessageViewModel>();
+        = [];
 }
 
 public class InboxItemViewModel
@@ -45,7 +45,7 @@ public class InboxItemViewModel
     public string? NeedContactPerson { get; init; }
     public string? NeedContactPoint { get; init; }
     public string? NeedPhoneNumber { get; init; }
-    
+
     public AssignmentStatus Status { get; init; }
     public DateTime RequestedAtUtc { get; init; }
     public DateTime? AssignedAtUtc { get; init; }
